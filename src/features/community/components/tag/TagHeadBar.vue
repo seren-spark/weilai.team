@@ -176,6 +176,9 @@ getAllTagList()
         overflow-x: auto;
         /* 启用水平滚动 */
 
+        .tag-head-bar-item {
+            font-size: 16px;
+        }
         /* 设置滚动条的宽度 */
         &::-webkit-scrollbar {
             width: 12px;
