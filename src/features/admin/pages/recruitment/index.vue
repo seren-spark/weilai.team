@@ -5,7 +5,6 @@ import {
   ToggleShow,
   QuickShowCard,
   ShortcutOperation,
-  InterviewEvaluationShow,
 } from "@/components/recruitment";
 import { useRequest } from "vue-request";
 import { getMyInterviewRecord,getInterviewCount } from "@/composables/useRecruitmentRequest";
@@ -44,7 +43,7 @@ const toggleItems = ref([
 // 卡片信息展示
 const  messageCard=ref([]);
 // 确保所有 id 都是字符串
-const normalizeInterviewCard = (card: any) => ({
+const normalizeInterviewCard = (card: any ) => ({
   ...card,
   InterviewOfficerSecond: {
     ...card.InterviewOfficerSecond,
@@ -65,6 +64,7 @@ const normalizeInterviewCard = (card: any) => ({
             watch(
              [data, error, loading] ,
               ([newData, newError, loading]) => {
+                console.log(loading);
                 if (newData?.data.data.data) {
                   console.log(newData.data.data.data);
                   messageCard.value = newData.data.data.data.map((card:any)=>{
@@ -114,6 +114,7 @@ const fetchAllInterviewCount = () => {
   watch(
     [countOne, errorOne, loadingOne],
     ([newData, newError, loading]) => {
+      console.log(loading);
       if (newData?.data.data) {
         quickShowItems.value[0].number = newData.data.data;
       }
@@ -133,6 +134,7 @@ const fetchAllInterviewCount = () => {
   watch(
     [countTwo, errorTwo, loadingTwo],
     ([newData, newError, loading]) => {
+      console.log(loading);
       if (newData?.data.data) {
         quickShowItems.value[1].number = newData.data.data;
       }
@@ -166,11 +168,13 @@ const quickShowItems = ref([
   <div class="main">
     <div class="left-side">
       <div
-        class="quick-show"
+
         v-for="(item, index) in quickShowItems"
         :key="index"
+        class="quick-show"
       >
-        <QuickShowCard :quickShowItem="item"></QuickShowCard>
+        <QuickShowCard
+        :quick-show-item="item"></QuickShowCard>
       </div>
 
       <div class="quick-control">
@@ -186,8 +190,8 @@ const quickShowItems = ref([
       <div class="content-container">
         <div class="toggle-outer long-dashed-border">
           <ToggleShow
-            :toggleItems="toggleItems"
-            @transferToggleShowStatus="handleToggleShowStatus"
+            :toggle-items="toggleItems"
+            @transfer-toggle-show-status="handleToggleShowStatus"
           />
         </div>
         <div class="main-content-show"  >
