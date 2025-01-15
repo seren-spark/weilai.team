@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import useApplication from '@/composables/useApplication'
+import useApplication from '@/composables/useSendApplication'
 import { applicationStore } from '@/store/applicationStore'
 import { reactive, ref, watch } from 'vue'
 import {

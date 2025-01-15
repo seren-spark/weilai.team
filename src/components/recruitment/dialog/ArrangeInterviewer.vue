@@ -1,10 +1,11 @@
 <template>
   <Teleport to="body">
     <transition name="fade">
-    <div class="arrange-interviewer-wrapper" v-if="isOpen">
+    <div  v-if="isOpen" class="arrange-interviewer-wrapper">
       <!-- 箭头图标 -->
       <div class="arrow" @click="emit('close')"  >
-    <svg xmlns="http://www.w3.org/2000/svg"
+    <svg
+    xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
@@ -22,7 +23,7 @@
       <FormItem>
         <FormLabel class="m-3 m-b-2">申请人</FormLabel >
         <FormControl>
-          <Input placeholder="填写申请人" v-model="formData.ApplyUser"  />
+          <Input v-model="formData.ApplyUser" placeholder="填写申请人"   />
         </FormControl>
         <span class="form-message">{{ errors.ApplyUser }}</span>
       </FormItem>
@@ -32,7 +33,7 @@
       <FormItem>
         <FormLabel class="m-3">面试地点</FormLabel >
         <FormControl>
-          <Input placeholder="安排面试地点" v-model="formData.place" />
+          <Input v-model="formData.place" placeholder="安排面试地点"  />
         </FormControl>
         <span class="form-message">{{ errors.place }}</span>
       </FormItem>
@@ -42,7 +43,8 @@
       <FormItem class="flex flex-col">
         <FormLabel class="m-3">面试官</FormLabel >
         <Popover>
-          <PopoverTrigger asChild>
+          // eslint-disable-next-line vue/attribute-hyphenation
+          <PopoverTrigger as-child>
             <FormControl>
               <Button
                 variant="outline"
@@ -65,7 +67,7 @@
           </PopoverTrigger>
           <PopoverContent class="p-0" align="start">
             <Command>
-              <CommandInput placeholder="搜索面试官" v-model="searchName" />
+              <CommandInput  v-model="searchName" placeholder="搜索面试官" />
               <CommandList>
                 <CommandEmpty>未找到该面试官</CommandEmpty>
                 <CommandGroup>
@@ -73,8 +75,8 @@
                     v-for="choice in choices"
                     :key="choice.value"
                     :value="choice.label"
-                    @select="() => handleInterviewerChange(choice.value,choice.id )"
                     :class="{ 'interviewer-selected': formData.interviewer.includes(choice.value) }"
+                    @select="() => handleInterviewerChange(choice.value,choice.id )"
                   >
                     <CheckIcon
                       :class="[
@@ -98,7 +100,7 @@
       <FormItem class="flex flex-col">
         <FormLabel class="m-3">面试日期 </FormLabel >
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger as-child>
             <FormControl>
               <Button
                 variant="outline"
@@ -118,10 +120,10 @@
           </PopoverTrigger>
           <PopoverContent class="w-auto p-0" align="start">
             <Calendar
-              mode="single"
               v-model="formData.date as any"
+              :on-date-change="handleDateUpdate"
+              mode="single"
               locale="zh-CN"
-              :onDateChange="handleDateUpdate"
             />
           </PopoverContent>
         </Popover>
@@ -134,8 +136,8 @@
         <FormLabel class="m-3">开始时间</FormLabel >
         <FormControl>
          <Input
-            placeholder="填写开始时间"
-            v-model="formData.startTime"
+          v-model="formData.startTime"
+          placeholder="填写开始时间"
           />
         </FormControl>
         <span class="form-message">{{ errors.startTime }}</span>
@@ -147,8 +149,8 @@
         <FormLabel class="m-3">结束时间</FormLabel >
         <FormControl>
          <Input
-            placeholder="填写结束时间"
-            v-model="formData.endTime"
+         v-model="formData.endTime"
+          placeholder="填写结束时间"
           />
         </FormControl>
         <span class="form-message">{{ errors.endTime }}</span>
@@ -282,7 +284,7 @@ const searchName = ref("");
 import { onMounted} from "vue";
 
 onMounted(() => {
-  const { data, error, loading } = useRequest(() => getAllInterviewer({ pageNo: 1, pageSize: 100, name: searchName.value }));
+  const { data, error } = useRequest(() => getAllInterviewer({ pageNo: 1, pageSize: 100, name: searchName.value }));
 
   watchEffect(() => {
     if (error.value) {
@@ -355,7 +357,7 @@ const handleSubmit = () => {
     });
     let dateString=`${formatDate(formData.date as any)}-${formData.startTime}-${formData.endTime}`;
     // 提交表单数据
-   const { data, error, loading } = useRequest(() => arrangeInterviewer({
+   const { data } = useRequest(() => arrangeInterviewer({
     id: props.id,
     interviewTime:dateString ,
     place: formData.place,
