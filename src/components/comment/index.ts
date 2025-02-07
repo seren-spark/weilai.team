@@ -49,6 +49,4 @@ async function getUserInfo(userId: number, userInfo: any) {
   }
 }
 
-//获取二级评论数据
-
 export { createUserInfo, getUserInfo };
