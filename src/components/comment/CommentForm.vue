@@ -27,9 +27,11 @@ const props = defineProps<{
 
 const { data, executeRequest } = useRequest();
 const { showAlert } = useAlert();
-const commentText = ref<string>("");
+const commentTexts = ref<string>("");
+// 用于保存拼接后的文本+图片编码
+const finalCommentText = ref<string>("");
 const maxLength = 1000;
-const remaining = computed(() => maxLength - commentText.value.length);
+const remaining = computed(() => maxLength - commentTexts.value.length);
 const renderedContent = ref<string>("");
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageTags = ref<string[]>([]);
@@ -37,20 +39,19 @@ const photoUrls = ref<string[]>([]);
 const emojiVisible = ref<boolean>(false);
 const emit = defineEmits(["reply"]);
 const onSelectEmoji = (emoji: string) => {
-  commentText.value += emoji.i;
-  console.log(emoji);
+  commentTexts.value += emoji.i;
   emojiVisible.value = false;
 };
 
 // 更新内容并限制最大长度
-watch(commentText, (newContent) => {
+watch(commentTexts, (newContent) => {
   if (newContent.length > maxLength) {
-    commentText.value = newContent.slice(0, maxLength);
+    commentTexts.value = newContent.slice(0, maxLength);
   }
 });
 // 渲染的Markdown内容
 watchEffect(async () => {
-  const rawHTML = await marked(commentText.value);
+  const rawHTML = await marked(commentTexts.value);
   renderedContent.value = dompurify.sanitize(rawHTML);
 });
 // 图片输入
@@ -66,12 +67,18 @@ const handleFileSelect = (event: Event) => {
       showAlert("只能上传一张图片", "waring");
       return;
     }
+    photoUrls.value = [];
+    imageTags.value = [];
+    finalCommentText.value = "";
     const reader = new FileReader();
     reader.onload = (e) => {
       const url = e.target?.result as string;
       photoUrls.value.push(url);
       const imgMarkdown = `![${file.name}](${url})`;
       imageTags.value = [imgMarkdown];
+      if (!finalCommentText.value.includes(url)) {
+        finalCommentText.value += `<!-- IMG_SPLIT -->${url}<!-- IMG_SPLIT -->`;
+      }
     };
     reader.readAsDataURL(file);
   }
@@ -81,6 +88,7 @@ const handleFileSelect = (event: Event) => {
 const deleteImage = () => {
   photoUrls.value = [];
   imageTags.value = [];
+  finalCommentText.value = "";
 };
 
 // 生命周期函数
@@ -95,13 +103,15 @@ onUnmounted(() => {
 });
 // 写一级评论
 const submitComment = async () => {
-  if (!commentText.value.trim()) {
+  finalCommentText.value += commentTexts.value;
+  if (!finalCommentText.value.trim()) {
     showAlert("评论内容不能为空", "error");
     return;
   }
+
   const requestData = {
     postId: props.postId,
-    commentTxt: commentText.value,
+    commentTxt: finalCommentText.value,
   };
   // 发送请求
   await executeRequest({
@@ -112,7 +122,7 @@ const submitComment = async () => {
   if (data.value?.code == 200) {
     showAlert("评论成功", "pass");
     props.getFirstComment();
-    commentText.value = "";
+    commentTexts.value = "";
     photoUrls.value = [];
     imageTags.value = [];
   } else {
@@ -121,13 +131,14 @@ const submitComment = async () => {
 };
 //多级评论
 const submitReply = async (commentId: number, userId: number) => {
-  if (!commentText.value.trim()) {
+  finalCommentText.value += commentTexts.value;
+  if (!finalCommentText.value.trim()) {
     showAlert("评论内容不能为空", "error");
     return;
   }
   const replyCommentDTO = {
     commentId: commentId,
-    commentTxt: commentText.value,
+    commentTxt: finalCommentText.value,
     userId: userId,
   };
   console.log("提交的请求数据:", replyCommentDTO);
@@ -140,7 +151,7 @@ const submitReply = async (commentId: number, userId: number) => {
 
   if (data.value?.code == 200) {
     showAlert("评论成功", "pass");
-    commentText.value = "";
+    commentTexts.value = "";
     photoUrls.value = [];
     imageTags.value = [];
     emit("reply", commentId);
@@ -162,7 +173,7 @@ const handleButtonClick = () => {
   <div class="comment-form">
     <!-- 评论输入框 -->
     <textarea
-      v-model="commentText"
+      v-model="commentTexts"
       placeholder="请输入你的评论......"
       :maxlength="maxLength"
     ></textarea>
@@ -192,6 +203,7 @@ const handleButtonClick = () => {
             <PopoverContent :style="{ padding: '0rem', width: 'auto' }">
               <EmojiPicker
                 class="emoji-picker-float"
+                :options-name="optionsName"
                 :native="true"
                 @select="onSelectEmoji"
               />
