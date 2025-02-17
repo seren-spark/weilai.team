@@ -6,26 +6,26 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(["close"]);
-const close = (event: Event) => {
+const close = (event: Event): void => {
   // 点击遮罩层关闭
   if (event.target === event.currentTarget) {
     emit("close");
   }
-  return;
+  return void 0;
 };
 
 </script>
 <!-- <InterviewEvaluationShow /> -->
 <template>
   <Teleport to="body">
-    <div class="outer" v-if="isOpen" @click="close($event)">
+    <div v-if="isOpen" class="outer" @click="close($event)">
       <div class="interview-evaluation-container">
         <div class="title">
           <h2>面试评价展示页</h2>
         </div>
         <div class="content">
           <p>
-            {{ message }}
+            {{props.message }}
           </p>
         </div>
       </div>

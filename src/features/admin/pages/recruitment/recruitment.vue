@@ -72,7 +72,7 @@ const normalizeInterviewCard = (card: any ) => ({
                       ApplyUserId: card.userId,
                       InterviewTime: card.interviewTime,
                       InterviewAddress: card.place,
-                      InterviewRound: card.interviewRound || "刘志文没传",
+                      InterviewRound: card.interviewRound || "一面",
                       InterviewName: card.name,
                       InterviewStatus:interviewStatusMap[card.interviewStatus as interviewStatus],
                       InterviewId: card.id,

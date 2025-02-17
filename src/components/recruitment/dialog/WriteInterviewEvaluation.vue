@@ -1,22 +1,22 @@
 <template>
 <Teleport to="body">
-    <div class="outer" v-if="props.isOpen"  @click="close($event)">
-  <form @submit.prevent="handleSubmit" class="space-y-6 p-4">
+    <div  v-if="props.isOpen" class="outer"  @click="close($event)">
+  <form class="space-y-6 p-4" @submit.prevent="handleSubmit">
     <!-- 写面评字段 -->
     <FormField name="interviewEvaluation">
       <FormItem>
         <FormLabel>写面评</FormLabel>
         <FormControl>
           <Textarea
+            v-model="formData.interviewEvaluation"
             placeholder="在此书写面试评价"
             class="resize-none"
-            v-model="formData.interviewEvaluation"
             >
           </Textarea>
         </FormControl>
         <span
-        class="error-message"
-        v-if="errors.interviewEvaluation">{{
+        v-if="errors.interviewEvaluation"
+        class="error-message">{{
           errors.interviewEvaluation
         }}</span>
       </FormItem>
@@ -38,8 +38,8 @@
           </Select>
         </FormControl>
         <span
-        class="error-message"
-        v-if="errors.status">{{ errors.status }}</span>
+        v-if="errors.status"
+        class="error-message">{{ errors.status }}</span>
       </FormItem>
     </FormField>
     <Button type="submit" class="btn-style" >保存</Button>
@@ -79,7 +79,10 @@ const close = (event: Event) => {
 
 const props = defineProps({
   isOpen: Boolean,
-  id: String,
+  id: {
+    type: String,
+    default: "",
+  },
 });
 
 

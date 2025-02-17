@@ -43,7 +43,6 @@
       <FormItem class="flex flex-col">
         <FormLabel class="m-3">面试官</FormLabel >
         <Popover>
-          // eslint-disable-next-line vue/attribute-hyphenation
           <PopoverTrigger as-child>
             <FormControl>
               <Button
@@ -276,9 +275,7 @@ const formSchema = z.object({
 
 const choices = ref<[
 { label:string, value: string ,id:string},
-]
-
->();
+]>();
 const searchName = ref("");
 //从后端拿到面试官信息
 import { onMounted} from "vue";

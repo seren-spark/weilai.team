@@ -10,7 +10,7 @@ type cardMessage={
 const props = defineProps<
    { quickShowItem : cardMessage,}
 >()
-
+console.log(props)
 </script>
 <template>
         <Card class="card-message-show" >

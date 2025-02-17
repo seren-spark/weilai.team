@@ -7,13 +7,13 @@ import {
   Pagination,
   AutoLongerInput,
   UpdateStatus,
-  ModalDialog,
+  // ModalDialog,
   UpdateApplyUserInfo,
   ArrangeInterviewer,
 } from "@/components/recruitment";
 import { Icon } from "@iconify/vue";
 import { Button } from "@/components/ui/button";
-import { ref, watch, watchEffect, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import {
   getAllApplyUser,
   getAllGrade,
@@ -23,7 +23,7 @@ import {
 import { useRequest } from "vue-request";
 import type {
   IAllApplyUserVO,
-  IResponseDataApplyUser,
+  // IResponseDataApplyUser,
   IAllApplyUserDTO,
   IGradeData,
 } from "@/types/recruitmentType";
@@ -101,7 +101,7 @@ const handleFilterCondition = (value: string, title: string) => {
 const dateRange = ref(null); // 初始化日期范围
 
 // 获得子组件的日期参数
-const handleDateRangeUpdate = (newDateRange: any) => {
+const handleDateRangeUpdate = (newDateRange:never) => {
   dateRange.value = newDateRange;
   handleDateRange();
 };
@@ -164,7 +164,7 @@ const pageSize = ref(10);
 const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);
-const getApplyUserData = ref<IResponseDataApplyUser | null>(null);
+// const getApplyUserData = ref<IResponseDataApplyUser | null>(null);
 
 //从分页组件拿到页码信息并更新
 const changePage = (newPage: number) => {
@@ -214,7 +214,7 @@ const headers = ref([
 // 查看简历 \/
 const viewResume = (id: string) => {
 
-      const { data, error, loading } = useRequest(() =>
+      const { data, error } = useRequest(() =>
     getResumeById({ id }),
   );
   watch(
@@ -260,7 +260,7 @@ const confirmDeleteCandidate = (id: string) => {
     title: "系统提示",
     content: "确定删除该用户吗？",
   }).then(()=>{
-    const { data, error, loading } = useRequest(() =>
+    const { data, error } = useRequest(() =>
     deleteApplyUserById({ id }),
   );
   watch(
@@ -314,7 +314,7 @@ const actionItems = ref([
 
 //拿到后端的所有年级数据
 const fetchAllGrade=()=>{
-  const { data, error, loading } = useRequest(() =>
+  const { data, error} = useRequest(() =>
   getAllGrade({ pageNo: 1, pageSize: 100 }),
 );
         watch(
@@ -344,6 +344,10 @@ const grade=ref<string>("")
 const sex=ref<string>("")
 const dateString=ref<string>("")
 
+watch([grade,sex,dateString,searchValue,status,],()=>{
+  pageNo.value=1;
+})
+
 const getAllApplyUserRequestParams = computed(() => ({
   pageNo: pageNo.value,
   pageSize: pageSize.value,
@@ -360,8 +364,9 @@ const updateParameter = ref<boolean>(false);
 watch(
   [getAllApplyUserRequestParams, updateParameter],
   ([newParams, _]) => {
-    console.log(newParams);
-    const { data, error, loading } = useRequest(() =>
+
+    console.log(newParams,_);
+    const { data, error} = useRequest(() =>
       getAllApplyUser(newParams),
     );
 
@@ -425,20 +430,20 @@ const arrangeInterviewerDialog=ref(false);
 <template>
   <div class="content">
     <ArrangeInterviewer
-    :isOpen="arrangeInterviewerDialog"
-    @close="arrangeInterviewerDialog = false"
     :id="currentArrangeInterviewId"
     :name="currentArrangeInterviewName"
+    :is-open="arrangeInterviewerDialog"
+    @close="arrangeInterviewerDialog = false"
     />
     <UpdateApplyUserInfo
-      :isOpen="updateApplyUserInfo"
-      @close="updateApplyUserInfo = false"
       :id="currentUpdateApplyUserId"
+      :is-open="updateApplyUserInfo"
+      @close="updateApplyUserInfo = false"
     />
     <UpdateStatus
-      :isOpen="updateStatus"
-      @close="updateStatus = false"
       :ids="currentTableSelectIds"
+      :is-open="updateStatus"
+      @close="updateStatus = false"
     />
 
 
@@ -449,9 +454,9 @@ const arrangeInterviewerDialog=ref(false);
       ></FilterCondition>
       <div class="date-picker">
         <DataRangePicker
-          @updateDateRange="handleDateRangeUpdate"
-          :dateRange="dateRange"
-          :isReset="isReset"
+          :date-range="dateRange"
+          :is-reset="isReset"
+          @update-date-range="handleDateRangeUpdate"
         />
       </div>
 
@@ -462,15 +467,15 @@ const arrangeInterviewerDialog=ref(false);
 
       <div class="search-input">
         <AutoLongerInput
+        placeholder-text="搜索候选人："
           @input_src="handleInput"
-          placeholderText="搜索候选人："
         />
       </div>
     </div>
     <div class="toggle-handle">
       <ToggleShow
-        :toggleItems="toggleItems"
-        @transferToggleShowStatus="handleToggleShowStatus"
+        :toggle-items="toggleItems"
+        @transfer-toggle-show-status="handleToggleShowStatus"
       ></ToggleShow>
 
       <div class="handle-btns">
@@ -486,13 +491,13 @@ const arrangeInterviewerDialog=ref(false);
       <DataTable
         :items="tableData"
         :headers="headers"
-        :actionItems="actionItems"
+        :action-items="actionItems"
         @send-selected-ids="handleTableSelectIds"
       ></DataTable>
       <div class="pagination-container">
         <Pagination
-          :totalItems="total"
-          :pageSize="pageSize"
+          :total-items="total"
+          :page-size="pageSize"
           @update:page="changePage"
         >
         </Pagination>

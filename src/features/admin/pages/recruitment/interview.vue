@@ -8,17 +8,17 @@ import {
   AutoLongerInput,
 } from "@/components/recruitment";
 import { Icon } from "@iconify/vue";
-import { computed, ref ,watch} from "vue";
+import { computed, ref, watch } from "vue";
 import {
   getAllGrade,
   getAllInterviewUser,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import type { IGradeData } from "@/types/recruitmentType";
-import {interviewStatusMap,interviewStatus} from "@/types/recruitmentType";
+import { interviewStatusMap, interviewStatus } from "@/types/recruitmentType";
 //切换框
 const toggleShowStatus = ref("-1");
-const handleToggleShowStatus = (val:string) => {
+const handleToggleShowStatus = (val: string) => {
   toggleShowStatus.value = val;
 };
 
@@ -51,7 +51,7 @@ const toggleItems = ref([
 ]);
 
 // 卡片信息展示
-const  messageCard=ref([
+const messageCard = ref([
   // {
   //   ApplyUserId: "1",
   //   InterviewTime: "2024-12-14 12:00-13:00",
@@ -93,11 +93,10 @@ const  messageCard=ref([
   //     name: "王五",
   //     id: "3",
   //   },
-
   // }
 ]);
 // 确保所有 id 都是字符串
-const normalizeInterviewCard=(card:any) => ({
+const normalizeInterviewCard = (card: any) => ({
   ...card,
   InterviewOfficerSecond: {
     ...card.InterviewOfficerSecond,
@@ -131,94 +130,93 @@ const filterOneSeletedItems = ref([
   },
 ]);
 //拿到后端的所有年级数据
-const fetchAllGrade=()=>{
-  const { data, error, loading } = useRequest(() =>
-  getAllGrade({ pageNo: 1, pageSize: 100 }),
-);
-        watch(
-          [data, error],
-          ([newData, newError]) => {
-            if (newError) {
-              console.log("请求失败:", newError);
-              return;
-            }
-            if (newData) {
-              //拿到数据后逆序渲染
-              filterOneSeletedItems.value[0].arr = newData.data.data.data.map(
-                (item: IGradeData) => {
-                  return {
-                    condition: item.grade,
-                  };
-                },
-              );
-            }
+const fetchAllGrade = () => {
+  const { data, error } = useRequest(() =>
+    getAllGrade({ pageNo: 1, pageSize: 100 }),
+  );
+  watch(
+    [data, error],
+    ([newData, newError]) => {
+      if (newError) {
+        console.log("请求失败:", newError);
+        return;
+      }
+      if (newData) {
+        //拿到数据后逆序渲染
+        filterOneSeletedItems.value[0].arr = newData.data.data.data.map(
+          (item: IGradeData) => {
+            return {
+              condition: item.grade,
+            };
           },
-          { immediate: true },
         );
-}
+      }
+    },
+    { immediate: true },
+  );
+};
 fetchAllGrade();
 
-const getAllInterviewUserParams =computed(()=>{
+const getAllInterviewUserParams = computed(() => {
   return {
     pageNo: 1,
     pageSize: 100,
     status: toggleShowStatus.value,
-  }
-})
+  };
+});
 
 //获取展示卡片的信息
 watch(
-    toggleShowStatus,
-    (newStatus) => {
-      const { data, error, loading }=
-      useRequest(() =>
-      getAllInterviewUser(getAllInterviewUserParams.value));
-            watch(
-             [data, error, loading] ,
-              ([newData, newError, loading]) => {
-                if (newData?.data.data.data) {
-                  console.log(newData.data.data.data);
-                  messageCard.value = newData.data.data.data.map((card:any)=>{
-                    return {
-                      ApplyUserId: card.userId,
-                      InterviewTime: card.interviewTime,
-                      InterviewAddress: card.place,
-                      InterviewRound: card.interviewRound || "刘志文没传",
-                      InterviewName: card.name,
-                      InterviewStatus:interviewStatusMap[card.interviewStatus as interviewStatus],
-                      InterviewId: card.id,
-                      InterviewOfficerFirst: {
-                        name: card.firstHr?.name,
-                        id: card.firstHr?.id || "",
-                      } ,
-                      InterviewOfficerThird: {
-                        name: card.thirdHr?.name ,
-                        id: card.thirdHr?.id || "",
-                      },
-                      InterviewOfficerSecond: {
-                        name: card.secondHr?.name,
-                        id: card.secondHr?.id || "",
-                      }
-                    }
-                  });
-                }
-                if (newError) {
-                  console.log(newError);
-                }
-                // if (loading) {
-                //   console.log(loading);
-                // }
-                return;
+  toggleShowStatus,
+  () => {
+    const { data, error, loading } = useRequest(() =>
+      getAllInterviewUser(getAllInterviewUserParams.value),
+    );
+    watch(
+      [data, error, loading],
+      ([newData, newError]) => {
+        if (newData?.data.data.data) {
+          console.log(newData.data.data.data);
+          messageCard.value = newData.data.data.data.map((card: any) => {
+            return {
+              ApplyUserId: card.userId,
+              InterviewTime: card.interviewTime,
+              InterviewAddress: card.place,
+              InterviewRound: card.interviewRound || "一面",
+              InterviewName: card.name,
+              InterviewStatus:
+                interviewStatusMap[card.interviewStatus as interviewStatus],
+              InterviewId: card.id,
+              InterviewOfficerFirst: {
+                name: card.firstHr?.name,
+                id: card.firstHr?.id || "",
               },
-              {immediate: true,}
-            );
-
-    },{
-      immediate: true,
-    }
-  );
-
-
+              InterviewOfficerThird: {
+                name: card.thirdHr?.name,
+                id: card.thirdHr?.id || "",
+              },
+              InterviewOfficerSecond: {
+                name: card.secondHr?.name,
+                id: card.secondHr?.id || "",
+              },
+            };
+          });
+        }
+        if (newError) {
+          console.log(newError);
+        }
+        // if (loading) {
+        //   console.log(loading);
+        // }
+        return;
+      },
+      { immediate: true },
+    );
+  },
+  {
+    immediate: true,
+  },
+);
 
 const dateRange = ref(null); // 初始化日期范围
 
@@ -246,49 +244,44 @@ const handleInput = (value: string) => {
   console.log(searchValue);
 };
 
-
-
-
 const handleFilterCondition = (value: string, title: string) => {
   console.log(value, title);
 };
 
-const filterMoreSeletedItem = ref(
-  {
-    title: "面试官",
-    label: "选择面试官",
-    drapdownItems: [
-      {
-        condition: "王科林",
-        isSeleted: false,
-      },
-      {
-        condition: "刘志文",
-        isSeleted: false,
-      },
-      {
-        condition: "贝利亚",
-        isSeleted: false,
-      },
-      {
-        condition: "张三",
-        isSeleted: false,
-      },
-      {
-        condition: "李四",
-        isSeleted: false,
-      },
-      {
-        condition: "王五",
-        isSeleted: false,
-      },
-      {
-        condition: "赵六",
-        isSeleted: false,
-      },
-    ],
-  },
-);
+const filterMoreSeletedItem = ref({
+  title: "面试官",
+  label: "选择面试官",
+  drapdownItems: [
+    {
+      condition: "王科林",
+      isSeleted: false,
+    },
+    {
+      condition: "刘志文",
+      isSeleted: false,
+    },
+    {
+      condition: "贝利亚",
+      isSeleted: false,
+    },
+    {
+      condition: "张三",
+      isSeleted: false,
+    },
+    {
+      condition: "李四",
+      isSeleted: false,
+    },
+    {
+      condition: "王五",
+      isSeleted: false,
+    },
+    {
+      condition: "赵六",
+      isSeleted: false,
+    },
+  ],
+});
 
 const isReset = ref(false);
 //重置筛选条件
@@ -312,19 +305,19 @@ const resetCondition = () => {
   <div class="content">
     <div class="filter-items">
       <FilterCondition
-        :itemsObjArr="filterOneSeletedItems"
+        :items-obj-arr="filterOneSeletedItems"
         @filter_condition="handleFilterCondition"
       />
       <FilterConditionMoreSelect
         class="mr-4 min-w-[300px]"
-        :filterMoreSeletedItem="filterMoreSeletedItem"
+        :filter-more-seleted-item="filterMoreSeletedItem"
       />
 
       <div class="date-picker">
         <DataRangePicker
-          @updateDateRange="handleDateRangeUpdate"
-          :dateRange="dateRange"
-          :isReset="isReset"
+          :date-range="dateRange"
+          :is-reset="isReset"
+          @update-date-range="handleDateRangeUpdate"
         />
       </div>
       <div class="reset" @click="resetCondition">
@@ -334,20 +327,22 @@ const resetCondition = () => {
 
       <div class="search-input">
         <AutoLongerInput
+        placeholder-text="搜索候选人："
           @input_src="handleInput"
-          placeholderText="搜索候选人："
+
         />
       </div>
     </div>
     <div class="toggle-handle">
       <ToggleShow
-      :toggleItems="toggleItems"
-      @transfer-toggle-show-status="handleToggleShowStatus"
+        :toggle-items="toggleItems"
+        @transfer-toggle-show-status="handleToggleShowStatus"
       ></ToggleShow>
     </div>
     <div class="main-content-show">
       <MessageCard
-        v-for="(item, index) in messageCard" :key="index"
+        v-for="(item, index) in messageCard"
+        :key="index"
         :card-message="normalizeInterviewCard(item)"
       ></MessageCard>
     </div>

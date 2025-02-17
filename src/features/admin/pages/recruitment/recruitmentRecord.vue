@@ -2,7 +2,7 @@
 import {
   FilterCondition,
   DataRangePicker,
-  MessageCard,
+  // MessageCard,
   AutoLongerInput,
 } from "@/components/recruitment";
 
@@ -117,9 +117,9 @@ const isReset = ref(false);
       ></FilterCondition>
       <div class="date-picker">
         <DataRangePicker
-          @updateDateRange="handleDateRangeUpdate"
-          :dateRange="dateRange"
-          :isReset="isReset"
+          :date-range="dateRange"
+          :is-reset="isReset"
+          @update-date-range="handleDateRangeUpdate"
         />
       </div>
 
@@ -129,13 +129,12 @@ const isReset = ref(false);
       </div>
       <div class="search-input">
         <AutoLongerInput
+          placeholder-text="搜索人员记录："
           @input_src="handleInput"
-          placeholderText="搜索人员记录："
         />
       </div>
     </div>
-    <div class="main-content-show">
-    </div>
+    <div class="main-content-show"></div>
   </div>
 </template>
 

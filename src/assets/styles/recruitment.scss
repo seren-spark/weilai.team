@@ -28,11 +28,12 @@ $undertone: #647499; //浅灰 设置为非强调色 常设置为字体颜色
 }
 .checkbox[checked-not-all="true"] {
   &::after {
-    content: "\2588";
+    content:"√";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+
   }
 }
 
