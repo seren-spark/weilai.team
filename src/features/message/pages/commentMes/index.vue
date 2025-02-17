@@ -180,7 +180,7 @@ watch(
 }
 @media screen and (max-width: 768px) {
   .commentCon {
-    margin-top: 100px;
+    margin-top: 70px;
     width: 100%;
     .titleOptions {
       width: 100%;
@@ -194,7 +194,7 @@ watch(
     .messageCon {
       width: 100%;
       .mesItem {
-        width: 98%;
+        width: 100%;
         margin-right: 0;
       }
     }

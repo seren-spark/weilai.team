@@ -6,14 +6,17 @@
           全部({{ total }})
           <div v-if="noticeStore.hasUnreadNotice" class="dot"></div>
         </div>
-        <div class="noRead">未读({{ notReadCount }})</div>
+        <div class="noRead">
+          未读({{ notReadCount }})
+          <div v-if="noticeStore.hasUnreadNotice" class="dot"></div>
+        </div>
         <div class="settings">
           <DropdownMenu :style="{ width: '80px' }">
             <DropdownMenuTrigger>
               <Icon icon="carbon:settings-adjust" class="settingIcon"
             /></DropdownMenuTrigger>
             <DropdownMenuContent
-              class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg p-0"
+              class="w-[--radix-dropdown-menu-trigger-width] rounded-lg p-0"
               side="bottom"
               :side-offset="1"
             >
@@ -137,9 +140,6 @@ const readAllNotice = async () => {
 </script>
 
 <style scoped lang="scss">
-.min-w-56 {
-  min-width: 80px;
-}
 .drop-menu-item {
   width: 100%;
   background-color: white;
@@ -183,8 +183,8 @@ const readAllNotice = async () => {
     margin-right: 15px;
     padding-right: 13px;
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       position: absolute;
       top: 0;
       right: 0;
@@ -198,6 +198,16 @@ const readAllNotice = async () => {
     color: gray;
     cursor: pointer;
     margin-right: 100px;
+    position: relative;
+    .dot {
+      width: 6px;
+      height: 6px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-radius: 50%;
+      background-color: rgb(220, 4, 4);
+    }
   }
   .settings {
     width: 30px;

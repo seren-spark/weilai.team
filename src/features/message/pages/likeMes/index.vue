@@ -8,20 +8,23 @@
         </div>
       </div>
       <div class="messageCon">
-        <NoData v-if="totalCount === 0" />
-        <div v-else-if="loading" class="loading-item">
+        <div v-if="loading" class="loading-item">
           <div
-            v-for="index in messages.length"
+            v-for="index in 6"
             :key="index"
             class="flex items-center space-x-4"
           >
-            <Skeleton class="h-12 w-12 rounded-full bg-[--muted]" />
+            <Skeleton
+              v-if="totalCount != 0"
+              class="h-12 w-12 rounded-full bg-[--muted]"
+            />
             <div class="space-y-2">
               <Skeleton class="h-4 w-[250px] bg-[--muted]" />
               <Skeleton class="h-4 w-[200px] bg-[--muted]" />
             </div>
           </div>
         </div>
+        <NoData v-else-if="totalCount === 0" />
         <div v-else class="messageList">
           <div
             v-for="message in messages"
@@ -112,7 +115,7 @@ const { data: deleteData, run: deleteRun } = useRequest(deleteAllMes, {
 });
 function deleteAll() {
   showConfirm({
-    content: "确定清空所有评论消息吗？",
+    content: "确定清空所有点赞/收藏的消息吗？",
   })
     .then(() => {
       deleteRun(messageType);
