@@ -1,4 +1,4 @@
-type OnClickFunction = (id: string,name?:string) => void;
+type OnClickFunction = (id: string, name?: string) => void;
 
 //面试状态
 export const enum interviewStatus {
@@ -84,7 +84,7 @@ export interface IAllGradeDTO {
 //导出面试结果的excel表格  数据传输对象 发送
 export interface IExportInterviewResultDTO {
   clazz?: string;
-  dateString?: string;
+  dateString: string;
   grade?: string;
   sex?: string;
   status: string;
@@ -102,21 +102,21 @@ export interface IUpdateApplyUserDTO {
 }
 //面试官评价  数据传输对象 发送
 export interface IUpdateInterviewResultDTO {
-  comment:string;
-  id:string;// 面试记录id
-  round:string;
-  status:string;
-  userId:string;// 面试人员id
+  comment: string;
+  id: string; // 面试记录id
+  round: string;
+  status: string;
+  userId: string; // 面试人员id
 }
 
 //获取面试人员  数据传输对象 发送
 export interface IGetInterviewUserDTO {
-  pageNo:number;
-  pageSize:number;
-  grade?:string;
-  status:string;
-  name?:string;
-  round?:string;
+  pageNo: number;
+  pageSize: number;
+  grade?: string;
+  status: string;
+  name?: string;
+  round?: string;
 }
 
 //安排面试官  数据传输对象 发送

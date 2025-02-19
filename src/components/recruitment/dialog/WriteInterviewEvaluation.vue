@@ -1,55 +1,53 @@
 <template>
-<Teleport to="body">
-    <div class="outer" v-if="props.isOpen"  @click="close($event)">
-  <form @submit.prevent="handleSubmit" class="space-y-6 p-4">
-    <!-- 写面评字段 -->
-    <FormField name="interviewEvaluation">
-      <FormItem>
-        <FormLabel>写面评</FormLabel>
-        <FormControl>
-          <Textarea
-            placeholder="在此书写面试评价"
-            class="resize-none"
-            v-model="formData.interviewEvaluation"
-            >
-          </Textarea>
-        </FormControl>
-        <span
-        class="error-message"
-        v-if="errors.interviewEvaluation">{{
-          errors.interviewEvaluation
-        }}</span>
-      </FormItem>
-    </FormField>
-    <!-- 面试去向字段 -->
-    <FormField name="interviewResult">
-      <FormItem>
-        <FormLabel>面试去向</FormLabel>
-        <FormControl>
-          <Select v-model="formData.status">
-            <SelectTrigger>
-              <SelectValue placeholder="选择面试去向" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="-2">待二面</SelectItem>
-              <SelectItem value="3">淘汰</SelectItem>
-              <SelectItem value="2">已录取</SelectItem>
-            </SelectContent>
-          </Select>
-        </FormControl>
-        <span
-        class="error-message"
-        v-if="errors.status">{{ errors.status }}</span>
-      </FormItem>
-    </FormField>
-    <Button type="submit" class="btn-style" >保存</Button>
-  </form>
+  <Teleport to="body">
+    <div v-if="props.isOpen" class="outer" @click="close($event)">
+      <form class="space-y-6 p-4" @submit.prevent="handleSubmit">
+        <!-- 写面评字段 -->
+        <FormField name="interviewEvaluation">
+          <FormItem class="text-center">
+            <FormLabel class="dialog-title">书写面评</FormLabel>
+            <FormControl>
+              <Textarea
+                v-model="formData.interviewEvaluation"
+                placeholder="在此书写面试评价"
+                class="resize-none"
+              >
+              </Textarea>
+            </FormControl>
+            <span v-if="errors.interviewEvaluation" class="error-message">{{
+              errors.interviewEvaluation
+            }}</span>
+          </FormItem>
+        </FormField>
+        <!-- 面试去向字段 -->
+        <FormField name="interviewResult">
+          <FormItem class="text-center">
+            <FormLabel class="dialog-title">面试去向</FormLabel>
+            <FormControl>
+              <Select v-model="formData.status">
+                <SelectTrigger>
+                  <SelectValue placeholder="选择面试去向" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="-2">待二面</SelectItem>
+                  <SelectItem value="3">淘汰</SelectItem>
+                  <SelectItem value="2">已录取</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <span v-if="errors.status" class="error-message">{{
+              errors.status
+            }}</span>
+          </FormItem>
+        </FormField>
+        <Button type="submit" class="btn-style">保存</Button>
+      </form>
     </div>
-</Teleport>
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
-import { ref,watch } from "vue";
+import { ref, watch } from "vue";
 import {
   FormField,
   FormItem,
@@ -66,7 +64,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
-const emit= defineEmits(["close"]);
+const emit = defineEmits(["close"]);
 const close = (event: Event) => {
   // 点击遮罩层关闭
   if (event.target === event.currentTarget) {
@@ -75,14 +73,13 @@ const close = (event: Event) => {
   return;
 };
 
-
-
 const props = defineProps({
   isOpen: Boolean,
-  id: String,
+  id: {
+    type: String,
+    default: "",
+  },
 });
-
-
 
 const formData = ref({
   interviewEvaluation: "",
@@ -103,9 +100,8 @@ watch(
     if (!newValue) {
       clearFormData();
     }
-  }
+  },
 );
-
 
 const errors = ref({
   interviewEvaluation: "",
@@ -128,8 +124,6 @@ const handleSubmit = () => {
       status: formattedErrors.status?._errors?.[0] || "",
     };
   } else {
-
-
     // 清空错误消息
     errors.value = {
       interviewEvaluation: "",
@@ -143,12 +137,11 @@ const handleSubmit = () => {
 </script>
 
 <style lang="scss" scoped>
-// 整体表单样式
 form {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  background-color:var(--popover);
+  background-color: var(--popover);
   padding: 20px;
   border-radius: var(--radius);
   &.space-y-6 {
@@ -156,9 +149,8 @@ form {
   }
 }
 
-
 // 表单消息提示区域样式（比如错误提示等）
-.error-message{
+.error-message {
   color: var(--destructive-foreground);
   font-size: 14px;
   margin-top: 5px;
@@ -166,7 +158,7 @@ form {
 
 // 提交按钮样式
 Button[type="submit"] {
-  background-color: var(--primary-foreground);
+  background-color: skyblue;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -174,7 +166,7 @@ Button[type="submit"] {
   cursor: pointer;
 }
 
-// 文本域样式调整（根据实际需求可进一步优化）
+// 文本域样式调整
 Textarea {
   width: 100%;
   min-height: 100px;
@@ -182,6 +174,12 @@ Textarea {
   border-radius: 3px;
   padding: 5px;
 }
-
-
+.dialog-title {
+  display: block;
+  font-size: 0.8rem;
+  // font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  word-spacing: 3px;
+}
 </style>

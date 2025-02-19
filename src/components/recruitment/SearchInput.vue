@@ -26,16 +26,20 @@ const input_src=(e:Event)=>{
     }
     return;
 };
-const props = defineProps({
-   labelText : String,
+// const props = defineProps({
+//    labelText : {
+//     type:String,
+//     default:"搜索"
+//    },
 
-})
+// })
 
 </script>
 <template>
     <div >
         <form>
-	<input required="false" pattern=".*\S.*" type="search" class="input" id="search"
+	<input
+id="search" required="false" pattern=".*\S.*" type="search" class="input"
     @input="input_src($event)"
     @compositionstart="onCompositionStart"
     @compositionend="onCompositionEnd"
@@ -45,7 +49,6 @@ const props = defineProps({
     </div>
 </template>
 <style scoped lang="scss">
-/* From Uiverse.io by Harsha2lucky */
 @use '@/assets/styles';
 $boderColor :#393e46;
 .input {

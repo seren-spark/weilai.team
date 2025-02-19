@@ -1,26 +1,43 @@
-
-import axios from 'axios';
-import router from '@/router';
-
-import type  {  IGetAllApplyUserDTO ,IGetAllGradeDTO,IExportInterviewResultDTO,IUpdateApplyUserDTO,IUpdateInterviewResultDTO,IGetInterviewUserDTO,IArrangeInterviewDTO } from '@/types/recruitmentType';
+import axios from "axios";
+import router from "@/router";
+import { toRaw } from "vue";
+import type {
+  IGetAllApplyUserDTO,
+  IGetAllGradeDTO,
+  IExportInterviewResultDTO,
+  IUpdateApplyUserDTO,
+  IUpdateInterviewResultDTO,
+  IGetInterviewUserDTO,
+  IArrangeInterviewDTO,
+} from "@/types/recruitmentType";
+// import { ca } from 'date-fns/locale';
 // 招新模块
-const BASE_UEL='http://49.232.183.67:8087/'
+const BASE_UEL = "http://49.232.183.67:8087/";
 const getToken = (): string => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    router.push('/login');
-    throw new Error('拿token了吗孩子');
+    router.push("/login");
+    throw new Error("拿token了吗孩子");
+    return "";
   }
   return JSON.parse(token).value;
 };
 
-
 //获取所有提交报名的人员
-export const getAllApplyUser =  ({ pageNo, pageSize, status, sex, clazz, condition, dateString, grade }: IGetAllApplyUserDTO) => {
+export const getAllApplyUser = ({
+  pageNo,
+  pageSize,
+  status,
+  sex,
+  clazz,
+  condition,
+  dateString,
+  grade,
+}: IGetAllApplyUserDTO) => {
   return axios.get(`${BASE_UEL}recruit/manage/listAllRecruitUser`, {
     params: {
-      ['pageDTO.pageNo']: pageNo,
-      ['pageDTO.pageSize']: pageSize,
+      ["pageDTO.pageNo"]: pageNo,
+      ["pageDTO.pageSize"]: pageSize,
       status: status,
       sex: sex,
       clazz: clazz,
@@ -29,58 +46,60 @@ export const getAllApplyUser =  ({ pageNo, pageSize, status, sex, clazz, conditi
       grade: grade,
     },
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + getToken(),
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
     },
-  }
-  )
+  });
 };
 
-
 // //获取所有年级
-export const getAllGrade = ({pageNo, pageSize}:IGetAllGradeDTO) => {
+export const getAllGrade = ({ pageNo, pageSize }: IGetAllGradeDTO) => {
   return axios.get(`${BASE_UEL}recruit/manage/listAllGrade`, {
     params: {
       pageNo: pageNo,
       pageSize: pageSize,
     },
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + getToken(),
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
     },
-  }
-  )
+  });
 };
 
-
 // //根据id获取某人的简历
-export const getResumeById =  ({id}:{id:string}) => {
+export const getResumeById = ({ id }: { id: string }) => {
   return axios.get(`${BASE_UEL}recruit/manage/getResume/${id}`, {
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer '+ getToken(),
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
     },
-  }
-  )
+  });
 };
 
 // //根据id 删除候选人
-export const deleteApplyUserById = ({id}:{id:string}) => {
+export const deleteApplyUserById = ({ id }: { id: string }) => {
   return axios.delete(`${BASE_UEL}recruit/manage/deleteRecruitUser`, {
     params: {
       id: id,
     },
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer '+ getToken(),
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
     },
-  }
-  )
+  });
 };
 
 //获取待我反馈、我录取的、我淘汰的 的面试记录
 //状态参数标记 1待我反馈；2我录取；3我淘汰
-export const getMyInterviewRecord = ({pageNo, pageSize, status}:{pageNo:number, pageSize:number, status:string}) => {
+export const getMyInterviewRecord = ({
+  pageNo,
+  pageSize,
+  status,
+}: {
+  pageNo: number;
+  pageSize: number;
+  status: string;
+}) => {
   return axios.get(`${BASE_UEL}recruit/manage/getAboutMe`, {
     params: {
       pageNo: pageNo,
@@ -88,104 +107,186 @@ export const getMyInterviewRecord = ({pageNo, pageSize, status}:{pageNo:number, 
       status: status,
     },
     headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
-
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
+    },
+  });
+};
 
 // 获取 待安排/已录取 的人数
 // 状态参数标记 0待安排；2已录取
-export const getInterviewCount = ({status}:{status:number}) => {
+export const getInterviewCount = ({ status }: { status: number }) => {
   return axios.get(`${BASE_UEL}recruit/manage/getCount/${status}`, {
     headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
-
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
+    },
+  });
+};
 
 // 导出录取结果excel表
 // 状态参数标记 0代表待安排；1代表待面试；2代表已录取；3代表未录取
-export const exportResultExcel = ({clazz,dateString,grade,sex,status}:IExportInterviewResultDTO) => {
+export const exportResultExcel = ({
+  clazz,
+  dateString,
+  grade,
+  sex,
+  status,
+}: IExportInterviewResultDTO) => {
   return axios.get(`${BASE_UEL}recruit/manage/resultExport`, {
-    data: {clazz,dateString,grade,sex,status},
+    data: { clazz, dateString, grade, sex, status },
     headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
+    },
+  });
+};
 
 //修改招新报名的人员的信息
-export const updateApplyUserInfo = ({clazz,email,grade,id,name,qq,sex,studentId}:IUpdateApplyUserDTO) => {
-  return axios.put(`${BASE_UEL}recruit/manage/updateInfo`, {clazz,email,grade,id,name,qq,sex,studentId}, {
-    headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
+export const updateApplyUserInfo = ({
+  clazz,
+  email,
+  grade,
+  id,
+  name,
+  qq,
+  sex,
+  studentId,
+}: IUpdateApplyUserDTO) => {
+  return axios.put(
+    `${BASE_UEL}recruit/manage/updateInfo`,
+    { clazz, email, grade, id, name, qq, sex, studentId },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    },
+  );
+};
 
-//面试官评价
-export const evaluateInterview = ({comment,id,round,status,userId}:IUpdateInterviewResultDTO) => {
-  return axios.post(`${BASE_UEL}recruit/interview/comment`, {comment,id,round,status,userId}, {
-    headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
+//修改报名人员的状态
+export const updateApplyUserStatus = ({
+  ids,
+  interviewStatus,
+}: {
+  ids: string[];
+  interviewStatus: string;
+}) => {
+  console.log(ids, interviewStatus);
+  return axios
+    .put(`${BASE_UEL}recruit/manage/updateRecruitUserStatus`, {
+      params: { ids: toRaw(ids), interviewStatus },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    })
+    .then((res) => {
+      if (res?.data.code !== 200) {
+        console.log(res.data.message);
+      }
+    });
+};
 
+//写面评
+export const evaluateInterview = ({
+  comment,
+  id,
+  round,
+  status,
+  userId,
+}: IUpdateInterviewResultDTO) => {
+  return axios.post(
+    `${BASE_UEL}recruit/interview/comment`,
+    { comment, id, round, status, userId },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    },
+  );
+};
 
 //根据面试记录id获取面评
-export const getCommentByInterviewRecordId = ({id}:{id:string}) => {
+export const getCommentByInterviewRecordId = ({ id }: { id: string }) => {
   return axios.get(`${BASE_UEL}recruit/interview/getComment/${id}`, {
     headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
+    },
+  });
+};
 
 //获取所有面试官
-export const getAllInterviewer = ({pageNo, pageSize,name}:{pageNo:number, pageSize:number,name:string}) => {
+export const getAllInterviewer = ({
+  pageNo,
+  pageSize,
+  name,
+}: {
+  pageNo: number;
+  pageSize: number;
+  name?: string;
+}) => {
   return axios.get(`${BASE_UEL}recruit/interview/listAllHr`, {
-
     params: {
-      pageNo,pageSize,name
+      pageNo,
+      pageSize,
+      name,
     },
     headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
+    },
+  });
+};
 
 //获取所有面试人员
 //状态参数标记 -1查询全部，0查询待我面试，1待反馈；2已录取；3未录取
-export const getAllInterviewUser = ({pageNo, pageSize,name,grade,round,status}:IGetInterviewUserDTO) => {
+export const getAllInterviewUser = ({
+  pageNo,
+  pageSize,
+  name,
+  grade,
+  round,
+  status,
+}: IGetInterviewUserDTO) => {
   return axios.get(`${BASE_UEL}recruit/interview/listAllInterview`, {
     params: {
-      'pageDTO.pageNo':pageNo,'pageDTO.pageSize':pageSize,name,grade,round,status
+      "pageDTO.pageNo": pageNo,
+      "pageDTO.pageSize": pageSize,
+      name,
+      grade,
+      round,
+      status,
     },
     headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-  })
-}
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + getToken(),
+    },
+  });
+};
 
 //安排面试官
 //状态参数标记 round 1全部，1代表一面、2代表二面
-export const arrangeInterviewer = ({id,interviewTime,place,firstHr,secondHr,thirdHr}:IArrangeInterviewDTO) => {
-  console.log(id,interviewTime,place,firstHr,secondHr,thirdHr)
-  return axios.post(`${BASE_UEL}recruit/interview/scheduleInterviewer`, {id,interviewTime,place,firstHr,secondHr,thirdHr}, {
-    headers: {
-     'Content-Type': 'application/json',
-     Authorization: 'Bearer '+ getToken(),
-    }
-})
-}
+export const arrangeInterviewer = ({
+  id,
+  interviewTime,
+  place,
+  firstHr,
+  secondHr,
+  thirdHr,
+}: IArrangeInterviewDTO) => {
+  console.log(id, interviewTime, place, firstHr, secondHr, thirdHr);
+  return axios.post(
+    `${BASE_UEL}recruit/interview/scheduleInterviewer`,
+    { id, interviewTime, place, firstHr, secondHr, thirdHr },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    },
+  );
+};
