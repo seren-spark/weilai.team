@@ -80,7 +80,9 @@ const splitResult = computed(() => {
 
 <template>
   <div class="mesItem">
-    <UserAvatar class="avatar" :avatar="props.message.headPortrait" />
+    <a href="http://localhost:5173/personalCenter/userInfo">
+      <UserAvatar class="avatar" :avatar="props.message.headPortrait"
+    /></a>
     <div class="mesContent">
       <div class="details">
         <div class="name">

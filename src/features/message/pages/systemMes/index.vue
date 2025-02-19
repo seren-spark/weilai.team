@@ -28,7 +28,7 @@
             :key="message.messageId"
             class="mess"
           >
-            <MesItem :message="message" @comment="run()" />
+            <MesItem :message="message" @system="run()" />
           </div>
         </div>
       </div>

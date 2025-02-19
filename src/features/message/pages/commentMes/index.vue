@@ -44,7 +44,7 @@ import NoData from "../../../../components/loading/NoData.vue";
 import Rightbar from "@/components/community/Rightbar.vue";
 import { Icon } from "@iconify/vue";
 import MesItem from "../../compontent/MesItem.vue";
-import type { SSEMessageData } from "../../../../types/sseType";
+import type { SSEMessageData, SSENoticeData } from "../../../../types/sseType";
 import { useSseStore } from "../../../../store/useSseStore";
 import { onMounted, ref, watch } from "vue";
 import { useMessageStore } from "@/store/messageStore";
@@ -61,10 +61,10 @@ const pageSize = 10;
 const pageNumber = 1;
 const totalCount = ref(0);
 onMounted(() => {
-  sseStore.subscribe("message", (message: SSEMessageData) => {
-    if (message.messageType == messageType) {
-      messages.value.unshift(message);
-      console.log(message);
+  sseStore.subscribe("message", (data: SSEMessageData | SSENoticeData) => {
+    if ("messageId" in data && data.messageType === messageType) {
+      messages.value.unshift(data as SSEMessageData);
+      console.log(data);
       messageStore.setCommentStatus(true);
     }
   });

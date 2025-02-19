@@ -26,8 +26,12 @@ interface NoticeContent {
 }
 const noticeContentRef = ref<HTMLElement | null>(null);
 const isShow = ref(false);
+const userId = ref(JSON.parse(localStorage.getItem("userId") || "{}").value);
+console.log(userId.value);
+
 const showText = ref("展开");
 const { showAlert } = useAlert();
+
 const toggleContent = () => {
   if (showText.value === "收起") {
     noticeContentRef.value!.style.overflow = "hidden";
@@ -139,15 +143,25 @@ const editNotice = () => {};
       <div class="userInfo">
         <div class="action">
           <div class="publish-avatar">
-            <UserAvatar :avatar="props.notice.headPortrait" />
+            <a href="http://localhost:5173/personalCenter/userInfo">
+              <UserAvatar :avatar="props.notice.headPortrait" />
+            </a>
           </div>
-          <div class="nickName">{{ props.notice.username }}</div>
+          <a href="http://localhost:5173/personalCenter/userInfo">
+            <div class="nickName">{{ props.notice.username }}</div>
+          </a>
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span class="edit" @click="editNotice()"
-                  ><Icon icon="mage:edit-pen" class="editIcon"
-                /></span>
+                <RouterLink to="/noticeEdit">
+                  <span
+                    v-if="userId === props.notice.senderId"
+                    class="edit"
+                    @click="editNotice()"
+                    ><Icon icon="mage:edit-pen" class="editIcon"
+                  /></span>
+                </RouterLink>
               </TooltipTrigger>
               <TooltipContent>
                 <p>编辑</p>
@@ -158,6 +172,7 @@ const editNotice = () => {};
             <Tooltip>
               <TooltipTrigger>
                 <span
+                  v-if="userId === props.notice.senderId"
                   class="delete"
                   @click="deleteNotice(props.notice.noticeId)"
                   ><Icon icon="fluent:delete-24-regular" class="deleteIcon"
@@ -170,7 +185,10 @@ const editNotice = () => {};
           </TooltipProvider>
           <TooltipProvider v-if="props.notice.status === 0">
             <Tooltip>
-              <TooltipTrigger class="tooltip_trigger">
+              <TooltipTrigger
+                v-if="userId != props.notice.senderId"
+                class="tooltip_trigger"
+              >
                 <span class="alRead" @click="readNotice(props.notice.noticeId)"
                   ><Icon
                     icon="material-symbols:mark-email-read-outline-rounded"
