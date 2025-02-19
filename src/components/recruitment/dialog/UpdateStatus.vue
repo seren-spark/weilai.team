@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {  ref ,defineProps, watch,defineEmits,toRaw} from 'vue';
+import {  ref ,defineProps,defineEmits} from 'vue';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -7,7 +7,6 @@ import {
   FormDescription,
   FormItem,
   FormField,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -51,7 +50,7 @@ const handleSubmit = () => {
   }
   // 提交表单
   // updateApplyUserStatus({ids:props.ids,interviewStatus:selectStatus.value});
-  const { run,data } = useRequest(updateApplyUserStatus, {
+  const { run } = useRequest(updateApplyUserStatus, {
     manual: true,
     onSuccess: () => {
       showAlert("修改成功", "pass");
@@ -61,8 +60,8 @@ const handleSubmit = () => {
       showAlert("修改失败", "error");
     },
   });
-  run( {ids:props.ids, interviewStatus:selectStatus.value});
-  console.log("data:", data);
+  run( {ids:props.ids, interviewStatus:selectStatus.value})
+
   //清除状态
   selectStatus.value = "";
 };
@@ -70,7 +69,7 @@ const handleSubmit = () => {
 
 <template>
   <Teleport to="body">
-  <div class="outer" v-if="props.isOpen"  @click="close($event)">
+  <div v-if="props.isOpen" class="outer"  @click="close($event)">
     <Form  class="form-container">
       <FormField name="status" control="selectStatus" class="bg-white">
         <div class="form-label">修改状态框</div>

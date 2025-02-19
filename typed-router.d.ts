@@ -34,7 +34,6 @@ declare module 'vue-router/auto-routes' {
     '/admin/recruitment/candidates': RouteRecordInfo<'/admin/recruitment/candidates', '/admin/recruitment/candidates', Record<never, never>, Record<never, never>>,
     '/admin/recruitment/interview': RouteRecordInfo<'/admin/recruitment/interview', '/admin/recruitment/interview', Record<never, never>, Record<never, never>>,
     '/admin/recruitment/recruitment': RouteRecordInfo<'/admin/recruitment/recruitment', '/admin/recruitment/recruitment', Record<never, never>, Record<never, never>>,
-    '/admin/recruitment/recruitmentRecord': RouteRecordInfo<'/admin/recruitment/recruitmentRecord', '/admin/recruitment/recruitmentRecord', Record<never, never>, Record<never, never>>,
     '/Alert': RouteRecordInfo<'/Alert', '/Alert', Record<never, never>, Record<never, never>>,
     '/application': RouteRecordInfo<'/application', '/application', Record<never, never>, Record<never, never>>,
     '/community': RouteRecordInfo<'/community', '/community', Record<never, never>, Record<never, never>>,

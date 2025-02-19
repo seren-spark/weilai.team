@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import {
   FilterConditionMoreSelect,
@@ -12,6 +13,7 @@ import { computed, ref, watch } from "vue";
 import {
   getAllGrade,
   getAllInterviewUser,
+  getAllInterviewer,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import type { IGradeData } from "@/types/recruitmentType";
@@ -51,50 +53,7 @@ const toggleItems = ref([
 ]);
 
 // 卡片信息展示
-const messageCard = ref([
-  // {
-  //   ApplyUserId: "1",
-  //   InterviewTime: "2024-12-14 12:00-13:00",
-  //   InterviewAddress: "北京",
-  //   InterviewRound: "第一轮",
-  //   InterviewName: "王科林",
-  //   InterviewStatus: "待我反馈",
-  //   InterviewId: "1",
-  //   InterviewOfficerFirst: {
-  //     name: "张三",
-  //     id: "1",
-  //   },
-  //   InterviewOfficerSecond: {
-  //    name:"李四",
-  //     id: "2",
-  //   },
-  //   InterviewOfficerThird: {
-  //     name: "王五",
-  //     id: "3",
-  //   },
-  // },
-  // {
-  //   ApplyUserId: "2",
-  //   InterviewTime: "2024-12-12 13:00-14:00",
-  //   InterviewAddress: "北京",
-  //   InterviewRound: "第一轮",
-  //   InterviewName: "刘志文",
-  //   InterviewStatus: "待我反馈",
-  //   InterviewId: "2",
-  //   InterviewOfficerFirst: {
-  //     name: "张三",
-  //     id: "1",
-  //   },
-  //   InterviewOfficerSecond: {
-  //    name: "李四",
-  //     id: "2",
-  //   },
-  //   InterviewOfficerThird: {
-  //     name: "王五",
-  //     id: "3",
-  //   },
-  // }
-]);
+const messageCard = ref([]);
 // 确保所有 id 都是字符串
 const normalizeInterviewCard = (card: any) => ({
   ...card,
@@ -176,7 +135,7 @@ watch(
       [data, error, loading],
       ([newData, newError]) => {
         if (newData?.data.data.data) {
-          console.log(newData.data.data.data);
+          // console.log(newData.data.data.data);
           messageCard.value = newData.data.data.data.map((card: any) => {
             return {
               ApplyUserId: card.userId,
@@ -251,36 +210,19 @@ const handleFilterCondition = (value: string, title: string) => {
 const filterMoreSeletedItem = ref({
   title: "面试官",
   label: "选择面试官",
-  drapdownItems: [
-    {
-      condition: "王科林",
-      isSeleted: false,
+  drapdownItems: [],
+});
+getAllInterviewer({ pageNo: 1, pageSize: 100 }).then((res) => {
+  console.log(res.data.data.data);
+  filterMoreSeletedItem.value.drapdownItems = res.data.data.data.map(
+    (item: any) => {
+      return {
+        id: item.id,
+        condition: item.name,
+        isSeleted: false,
+      };
     },
-    {
-      condition: "刘志文",
-      isSeleted: false,
-    },
-    {
-      condition: "贝利亚",
-      isSeleted: false,
-    },
-    {
-      condition: "张三",
-      isSeleted: false,
-    },
-    {
-      condition: "李四",
-      isSeleted: false,
-    },
-    {
-      condition: "王五",
-      isSeleted: false,
-    },
-    {
-      condition: "赵六",
-      isSeleted: false,
-    },
-  ],
+  );
 });
 
 const isReset = ref(false);
@@ -290,9 +232,11 @@ const resetCondition = () => {
   filterOneSeletedItems.value.forEach((item) => {
     item.ref = "init";
   });
-  filterMoreSeletedItem.value.drapdownItems.forEach((item) => {
-    item.isSeleted = false;
-  });
+  filterMoreSeletedItem.value.drapdownItems.forEach(
+    (item: { id: string; condition: string; isSeleted: boolean }) => {
+      item.isSeleted = false;
+    },
+  );
   dateRange.value = null;
   isReset.value = true;
   setTimeout(() => {
@@ -327,9 +271,8 @@ const resetCondition = () => {
 
       <div class="search-input">
         <AutoLongerInput
-        placeholder-text="搜索候选人："
+          placeholder-text="搜索候选人："
           @input_src="handleInput"
-
         />
       </div>
     </div>

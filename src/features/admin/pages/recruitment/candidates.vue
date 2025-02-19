@@ -28,18 +28,17 @@ import type {
   IGradeData,
 } from "@/types/recruitmentType";
 import { interviewStatusMap } from "@/types/recruitmentType";
-import  {showConfirm} from "@/composables/useConfirm";
+import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
-const {showAlert} = useAlert();
+const { showAlert } = useAlert();
 const searchValue = ref("");
 const handleInput = (value: string) => {
   console.log(value);
   if (value === "") {
     searchValue.value = "";
-   return;
+    return;
   }
   searchValue.value = value;
-
 };
 
 //下拉过滤框
@@ -84,7 +83,7 @@ const candidates_itemsObjArr = ref([
 //获得子组件的过滤条件
 const handleFilterCondition = (value: string, title: string) => {
   console.log(value, title);
-  if (value === "init" || value==="") {
+  if (value === "init" || value === "") {
     return;
   }
   if (title === "年级") {
@@ -101,7 +100,7 @@ const handleFilterCondition = (value: string, title: string) => {
 const dateRange = ref(null); // 初始化日期范围
 
 // 获得子组件的日期参数
-const handleDateRangeUpdate = (newDateRange:never) => {
+const handleDateRangeUpdate = (newDateRange: never) => {
   dateRange.value = newDateRange;
   handleDateRange();
 };
@@ -213,22 +212,16 @@ const headers = ref([
 
 // 查看简历 \/
 const viewResume = (id: string) => {
-
-      const { data, error } = useRequest(() =>
-    getResumeById({ id }),
-  );
-  watch(
-    [data, error],
-    ([newData, newError]) => {
-      if (newError) {
-        console.log("请求失败:", newError);
-        return;
-      }
-      if (newData) {
-        window.open(newData.data.data,'_blank')
-      }
-    },
-  );
+  const { data, error } = useRequest(() => getResumeById({ id }));
+  watch([data, error], ([newData, newError]) => {
+    if (newError) {
+      console.log("请求失败:", newError);
+      return;
+    }
+    if (newData) {
+      window.open(newData.data.data, "_blank");
+    }
+  });
 };
 // 编辑
 const currentUpdateApplyUserId = ref("");
@@ -240,16 +233,16 @@ const tableEdit = (id: string) => {
 // 安排面试
 const currentArrangeInterviewId = ref("");
 const currentArrangeInterviewName = ref<string>("");
-const arrangeInterview = (id: string,name?:string) => {
+const arrangeInterview = (id: string, name?: string) => {
   arrangeInterviewerDialog.value = true;
   currentArrangeInterviewId.value = id;
-  currentArrangeInterviewName.value= name || "";
+  currentArrangeInterviewName.value = name || "";
 };
 
 // 淘汰
-const eliminateCandidate = (id: string) => {
-  console.log(id, "淘汰");
-};
+// const eliminateCandidate = (id: string) => {
+//   console.log(id, "淘汰");
+// };
 
 // 删除候选人
 const DeleteCandidate = (id: string) => {
@@ -259,29 +252,28 @@ const confirmDeleteCandidate = (id: string) => {
   showConfirm({
     title: "系统提示",
     content: "确定删除该用户吗？",
-  }).then(()=>{
-    const { data, error } = useRequest(() =>
-    deleteApplyUserById({ id }),
-  );
-  watch(
-    [data, error],
-    ([newData, newError]) => {
-      if (newError) {
-        console.log("请求失败:", newError);
-        return;
-      }
-      if (newData) {
-        showAlert("删除成功", "pass");
-        // 刷新表格数据
-        updateParameter.value =!updateParameter.value;
-      }
-    },
-    { immediate: true },
-  );
   })
-  .catch(()=>{
-    console.log("取消删除");
-  });
+    .then(() => {
+      const { data, error } = useRequest(() => deleteApplyUserById({ id }));
+      watch(
+        [data, error],
+        ([newData, newError]) => {
+          if (newError) {
+            console.log("请求失败:", newError);
+            return;
+          }
+          if (newData) {
+            showAlert("删除成功", "pass");
+            // 刷新表格数据
+            updateParameter.value = !updateParameter.value;
+          }
+        },
+        { immediate: true },
+      );
+    })
+    .catch(() => {
+      console.log("取消删除");
+    });
 };
 //为表格传递操作项和图标
 const actionItems = ref([
@@ -300,11 +292,11 @@ const actionItems = ref([
     icon: "tabler:calendar-check",
     onclick: arrangeInterview,
   },
-  {
-    title: "淘汰",
-    icon: "tabler:cross",
-    onclick: eliminateCandidate,
-  },
+  // {
+  //   title: "淘汰",
+  //   icon: "tabler:cross",
+  //   onclick: eliminateCandidate,
+  // },
   {
     title: "删除候选人",
     icon: "tabler:trash",
@@ -313,40 +305,40 @@ const actionItems = ref([
 ]);
 
 //拿到后端的所有年级数据
-const fetchAllGrade=()=>{
-  const { data, error} = useRequest(() =>
-  getAllGrade({ pageNo: 1, pageSize: 100 }),
-);
-        watch(
-          [data, error],
-          ([newData, newError]) => {
-            if (newError) {
-              console.log("请求失败:", newError);
-              return;
-            }
-            if (newData) {
-              //拿到数据后逆序渲染
-              candidates_itemsObjArr.value[0].arr = newData.data.data.data.map(
-                (item: IGradeData) => {
-                  return {
-                    condition: item.grade,
-                  };
-                },
-              );
-            }
+const fetchAllGrade = () => {
+  const { data, error } = useRequest(() =>
+    getAllGrade({ pageNo: 1, pageSize: 100 }),
+  );
+  watch(
+    [data, error],
+    ([newData, newError]) => {
+      if (newError) {
+        console.log("请求失败:", newError);
+        return;
+      }
+      if (newData) {
+        //拿到数据后逆序渲染
+        candidates_itemsObjArr.value[0].arr = newData.data.data.data.map(
+          (item: IGradeData) => {
+            return {
+              condition: item.grade,
+            };
           },
-          { immediate: true },
         );
-}
+      }
+    },
+    { immediate: true },
+  );
+};
 fetchAllGrade();
 
-const grade=ref<string>("")
-const sex=ref<string>("")
-const dateString=ref<string>("")
+const grade = ref<string>("");
+const sex = ref<string>("");
+const dateString = ref<string>("");
 
-watch([grade,sex,dateString,searchValue,status,],()=>{
-  pageNo.value=1;
-})
+watch([grade, sex, dateString, searchValue, status], () => {
+  pageNo.value = 1;
+});
 
 const getAllApplyUserRequestParams = computed(() => ({
   pageNo: pageNo.value,
@@ -364,11 +356,8 @@ const updateParameter = ref<boolean>(false);
 watch(
   [getAllApplyUserRequestParams, updateParameter],
   ([newParams, _]) => {
-
-    console.log(newParams,_);
-    const { data, error} = useRequest(() =>
-      getAllApplyUser(newParams),
-    );
+    console.log(newParams, _);
+    const { data, error } = useRequest(() => getAllApplyUser(newParams));
 
     watch(
       [data, error],
@@ -423,17 +412,17 @@ const handleEditStatus = () => {
   //把修改状态的弹窗组件展示
   updateStatus.value = true;
 };
-const updateApplyUserInfo=ref(false);
-const arrangeInterviewerDialog=ref(false);
+const updateApplyUserInfo = ref(false);
+const arrangeInterviewerDialog = ref(false);
 </script>
 
 <template>
   <div class="content">
     <ArrangeInterviewer
-    :id="currentArrangeInterviewId"
-    :name="currentArrangeInterviewName"
-    :is-open="arrangeInterviewerDialog"
-    @close="arrangeInterviewerDialog = false"
+      :id="currentArrangeInterviewId"
+      :name="currentArrangeInterviewName"
+      :is-open="arrangeInterviewerDialog"
+      @close="arrangeInterviewerDialog = false"
     />
     <UpdateApplyUserInfo
       :id="currentUpdateApplyUserId"
@@ -445,7 +434,6 @@ const arrangeInterviewerDialog=ref(false);
       :is-open="updateStatus"
       @close="updateStatus = false"
     />
-
 
     <div class="filter-items">
       <FilterCondition
@@ -467,7 +455,7 @@ const arrangeInterviewerDialog=ref(false);
 
       <div class="search-input">
         <AutoLongerInput
-        placeholder-text="搜索候选人："
+          placeholder-text="搜索候选人："
           @input_src="handleInput"
         />
       </div>

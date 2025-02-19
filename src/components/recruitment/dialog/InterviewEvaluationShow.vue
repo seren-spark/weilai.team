@@ -1,9 +1,16 @@
+<!-- eslint-disable vue/no-v-html -->
 <script setup lang="ts">
+import { defineProps, defineEmits, computed } from "vue";
+import {marked} from "marked";
 
 const props = defineProps<{
   message: string;
   isOpen: boolean;
 }>();
+
+
+const safeHtml=computed(()=> marked(props.message));
+
 
 const emit = defineEmits(["close"]);
 const close = (event: Event): void => {
@@ -13,7 +20,6 @@ const close = (event: Event): void => {
   }
   return void 0;
 };
-
 </script>
 <!-- <InterviewEvaluationShow /> -->
 <template>
@@ -24,9 +30,8 @@ const close = (event: Event): void => {
           <h2>面试评价展示页</h2>
         </div>
         <div class="content">
-          <p>
-            {{props.message }}
-          </p>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <p v-html="safeHtml"></p>
         </div>
       </div>
     </div>
@@ -37,7 +42,7 @@ const close = (event: Event): void => {
 .interview-evaluation-container {
   width: 400px;
   height: 300px;
-  background-color:var(--popover);
+  background-color: var(--popover);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -60,7 +65,7 @@ const close = (event: Event): void => {
     height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: left;
   }
 }
 </style>

@@ -12,9 +12,9 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-import {  defineProps,ref,computed,watch } from 'vue';
-import { Icon } from '@iconify/vue';
+} from "@/components/ui/popover";
+import { defineProps, ref, computed, watch } from "vue";
+import { Icon } from "@iconify/vue";
 import type {
   IAllApplyUserVO,
   tableActionsVO,
@@ -22,8 +22,6 @@ import type {
 } from "@/types/recruitmentType";
 
 // import {NoData} from "@/components/loading/NoData.vue";
-
-
 
 const props = defineProps<{
   items: IAllApplyUserVO[];
@@ -51,23 +49,34 @@ const handleSelectAll = () => {
   }
 };
 
-
-const isAllSelected = computed(() => selectedIds.value.length === props.items.length);
-const isNotAllSelected = computed(() => selectedIds.value.length!== props.items.length&&selectedIds.value.length!== 0);
+const isAllSelected = computed(
+  () => selectedIds.value.length === props.items.length,
+);
+const isNotAllSelected = computed(
+  () =>
+    selectedIds.value.length !== props.items.length &&
+    selectedIds.value.length !== 0,
+);
 
 // 清空选中当数据发生变化时
-watch(() => props.items, () => {
-  selectedIds.value = [];
-});
+watch(
+  () => props.items,
+  () => {
+    selectedIds.value = [];
+  },
+);
 
 // 导出选中的 id
 const emit = defineEmits(["sendSelectedIds"]);
 //监听selectedIds的变化
-watch(selectedIds, (newValue, oldValue) => {
-  //将选中的id实时传递给父组件
-  emit("sendSelectedIds", newValue);
-}, { deep: true });
-
+watch(
+  selectedIds,
+  (newValue) => {
+    //将选中的id实时传递给父组件
+    emit("sendSelectedIds", newValue);
+  },
+  { deep: true },
+);
 </script>
 
 <template>
@@ -77,16 +86,16 @@ watch(selectedIds, (newValue, oldValue) => {
       <TableRow>
         <TableCell class="font-medium text-center min-w-120">
           <Checkbox
-            @click="handleSelectAll"
             class="checkbox"
             :checked="isAllSelected"
             :checked-not-all="isNotAllSelected"
+            @click="handleSelectAll"
           />
         </TableCell>
         <TableCell
-          class="font-medium text-center min-w-120"
           v-for="header in headers"
           :key="header.key"
+          class="font-medium text-center min-w-120"
         >
           {{ header.title }}
         </TableCell>
@@ -97,20 +106,20 @@ watch(selectedIds, (newValue, oldValue) => {
         v-show="items.length === 0"
         style="font-size: large; height: 40px; text-align: center"
       >
-        <TableCell colspan="100%"><NoData/> </TableCell>
+        <TableCell colspan="100%"><NoData /> </TableCell>
       </TableRow>
       <TableRow v-for="item in items" :key="item.id" class="hover-tr">
         <TableCell
-          class="font-medium text-center"
           v-for="(obj, theKey) in item"
           :key="theKey"
+          class="font-medium text-center"
         >
           <template v-if="theKey === 'id'">
             <Checkbox
               class="checkbox"
-              @click="handleSelect(item.id)"
               :checked="selectedIds.includes(item.id)"
               :value="theKey"
+              @click="handleSelect(item.id)"
             />
           </template>
           <template v-else>
@@ -119,22 +128,30 @@ watch(selectedIds, (newValue, oldValue) => {
         </TableCell>
         <!-- 操作框 -->
         <TableCell class="font-medium">
-          <Popover  >
+          <Popover>
             <PopoverTrigger>
-              <Icon icon="tabler:dots" style="display: inline-block;font-size: 18px; cursor: pointer;"
+              <Icon
+                icon="tabler:dots"
+                style="display: inline-block; font-size: 18px; cursor: pointer"
               />
             </PopoverTrigger>
-            <PopoverContent class="popover-content" style="z-index: 10;" >
+            <PopoverContent class="popover-content" style="z-index: 10">
               <div>
                 <div
-                  class="pop-content-item"
                   v-for="(i, index) in actionItems"
                   :key="index"
-                  @click=" i.onclick(item.id,item.name);"
-                  >
-                  <Icon :icon=i.icon
-                  :key="index"
-                  style="display: inline-block;font-size: 18px; cursor: pointer;"/>
+                  class="pop-content-item"
+                  @click="i.onclick(item.id, item.name)"
+                >
+                  <Icon
+                    :key="index"
+                    :icon="i.icon"
+                    style="
+                      display: inline-block;
+                      font-size: 18px;
+                      cursor: pointer;
+                    "
+                  />
                   <span class="pop-content-item-text">{{ i.title }}</span>
                 </div>
               </div>
@@ -145,9 +162,9 @@ watch(selectedIds, (newValue, oldValue) => {
     </TableBody>
   </Table>
 </template>
-<style lang="scss" >
-@use "@/assets/styles/recruitment.scss" ;
-.adaptive table{
+<style lang="scss">
+@use "@/assets/styles/recruitment.scss";
+.adaptive table {
   width: 100%;
   height: auto;
   background-color: #fff;
@@ -178,7 +195,7 @@ watch(selectedIds, (newValue, oldValue) => {
   left: -40px;
   top: 0;
   z-index: 39;
- .pop-content-item{
+  .pop-content-item {
     width: 100%;
     height: 40px;
     display: flex;
