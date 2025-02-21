@@ -7,13 +7,13 @@ import {
   Pagination,
   AutoLongerInput,
   UpdateStatus,
-  ModalDialog,
+  // ModalDialog,
   UpdateApplyUserInfo,
   ArrangeInterviewer,
 } from "@/components/recruitment";
 import { Icon } from "@iconify/vue";
 import { Button } from "@/components/ui/button";
-import { ref, watch, watchEffect, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import {
   getAllApplyUser,
   getAllGrade,
@@ -23,23 +23,22 @@ import {
 import { useRequest } from "vue-request";
 import type {
   IAllApplyUserVO,
-  IResponseDataApplyUser,
+  // IResponseDataApplyUser,
   IAllApplyUserDTO,
   IGradeData,
 } from "@/types/recruitmentType";
 import { interviewStatusMap } from "@/types/recruitmentType";
-import  {showConfirm} from "@/composables/useConfirm";
+import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
-const {showAlert} = useAlert();
+const { showAlert } = useAlert();
 const searchValue = ref("");
 const handleInput = (value: string) => {
   console.log(value);
   if (value === "") {
     searchValue.value = "";
-   return;
+    return;
   }
   searchValue.value = value;
-
 };
 
 //下拉过滤框
@@ -84,7 +83,7 @@ const candidates_itemsObjArr = ref([
 //获得子组件的过滤条件
 const handleFilterCondition = (value: string, title: string) => {
   console.log(value, title);
-  if (value === "init" || value==="") {
+  if (value === "init" || value === "") {
     return;
   }
   if (title === "年级") {
@@ -101,7 +100,7 @@ const handleFilterCondition = (value: string, title: string) => {
 const dateRange = ref(null); // 初始化日期范围
 
 // 获得子组件的日期参数
-const handleDateRangeUpdate = (newDateRange: any) => {
+const handleDateRangeUpdate = (newDateRange: never) => {
   dateRange.value = newDateRange;
   handleDateRange();
 };
@@ -164,7 +163,7 @@ const pageSize = ref(10);
 const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);
-const getApplyUserData = ref<IResponseDataApplyUser | null>(null);
+// const getApplyUserData = ref<IResponseDataApplyUser | null>(null);
 
 //从分页组件拿到页码信息并更新
 const changePage = (newPage: number) => {
@@ -213,22 +212,16 @@ const headers = ref([
 
 // 查看简历 \/
 const viewResume = (id: string) => {
-
-      const { data, error, loading } = useRequest(() =>
-    getResumeById({ id }),
-  );
-  watch(
-    [data, error],
-    ([newData, newError]) => {
-      if (newError) {
-        console.log("请求失败:", newError);
-        return;
-      }
-      if (newData) {
-        window.open(newData.data.data,'_blank')
-      }
-    },
-  );
+  const { data, error } = useRequest(() => getResumeById({ id }));
+  watch([data, error], ([newData, newError]) => {
+    if (newError) {
+      console.log("请求失败:", newError);
+      return;
+    }
+    if (newData) {
+      window.open(newData.data.data, "_blank");
+    }
+  });
 };
 // 编辑
 const currentUpdateApplyUserId = ref("");
@@ -240,16 +233,16 @@ const tableEdit = (id: string) => {
 // 安排面试
 const currentArrangeInterviewId = ref("");
 const currentArrangeInterviewName = ref<string>("");
-const arrangeInterview = (id: string,name?:string) => {
+const arrangeInterview = (id: string, name?: string) => {
   arrangeInterviewerDialog.value = true;
   currentArrangeInterviewId.value = id;
-  currentArrangeInterviewName.value= name || "";
+  currentArrangeInterviewName.value = name || "";
 };
 
 // 淘汰
-const eliminateCandidate = (id: string) => {
-  console.log(id, "淘汰");
-};
+// const eliminateCandidate = (id: string) => {
+//   console.log(id, "淘汰");
+// };
 
 // 删除候选人
 const DeleteCandidate = (id: string) => {
@@ -259,29 +252,28 @@ const confirmDeleteCandidate = (id: string) => {
   showConfirm({
     title: "系统提示",
     content: "确定删除该用户吗？",
-  }).then(()=>{
-    const { data, error, loading } = useRequest(() =>
-    deleteApplyUserById({ id }),
-  );
-  watch(
-    [data, error],
-    ([newData, newError]) => {
-      if (newError) {
-        console.log("请求失败:", newError);
-        return;
-      }
-      if (newData) {
-        showAlert("删除成功", "pass");
-        // 刷新表格数据
-        updateParameter.value =!updateParameter.value;
-      }
-    },
-    { immediate: true },
-  );
   })
-  .catch(()=>{
-    console.log("取消删除");
-  });
+    .then(() => {
+      const { data, error } = useRequest(() => deleteApplyUserById({ id }));
+      watch(
+        [data, error],
+        ([newData, newError]) => {
+          if (newError) {
+            console.log("请求失败:", newError);
+            return;
+          }
+          if (newData) {
+            showAlert("删除成功", "pass");
+            // 刷新表格数据
+            updateParameter.value = !updateParameter.value;
+          }
+        },
+        { immediate: true },
+      );
+    })
+    .catch(() => {
+      console.log("取消删除");
+    });
 };
 //为表格传递操作项和图标
 const actionItems = ref([
@@ -300,11 +292,11 @@ const actionItems = ref([
     icon: "tabler:calendar-check",
     onclick: arrangeInterview,
   },
-  {
-    title: "淘汰",
-    icon: "tabler:cross",
-    onclick: eliminateCandidate,
-  },
+  // {
+  //   title: "淘汰",
+  //   icon: "tabler:cross",
+  //   onclick: eliminateCandidate,
+  // },
   {
     title: "删除候选人",
     icon: "tabler:trash",
@@ -313,36 +305,40 @@ const actionItems = ref([
 ]);
 
 //拿到后端的所有年级数据
-const fetchAllGrade=()=>{
-  const { data, error, loading } = useRequest(() =>
-  getAllGrade({ pageNo: 1, pageSize: 100 }),
-);
-        watch(
-          [data, error],
-          ([newData, newError]) => {
-            if (newError) {
-              console.log("请求失败:", newError);
-              return;
-            }
-            if (newData) {
-              //拿到数据后逆序渲染
-              candidates_itemsObjArr.value[0].arr = newData.data.data.data.map(
-                (item: IGradeData) => {
-                  return {
-                    condition: item.grade,
-                  };
-                },
-              );
-            }
+const fetchAllGrade = () => {
+  const { data, error } = useRequest(() =>
+    getAllGrade({ pageNo: 1, pageSize: 100 }),
+  );
+  watch(
+    [data, error],
+    ([newData, newError]) => {
+      if (newError) {
+        console.log("请求失败:", newError);
+        return;
+      }
+      if (newData) {
+        //拿到数据后逆序渲染
+        candidates_itemsObjArr.value[0].arr = newData.data.data.data.map(
+          (item: IGradeData) => {
+            return {
+              condition: item.grade,
+            };
           },
-          { immediate: true },
         );
-}
+      }
+    },
+    { immediate: true },
+  );
+};
 fetchAllGrade();
 
-const grade=ref<string>("")
-const sex=ref<string>("")
-const dateString=ref<string>("")
+const grade = ref<string>("");
+const sex = ref<string>("");
+const dateString = ref<string>("");
+
+watch([grade, sex, dateString, searchValue, status], () => {
+  pageNo.value = 1;
+});
 
 const getAllApplyUserRequestParams = computed(() => ({
   pageNo: pageNo.value,
@@ -360,10 +356,8 @@ const updateParameter = ref<boolean>(false);
 watch(
   [getAllApplyUserRequestParams, updateParameter],
   ([newParams, _]) => {
-    console.log(newParams);
-    const { data, error, loading } = useRequest(() =>
-      getAllApplyUser(newParams),
-    );
+    console.log(newParams, _);
+    const { data, error } = useRequest(() => getAllApplyUser(newParams));
 
     watch(
       [data, error],
@@ -405,51 +399,41 @@ watch(
 
 //dialog
 const updateStatus = ref(false);
+const currentTableSelectIds = ref<string[]>([]);
 //修改状态、
+const handleTableSelectIds = (ids: string[]) => {
+  currentTableSelectIds.value = ids;
+};
 const handleEditStatus = () => {
+  if (currentTableSelectIds.value.length === 0) {
+    showAlert("请选择候选人以更改状态", "error");
+    return;
+  }
   //把修改状态的弹窗组件展示
   updateStatus.value = true;
 };
-const updateApplyUserInfo=ref(false);
-const arrangeInterviewerDialog=ref(false);
+const updateApplyUserInfo = ref(false);
+const arrangeInterviewerDialog = ref(false);
 </script>
 
 <template>
   <div class="content">
     <ArrangeInterviewer
-    :isOpen="arrangeInterviewerDialog"
-    @close="arrangeInterviewerDialog = false"
-    :id="currentArrangeInterviewId"
-    :name="currentArrangeInterviewName"
+      :id="currentArrangeInterviewId"
+      :name="currentArrangeInterviewName"
+      :is-open="arrangeInterviewerDialog"
+      @close="arrangeInterviewerDialog = false"
     />
     <UpdateApplyUserInfo
-      :isOpen="updateApplyUserInfo"
-      @close="updateApplyUserInfo = false"
       :id="currentUpdateApplyUserId"
+      :is-open="updateApplyUserInfo"
+      @close="updateApplyUserInfo = false"
     />
     <UpdateStatus
-      :isOpen="updateStatus"
+      :ids="currentTableSelectIds"
+      :is-open="updateStatus"
       @close="updateStatus = false"
     />
-    <!-- <ModalDialog :isOpen="isModalOpen" @close="closeModal">
-      <template #header>
-        <h2>删除候选人</h2>
-      </template>
-      <p>你确定要删除该条候选人的数据吗？</p>
-      <p style="color: red; font-size: 0.5em">
-        （此项操作无法撤销，请慎重操作！！！）
-      </p>
-      <template #footer>
-        <Button
-          class="btn-style"
-          @click="confirmDeleteCandidate(currentDeleteId)"
-          >确定</Button
-        >
-        <Button class="btn-style" @click="closeModal">关闭</Button>
-      </template>
-    </ModalDialog> -->
-
-
 
     <div class="filter-items">
       <FilterCondition
@@ -458,9 +442,9 @@ const arrangeInterviewerDialog=ref(false);
       ></FilterCondition>
       <div class="date-picker">
         <DataRangePicker
-          @updateDateRange="handleDateRangeUpdate"
-          :dateRange="dateRange"
-          :isReset="isReset"
+          :date-range="dateRange"
+          :is-reset="isReset"
+          @update-date-range="handleDateRangeUpdate"
         />
       </div>
 
@@ -471,15 +455,15 @@ const arrangeInterviewerDialog=ref(false);
 
       <div class="search-input">
         <AutoLongerInput
+          placeholder-text="搜索候选人："
           @input_src="handleInput"
-          placeholderText="搜索候选人："
         />
       </div>
     </div>
     <div class="toggle-handle">
       <ToggleShow
-        :toggleItems="toggleItems"
-        @transferToggleShowStatus="handleToggleShowStatus"
+        :toggle-items="toggleItems"
+        @transfer-toggle-show-status="handleToggleShowStatus"
       ></ToggleShow>
 
       <div class="handle-btns">
@@ -495,12 +479,13 @@ const arrangeInterviewerDialog=ref(false);
       <DataTable
         :items="tableData"
         :headers="headers"
-        :actionItems="actionItems"
+        :action-items="actionItems"
+        @send-selected-ids="handleTableSelectIds"
       ></DataTable>
       <div class="pagination-container">
         <Pagination
-          :totalItems="total"
-          :pageSize="pageSize"
+          :total-items="total"
+          :page-size="pageSize"
           @update:page="changePage"
         >
         </Pagination>

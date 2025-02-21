@@ -54,13 +54,26 @@ const getSecondComment = async (commentId: number) => {
   });
 
   if (data.value?.data.postCommentAll) {
-    console.log(11);
     total.value = data.value.data.pageInfo.total;
     sonComments.value = data.value.data.postCommentAll.map((comment: any) => {
       const replyInfo = createUserInfo();
       getUserInfo(comment.pointUser, replyInfo);
+
+      const { commentTxt } = comment;
+      const splitPattern = "<!-- IMG_SPLIT -->";
+      const parts = commentTxt.split(splitPattern);
+      const texts = parts
+        .filter((part: string, index: number) => index % 2 === 0)
+        .join("");
+      const imgUrls = parts
+        .filter((part: string, index: number) => index % 2 !== 0)
+        .join("");
+
       comment.userInfo = replyInfo;
       comment.parentId = commentId;
+      comment.texts = texts;
+      comment.imgUrls = imgUrls;
+
       return comment;
     });
   }
@@ -143,10 +156,10 @@ defineExpose({ userInfo });
         <span v-if="isReply" :key="comment.pointUser" class="reply-to">{{
           `@${comment.userInfo?.name}`
         }}</span>
-        {{ comment.commentTxt }}
+        {{ comment.texts }}
       </div>
-      <div v-if="comment.urls" class="image">
-        <img :src="comment.urls" />
+      <div v-if="comment.imgUrls" class="image">
+        <img :src="comment.imgUrls" />
       </div>
       <div class="action-box">
         <div class="btnBox">
@@ -243,7 +256,8 @@ defineExpose({ userInfo });
   margin-bottom: 5px;
   min-height: 90px;
   overflow: hidden;
-  border-bottom: 1px solid #dddcdc;
+  padding-top: 5px;
+  border-top: 1px solid #eeeded;
 
   .avatar {
     width: 45px;

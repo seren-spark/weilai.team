@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
 import { Icon } from "@iconify/vue";
 import CommunityTag from '../../composables/CommunityTag';
 import { useTagStore } from "@/store/tagTypeStore";
+import NoData from '@/components/loading/NoData.vue';
+
 
 const tagStore = useTagStore();
 const tagType = tagStore.tagType.tagType
@@ -12,15 +13,6 @@ getHotTagList()
 </script>
 
 <template>
-    <!-- <div class="tag-suggest">
-        <div class="tag-suggest-like">猜你喜欢</div>
-        <div class="suggestTagList">
-            <div class="tag-suggest-item" v-for="(item, index) in likeTagList" :key="index">
-                <Icon icon="icon-park-outline:tag" class="tag-suggest-item-icon" />
-                <div class="tag-suggest-item-name">{{ item }}</div>
-            </div>
-        </div>
-    </div> -->
     <div class="rightBarTag">
         <div class="rightTagHead">
             <div class="tagHeadTitle">
@@ -29,7 +21,7 @@ getHotTagList()
             </div>
         </div>
         <div v-if="!likeTagList || likeTagList.length == 0" class="noMoreTag">
-            暂无相关推荐
+            <NoData />
         </div>
         <div class="hotTagList" v-if="likeTagList">
             <span class="tag" v-for="(tag, index) in likeTagList" :key="index">
@@ -124,6 +116,7 @@ getHotTagList()
 @media screen and (max-width: 1200px) {
     .rightBarTag {
         max-height: 250px;
+
         .rightTagHead {
             font-size: 12px;
 

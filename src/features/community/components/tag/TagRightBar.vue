@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/tooltip";
 import CommunityTag from "../../composables/CommunityTag";
 import { useTagStore } from "@/store/tagTypeStore";
+import NoData from '@/components/loading/NoData.vue';
+
 
 const tagStore = useTagStore();
 const tagType = tagStore.tagType.tagType
@@ -45,7 +47,7 @@ watch(useTagList, () => {
         <hr />
         <ul>
             <li v-if="firstUseTagList.length === 0">
-                <div class="no-data">暂无数据</div>
+                <NoData />
             </li>
             <li v-for="(item, index) in firstUseTagList" :key="index">
                 <TooltipProvider>

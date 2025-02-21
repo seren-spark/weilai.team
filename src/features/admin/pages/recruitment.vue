@@ -14,7 +14,7 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
     "thirdNavItems": [
       {
         "title": "首页",
-        "path": "/admin/recruitment",
+        "path": "/admin/recruitment/recruitment",
         "icon": "bitcoin-icons:home-outline"
       },
       {
@@ -26,11 +26,6 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
         "title": "面试",
         "path": "/admin/recruitment/interview",
         "icon": "heroicons:calendar-date-range"
-      },
-      {
-        "title": "招新记录",
-        "path": "/admin/recruitment/recruitmentRecord",
-        "icon": "tdesign:data-filled"
       }
     ]
   }

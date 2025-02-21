@@ -1,7 +1,4 @@
 <script setup lang="ts">
-
-
-
 import TheTopNav from "../../../components/layouts/AppThirdNav.vue";
 import { useTagStore } from "@/store/tagTypeStore";
 import { ref } from "vue";
@@ -15,23 +12,19 @@ const typeData = ref<TagData>({ type: 0, tagType: "comprehensive" });
 const addTagType = useTagStore();
 addTagType.addTag(typeData.value);
 
-
-import MyHeader from '../components/MyHeader.vue';
-import MyTabs from '../components/MyTabs.vue';
-import Rightbar from '../../../components/community/Rightbar.vue'
+import MyTabs from "../components/MyTabs.vue";
+import Rightbar from "../../../components/community/Rightbar.vue";
 </script>
 
 <template>
   <TheTopNav></TheTopNav>
-  <div style="display: flex;">
+  <div style="display: flex">
     <div class="content">
       <MyHeader></MyHeader>
       <MyTabs></MyTabs>
     </div>
     <Rightbar></Rightbar>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -48,7 +41,8 @@ import Rightbar from '../../../components/community/Rightbar.vue'
 }
 </style>
 
-<route lang="json">{
+<route lang="json">
+{
   "meta": {
     "title": "资料",
     "thirdNavItems": [
@@ -59,4 +53,5 @@ import Rightbar from '../../../components/community/Rightbar.vue'
       }
     ]
   }
-}</route>
+}
+</route>

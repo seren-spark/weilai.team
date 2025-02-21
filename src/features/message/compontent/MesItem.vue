@@ -54,6 +54,28 @@ watch(
     }
   },
 );
+const splitResult = computed(() => {
+  const content = props.message?.content;
+  if (!content) {
+    return {
+      texts: "",
+      imgUrls: "",
+    };
+  }
+  const splitPattern = "<!-- IMG_SPLIT -->";
+  const parts = content.split(splitPattern);
+  const texts = parts
+    .filter((part: string, index: number) => index % 2 === 0)
+    .join("");
+  const imgUrls = parts
+    .filter((part: string, index: number) => index % 2 !== 0)
+    .join("");
+
+  return {
+    texts,
+    imgUrls,
+  };
+});
 </script>
 
 <template>
@@ -79,10 +101,12 @@ watch(
         </div>
         <div class="time">{{ formattedTime }}</div>
       </div>
-      <div v-if="props.message.content != null" class="content">
-        {{ props.message.content }}
+      <div v-if="splitResult.texts != null" class="content">
+        {{ splitResult.texts }}
       </div>
-      <!-- <div class="imgCon"><img src="../../../assets/img/headImg.jpg"/></div> -->
+      <div v-if="splitResult.imgUrls" class="imgCon">
+        <img :src="splitResult.imgUrls" />
+      </div>
       <div class="postLink">
         <a :href="`/community/post/${props.message.postId}`"
           ># {{ props.message.postTitle }}</a
@@ -124,6 +148,7 @@ watch(
   .mesContent {
     width: calc(100% - 73px);
     height: 100%;
+    padding-right: 3%;
     .details {
       width: 100%;
       height: 20px;
@@ -149,7 +174,7 @@ watch(
       }
 
       .time {
-        margin-right: 20px;
+        // margin-right: 20px;
         color: #868787;
         font-size: 13px;
         justify-content: flex-end;

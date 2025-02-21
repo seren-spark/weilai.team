@@ -40,7 +40,7 @@ const filter_condition = (e: Event) => {
 </script>
 <template>
     <div class="filter-condition">
-        <DropdownMenu v-for="i in itemsObjArr " :key="i.title">
+        <DropdownMenu v-for="i in props.itemsObjArr" :key="i.title">
             <DropdownMenuTrigger>
                <div class="filter-title long-dashed-border">
                 {{ i.title }} <Icon icon="pepicons-pencil:triangle-down" class="ml-2" />
@@ -49,7 +49,7 @@ const filter_condition = (e: Event) => {
             <DropdownMenuContent  class="filter-content bg-white" style="position: absolute;">
                 <DropdownMenuLabel class="filter-label">{{ i.label }}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="drap-menu-content" v-for="j in i.arr">
+                <DropdownMenuItem v-for="j in i.arr" :key="j.condition" class="drap-menu-content">
                     <DropdownMenuRadioGroup
                         v-model="i.ref"
                     >

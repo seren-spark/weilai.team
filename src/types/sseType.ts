@@ -10,7 +10,7 @@ export type SSEMessageData = {
   headPortrait: string | null;
   postId: number;
   postTitle: string;
-  content: string | null;
+  content: string;
   createdAt: string;
 };
 
