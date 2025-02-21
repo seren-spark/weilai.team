@@ -220,10 +220,10 @@ function reset() {
                       {{ item.sex }}
                     </TableCell>
                     <TableCell class="hidden md:table-cell">
-                      <Badge v-for="authority in item.authority" :key="authority" variant="outline">{{
+                      <Badge :class="authority" v-for="authority in item.authority" :key="authority" variant="outline">{{
                         authorityTransformer(authority) }}
                       </Badge>
-                      <Badge v-if="item.authority.length == 0" variant="outline">暂无权限</Badge>
+                      <Badge v-if="item.authority.length == 0" variant="outline" class="text-gray-500 border-black">暂无权限</Badge>
                     </TableCell>
 
                     <TableCell>
@@ -594,6 +594,26 @@ td {
   }
 }
 
+.admin_plus {
+  color: #ff9696;
+  border-color: #ff9696;
+}
+.team_admin {
+  color: #64c8c8;
+  border-color: #64c8c8;
+}
+.community_admin {
+  color: #ffb97d;
+  border-color: #ffb97d;
+}
+.recruit_admin {
+  color: #64af64;
+  border-color: #64af64;
+}
+.notice_admin {
+  color: #ff64ff;
+  border-color: #ff64ff;  
+}
 @media (max-width: 768px) {
   .content {
     margin-top: 70px;

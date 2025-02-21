@@ -12,6 +12,7 @@ const typeData = ref<TagData>({ type: 0, tagType: "comprehensive" });
 const addTagType = useTagStore();
 addTagType.addTag(typeData.value);
 
+import MyHeader from "../components/MyHeader.vue";
 import MyTabs from "../components/MyTabs.vue";
 import Rightbar from "../../../components/community/Rightbar.vue";
 </script>
