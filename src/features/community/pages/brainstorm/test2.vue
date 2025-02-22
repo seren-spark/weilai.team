@@ -15,6 +15,7 @@
         <th style="font-size: 12px; color: #909399; width: 100px">状态</th>
       </tr>
     </table>
+    <div v-for="(item, index) in percent">{{ item }}</div>
     <div class="file-list-wrapper">
       <div v-for="(item, index) in uploadFileList" :key="index">
         <div class="upload-file-item">
