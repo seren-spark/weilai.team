@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import PrimarySidebar from "@/features/post/components/sidebar/PrimarySidebar.vue";
-import SecondarySidebar from "@/features/post/components/sidebar/SecondarySidebar.vue";
 import AppEditor from "@post/components/AppEditor.vue";
 import PostHeader from "@post/components/header/index.vue";
 import { onBeforeUnmount, reactive, ref, toRaw, watch } from "vue";
-import type { AcceptableInputValue } from "node_modules/radix-vue/dist/TagsInput/TagsInputRoot";
 import useAppEditor from "@/features/post/composables/useAppEditor";
 import * as z from "zod";
 import { toast } from "@/components/ui/toast";
@@ -15,23 +13,19 @@ import type { ApiResponseData } from "@/types/api-response";
 import router from "@/router";
 
 interface PostErrors {
+  id: number;
   title: string;
   postTxt: string;
-  tags: string[];
-  type: string;
-  postAbstract: string;
 }
 
 interface PostResponse {
-  postId: number | string;
+  noticeId: number | string;
 }
 
 const { editor } = useAppEditor();
 const postData = reactive({
+  id: "" as unknown as number,
   title: "" as string | number | undefined,
-  tags: [] as AcceptableInputValue[],
-  type: "",
-  postAbstract: "" as string | number | undefined,
   postTxt: undefined as string | undefined,
 });
 const filedErrors = ref<z.ZodFormattedError<PostErrors> | undefined>();
@@ -39,24 +33,16 @@ const filedErrors = ref<z.ZodFormattedError<PostErrors> | undefined>();
 const postSchema = z.object({
   postTitle: z
     .string()
-    .min(1, { message: "博文标题不能为空" })
-    .max(100, { message: "博文标题不能超过100个字符" }),
-  postContent: z.string().min(1, "博文内容至少需要10个字符"),
-  postTags: z.array(z.string()).min(1, "请至少选择一个标签"),
-  postCategories: z.string().min(1, "请选择一个分类"),
-  postSummary: z
-    .string()
-    .min(10, { message: "摘要至少需要10个字符" })
-    .max(200, { message: "摘要不能超过200个字符" }),
+    .min(1, { message: "标题不能为空" })
+    .max(100, { message: "标题不能超过100个字符" }),
+  postContent: z.string().min(1, "内容至少需要10个字符"),
 });
+postData.id = 66;
 
 const validatePost = () => {
   const parseResult = postSchema.safeParse({
     postTitle: postData.title,
     postContent: JSON.stringify(postData.postTxt),
-    postTags: postData.tags,
-    postCategories: postData.type,
-    postSummary: postData.postAbstract,
   });
 
   if (!parseResult.success) {
@@ -66,27 +52,35 @@ const validatePost = () => {
   return parseResult.success;
 };
 
-const putPost = (data: typeof postData) => {
-  return apiClient.post("/post/put", data);
+const putNotice = (data: typeof postData) => {
+  return apiClient.put("/notice/updateNotice", data);
 };
 
-const { run, loading, data } = useRequest<ApiResponseData<PostResponse>>(
-  putPost,
-  {
-    manual: true,
-  },
-);
+const {
+  run: putNoticeRun,
+  loading,
+  data: putNoticeData,
+} = useRequest<ApiResponseData<PostResponse>>(putNotice, {
+  manual: true,
+});
+
+const getNoticeById = (noticeId: number) => {
+  return apiClient.get(`/notice/getNoticeById/${noticeId}`);
+};
+
+const { data: NoticeData, run: getNoticeByIdRun } = useRequest(getNoticeById);
 
 const handlePost = async () => {
   if (!validatePost()) {
     return;
   }
 
-  run(toRaw(postData));
+  putNoticeRun(toRaw(postData));
+  console.log(postData);
 };
 
-watch(data, (newValue) => {
-  if (newValue?.code == 2000) {
+watch(putNoticeData, (newValue) => {
+  if (newValue?.code == 200) {
     toast({
       title: "发布成功",
       description: "您的文章已成功发布",
@@ -96,11 +90,23 @@ watch(data, (newValue) => {
     if (newValue.data) {
       setTimeout(() => {
         router.push({
-          name: "/community/post/[id]",
-          params: { id: newValue?.data.postId },
+          name: "/community/notice",
         });
       });
     }
+  } else if (newValue?.code == 2004) {
+    toast({
+      title: "该帖子不存在",
+      description: "您的文章修改失败",
+      duration: 1000,
+    });
+  }
+});
+getNoticeByIdRun(postData.id);
+watch(NoticeData, (newValue) => {
+  if (newValue && newValue.code === 200) {
+    postData.title = newValue.data?.title || "";
+    postData.postTxt = newValue.data?.content || undefined;
   }
 });
 
@@ -143,7 +149,8 @@ onBeforeUnmount(() => {
             }
           "
         />
-        <SecondarySidebar
+        <!-- 右侧边栏 -->
+        <!-- <SecondarySidebar
           :editor="editor"
           :errors="filedErrors"
           :post-tags="postData.tags"
@@ -192,7 +199,7 @@ onBeforeUnmount(() => {
               }
             }
           "
-        ></SecondarySidebar>
+        ></SecondarySidebar> -->
       </main>
     </div>
   </div>

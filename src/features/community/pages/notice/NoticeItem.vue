@@ -8,6 +8,9 @@ import { useAlert } from "@/composables/useAlert";
 const { data, executeRequest } = useRequest();
 import type { SSENoticeData } from "../../../../types/sseType";
 import { showConfirm } from "@/composables/useConfirm";
+import router from "@/router";
+import { useUserStore } from "../../../../store/userStore";
+const userStore = useUserStore();
 import {
   Tooltip,
   TooltipContent,
@@ -130,6 +133,15 @@ const readNotice = async (noticeId: string) => {
     })
     .catch(() => {});
 };
+//跳转个人中心;
+function skipPersonCenter(id: number) {
+  userStore.setUserId(id);
+  userStore.setIsSelf(false);
+
+  router.push({
+    path: `/personalCenter/userInfo`,
+  });
+}
 
 //修改公告
 const editNotice = () => {};
@@ -142,15 +154,18 @@ const editNotice = () => {};
       <!-- 个人信息以及编辑操作 -->
       <div class="userInfo">
         <div class="action">
-          <div class="publish-avatar">
-            <a href="http://localhost:5173/personalCenter/userInfo">
-              <UserAvatar :avatar="props.notice.headPortrait" />
-            </a>
+          <div
+            class="publish-avatar"
+            @click="skipPersonCenter(props.notice.senderId)"
+          >
+            <UserAvatar :avatar="props.notice.headPortrait" />
           </div>
-          <a href="http://localhost:5173/personalCenter/userInfo">
-            <div class="nickName">{{ props.notice.username }}</div>
-          </a>
-
+          <div
+            class="nickName"
+            @click="skipPersonCenter(props.notice.senderId)"
+          >
+            {{ props.notice.username }}
+          </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
