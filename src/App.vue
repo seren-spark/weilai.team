@@ -2,7 +2,9 @@
 import Alert from "@/pages/Alert.vue";
 import { useAlert } from "./composables/useAlert";
 
+
 const { alertState } = useAlert();
+
 </script>
 
 <template>

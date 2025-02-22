@@ -17,12 +17,12 @@
             :updateData="updateData"
             :havaLeader="haveLeader"
           />
-          <Button size="sm" variant="outline" class="h-7 gap-1 header-btn">
+          <!-- <Button size="sm" variant="outline" class="h-7 gap-1 header-btn">
             <Icon icon="proicons:person-2" />
             <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
               编辑组织
             </span>
-          </Button>
+          </Button> -->
         </div>
       </div>
       <hr />
@@ -49,9 +49,7 @@
                   <DropdownMenuTrigger class="head"
                     >批量管理</DropdownMenuTrigger
                   >
-                  <!-- <button >
-                <span></span>
-              </button> -->
+
                   <DropdownMenuContent>
                     <DropdownMenuItem @click="deleteMembers"
                       >批量删除</DropdownMenuItem
@@ -526,10 +524,10 @@ td {
         text-align: center;
         color: var(--secondary-foreground);
         width: 7vw;
-        height: 4vh;
+        height: 2rem;
 
         padding: 0.1vh 0.05vw;
-        font-size: 13px;
+        font-size: 0.9rem;
         border: 1.5px solid var(--border);
         border-radius: var(--radius);
         &:hover {
@@ -549,13 +547,13 @@ td {
 }
 .top-title {
   text-align: center;
-  height: 3vh;
-  border: 0.15vw solid #e0f1f6;
-  border-radius: 1vw;
+  height: 2rem;
+  border: 0.1rem solid #e0f1f6;
+  border-radius: 1rem;
   margin: 0 10px;
   text-align: center;
   color: var(--secondary-foreground);
-  font-size: 12px;
+  font-size: 0.825rem;
   display: flex;
   align-items: center;
   span {

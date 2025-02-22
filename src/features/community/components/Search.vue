@@ -178,8 +178,9 @@ function skip(e: Event) {
     height: 45px;
     border: 1px solid #d0d9e4;
     border-radius: 25px;
-    padding: 5px 10px;
+    padding: var(--padding);
     padding-left: 30px;
+    font-size: 0.95rem;
   }
   .search-icon {
     position: absolute;

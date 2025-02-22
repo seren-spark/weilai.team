@@ -12,11 +12,7 @@
       }}
     </div>
     <div class="news-comment">
-      <Icon
-        icon="fontisto:comment"
-        class="news-footer-icon"
-        style="font-size: 13px"
-      />
+      <Icon icon="fluent:comment-16-regular" class="news-footer-icon" />
       {{ commentCount == 0 ? "评论" : commentCount }}
     </div>
   </div>
@@ -44,28 +40,24 @@ defineProps({
 .news-footer {
   display: flex;
   align-items: center;
-  padding: 5px 55px;
+  padding: var(--padding);
   & > div {
     color: var(--secondary-foreground);
     display: flex;
     align-items: center;
-    font-size: 0.9vw;
-    margin-right: 10px;
+    font-size: 0.825rem;
+    margin-right: 0.825rem;
   }
   &-icon {
     color: var(--secondary-foreground);
-    font-size: 1vw;
-    margin-right: 5px;
+    font-size: 1rem;
+    margin-right: 0.2rem;
   }
   .already {
     color: red;
   }
 }
-@media screen and (max-width: 1300px) and (min-width: 900px) {
-  .news-footer {
-    padding: 5px 3vw !important;
-  }
-}
+
 @media screen and (max-width: 768px) {
   .news-footer {
     padding-top: 5px;

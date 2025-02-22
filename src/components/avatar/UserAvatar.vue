@@ -11,7 +11,7 @@ console.log(props.customClass);
 </script>
 
 <template>
-  <div class="avatar-container" :class="customClass">
+  <div :class="`avatar-container `+customClass " >
     <div v-if="isLoading" class="flex items-center space-x-4">
       <Skeleton class="h-12 w-12 rounded-full" />
       <div class="space-y-2">
@@ -42,7 +42,8 @@ console.log(props.customClass);
   flex-direction: column;
   gap: 0.5rem;
   min-height:30px ;
-  
+  width: 100%;
+  height: 100%;
 
   .avatar-info {
     display: flex;
@@ -54,9 +55,9 @@ console.log(props.customClass);
   .default-avatar{
     display: block;
     
-    min-width:40px ;
+    width:var(--avatar) ;
     height:100%;
-    min-height: 40px;
+    height: var(--avatar);
   object-fit: cover;
   
   }

@@ -1,0 +1,7 @@
+.input-container {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: 2;
+  align-items: center;
+  gap: 0.25rem;
+}/*# sourceMappingURL=form.css.map */

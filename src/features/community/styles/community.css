@@ -1,0 +1,12 @@
+.content {
+  padding: 0 3rem;
+  width: 100%;
+  height: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    padding: 0 0;
+    padding-bottom: 60px;
+  }
+}/*# sourceMappingURL=community.css.map */

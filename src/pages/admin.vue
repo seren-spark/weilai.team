@@ -32,7 +32,7 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
       {
         "title": "招新管理",
         "icon": "arcticons:studentid",
-        "path": "/admin/recruitment"
+        "path": "/admin/recruitment/recruitment"
       },
       {
         "title": "考勤管理",
