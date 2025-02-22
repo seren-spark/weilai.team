@@ -14,7 +14,7 @@
     </div>
     <hr />
     <div class="rank-list">
-      <ul v-if="RankList.length">
+      <ul v-if="RankList.length > 0">
         <li v-for="(item, index) in RankList" :key="index">
           <TooltipProvider>
             <Tooltip>
@@ -33,7 +33,12 @@
           </TooltipProvider>
         </li>
       </ul>
-      <div v-else>
+      <ul v-else-if="loading">
+        <li v-for="index in 6" :key="index">
+          <Skeleton class="h-[30px] w-full" />
+        </li>
+      </ul>
+      <div v-else="!loading && !articleList.length">
         <NoData />
       </div>
     </div>
@@ -41,6 +46,9 @@
 </template>
 
 <script setup lang="ts">
+import apiClient from "@/api/axios";
+import { Skeleton } from "@/components/ui/skeleton";
+// @ts-ignore
 import NoData from "@/components/loading/NoData.vue";
 import {
   Tooltip,
@@ -48,19 +56,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getArticle } from "@/features/community/composables/search";
+
+// import { getArticle } from "@/features/community/composables/search";
+import { getArticle2 } from "@/features/community/composables/search";
 import { useTagStore } from "@/store/tagTypeStore";
-import type { ArticleList } from "@/types/Community";
+import type { ArticleList, Data } from "@/types/Community";
 import { Icon } from "@iconify/vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+
 const tagStore = useTagStore();
 const type = tagStore.tagType.type;
 
 const RankList = ref<ArticleList[]>([]);
 
-getArticle(type).then((res) => {
-  RankList.value = res.records.slice(0, 6);
-  console.log(RankList.value);
+const { data, loading } = getArticle2(type);
+watch(data, () => {
+  const res = data.value as Data;
+  RankList.value = res.data.records.slice(0, 6);
 });
 </script>
 
@@ -128,5 +140,4 @@ ul {
 .rank-list {
   padding: 10px 15px;
 }
-
 </style>

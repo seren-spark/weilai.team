@@ -15,7 +15,11 @@ import SidebarMenuButton from "@/components/ui/sidebar/SidebarMenuButton.vue";
 import SidebarMenuItem from "@/components/ui/sidebar/SidebarMenuItem.vue";
 import SidebarProvider from "@/components/ui/sidebar/SidebarProvider.vue";
 
+import type { UserInfo } from "@/components/comment/index.ts";
 import UserLogin from "@/composables/useLoginAll";
+import { useRequest } from '@/composables/useRequest';
+import { useMessageStore } from '@/store/messageStore';
+import { useNoticeStore } from '@/store/UseNoticeStore';
 import { useUserStore } from '@/store/userStore';
 import { Icon } from "@iconify/vue";
 import {
@@ -28,10 +32,6 @@ import { RouterLink, useRoute, useRouter } from "vue-router";
 import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";
 import SidebarHeader from "../ui/sidebar/SidebarHeader.vue";
-import { useMessageStore } from '@/store/messageStore';
-import { useNoticeStore } from '@/store/UseNoticeStore'
-import type { UserInfo } from "@/components/comment/index.ts";
-import { useRequest } from '@/composables/useRequest';
 const { data, executeRequest } = useRequest()
 // 获取个人id用于渲染
 interface Info{
@@ -51,7 +51,7 @@ async function getUserInfo (){
 getUserInfo()
 
 watch(()=>data.value,()=>{
-  console.log(data.value)
+ 
 })
 const {  logout } = UserLogin()
 const route = useRoute();
@@ -62,26 +62,31 @@ const subNavs = [
     title: "综合",
     icon: "material-symbols-light:overview-key-outline",
     path: "/community/comprehensive",
+    appPath:"/community/comprehensive/hot",
   },
   {
     title: "博客",
     icon: "material-symbols:article-outline",
     path: "/community/blog",
+    appPath:"/community/blog/hot",
   },
   {
     title: "公告",
     icon: "material-symbols:article-outline",
     path: "/community/notice",
+    appPath:"/community/notice",
   },
   {
     title: "交流",
     icon: "weui:time-outlined",
     path: "/community/discussion",
+    appPath:"/community/dicusstion/hot",
   },
   {
     title: "头脑风暴",
     icon: "weui:time-outlined",
     path: "/community/brainstorm",
+    appPath:"/community/brainstorm/hot",
   },
 ];
 
@@ -103,6 +108,7 @@ const items = [
     url: "admin/",
     icon: "lsicon:control-outline",
     redirect: "admin/profile",
+    hidden:true
   },
 ];
 
@@ -238,7 +244,7 @@ getNotReadCount()
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
-          <SidebarFooter id="sidebar-footer">
+          <SidebarFooter id="sidebar-footer" style="height:7rem">
             <SidebarMenu>
               <SidebarMenuItem>
                 <DropdownMenu>
@@ -263,7 +269,7 @@ getNotReadCount()
                        <div class="avatar"> <Avatar  :avatar="userInfo?.headPortrait"  /></div>
 
                       <div class="grid flex-1 text-left text-sm leading-tight">
-                        <span class="truncate">爆米奇</span>
+                        <span class="truncate">{{ userInfo?.name }}</span>
                       </div>
                       <ChevronsUpDown class="ml-auto size-4" />
                     </SidebarMenuButton>
@@ -310,7 +316,7 @@ getNotReadCount()
       ></DropdownMenuTrigger>
       <DropdownMenuContent class="w-6 bg-white">
         <RouterLink
-          :to="item.path"
+          :to="item.appPath "
           class="main-menu-sub-link"
           v-for="(item, index) in subNavs"
         >
@@ -332,6 +338,7 @@ getNotReadCount()
 </template>
 
 <style lang="scss" scoped>
+
 .dot{
   position: absolute;
   top: 41%;
@@ -369,6 +376,9 @@ getNotReadCount()
   top: 0;
   background-color: #fafafa;
   display: flex;
+  span{
+    font-size: 0.9rem;
+  }
   #sidebar {
     background-color: white;
   }
@@ -383,11 +393,11 @@ getNotReadCount()
   }
 }
 .publish-btn {
-  height: 40px;
-  padding-left: 15px;
-  border-radius: 20px;
+  height: 2.5rem;
+  padding-left: 1rem;
+  border-radius: 1rem;
   color: white;
-  font-size: 15px;
+  font-size: 1rem;
   background: linear-gradient(
     to right,
     #139bb8,
@@ -398,7 +408,7 @@ getNotReadCount()
   );
   svg {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 1rem;
   }
 }
 .sidebar {
@@ -451,6 +461,15 @@ getNotReadCount()
       color: var(--secondary-foreground);
       background-color: var(--secondary);
     }
+  }
+  #sidebar-footer{
+     .footer-user{
+      height: 5.5rem;
+      box-sizing: border-box;
+      .truncate{
+        font-size: 0.9rem;
+      }
+     }
   }
 }
 
@@ -534,9 +553,7 @@ getNotReadCount()
 }
 }
 @media screen and (min-width:900px) and (max-width: 2000px) {
-  a{
-  height: 5vh !important;
-}
+
 
 .main-menu{
   display: none;
@@ -554,11 +571,6 @@ color :var(--secondary-foreground);
    border-top: 1px solid #e5e7eb;
    border-bottom: 1px solid #e5e7eb;
   }
-  span{
-    font-size:0.9vw  !important ;
-  }
-
-
 
 }
 
@@ -571,19 +583,12 @@ color :var(--secondary-foreground);
   }
 }
 .publish-btn {
-  height: 5vh;
+  height: 2.625rem;
   padding-left: 15px;
   border-radius: 20px;
   color: white;
   font-size: 0.9vw;
-  background: linear-gradient(
-    to right,
-    #139bb8,
-    #739fcd,
-    #b2b3df,
-    #e7dcf3,
-    #fdfbfe00
-  );
+
   svg {
     font-weight: bold;
     font-size: 16px;
@@ -654,11 +659,6 @@ color :var(--secondary-foreground);
   }
   &-footer{
     .footer-user{
-      height: 5.5vh;
-      box-sizing: border-box;
-      .truncate{
-        font-size: 0.9vw;
-      }
       li{
         box-sizing: border-box;
         height: 100%;
@@ -674,12 +674,6 @@ color :var(--secondary-foreground);
 }
 @media screen and (min-width:1700px) {
 
-   a{
-  height: 5vh !important;
-}
-
-
-
 .avatar {
   width: calc(20% - 2px);
   height: calc(100% - 2px);
@@ -692,12 +686,6 @@ color :var(--secondary-foreground);
    border-top: 1px solid #e5e7eb;
    border-bottom: 1px solid #e5e7eb;
   }
-  span{
-    font-size:0.9vw  !important ;
-  }
-
-
-
 }
 
 
@@ -795,7 +783,7 @@ color :var(--secondary-foreground);
   }
   &-footer{
     .footer-user{
-      height: 5.5vh;
+      height: 5.8rem;
       box-sizing: border-box;
       .truncate{
         font-size: 0.9vw;

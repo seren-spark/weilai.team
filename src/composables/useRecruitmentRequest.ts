@@ -1,6 +1,5 @@
 import axios from "axios";
 import router from "@/router";
-import { toRaw } from "vue";
 import type {
   IGetAllApplyUserDTO,
   IGetAllGradeDTO,
@@ -10,7 +9,6 @@ import type {
   IGetInterviewUserDTO,
   IArrangeInterviewDTO,
 } from "@/types/recruitmentType";
-// import { ca } from 'date-fns/locale';
 // 招新模块
 const BASE_UEL = "http://49.232.183.67:8087/";
 const getToken = (): string => {
@@ -18,7 +16,6 @@ const getToken = (): string => {
   if (!token) {
     router.push("/login");
     throw new Error("拿token了吗孩子");
-    return "";
   }
   return JSON.parse(token).value;
 };
@@ -31,7 +28,8 @@ export const getAllApplyUser = ({
   sex,
   clazz,
   condition,
-  dateString,
+  startTime,
+  endTime,
   grade,
 }: IGetAllApplyUserDTO) => {
   return axios.get(`${BASE_UEL}recruit/manage/listAllRecruitUser`, {
@@ -42,7 +40,8 @@ export const getAllApplyUser = ({
       sex: sex,
       clazz: clazz,
       condition: condition,
-      dateString: dateString,
+      startTime: startTime,
+      endTime: endTime,
       grade: grade,
     },
     headers: {
@@ -125,21 +124,31 @@ export const getInterviewCount = ({ status }: { status: number }) => {
 };
 
 // 导出录取结果excel表
-// 状态参数标记 0代表待安排；1代表待面试；2代表已录取；3代表未录取
+// 状态参数标记 0代表待安排；1代表待面试；2代表已录取；3代表已淘汰
 export const exportResultExcel = ({
-  clazz,
-  dateString,
+  startTime,
+  endTime,
   grade,
   sex,
   status,
 }: IExportInterviewResultDTO) => {
-  return axios.get(`${BASE_UEL}recruit/manage/resultExport`, {
-    data: { clazz, dateString, grade, sex, status },
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + getToken(),
+  console.log(startTime, endTime, grade, sex, status);
+  return axios.post(
+    `${BASE_UEL}recruit/manage/resultExport`,
+    {
+      startTime,
+      endTime,
+      grade,
+      sex,
+      status,
     },
-  });
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    },
+  );
 };
 
 //修改招新报名的人员的信息
@@ -173,33 +182,31 @@ export const updateApplyUserStatus = ({
   ids: string[];
   interviewStatus: string;
 }) => {
-  console.log(ids, interviewStatus);
-  return axios
-    .put(`${BASE_UEL}recruit/manage/updateRecruitUserStatus`, {
-      params: { ids: toRaw(ids), interviewStatus },
+  const id = ids.map((id) => `ids=${id}`).join("&");
+  return axios.put(
+    `${BASE_UEL}recruit/manage/updateRecruitUserStatus?${id}`,
+    {},
+    {
+      params: { interviewStatus },
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + getToken(),
       },
-    })
-    .then((res) => {
-      if (res?.data.code !== 200) {
-        console.log(res.data.message);
-      }
-    });
+    },
+  );
 };
 
 //写面评
 export const evaluateInterview = ({
   comment,
   id,
-  round,
+  isSecond,
   status,
   userId,
 }: IUpdateInterviewResultDTO) => {
   return axios.post(
     `${BASE_UEL}recruit/interview/comment`,
-    { comment, id, round, status, userId },
+    { comment, id, isSecond, status, userId },
     {
       headers: {
         "Content-Type": "application/json",
@@ -245,21 +252,31 @@ export const getAllInterviewer = ({
 //获取所有面试人员
 //状态参数标记 -1查询全部，0查询待我面试，1待反馈；2已录取；3未录取
 export const getAllInterviewUser = ({
-  pageNo,
-  pageSize,
   name,
   grade,
   round,
   status,
+  clazz,
+  startTime,
+  endTime,
+  ids,
 }: IGetInterviewUserDTO) => {
-  return axios.get(`${BASE_UEL}recruit/interview/listAllInterview`, {
+  let params = "";
+  if (ids?.length === 0) {
+    params = `${BASE_UEL}recruit/interview/listAllInterview`;
+  } else {
+    params = `${BASE_UEL}recruit/interview/listAllInterview?${ids?.map((id) => `ids=${id}`).join("&")}`;
+  }
+
+  return axios.get(params, {
     params: {
-      "pageDTO.pageNo": pageNo,
-      "pageDTO.pageSize": pageSize,
       name,
       grade,
       round,
       status,
+      clazz,
+      startTime,
+      endTime,
     },
     headers: {
       "Content-Type": "application/json",

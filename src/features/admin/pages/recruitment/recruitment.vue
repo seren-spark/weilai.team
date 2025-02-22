@@ -21,7 +21,6 @@ import { ref, watch } from "vue";
 //切换框的数据展示状态参量
 const toggleShowStatus = ref<string>("1");
 const handleToggleShowStatus = (newValue: string) => {
-  console.log(newValue);
   toggleShowStatus.value = newValue;
 };
 const toggleItems = ref([
@@ -56,10 +55,10 @@ const normalizeInterviewCard = (card: any) => ({
     id: card.InterviewOfficerThird.id || "",
   },
 });
-
+const refreshPageParams = ref(false);
 watch(
-  toggleShowStatus,
-  (newStatus) => {
+  [toggleShowStatus, refreshPageParams],
+  ([newStatus]) => {
     const { data, error, loading } = useRequest(() =>
       getMyInterviewRecord({ pageNo: 1, pageSize: 100, status: newStatus }),
     );
@@ -68,13 +67,13 @@ watch(
       ([newData, newError, loading]) => {
         console.log(loading);
         if (newData?.data.data.data) {
-          console.log(newData.data.data.data);
           messageCard.value = newData.data.data.data.map((card: any) => {
             return {
-              ApplyUserId: card.userId,
-              InterviewTime: card.interviewTime,
+              userId: card.userId,
+              startTime: card.startTime,
+              endTime: card.endTime,
               InterviewAddress: card.place,
-              InterviewRound: card.interviewRound || "一面",
+              InterviewRound: card.round,
               InterviewName: card.name,
               InterviewStatus:
                 interviewStatusMap[card.interviewStatus as interviewStatus],
@@ -197,11 +196,13 @@ const quickShowItems = ref([
           />
         </div>
         <div class="main-content-show">
+          <div v-show="messageCard.length === 0" class="no-data">暂无数据</div>
           <MessageCard
             v-for="(item, index) in messageCard"
             :key="index"
             :card-message="normalizeInterviewCard(item)"
-          ></MessageCard>
+            @refresh-page="refreshPageParams = !refreshPageParams"
+          />
         </div>
       </div>
     </div>

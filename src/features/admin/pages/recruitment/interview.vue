@@ -88,6 +88,19 @@ const filterOneSeletedItems = ref([
     ],
   },
 ]);
+const handleFilterConditionOne = (value: string, title: string) => {
+  // console.log(value, title);
+  if (value === "init" || value === "") {
+    return;
+  }
+  if (title === "年级") {
+    searchGrade.value = value;
+  }
+  if (title === "面试轮次") {
+    searchRound.value = value == "一面" ? "1" : "2";
+  }
+};
+
 //拿到后端的所有年级数据
 const fetchAllGrade = () => {
   const { data, error } = useRequest(() =>
@@ -116,17 +129,76 @@ const fetchAllGrade = () => {
 };
 fetchAllGrade();
 
+const dateRange = ref(null); // 初始化日期范围
+
+// 获得子组件的日期参数
+const handleDateRangeUpdate = (newDateRange: any) => {
+  dateRange.value = newDateRange;
+  // 在这里可以对日期范围进行处理，例如发送请求或更新其他组件的数据
+  handleDateRange();
+};
+let formattedRange = "";
+let startTime = ref("");
+let endTime = ref("");
+//对dateRange进行处理
+const handleDateRange = () => {
+  // 在这里处理日期范围，例如将日期范围转换为字符串格式
+  if (!dateRange.value) {
+    return;
+  }
+  const startDate = Reflect.get(dateRange.value, "start");
+  const endDate = Reflect.get(dateRange.value, "end");
+  formattedRange = `${startDate}@${endDate}`;
+  const [start, end] = formattedRange.split("@");
+  startTime.value = start;
+  endTime.value = end;
+};
+
+const searchValue = ref("");
+const handleInput = (value: string) => {
+  console.log(value);
+  searchValue.value = value;
+};
+
+const handleFilterCondition = (ids: string[]) => {
+  InterviewOfficerIds.value = ids;
+};
+
+const filterMoreSeletedItem = ref({
+  title: "面试官",
+  label: "选择面试官",
+  drapdownItems: [],
+});
+getAllInterviewer({ pageNo: 1, pageSize: 100 }).then((res) => {
+  filterMoreSeletedItem.value.drapdownItems = res.data.data.data.map(
+    (item: any) => {
+      return {
+        id: item.id,
+        condition: item.name,
+        isSeleted: false,
+      };
+    },
+  );
+});
+
+const searchGrade = ref<string>();
+const searchRound = ref<string>();
+const InterviewOfficerIds = ref<string[]>([]);
 const getAllInterviewUserParams = computed(() => {
   return {
-    pageNo: 1,
-    pageSize: 100,
     status: toggleShowStatus.value,
+    grade: searchGrade.value,
+    round: searchRound.value,
+    name: searchValue.value,
+    ids: [...InterviewOfficerIds.value],
+    startTime: startTime.value,
+    endTime: endTime.value,
   };
 });
 
 //获取展示卡片的信息
 watch(
-  toggleShowStatus,
+  getAllInterviewUserParams,
   () => {
     const { data, error, loading } = useRequest(() =>
       getAllInterviewUser(getAllInterviewUserParams.value),
@@ -134,14 +206,14 @@ watch(
     watch(
       [data, error, loading],
       ([newData, newError]) => {
-        if (newData?.data.data.data) {
-          // console.log(newData.data.data.data);
-          messageCard.value = newData.data.data.data.map((card: any) => {
+        if (newData?.data.data) {
+          messageCard.value = newData.data.data.map((card: any) => {
             return {
               ApplyUserId: card.userId,
-              InterviewTime: card.interviewTime,
+              startTime: card.startTime,
+              endTime: card.endTime,
               InterviewAddress: card.place,
-              InterviewRound: card.interviewRound || "一面",
+              InterviewRound: card.round,
               InterviewName: card.name,
               InterviewStatus:
                 interviewStatusMap[card.interviewStatus as interviewStatus],
@@ -164,9 +236,9 @@ watch(
         if (newError) {
           console.log(newError);
         }
-        // if (loading) {
-        //   console.log(loading);
-        // }
+        if (loading) {
+          console.log(loading);
+        }
         return;
       },
       { immediate: true },
@@ -177,55 +249,8 @@ watch(
   },
 );
 
-const dateRange = ref(null); // 初始化日期范围
-
-// 获得子组件的日期参数
-const handleDateRangeUpdate = (newDateRange: any) => {
-  dateRange.value = newDateRange;
-  // 在这里可以对日期范围进行处理，例如发送请求或更新其他组件的数据
-  handleDateRange();
-};
-//对dateRange进行处理
-const handleDateRange = () => {
-  // 在这里处理日期范围，例如将日期范围转换为字符串格式
-  if (!dateRange.value) {
-    return;
-  }
-  const startDate = Reflect.get(dateRange.value, "start");
-  const endDate = Reflect.get(dateRange.value, "end");
-  const formattedRange = `${startDate} - ${endDate}`;
-  console.log(formattedRange);
-};
-
-const searchValue = ref("");
-const handleInput = (value: string) => {
-  searchValue.value = value;
-  console.log(searchValue);
-};
-
-const handleFilterCondition = (value: string, title: string) => {
-  console.log(value, title);
-};
-
-const filterMoreSeletedItem = ref({
-  title: "面试官",
-  label: "选择面试官",
-  drapdownItems: [],
-});
-getAllInterviewer({ pageNo: 1, pageSize: 100 }).then((res) => {
-  console.log(res.data.data.data);
-  filterMoreSeletedItem.value.drapdownItems = res.data.data.data.map(
-    (item: any) => {
-      return {
-        id: item.id,
-        condition: item.name,
-        isSeleted: false,
-      };
-    },
-  );
-});
-
 const isReset = ref(false);
+
 //重置筛选条件
 const resetCondition = () => {
   // 在这里处理重置条件的逻辑，例如清空输入框或其他组件的数据
@@ -238,7 +263,14 @@ const resetCondition = () => {
     },
   );
   dateRange.value = null;
+  searchValue.value = "";
+  searchGrade.value = "";
+  searchRound.value = "";
+  InterviewOfficerIds.value = [];
+  formattedRange = "";
   isReset.value = true;
+  startTime.value = "";
+  endTime.value = "";
   setTimeout(() => {
     isReset.value = false;
   }, 500);
@@ -250,11 +282,12 @@ const resetCondition = () => {
     <div class="filter-items">
       <FilterCondition
         :items-obj-arr="filterOneSeletedItems"
-        @filter_condition="handleFilterCondition"
+        @filter_condition="handleFilterConditionOne"
       />
       <FilterConditionMoreSelect
         class="mr-4 min-w-[300px]"
         :filter-more-seleted-item="filterMoreSeletedItem"
+        @update:selected-ids="handleFilterCondition"
       />
 
       <div class="date-picker">
@@ -283,11 +316,12 @@ const resetCondition = () => {
       ></ToggleShow>
     </div>
     <div class="main-content-show">
+      <div v-show="messageCard.length === 0" class="no-data">暂无数据</div>
       <MessageCard
         v-for="(item, index) in messageCard"
         :key="index"
         :card-message="normalizeInterviewCard(item)"
-      ></MessageCard>
+      />
     </div>
   </div>
 </template>

@@ -11,7 +11,6 @@ export default function useCreatePost() {
     title: string | number | undefined,
     type: string | undefined,
   ) {
-    
     executeRequest({
       url: "/post/put",
       method: "post",

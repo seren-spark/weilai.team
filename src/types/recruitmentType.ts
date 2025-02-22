@@ -31,7 +31,9 @@ export interface IResponseDataApplyUser {
 export interface IGetAllApplyUserDTO {
   clazz?: string;
   condition?: string; //姓名 qq 邮箱 学号
-  dateString?: string; //筛选日期 格式为 2023-08-20 2023-08-21
+  //筛选日期 格式为 2023-08-20 2023-08-21
+  startTime?: string;
+  endTime?: string;
   grade?: string; //年级
   sex?: string;
   status?: interviewStatus;
@@ -84,10 +86,11 @@ export interface IAllGradeDTO {
 //导出面试结果的excel表格  数据传输对象 发送
 export interface IExportInterviewResultDTO {
   clazz?: string;
-  dateString: string;
+  startTime?: string;
+  endTime?: string;
   grade?: string;
   sex?: string;
-  status: string;
+  status: number;
 }
 //修改报名人员信息  数据传输对象 发送
 export interface IUpdateApplyUserDTO {
@@ -104,19 +107,22 @@ export interface IUpdateApplyUserDTO {
 export interface IUpdateInterviewResultDTO {
   comment: string;
   id: string; // 面试记录id
-  round: string;
+  isSecond: string;
   status: string;
   userId: string; // 面试人员id
 }
 
 //获取面试人员  数据传输对象 发送
 export interface IGetInterviewUserDTO {
-  pageNo: number;
-  pageSize: number;
+  clazz?: string;
   grade?: string;
   status: string;
   name?: string;
   round?: string;
+  startTime?: string;
+  endTime?: string;
+  condition?: string;
+  ids?: string[];
 }
 
 //安排面试官  数据传输对象 发送

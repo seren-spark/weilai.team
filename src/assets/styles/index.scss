@@ -3,3 +3,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media screen and (min-width: 900px) and (max-width: 1200px) {
+  html {
+    font-size: 10px;
+  }
+}
+@media screen and (min-width: 1200px) and (max-width: 1400px) {
+  html {
+    font-size: 13px;
+  }
+}
+@media screen and (min-width: 1400px) and (max-width: 1600px) {
+  html {
+    font-size: 16px;
+  }
+}
+@media screen and (min-width: 1600px) {
+  html {
+    font-size: 19px;
+  }
+}
+
+::-webkit-scrollbar {
+  width: var(--scrollbar-width); /* 设置滚动条宽度 */
+}
+::-webkit-scrollbar-track {
+  background-color: #eaeaea;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #b5b5b56b;
+  // background-color: rgb(187, 216, 248);
+  border-radius: 1rem;
+}

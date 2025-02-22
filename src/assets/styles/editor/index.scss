@@ -6,8 +6,8 @@
 
 .tiptap {
   @font-face {
-    font-family: 'JetBrainsMono';
-    src: url('/src/assets/fonts/JetBrainsMono-Regular.woff2') format('woff2');
+    font-family: "JetBrainsMono";
+    src: url("/src/assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
   }
@@ -40,5 +40,5 @@
   --main-color-white: #ffffff40;
   --main-color-gray: #999;
   --main-color-red: #ff3842;
-  --main-font-family: JetBrainsMono,
+  --main-font-family: JetBrainsMono;
 }

@@ -3,8 +3,8 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
 import { useTagStore } from "@/store/tagTypeStore";
 import { ref } from "vue";
 interface TagData {
-    type: number;
-    tagType: string;
+  type: number;
+  tagType: string;
 }
 // const tagType = ref('blog')
 const typeData = ref<TagData>({ type: 0, tagType: "comprehensive" });
