@@ -31,26 +31,24 @@ const noticeContentRef = ref<HTMLElement | null>(null);
 const isShow = ref(false);
 const userId = ref(JSON.parse(localStorage.getItem("userId") || "{}").value);
 console.log(userId.value);
-
-const showText = ref("展开");
 const { showAlert } = useAlert();
-
-const toggleContent = () => {
-  if (showText.value === "收起") {
-    noticeContentRef.value!.style.overflow = "hidden";
-    noticeContentRef.value!.style.height = "10px";
-    showText.value = "展开";
-  } else {
-    showText.value = isShow.value ? "收起" : "展开";
-    if (isShow.value) {
-      noticeContentRef.value!.style.overflow = "visible";
-      noticeContentRef.value!.style.height = "auto";
-    } else {
-      noticeContentRef.value!.style.overflow = "hidden";
-      noticeContentRef.value!.style.height = "50px";
-    }
-  }
-};
+// const showText = ref("展开");
+// const toggleContent = () => {
+//   if (showText.value === "收起") {
+//     noticeContentRef.value!.style.overflow = "hidden";
+//     noticeContentRef.value!.style.height = "10px";
+//     showText.value = "展开";
+//   } else {
+//     showText.value = isShow.value ? "收起" : "展开";
+//     if (isShow.value) {
+//       noticeContentRef.value!.style.overflow = "visible";
+//       noticeContentRef.value!.style.height = "auto";
+//     } else {
+//       noticeContentRef.value!.style.overflow = "hidden";
+//       noticeContentRef.value!.style.height = "50px";
+//     }
+//   }
+// };
 onMounted(() => {
   nextTick(() => {
     if (noticeContentRef.value) {
@@ -67,6 +65,7 @@ onMounted(() => {
 const props = defineProps<{
   notice: SSENoticeData;
   noticeList: Function;
+  getNotReadCount: Function;
 }>();
 
 const createAt = formatPostTime(props.notice.createAt);
@@ -83,7 +82,7 @@ function handleNotice() {
       jsonObj.content[0].content.length > 0
     ) {
       let targetText = jsonObj.content[0].content[0].text;
-      noticeText = targetText.slice(0, 5);
+      noticeText = targetText;
     }
   } catch (error) {
     console.error("解析JSON字符串失败:", error);
@@ -124,6 +123,7 @@ const readNotice = async (noticeId: string) => {
       console.log(data.value);
       if (data.value?.code === 200) {
         props.noticeList();
+        props.getNotReadCount();
         showAlert("标记已读成功", "pass");
       } else {
         console.log(data.value);
@@ -221,21 +221,28 @@ const editNotice = () => {};
         <div class="publish-time">{{ createAt }}</div>
       </div>
       <!-- 公告内容 -->
-      <div class="noticeDetalis">
-        <div class="notice-title">{{ props.notice.title }}</div>
-        <div ref="noticeContentRef" class="notice-content">
-          {{ noticeTxt }}
-        </div>
-        <!-- <div class="notice-urls">
+      <RouterLink
+        :to="{
+          path: `/community/post/${props.notice.noticeId}`,
+          query: { uniqueId: 1 },
+        }"
+      >
+        <div class="noticeDetalis">
+          <div class="notice-title">{{ props.notice.title }}</div>
+          <div ref="noticeContentRef" class="notice-content">
+            {{ noticeTxt }}
+          </div>
+          <!-- <div class="notice-urls">
               <div v-for="url in props.notice.noticeUrls" :key="url">
                 <img :src="url">
               </div>
             </div> -->
-      </div>
-      <div class="show" v-show="isShow" @click="toggleContent">
+        </div>
+      </RouterLink>
+      <!-- <div class="show" v-show="isShow" @click="toggleContent">
         {{ showText
         }}<Icon icon="cuida:caret-down-outline" class="arrowsIcon" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -315,7 +322,7 @@ const editNotice = () => {};
   }
   .noticeDetalis {
     width: 100%;
-    padding: 10px 0;
+    padding: 10px 5px;
     .notice-urls {
       width: 100%;
       display: flex;
@@ -330,7 +337,7 @@ const editNotice = () => {};
       width: 100%;
       font-weight: bold;
       font-size: 15px;
-      margin: 0 0 5px 0;
+      margin: 0px 0 10px 0px;
       color: rgb(66, 65, 65);
     }
     .notice-content {
@@ -345,6 +352,9 @@ const editNotice = () => {};
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 4;
     }
+  }
+  .noticeDetalis:hover {
+    background-color: rgb(248, 248, 250);
   }
   .show {
     cursor: pointer;

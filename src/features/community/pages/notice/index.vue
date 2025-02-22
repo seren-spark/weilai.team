@@ -36,7 +36,11 @@
             :key="notice.noticeId"
             class="noticess"
           >
-            <NoticeItem :notice="notice" :notice-list="noticeList" />
+            <NoticeItem
+              :notice="notice"
+              :notice-list="noticeList"
+              :get-not-read-count="getNotReadCount"
+            />
           </div>
         </div>
       </div>
