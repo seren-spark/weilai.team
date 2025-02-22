@@ -1,6 +1,6 @@
 <template>
     <div class="myCollections">
-        <NoData v-if="userCollect.length == 0"></NoData>
+        <NoData v-if="userCollect.length == 0" class="mt-[50px] mb-[50px]"></NoData>
 
         <template v-if="userCollect.length != 0">
             <div class="postsListBox">
