@@ -16,7 +16,6 @@ const getToken = (): string => {
   if (!token) {
     router.push("/login");
     throw new Error("拿token了吗孩子");
-    return "";
   }
   return JSON.parse(token).value;
 };
@@ -127,20 +126,29 @@ export const getInterviewCount = ({ status }: { status: number }) => {
 // 导出录取结果excel表
 // 状态参数标记 0代表待安排；1代表待面试；2代表已录取；3代表已淘汰
 export const exportResultExcel = ({
-  clazz,
   startTime,
   endTime,
   grade,
   sex,
   status,
 }: IExportInterviewResultDTO) => {
-  return axios.post(`${BASE_UEL}recruit/manage/resultExport`, {
-    data: { clazz, startTime, endTime, grade, sex, status },
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + getToken(),
+  console.log(startTime, endTime, grade, sex, status);
+  return axios.post(
+    `${BASE_UEL}recruit/manage/resultExport`,
+    {
+      startTime,
+      endTime,
+      grade,
+      sex,
+      status,
     },
-  });
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + getToken(),
+      },
+    },
+  );
 };
 
 //修改招新报名的人员的信息
@@ -175,32 +183,30 @@ export const updateApplyUserStatus = ({
   interviewStatus: string;
 }) => {
   const id = ids.map((id) => `ids=${id}`).join("&");
-  return axios
-    .put(`${BASE_UEL}recruit/manage/updateRecruitUserStatus?${id}`, {
+  return axios.put(
+    `${BASE_UEL}recruit/manage/updateRecruitUserStatus?${id}`,
+    {},
+    {
       params: { interviewStatus },
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + getToken(),
       },
-    })
-    .then((res) => {
-      if (res?.data.code !== 200) {
-        console.log(res.data.message);
-      }
-    });
+    },
+  );
 };
 
 //写面评
 export const evaluateInterview = ({
   comment,
   id,
-  round,
+  isSecond,
   status,
   userId,
 }: IUpdateInterviewResultDTO) => {
   return axios.post(
     `${BASE_UEL}recruit/interview/comment`,
-    { comment, id, round, status, userId },
+    { comment, id, isSecond, status, userId },
     {
       headers: {
         "Content-Type": "application/json",
@@ -253,13 +259,13 @@ export const getAllInterviewUser = ({
   clazz,
   startTime,
   endTime,
-  ids
+  ids,
 }: IGetInterviewUserDTO) => {
-  let params=""
-  if(ids?.length===0) {
-    params = `${BASE_UEL}recruit/interview/listAllInterview`
-  }else{
-    params = `${BASE_UEL}recruit/interview/listAllInterview?${ids?.map((id) => `ids=${id}`).join('&')}`
+  let params = "";
+  if (ids?.length === 0) {
+    params = `${BASE_UEL}recruit/interview/listAllInterview`;
+  } else {
+    params = `${BASE_UEL}recruit/interview/listAllInterview?${ids?.map((id) => `ids=${id}`).join("&")}`;
   }
 
   return axios.get(params, {
@@ -276,7 +282,7 @@ export const getAllInterviewUser = ({
       "Content-Type": "application/json",
       Authorization: "Bearer " + getToken(),
     },
-  })
+  });
 };
 
 //安排面试官

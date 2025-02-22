@@ -30,7 +30,7 @@ watch(
   () => props.isPublishing,
   (newValue) => {
     console.log(newValue);
-  },                                                                                             
+  },
 );
 
 defineEmits<{

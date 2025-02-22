@@ -18,7 +18,7 @@ import {
   getAllGrade,
   getResumeById,
   deleteApplyUserById,
-  exportResultExcel,
+  // exportResultExcel,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import type {
@@ -29,7 +29,9 @@ import type {
 import { interviewStatusMap } from "@/types/recruitmentType";
 import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
+import * as XLSX from "xlsx";
 const { showAlert } = useAlert();
+
 const searchValue = ref("");
 const handleInput = (value: string) => {
   console.log(value);
@@ -63,16 +65,14 @@ const candidates_itemsObjArr = ref([
   },
 ]);
 
-//获得子组件的过滤条件
-const handleFilterCondition = (value: string, title: string) => {
-  if (value === "init" || value === "") {
-    return;
-  }
+//处理筛选条件
+const handleFilterConditions = (value: string, title: string) => {
   if (title === "年级") {
     grade.value = value;
-  }
-  if (title === "性别") {
+    return;
+  } else if (title === "性别") {
     sex.value = value;
+    return;
   }
 };
 
@@ -83,7 +83,7 @@ const handleDateRangeUpdate = (newDateRange: never) => {
   dateRange.value = newDateRange;
   handleDateRange();
 };
-let formattedRange ="";
+let formattedRange = "";
 let startTime = ref<string>("");
 let endTime = ref<string>("");
 //对dateRange进行处理
@@ -92,8 +92,8 @@ const handleDateRange = () => {
   if (!dateRange.value) {
     return;
   }
-  const  startDate= Reflect.get(dateRange.value, "start");
-  const  endDate= Reflect.get(dateRange.value, "end");
+  const startDate = Reflect.get(dateRange.value, "start");
+  const endDate = Reflect.get(dateRange.value, "end");
   formattedRange = `${startDate}@${endDate}`;
   const [start, end] = formattedRange.split("@");
   startTime.value = start;
@@ -314,7 +314,7 @@ fetchAllGrade();
 const grade = ref<string>("");
 const sex = ref<string>("");
 
-watch([grade, sex,startTime,endTime , searchValue, status], () => {
+watch([grade, sex, startTime, endTime, searchValue, status], () => {
   pageNo.value = 1;
 });
 
@@ -334,10 +334,8 @@ const updateParameter = ref<boolean>(false);
 
 watch(
   [getAllApplyUserRequestParams, updateParameter],
-  ([newParams, _]) => {
-    console.log(newParams, _);
+  ([newParams]) => {
     const { data, error } = useRequest(() => getAllApplyUser(newParams));
-
     watch(
       [data, error],
       ([newData, newError]) => {
@@ -346,7 +344,6 @@ watch(
           return;
         }
         if (newData) {
-          console.log("请求成功:", newData.data.data.data);
           total.value = newData.data.data.total;
           //拿到数据后逆序渲染
           tableData.value = newData.data.data.data.map(
@@ -376,39 +373,61 @@ watch(
   },
 );
 
-//导出excel表格
-const exportExcel = () => {
-  if (tableData.value.length === 0) {
-    showAlert("暂无数据", "error");
-    return;
-  }
-  const { data, error } = useRequest(() => exportResultExcel({status:status.value,grade:grade.value,startTime:startTime.value,endTime:endTime.value,sex:sex.value}));
-  watch(
-    [data, error],
-    ([newData, newError]) => {
-      if (newError) {
-        showAlert("导出失败", "error");
-        return;
-      }
-      if (newData) {
-        showAlert("导出成功", "pass");
-        const url = window.URL.createObjectURL(new Blob([newData.data]));
-        const link = document.createElement("a");
-        link.style.display = "none";
-        link.href = url;
-        link.setAttribute("download", "候选人信息.xlsx");
-        document.body.appendChild(link);
-        link.click();
-        window.URL.revokeObjectURL(url);
-      }
-    },
-    { immediate: true },
-  );
+const excelHeaders = ref([
+  {
+    title: "姓名",
+    key: "name",
+  },
+  {
+    title: "年级",
+    key: "session",
+  },
+  {
+    title: "班级",
+    key: "clazz",
+  },
+  {
+    title: "性别",
+    key: "gender",
+  },
+  {
+    title: "状态",
+    key: "state",
+  },
+]);
 
+const exportToExcelFunction = <T,>(data: Array<T>) => {
+  const filteredData = data.map((item: T) => {
+    const newItem: Partial<T> = {};
+    excelHeaders.value.forEach((Header) => {
+      newItem[Header.key as keyof T] = item[Header.key as keyof T];
+    });
+    return newItem;
+  });
 
+  // 创建一个工作簿
+  const workbook = XLSX.utils.book_new();
 
+  // 将表格数据转换为工作表
+  const worksheet = XLSX.utils.json_to_sheet(filteredData);
+
+  // 自定义导出表格的表头，使用组件内定义的 headers 中的 title 字段
+  const customHeaders = excelHeaders.value.map((item) => item.title);
+
+  // 在工作表第一行添加自定义表头
+  XLSX.utils.sheet_add_aoa(worksheet, [customHeaders], { origin: "A1" });
+
+  // 将工作表添加到工作簿
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+  // 生成 Excel 文件并触发下载
+  XLSX.writeFile(workbook, "导出信息表.xlsx");
 };
 
+//导出excel表格
+const exportExcel = () => {
+  exportToExcelFunction(tableData.value);
+};
 
 //dialog
 const updateStatus = ref(false);
@@ -425,6 +444,11 @@ const handleEditStatus = () => {
   //把修改状态的弹窗组件展示
   updateStatus.value = true;
 };
+
+const refreshPage = () => {
+  updateParameter.value = !updateParameter.value;
+};
+
 const updateApplyUserInfo = ref(false);
 const arrangeInterviewerDialog = ref(false);
 </script>
@@ -446,12 +470,13 @@ const arrangeInterviewerDialog = ref(false);
       :ids="currentTableSelectIds"
       :is-open="updateStatus"
       @close="updateStatus = false"
+      @refresh-page="refreshPage"
     />
 
     <div class="filter-items">
       <FilterCondition
         :items-obj-arr="candidates_itemsObjArr"
-        @filter_condition="handleFilterCondition"
+        @filter_condition="handleFilterConditions"
       ></FilterCondition>
       <div class="date-picker">
         <DataRangePicker
@@ -484,7 +509,9 @@ const arrangeInterviewerDialog = ref(false);
         <Button type="primary" class="btn-style" @click="handleEditStatus"
           >修改状态</Button
         >
-        <Button type="primary" class="btn-style" @click="exportExcel">结果导出</Button>
+        <Button type="primary" class="btn-style" @click="exportExcel"
+          >结果导出</Button
+        >
       </div>
     </div>
 
@@ -492,7 +519,11 @@ const arrangeInterviewerDialog = ref(false);
       <DataTable
         :items="tableData"
         :headers="headers"
-        :action-items="status===0 ? actionItems : actionItems.filter((item, index) => index !== 2)"
+        :action-items="
+          status === 0
+            ? actionItems
+            : actionItems.filter((item, index) => index !== 2)
+        "
         @send-selected-ids="handleTableSelectIds"
       ></DataTable>
       <div class="pagination-container">

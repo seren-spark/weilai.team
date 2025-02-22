@@ -39,14 +39,14 @@ const variantClass = computed(() => {
 </script>
 
 <template>
-    <Alert variant="destructive" class="allAlert" :class="propsData.type">
-        <template v-if="icon">
-            <component :is="icon" class="alertIcon w-4 h-4" />
-        </template>
-        <AlertDescription>
-            {{ message }}
-        </AlertDescription>
-    </Alert>
+  <Alert variant="destructive" class="allAlert" :class="propsData.type">
+    <template v-if="icon">
+      <component :is="icon" class="alertIcon w-4 h-4" />
+    </template>
+    <AlertDescription>
+      {{ message }}
+    </AlertDescription>
+  </Alert>
 </template>
 
 <style scoped lang="scss">
@@ -66,7 +66,7 @@ const variantClass = computed(() => {
   border: 0.5px #f87979 solid;
   color: rgb(249, 78, 78);
   background-color: #ffeeee;
-  .alertIcon{
+  .alertIcon {
     color: #f87979;
   }
 }
@@ -75,7 +75,7 @@ const variantClass = computed(() => {
   border: 0.5px #ffa341 solid;
   color: #ffa004;
   background-color: #fcf8eb;
-  .alertIcon{
+  .alertIcon {
     color: #ffa004;
   }
 }
@@ -84,7 +84,7 @@ const variantClass = computed(() => {
   border: 0.5px #68c331 solid;
   color: #49b407;
   background-color: #f2fceb;
-  .alertIcon{
+  .alertIcon {
     color: #49b407;
   }
 }

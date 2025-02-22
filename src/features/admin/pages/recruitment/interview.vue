@@ -89,6 +89,7 @@ const filterOneSeletedItems = ref([
   },
 ]);
 const handleFilterConditionOne = (value: string, title: string) => {
+  // console.log(value, title);
   if (value === "init" || value === "") {
     return;
   }
@@ -96,7 +97,7 @@ const handleFilterConditionOne = (value: string, title: string) => {
     searchGrade.value = value;
   }
   if (title === "面试轮次") {
-    searchRound.value = value=="一面" ? "1": "2";
+    searchRound.value = value == "一面" ? "1" : "2";
   }
 };
 
@@ -136,7 +137,7 @@ const handleDateRangeUpdate = (newDateRange: any) => {
   // 在这里可以对日期范围进行处理，例如发送请求或更新其他组件的数据
   handleDateRange();
 };
-let formattedRange ="";
+let formattedRange = "";
 let startTime = ref("");
 let endTime = ref("");
 //对dateRange进行处理
@@ -145,8 +146,8 @@ const handleDateRange = () => {
   if (!dateRange.value) {
     return;
   }
-  const  startDate= Reflect.get(dateRange.value, "start");
-  const  endDate= Reflect.get(dateRange.value, "end");
+  const startDate = Reflect.get(dateRange.value, "start");
+  const endDate = Reflect.get(dateRange.value, "end");
   formattedRange = `${startDate}@${endDate}`;
   const [start, end] = formattedRange.split("@");
   startTime.value = start;
@@ -161,7 +162,7 @@ const handleInput = (value: string) => {
 
 const handleFilterCondition = (ids: string[]) => {
   InterviewOfficerIds.value = ids;
-}
+};
 
 const filterMoreSeletedItem = ref({
   title: "面试官",
@@ -179,7 +180,6 @@ getAllInterviewer({ pageNo: 1, pageSize: 100 }).then((res) => {
     },
   );
 });
-
 
 const searchGrade = ref<string>();
 const searchRound = ref<string>();
@@ -207,14 +207,13 @@ watch(
       [data, error, loading],
       ([newData, newError]) => {
         if (newData?.data.data) {
-          // console.log(newData.data.data.data);
           messageCard.value = newData.data.data.map((card: any) => {
             return {
               ApplyUserId: card.userId,
               startTime: card.startTime,
               endTime: card.endTime,
               InterviewAddress: card.place,
-              InterviewRound: card.round ,
+              InterviewRound: card.round,
               InterviewName: card.name,
               InterviewStatus:
                 interviewStatusMap[card.interviewStatus as interviewStatus],
@@ -249,8 +248,6 @@ watch(
     immediate: true,
   },
 );
-
-
 
 const isReset = ref(false);
 
@@ -319,9 +316,7 @@ const resetCondition = () => {
       ></ToggleShow>
     </div>
     <div class="main-content-show">
-      <div v-show="messageCard.length === 0" class="no-data">
-        暂无数据
-      </div>
+      <div v-show="messageCard.length === 0" class="no-data">暂无数据</div>
       <MessageCard
         v-for="(item, index) in messageCard"
         :key="index"

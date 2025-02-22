@@ -10,7 +10,8 @@
   margin: 1rem 0;
   overflow: hidden;
 }
-.tiptap .code-block__copy, .tiptap .code-block__lang {
+.tiptap .code-block__copy,
+.tiptap .code-block__lang {
   position: absolute;
 }
 .tiptap .code-block__lang {
@@ -54,13 +55,17 @@
   white-space: nowrap;
   opacity: 0;
   transform: translateX(5px);
-  transition: color 0.3s, opacity 0.3s, transform 0.3s;
+  transition:
+    color 0.3s,
+    opacity 0.3s,
+    transform 0.3s;
 }
 .tiptap .code-block__copy.copied::before {
   opacity: 1;
   transform: translateX(0);
 }
-.tiptap .code-block__copy:hover::before, .tiptap .code-block__copy:hover::after {
+.tiptap .code-block__copy:hover::before,
+.tiptap .code-block__copy:hover::after {
   color: var(--main-color);
 }
 .tiptap .code-block__line {
@@ -68,8 +73,8 @@
   opacity: 0.6;
   text-align: center;
   -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  user-select: none;
   color: var(--main-font-second-color);
   background-color: var(--main-card-second-background);
 }
@@ -89,8 +94,8 @@
   width: 100%;
   overflow-y: auto;
   -webkit-user-select: text;
-     -moz-user-select: text;
-          user-select: text;
+  -moz-user-select: text;
+  user-select: text;
   border-left: 1px solid var(--main-card-border);
 }
 .tiptap .code-block pre code {
@@ -156,4 +161,4 @@
 }
 .tiptap .hljs-strong {
   font-weight: 700;
-}/*# sourceMappingURL=code.css.map */
+} /*# sourceMappingURL=code.css.map */

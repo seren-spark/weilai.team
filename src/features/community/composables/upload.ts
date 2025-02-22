@@ -22,12 +22,12 @@ export async function uploadFileChunk(
   object: string,
   uploadId: string,
 ) {
-  let fileUploadInfo={
+  let fileUploadInfo = {
     file,
     chunkIndex,
     object,
-    uploadId
-  }
+    uploadId,
+  };
   await executeRequest({
     url: `/upload/multipart/init`,
     method: "post",

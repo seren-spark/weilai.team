@@ -70,8 +70,8 @@ export function getArticle2(
   const { data, loading } = req(getArticle, {
     loadingKeep: 600,
   });
-  let res=ref<any>()
-  return { loading,  data};
+  let res = ref<any>();
+  return { loading, data };
 }
 export function checkType(type: any) {
   if (type == 1) {

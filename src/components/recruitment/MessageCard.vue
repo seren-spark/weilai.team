@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {  ref } from "vue";
-// import { useAlert } from "@/composables/useAlert";
+import { ref } from "vue";
 import { interviewStatus } from "@/types/recruitmentType";
 import {
   getResumeById,
@@ -10,13 +9,10 @@ import {
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import { watch } from "vue";
-import { InterviewEvaluationShow,WriteInterviewEvaluation } from "./dialog";
-
-// const { showAlert } = useAlert();
-// showAlert("您已通过面试，请等待HR联系", "pass");
+import { InterviewEvaluationShow, WriteInterviewEvaluation } from "./dialog";
 
 interface IProp {
-  ApplyUserId: string;
+  userId: string;
   startTime: string;
   endTime: string;
   InterviewAddress: string;
@@ -41,18 +37,13 @@ const props = defineProps<{
   cardMessage: IProp;
 }>();
 
+const emit = defineEmits(["refreshPage"]);
+
 const dateTime = ref({
   time1: props.cardMessage.startTime,
   time2: props.cardMessage.endTime,
 });
-// const round = computed(() => {
-//   return props.cardMessage.InterviewRound=='1' ? "一面" :  "二面";
-// });
-// const InterviewOfficerIdArr = ref([
-//   props.cardMessage.InterviewOfficerFirst.id,
-//   props.cardMessage.InterviewOfficerSecond.id,
-//   props.cardMessage.InterviewOfficerThird.id,
-// ]);
+
 const InterviewRecordId = ref(props.cardMessage.InterviewId);
 
 const isShowButton = ref(1);
@@ -97,16 +88,16 @@ const viewComment = (id: string) => {
 };
 //写面评 \/
 const writeInterviewEvaluationIsOpen = ref(false);
-const writeInterviewEvaluation = (id: string) => {
-  console.log(id);
+const writeInterviewEvaluation = () => {
   writeInterviewEvaluationIsOpen.value = true;
 };
-
 </script>
 <template>
   <WriteInterviewEvaluation
     :id="InterviewRecordId"
+    :user-id="props.cardMessage.userId"
     :is-open="writeInterviewEvaluationIsOpen"
+    @refresh-page="emit('refreshPage')"
     @close="writeInterviewEvaluationIsOpen = false"
   />
   <InterviewEvaluationShow
@@ -162,17 +153,18 @@ const writeInterviewEvaluation = (id: string) => {
     </CardContent>
     <CardFooter class="message-show-button">
       <Button
-      v-show="isShowButton === 2"
-       class="btn-style"
-       @click="writeInterviewEvaluation(InterviewRecordId)"
-       >面试评价</Button>
+        v-show="isShowButton === 2"
+        class="btn-style"
+        @click="writeInterviewEvaluation"
+        >面试评价</Button
+      >
       <Button
         v-show="isShowButton === 3"
         class="btn-style"
         @click="viewComment(InterviewRecordId)"
         >查看面评</Button
       >
-      <Button class="btn-style" @click="viewResume(cardMessage.ApplyUserId)"
+      <Button class="btn-style" @click="viewResume(cardMessage.userId)"
         >查看简历</Button
       >
     </CardFooter>

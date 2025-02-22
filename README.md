@@ -37,7 +37,7 @@
 - 提交信息格式：`<type>(<scope>): <subject>`
 
   - `type` 类型（必填）：描述提交的类别
-  
+
     - `feat`：新功能（如 `feat: add user login functionality`）
     - `fix`：修复 bug（如 `fix: correct login timeout issue`）
     - `refactor`：重构代码（不影响功能的改动）

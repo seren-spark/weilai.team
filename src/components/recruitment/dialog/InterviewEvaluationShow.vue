@@ -1,16 +1,14 @@
 <!-- eslint-disable vue/no-v-html -->
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from "vue";
-import {marked} from "marked";
+import { marked } from "marked";
 
 const props = defineProps<{
   message: string;
   isOpen: boolean;
 }>();
 
-
-const safeHtml=computed(()=> marked(props.message));
-
+const safeHtml = computed(() => marked(props.message));
 
 const emit = defineEmits(["close"]);
 const close = (event: Event): void => {
