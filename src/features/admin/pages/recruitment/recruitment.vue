@@ -72,9 +72,10 @@ watch(
           messageCard.value = newData.data.data.data.map((card: any) => {
             return {
               ApplyUserId: card.userId,
-              InterviewTime: card.interviewTime,
+              startTime: card.startTime,
+              endTime: card.endTime,
               InterviewAddress: card.place,
-              InterviewRound: card.interviewRound || "一面",
+              InterviewRound: card.round ,
               InterviewName: card.name,
               InterviewStatus:
                 interviewStatusMap[card.interviewStatus as interviewStatus],

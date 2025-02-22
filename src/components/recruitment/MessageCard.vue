@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ref } from "vue";
+import {  ref } from "vue";
 // import { useAlert } from "@/composables/useAlert";
 import { interviewStatus } from "@/types/recruitmentType";
 import {
@@ -17,7 +17,8 @@ import { InterviewEvaluationShow,WriteInterviewEvaluation } from "./dialog";
 
 interface IProp {
   ApplyUserId: string;
-  InterviewTime: string;
+  startTime: string;
+  endTime: string;
   InterviewAddress: string;
   InterviewRound: string;
   InterviewName: string;
@@ -41,9 +42,12 @@ const props = defineProps<{
 }>();
 
 const dateTime = ref({
-  date: props.cardMessage.InterviewTime.split(" ")[0],
-  time: props.cardMessage.InterviewTime.split(" ")[1],
+  time1: props.cardMessage.startTime,
+  time2: props.cardMessage.endTime,
 });
+// const round = computed(() => {
+//   return props.cardMessage.InterviewRound=='1' ? "一面" :  "二面";
+// });
 // const InterviewOfficerIdArr = ref([
 //   props.cardMessage.InterviewOfficerFirst.id,
 //   props.cardMessage.InterviewOfficerSecond.id,
@@ -115,11 +119,11 @@ const writeInterviewEvaluation = (id: string) => {
       <div class="message-show-top">
         <div class="message-show-time">
           <span class="min-width inline-block">
-            {{ dateTime.date }}
+            {{ dateTime.time1 }}
           </span>
           &nbsp;
           <span class="min-width inline-block">
-            {{ dateTime.time }}
+            {{ dateTime.time2 }}
           </span>
         </div>
         <div class="message-show-address">

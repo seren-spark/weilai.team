@@ -7,7 +7,6 @@ import {
   Pagination,
   AutoLongerInput,
   UpdateStatus,
-  // ModalDialog,
   UpdateApplyUserInfo,
   ArrangeInterviewer,
 } from "@/components/recruitment";
@@ -19,11 +18,11 @@ import {
   getAllGrade,
   getResumeById,
   deleteApplyUserById,
+  exportResultExcel,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import type {
   IAllApplyUserVO,
-  // IResponseDataApplyUser,
   IAllApplyUserDTO,
   IGradeData,
 } from "@/types/recruitmentType";
@@ -62,27 +61,10 @@ const candidates_itemsObjArr = ref([
       },
     ],
   },
-  {
-    title: "班级",
-    label: "选择要筛选的班级",
-    ref: "init",
-    arr: [
-      {
-        condition: "计科233",
-      },
-      {
-        condition: "物联233",
-      },
-      {
-        condition: "数据233",
-      },
-    ],
-  },
 ]);
 
 //获得子组件的过滤条件
 const handleFilterCondition = (value: string, title: string) => {
-  console.log(value, title);
   if (value === "init" || value === "") {
     return;
   }
@@ -92,9 +74,6 @@ const handleFilterCondition = (value: string, title: string) => {
   if (title === "性别") {
     sex.value = value;
   }
-  // if (title === "班级") {
-  //   clazz.value = value;
-  // }
 };
 
 const dateRange = ref(null); // 初始化日期范围
@@ -104,17 +83,21 @@ const handleDateRangeUpdate = (newDateRange: never) => {
   dateRange.value = newDateRange;
   handleDateRange();
 };
+let formattedRange ="";
+let startTime = ref<string>("");
+let endTime = ref<string>("");
 //对dateRange进行处理
 const handleDateRange = () => {
   // 将日期范围转换为字符串格式
   if (!dateRange.value) {
     return;
   }
-  const startDate = Reflect.get(dateRange.value, "start");
-  const endDate = Reflect.get(dateRange.value, "end");
-  const formattedRange = `${startDate} - ${endDate}`;
-  // console.log(formattedRange);
-  dateString.value = formattedRange;
+  const  startDate= Reflect.get(dateRange.value, "start");
+  const  endDate= Reflect.get(dateRange.value, "end");
+  formattedRange = `${startDate}@${endDate}`;
+  const [start, end] = formattedRange.split("@");
+  startTime.value = start;
+  endTime.value = end;
 };
 
 const isReset = ref(false);
@@ -127,7 +110,9 @@ const resetCondition = () => {
   grade.value = "";
   sex.value = "";
   dateRange.value = null;
-  dateString.value = "";
+  startTime.value = "";
+  endTime.value = "";
+  searchValue.value = "";
   isReset.value = true;
   setTimeout(() => {
     isReset.value = false;
@@ -163,7 +148,6 @@ const pageSize = ref(10);
 const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);
-// const getApplyUserData = ref<IResponseDataApplyUser | null>(null);
 
 //从分页组件拿到页码信息并更新
 const changePage = (newPage: number) => {
@@ -239,11 +223,6 @@ const arrangeInterview = (id: string, name?: string) => {
   currentArrangeInterviewName.value = name || "";
 };
 
-// 淘汰
-// const eliminateCandidate = (id: string) => {
-//   console.log(id, "淘汰");
-// };
-
 // 删除候选人
 const DeleteCandidate = (id: string) => {
   confirmDeleteCandidate(id);
@@ -259,7 +238,7 @@ const confirmDeleteCandidate = (id: string) => {
         [data, error],
         ([newData, newError]) => {
           if (newError) {
-            console.log("请求失败:", newError);
+            showAlert("删除失败", "error");
             return;
           }
           if (newData) {
@@ -334,9 +313,8 @@ fetchAllGrade();
 
 const grade = ref<string>("");
 const sex = ref<string>("");
-const dateString = ref<string>("");
 
-watch([grade, sex, dateString, searchValue, status], () => {
+watch([grade, sex,startTime,endTime , searchValue, status], () => {
   pageNo.value = 1;
 });
 
@@ -347,7 +325,8 @@ const getAllApplyUserRequestParams = computed(() => ({
   condition: searchValue.value,
   grade: grade.value,
   sex: sex.value,
-  dateString: dateString.value,
+  startTime: startTime.value,
+  endTime: endTime.value,
 }));
 
 //设置一个状态变量，用来强制更新
@@ -397,10 +376,44 @@ watch(
   },
 );
 
+//导出excel表格
+const exportExcel = () => {
+  if (tableData.value.length === 0) {
+    showAlert("暂无数据", "error");
+    return;
+  }
+  const { data, error } = useRequest(() => exportResultExcel({status:status.value,grade:grade.value,startTime:startTime.value,endTime:endTime.value,sex:sex.value}));
+  watch(
+    [data, error],
+    ([newData, newError]) => {
+      if (newError) {
+        showAlert("导出失败", "error");
+        return;
+      }
+      if (newData) {
+        showAlert("导出成功", "pass");
+        const url = window.URL.createObjectURL(new Blob([newData.data]));
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = url;
+        link.setAttribute("download", "候选人信息.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+      }
+    },
+    { immediate: true },
+  );
+
+
+
+};
+
+
 //dialog
 const updateStatus = ref(false);
 const currentTableSelectIds = ref<string[]>([]);
-//修改状态、
+//修改状态
 const handleTableSelectIds = (ids: string[]) => {
   currentTableSelectIds.value = ids;
 };
@@ -464,14 +477,14 @@ const arrangeInterviewerDialog = ref(false);
       <ToggleShow
         :toggle-items="toggleItems"
         @transfer-toggle-show-status="handleToggleShowStatus"
-      ></ToggleShow>
+      />
 
       <div class="handle-btns">
         <!-- <Button type="primary" class="btn-style">安排面试</Button> -->
         <Button type="primary" class="btn-style" @click="handleEditStatus"
           >修改状态</Button
         >
-        <Button type="primary" class="btn-style">结果导出</Button>
+        <Button type="primary" class="btn-style" @click="exportExcel">结果导出</Button>
       </div>
     </div>
 
@@ -479,7 +492,7 @@ const arrangeInterviewerDialog = ref(false);
       <DataTable
         :items="tableData"
         :headers="headers"
-        :action-items="actionItems"
+        :action-items="status===0 ? actionItems : actionItems.filter((item, index) => index !== 2)"
         @send-selected-ids="handleTableSelectIds"
       ></DataTable>
       <div class="pagination-container">

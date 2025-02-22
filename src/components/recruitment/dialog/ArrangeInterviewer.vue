@@ -404,7 +404,8 @@ const handleSubmit = () => {
     Object.keys(errors).forEach((key) => {
       errors[key as keyof typeof errors] = "";
     });
-    let dateString = `${formatDate(formData.date as any)}-${formData.startTime}-${formData.endTime}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let dateString = `${formatDate(formData.date as any)}-${formData.startTime}-${formatDate(formData.date as any)}-${formData.endTime}`;
     // 提交表单数据
     const { data } = useRequest(() =>
       arrangeInterviewer({
@@ -444,6 +445,9 @@ const handleSubmit = () => {
 @use "@/assets/styles/recruitment.scss";
 .interviewer-selected {
   background-color: var(--accent);
+  border-left: 3px solid var(--accent);
+  padding-left: 5px;
+  margin-left: -5px;
 }
 .btn-style {
   margin: 0 auto;
