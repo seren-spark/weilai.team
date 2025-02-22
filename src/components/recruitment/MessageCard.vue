@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {  ref } from "vue";
+import { ref } from "vue";
 import { interviewStatus } from "@/types/recruitmentType";
 import {
   getResumeById,
@@ -9,7 +9,7 @@ import {
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import { watch } from "vue";
-import { InterviewEvaluationShow,WriteInterviewEvaluation } from "./dialog";
+import { InterviewEvaluationShow, WriteInterviewEvaluation } from "./dialog";
 
 interface IProp {
   userId: string;
@@ -37,7 +37,7 @@ const props = defineProps<{
   cardMessage: IProp;
 }>();
 
-const emit = defineEmits(['refreshPage']);
+const emit = defineEmits(["refreshPage"]);
 
 const dateTime = ref({
   time1: props.cardMessage.startTime,
@@ -106,7 +106,6 @@ const writeInterviewEvaluation = () => {
     @close="commentIsOpen = false"
   />
   <Card class="message-show">
-
     <CardContent>
       <div class="message-show-top">
         <div class="message-show-time">
@@ -154,10 +153,11 @@ const writeInterviewEvaluation = () => {
     </CardContent>
     <CardFooter class="message-show-button">
       <Button
-      v-show="isShowButton === 2"
-       class="btn-style"
-       @click="writeInterviewEvaluation"
-       >面试评价</Button>
+        v-show="isShowButton === 2"
+        class="btn-style"
+        @click="writeInterviewEvaluation"
+        >面试评价</Button
+      >
       <Button
         v-show="isShowButton === 3"
         class="btn-style"

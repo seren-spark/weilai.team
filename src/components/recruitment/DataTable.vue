@@ -106,9 +106,7 @@ watch(
         v-show="items.length === 0"
         style="font-size: large; height: 40px; text-align: center"
       >
-        <TableCell colspan="100%">
-          暂无数据
-        </TableCell>
+        <TableCell colspan="100%"> 暂无数据 </TableCell>
       </TableRow>
       <TableRow v-for="item in items" :key="item.id" class="hover-tr">
         <TableCell

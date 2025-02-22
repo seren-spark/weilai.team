@@ -70,7 +70,9 @@
   transform: translateY(-2px);
   overflow-x: auto;
   max-width: 100%;
-  transition: color 0.3s, background-color 0.3s;
+  transition:
+    color 0.3s,
+    background-color 0.3s;
   cursor: pointer;
 }
 .tiptap p code:hover,
@@ -118,4 +120,4 @@
 .tiptap li strong,
 .tiptap td strong {
   color: var(--main-color);
-}/*# sourceMappingURL=typography.css.map */
+} /*# sourceMappingURL=typography.css.map */

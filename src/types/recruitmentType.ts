@@ -122,7 +122,7 @@ export interface IGetInterviewUserDTO {
   startTime?: string;
   endTime?: string;
   condition?: string;
-  ids?:string[];
+  ids?: string[];
 }
 
 //安排面试官  数据传输对象 发送

@@ -132,11 +132,15 @@ export const exportResultExcel = ({
   sex,
   status,
 }: IExportInterviewResultDTO) => {
-  console.log( startTime, endTime,grade,sex,status);
+  console.log(startTime, endTime, grade, sex, status);
   return axios.post(
     `${BASE_UEL}recruit/manage/resultExport`,
     {
-    startTime, endTime, grade, sex, status
+      startTime,
+      endTime,
+      grade,
+      sex,
+      status,
     },
     {
       headers: {
@@ -182,7 +186,8 @@ export const updateApplyUserStatus = ({
   return axios.put(
     `${BASE_UEL}recruit/manage/updateRecruitUserStatus?${id}`,
     {},
-    { params: { interviewStatus },
+    {
+      params: { interviewStatus },
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + getToken(),
@@ -201,7 +206,7 @@ export const evaluateInterview = ({
 }: IUpdateInterviewResultDTO) => {
   return axios.post(
     `${BASE_UEL}recruit/interview/comment`,
-    { comment, id,isSecond, status, userId },
+    { comment, id, isSecond, status, userId },
     {
       headers: {
         "Content-Type": "application/json",

@@ -68,7 +68,6 @@ import { evaluateInterview } from "@/composables/useRecruitmentRequest";
 import { useAlert } from "@/composables/useAlert";
 const { showAlert } = useAlert();
 
-
 const emit = defineEmits(["close", "refreshPage"]);
 const close = (event: Event) => {
   // 点击遮罩层关闭
@@ -137,15 +136,14 @@ const handleSubmit = () => {
     evaluateInterview({
       id: props.id,
       userId: props.userId,
-      isSecond:  formData.value.status ==='-4'? '1':'0',
+      isSecond: formData.value.status === "-4" ? "1" : "0",
       comment: formData.value.interviewEvaluation,
-      status: formData.value.status ==='-4'? '3':formData.value.status,
+      status: formData.value.status === "-4" ? "3" : formData.value.status,
     }).then(() => {
       showAlert("面评提交成功", "pass");
       emit("close");
       emit("refreshPage");
     });
-
   }
 };
 </script>

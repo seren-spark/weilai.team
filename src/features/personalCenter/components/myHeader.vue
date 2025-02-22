@@ -32,9 +32,9 @@
           class="w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-20"
           :avatar="userInfo.headPortrait"
         />
-        <div class="bg-gray-100  w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-10">
-          
-        </div>
+        <div
+          class="bg-gray-100 w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-10"
+        ></div>
         <div class="infoBox">
           <p class="nameAndSex">
             {{ userInfo.name }}
@@ -98,7 +98,7 @@
                     />
                   </FormControl>
                   <FormDescription></FormDescription>
-                  <FormMessage class="my-2"/>
+                  <FormMessage class="my-2" />
                 </FormItem>
               </FormField>
               <FormField
@@ -360,9 +360,10 @@ watch(
       userId = userStore.userId;
     }
     getUserInfo();
-  },{
-    deep: true
-  }
+  },
+  {
+    deep: true,
+  },
 );
 const plugin = Autoplay({
   delay: 2000,

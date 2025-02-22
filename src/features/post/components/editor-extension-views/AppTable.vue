@@ -64,7 +64,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped></style>
-/**
- * Initializes the Handsontable instance with the specified settings and adds a hook to log cell metadata changes.
- * The Handsontable instance is destroyed and the reference is set to null when the component is unmounted.
- */
+/** * Initializes the Handsontable instance with the specified settings and adds
+a hook to log cell metadata changes. * The Handsontable instance is destroyed
+and the reference is set to null when the component is unmounted. */

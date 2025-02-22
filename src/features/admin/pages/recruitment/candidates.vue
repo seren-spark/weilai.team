@@ -74,7 +74,7 @@ const handleFilterConditions = (value: string, title: string) => {
     sex.value = value;
     return;
   }
-}
+};
 
 const dateRange = ref(null); // 初始化日期范围
 
@@ -83,7 +83,7 @@ const handleDateRangeUpdate = (newDateRange: never) => {
   dateRange.value = newDateRange;
   handleDateRange();
 };
-let formattedRange ="";
+let formattedRange = "";
 let startTime = ref<string>("");
 let endTime = ref<string>("");
 //对dateRange进行处理
@@ -92,8 +92,8 @@ const handleDateRange = () => {
   if (!dateRange.value) {
     return;
   }
-  const  startDate= Reflect.get(dateRange.value, "start");
-  const  endDate= Reflect.get(dateRange.value, "end");
+  const startDate = Reflect.get(dateRange.value, "start");
+  const endDate = Reflect.get(dateRange.value, "end");
   formattedRange = `${startDate}@${endDate}`;
   const [start, end] = formattedRange.split("@");
   startTime.value = start;
@@ -107,8 +107,8 @@ const resetCondition = () => {
   candidates_itemsObjArr.value.forEach((item) => {
     item.ref = "init";
   });
-  grade.value=""
-  sex.value=""
+  grade.value = "";
+  sex.value = "";
   dateRange.value = null;
   startTime.value = "";
   endTime.value = "";
@@ -314,7 +314,7 @@ fetchAllGrade();
 const grade = ref<string>("");
 const sex = ref<string>("");
 
-watch([grade, sex,startTime,endTime , searchValue, status], () => {
+watch([grade, sex, startTime, endTime, searchValue, status], () => {
   pageNo.value = 1;
 });
 
@@ -373,7 +373,6 @@ watch(
   },
 );
 
-
 const excelHeaders = ref([
   {
     title: "姓名",
@@ -384,21 +383,20 @@ const excelHeaders = ref([
     key: "session",
   },
   {
-    title:"班级",
-    key:"clazz"
+    title: "班级",
+    key: "clazz",
   },
   {
     title: "性别",
     key: "gender",
   },
   {
-    title:"状态",
-    key:"state"
-  }
-])
+    title: "状态",
+    key: "state",
+  },
+]);
 
-
-const exportToExcelFunction = <T>(data: Array<T>) => {
+const exportToExcelFunction = <T,>(data: Array<T>) => {
   const filteredData = data.map((item: T) => {
     const newItem: Partial<T> = {};
     excelHeaders.value.forEach((Header) => {
@@ -417,20 +415,19 @@ const exportToExcelFunction = <T>(data: Array<T>) => {
   const customHeaders = excelHeaders.value.map((item) => item.title);
 
   // 在工作表第一行添加自定义表头
-  XLSX.utils.sheet_add_aoa(worksheet, [customHeaders], { origin: 'A1' });
+  XLSX.utils.sheet_add_aoa(worksheet, [customHeaders], { origin: "A1" });
 
   // 将工作表添加到工作簿
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
   // 生成 Excel 文件并触发下载
-  XLSX.writeFile(workbook, '导出信息表.xlsx');
+  XLSX.writeFile(workbook, "导出信息表.xlsx");
 };
 
 //导出excel表格
 const exportExcel = () => {
   exportToExcelFunction(tableData.value);
 };
-
 
 //dialog
 const updateStatus = ref(false);
@@ -512,7 +509,9 @@ const arrangeInterviewerDialog = ref(false);
         <Button type="primary" class="btn-style" @click="handleEditStatus"
           >修改状态</Button
         >
-        <Button type="primary" class="btn-style" @click="exportExcel">结果导出</Button>
+        <Button type="primary" class="btn-style" @click="exportExcel"
+          >结果导出</Button
+        >
       </div>
     </div>
 
@@ -520,7 +519,11 @@ const arrangeInterviewerDialog = ref(false);
       <DataTable
         :items="tableData"
         :headers="headers"
-        :action-items="status===0 ? actionItems : actionItems.filter((item, index) => index !== 2)"
+        :action-items="
+          status === 0
+            ? actionItems
+            : actionItems.filter((item, index) => index !== 2)
+        "
         @send-selected-ids="handleTableSelectIds"
       ></DataTable>
       <div class="pagination-container">

@@ -55,9 +55,9 @@ const normalizeInterviewCard = (card: any) => ({
     id: card.InterviewOfficerThird.id || "",
   },
 });
-const refreshPageParams=ref(false);
+const refreshPageParams = ref(false);
 watch(
-  [toggleShowStatus,refreshPageParams],
+  [toggleShowStatus, refreshPageParams],
   ([newStatus]) => {
     const { data, error, loading } = useRequest(() =>
       getMyInterviewRecord({ pageNo: 1, pageSize: 100, status: newStatus }),
@@ -73,7 +73,7 @@ watch(
               startTime: card.startTime,
               endTime: card.endTime,
               InterviewAddress: card.place,
-              InterviewRound: card.round ,
+              InterviewRound: card.round,
               InterviewName: card.name,
               InterviewStatus:
                 interviewStatusMap[card.interviewStatus as interviewStatus],
@@ -196,14 +196,12 @@ const quickShowItems = ref([
           />
         </div>
         <div class="main-content-show">
-          <div v-show="messageCard.length === 0" class="no-data">
-            暂无数据
-          </div>
+          <div v-show="messageCard.length === 0" class="no-data">暂无数据</div>
           <MessageCard
             v-for="(item, index) in messageCard"
             :key="index"
             :card-message="normalizeInterviewCard(item)"
-            @refresh-page="refreshPageParams=!refreshPageParams"
+            @refresh-page="refreshPageParams = !refreshPageParams"
           />
         </div>
       </div>

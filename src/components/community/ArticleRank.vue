@@ -71,13 +71,9 @@ const RankList = ref<ArticleList[]>([]);
 
 const { data, loading } = getArticle2(type);
 watch(data, () => {
- 
-    const res = data.value as Data;
-    RankList.value = res.data.records.slice(0, 6);
-   
-  });
-
-
+  const res = data.value as Data;
+  RankList.value = res.data.records.slice(0, 6);
+});
 </script>
 
 <style scoped lang="scss">

@@ -495,7 +495,7 @@ function deleteCourse(e) {
         method: "delete",
       }).then(() => {
         if (data.value && data.value.code == 200) {
-          showAlert({message: "删除成功",type: "pass"});
+          showAlert({ message: "删除成功", type: "pass" });
           console.log("删除成功", data.value);
           getSchedule();
         }
@@ -543,20 +543,27 @@ let coursePlace = ref("");
 //   console.log(error.value);
 //   getSchedule();
 // }
-const formSchema = toTypedSchema(z.object({
-  coursePlace: z.string({required_error: "请填写上课地点"}).max(10, '上课地点不能超过10个字'),
-  courseTime: z.string(),
-  weekTime: z.string(),
-  weeks: z.string({required_error: "请填写课程周数"}).max(10, '课程周数不能超过10个字'),
-  courseName: z.string({required_error: "请填写课程名称"}).max(10, '课程名称不能超过10个字'),
-}))
+const formSchema = toTypedSchema(
+  z.object({
+    coursePlace: z
+      .string({ required_error: "请填写上课地点" })
+      .max(10, "上课地点不能超过10个字"),
+    courseTime: z.string(),
+    weekTime: z.string(),
+    weeks: z
+      .string({ required_error: "请填写课程周数" })
+      .max(10, "课程周数不能超过10个字"),
+    courseName: z
+      .string({ required_error: "请填写课程名称" })
+      .max(10, "课程名称不能超过10个字"),
+  }),
+);
 const form = useForm({
   validationSchema: formSchema,
-})
+});
 const onSubmit = form.handleSubmit((values) => {
-  console.log('修改信息表单提交成功!', values)
-  
-})
+  console.log("修改信息表单提交成功!", values);
+});
 let changeCourseName = ref("");
 let changeCourseTime = ref("");
 let changeWeeks = ref("");
