@@ -84,6 +84,7 @@ declare module 'vue-router/auto-routes' {
     '/message/likeMes/': RouteRecordInfo<'/message/likeMes/', '/message/likeMes', Record<never, never>, Record<never, never>>,
     '/message/systemMes': RouteRecordInfo<'/message/systemMes', '/message/systemMes', Record<never, never>, Record<never, never>>,
     '/message/systemMes/': RouteRecordInfo<'/message/systemMes/', '/message/systemMes', Record<never, never>, Record<never, never>>,
+    '/noticeEdit': RouteRecordInfo<'/noticeEdit', '/noticeEdit', Record<never, never>, Record<never, never>>,
     '/personalCenter': RouteRecordInfo<'/personalCenter', '/personalCenter', Record<never, never>, Record<never, never>>,
     '/personalCenter/userInfo': RouteRecordInfo<'/personalCenter/userInfo', '/personalCenter/userInfo', Record<never, never>, Record<never, never>>,
     '/post': RouteRecordInfo<'/post', '/post', Record<never, never>, Record<never, never>>,
