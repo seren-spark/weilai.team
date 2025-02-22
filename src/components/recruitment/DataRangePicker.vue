@@ -9,13 +9,9 @@ import {
 } from "@/components/ui/popover";
 import { RangeCalendar } from "@/components/ui/range-calendar";
 import { cn } from "@/lib/utils";
-import { DateFormatter, getLocalTimeZone } from "@internationalized/date";
 import { CalendarIcon } from "@radix-icons/vue";
 import { type Ref, ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
-const df = new DateFormatter("zh-CN", {
-  dateStyle: "short",
-});
 
 const props = defineProps<{
   isReset: boolean;
@@ -86,8 +82,8 @@ const resetCondition = () => {
         v-model="value"
         initial-focus
         :number-of-months="2"
-        @update:start-value="(startDate) => (value.start = startDate)"
         locale="zh-CN"
+        @update:start-value="(startDate) => (value.start = startDate)"
       >
       </RangeCalendar>
     </PopoverContent>

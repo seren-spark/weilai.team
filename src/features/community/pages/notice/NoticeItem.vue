@@ -86,7 +86,7 @@ function handleNotice() {
 let noticeTxt = handleNotice();
 
 //删除单个公告
-const deleteNotice = async (noticeId: number) => {
+const deleteNotice = async (noticeId: string) => {
   showConfirm({
     content: "确定删除该公告吗？",
   })
@@ -126,6 +126,9 @@ const readNotice = async (noticeId: string) => {
     })
     .catch(() => {});
 };
+
+//修改公告
+const editNotice = () => {};
 </script>
 
 <template>
@@ -142,7 +145,7 @@ const readNotice = async (noticeId: string) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span class="edit"
+                <span class="edit" @click="editNotice()"
                   ><Icon icon="mage:edit-pen" class="editIcon"
                 /></span>
               </TooltipTrigger>
@@ -221,6 +224,7 @@ const readNotice = async (noticeId: string) => {
   .userInfo {
     display: flex;
     padding-bottom: 10px;
+    flex-wrap: wrap;
     justify-content: space-between;
     border-bottom: 1px solid var(--border);
     .action {

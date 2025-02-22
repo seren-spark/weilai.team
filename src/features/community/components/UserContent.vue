@@ -1,28 +1,47 @@
 <template>
-  <a
-    class="news-item"
-    v-for="item in userList"
-    @click="skipPersonCenter(item.userId)"
-  >
-    <div class="news-writer">
-      <div class="avatar">
-        <Avatar
-          :avatar="item.headPortrait"
-          :customClass="`w-[50px] h-[50px]`"
-        />
-      </div>
-      <div class="writer-info">
-        <h3 class="name">{{ item.name }}</h3>
-        <div class="work-info">
-          <span class="origin">原创 {{ item.postCount }}</span>
-          <span class="read">阅读 {{ item.viewCount }}</span>
-          <!-- <span class="like">点赞</span> -->
+  <div v-if="userList.length > 0">
+    <a
+      class="news-item"
+      v-for="item in userList"
+      @click="skipPersonCenter(item.userId)"
+    >
+      <div class="news-writer">
+        <div class="avatar">
+          <Avatar
+            :avatar="item.headPortrait"
+            :customClass="`w-[3rem] h-[3rem]`"
+          />
         </div>
-        <div class="brief">{{ item.userDestination }}</div>
+        <div class="writer-info">
+          <h3 class="name">{{ item.name }}</h3>
+          <div class="work-info">
+            <span class="origin">原创 {{ item.postCount }}</span>
+            <span class="read">阅读 {{ item.viewCount }}</span>
+            <!-- <span class="like">点赞</span> -->
+          </div>
+          <div class="brief">{{ item.userDestination }}</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div v-else-if="load">
+    <div
+      class="news-item"
+      style="display: flex; align-items: center"
+      v-for="index in 10"
+    >
+      <div>
+        <div class="flex items-center space-x-4 bg-[white]">
+          <Skeleton class="h-12 w-12 rounded-full bg-[--muted]" />
+          <div class="space-y-2">
+            <Skeleton class="h-4 w-[250px] bg-[--muted]" />
+            <Skeleton class="h-4 w-[200px] bg-[--muted]" />
+          </div>
+        </div>
       </div>
     </div>
-  </a>
-  <div v-if="!userList.length">
+  </div>
+  <div v-else="load && !userList.length">
     <NoData />
   </div>
   <div v-if="isOver && userList.length > 0" class="over">已经到底了</div>
@@ -30,12 +49,18 @@
 
 <script setup lang="ts">
 import Avatar from "@/components/avatar/UserAvatar.vue";
+import { Skeleton } from "@/components/ui/skeleton";
+// @ts-ignore
 import NoData from "@/components/loading/NoData.vue";
 import { useRequest } from "@/composables/useRequest";
+import { useRequest as req } from "vue-request";
 import { useUserStore } from "@/store/userStore";
 import type { UserData, UserInfo } from "@/types/Community";
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { get } from "@vueuse/core";
+import apiClient from "@/api/axios";
+import { log } from "node_modules/handsontable/helpers";
 const userStore = useUserStore();
 const router = useRouter();
 const current = ref<number>(1);
@@ -43,6 +68,7 @@ const pages = ref<number>(1);
 const total = ref<number>(0);
 const content = ref("");
 const isOver = ref(false);
+let load = ref(true);
 function skipPersonCenter(id: number) {
   userStore.setUserId(id);
   userStore.setIsSelf(false);
@@ -66,27 +92,37 @@ watch(
   (newVal) => {
     console.log((newVal as any).user);
     let user = (newVal as any).user;
-    getUserList(user);
+    runGetUserList(user);
   },
 );
 
-const { executeRequest, error, loading, data } = useRequest();
 const userList = ref<UserInfo[]>([]);
-async function getUserList(content = "", pageNumber = 1, pageSize = 30) {
-  await executeRequest({
-    url: `/user/searchUser?content=${content}&pageNumber=${pageNumber}&pageSize=${pageSize} `,
-    method: "get",
-  });
-  const res = data.value as UserData;
 
-  current.value = res.data.pageInfo.current;
-  pages.value = res.data.pageInfo.pages;
-  total.value = res.data.pageInfo.total;
-  return res.data;
+function runGetUserList(content = "", pageNumber = 1, pageSize = 10) {
+  const getUserList = () => {
+    return apiClient.get(
+      `/user/searchUser?content=${content}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    );
+  };
+  const { data, loading } = req(getUserList, { loadingKeep: 500 });
+  watch(data, () => {
+    let res = data.value as UserData;
+    load.value = loading.value;
+    current.value = res.data.pageInfo.current;
+    pages.value = res.data.pageInfo.pages;
+    total.value = res.data.pageInfo.total;
+    if (res.data.searchUsers.length > 0) {
+      res.data.searchUsers.forEach((record) => {
+        userList.value.push(record);
+      });
+    }
+    if (current.value == pages.value) {
+      isOver.value = true;
+    }
+  });
 }
-getUserList(props.content).then((res) => {
-  userList.value = res.searchUsers;
-});
+runGetUserList(props.content);
+
 onMounted(async () => {
   window.addEventListener("scroll", handleScroll, true);
 });
@@ -99,20 +135,9 @@ const handleScroll = async (e: any) => {
     document.documentElement.scrollHeight || document.body.scrollHeight;
 
   if (scrollTop + clientHeight > scrollHeight - 100) {
-    console.log("到底了");
     if (current.value < pages.value) {
       current.value++;
-      isOver.value = false;
-      //数据为加载完，继续赋值
-      getUserList(content.value, pages.value).then((res) => {
-        if (res.searchUsers.length > 0) {
-          res.searchUsers.forEach((record) => {
-            userList.value.push(record);
-          });
-        }
-      });
-    } else {
-      isOver.value = true;
+      runGetUserList(content.value, pages.value);
     }
   }
 };
@@ -121,39 +146,39 @@ const handleScroll = async (e: any) => {
 <style scoped lang="scss">
 .news-item {
   display: block;
-  padding: 10px 15px;
-  border-radius: 10px;
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
   cursor: pointer;
-  min-height: 85px;
+  min-height: 5.3rem;
   background-color: var(--background);
-  margin-bottom: 20px;
+  margin-bottom: 1.2rem;
   .news-writer {
     display: flex;
     align-items: center;
 
     .avatar {
-      width: 50px;
-      height: 50px;
-      margin-right: 10px;
+      width: 3rem;
+      height: 3rem;
+      margin-right: 0.625rem;
       img {
         width: 100%;
         height: 100%;
         border-radius: 50%;
       }
-      margin-right: 10px;
+      margin-right: 0.625rem;
     }
     .name {
       font-weight: 500;
-      font-size: 15px;
+      font-size: 0.9rem;
     }
 
     .work-info,
     .brief {
-      font-size: 13px;
+      font-size: 0.8rem;
       font-weight: 400;
       color: #686570;
       span {
-        margin-right: 12px;
+        margin-right: 0.75rem;
         &:last-child {
           margin-right: 0;
         }
@@ -208,7 +233,7 @@ const handleScroll = async (e: any) => {
 }
 .over {
   text-align: center;
-  font-size: 12px;
+  font-size: 0.7rem;
   color: var(--secondary-foreground);
   font-weight: 500;
 }

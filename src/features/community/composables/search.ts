@@ -2,12 +2,15 @@ import apiClient from "@/api/axios";
 import { useAlert } from "@/composables/useAlert";
 import { useRequest } from "@/composables/useRequest";
 import type { ArticleList, Data } from "@/types/Community";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRequest as req } from "vue-request";
+
 const { showAlert } = useAlert();
 const { executeRequest, error, loading, data } = useRequest();
 let articleList = ref<ArticleList[]>([]);
 let searchResult = ref<ArticleList[]>([]);
 let userInfo = ref<Data>({} as Data);
+let artList = ref<ArticleList[]>([]);
 export function debounce<T>(
   func: (this: T, ...args: any[]) => void,
   wait: number,
@@ -43,16 +46,32 @@ export async function getArticle(
     url: `/post/selectAll?condition=${condition}&page=${page}&sort=${sort}&startTime=${startTime}&type=${type}`,
     method: "get",
   });
-  console.log("渲染文章");
-
   const res = data.value as Data;
-  console.log(res);
   if (res.code === 401) {
     showAlert("登录过期，请重新登录", "waring");
   }
   articleList.value = res.data.records;
 
   return res.data;
+}
+
+export function getArticle2(
+  type: number | string = 0,
+  condition = "",
+  page = 1,
+  startTime: Date | string = "",
+  sort = 0,
+) {
+  const getArticle = () => {
+    return apiClient.get(
+      `/post/selectAll?condition=${condition}&page=${page}&sort=${sort}&startTime=${startTime}&type=${type}`,
+    );
+  };
+  const { data, loading } = req(getArticle, {
+    loadingKeep: 600,
+  });
+  let res = ref<any>();
+  return { loading, data };
 }
 export function checkType(type: any) {
   if (type == 1) {
@@ -66,9 +85,7 @@ export function checkType(type: any) {
 }
 
 export async function getUserList(content = "", pageNumber = 1, pageSize = 30) {
-  executeRequest({ url: "/user/searchUser", method: "get" }).then((res) => {
-    console.log(res);
-  });
+  executeRequest({ url: "/user/searchUser", method: "get" }).then((res) => {});
 }
 export async function deletes(ids: string) {
   return apiClient.put(`/post/deletes/${ids}`);
