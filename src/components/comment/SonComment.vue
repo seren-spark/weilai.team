@@ -100,10 +100,10 @@ const handleReply = () => {
         <span v-if="isReply" :key="son.pointUser" class="reply-to">{{
           `@${son.userInfo?.name}`
         }}</span>
-        {{ son.commentTxt }}
+        {{ son.texts }}
       </div>
-      <div v-if="son.urls" class="image">
-        <img :src="son.urls" />
+      <div v-if="son.imgUrls" class="image">
+        <img :src="son.imgUrls" />
       </div>
       <div class="action-box">
         <div class="btnBox">

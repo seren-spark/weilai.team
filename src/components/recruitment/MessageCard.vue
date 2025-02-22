@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ref } from "vue";
-import { useAlert } from "@/composables/useAlert";
+import {  ref } from "vue";
+// import { useAlert } from "@/composables/useAlert";
 import { interviewStatus } from "@/types/recruitmentType";
 import {
   getResumeById,
@@ -17,7 +17,8 @@ import { InterviewEvaluationShow,WriteInterviewEvaluation } from "./dialog";
 
 interface IProp {
   ApplyUserId: string;
-  InterviewTime: string;
+  startTime: string;
+  endTime: string;
   InterviewAddress: string;
   InterviewRound: string;
   InterviewName: string;
@@ -41,14 +42,17 @@ const props = defineProps<{
 }>();
 
 const dateTime = ref({
-  date: props.cardMessage.InterviewTime.split(" ")[0],
-  time: props.cardMessage.InterviewTime.split(" ")[1],
+  time1: props.cardMessage.startTime,
+  time2: props.cardMessage.endTime,
 });
-const InterviewOfficerIdArr = ref([
-  props.cardMessage.InterviewOfficerFirst.id,
-  props.cardMessage.InterviewOfficerSecond.id,
-  props.cardMessage.InterviewOfficerThird.id,
-]);
+// const round = computed(() => {
+//   return props.cardMessage.InterviewRound=='1' ? "一面" :  "二面";
+// });
+// const InterviewOfficerIdArr = ref([
+//   props.cardMessage.InterviewOfficerFirst.id,
+//   props.cardMessage.InterviewOfficerSecond.id,
+//   props.cardMessage.InterviewOfficerThird.id,
+// ]);
 const InterviewRecordId = ref(props.cardMessage.InterviewId);
 
 const isShowButton = ref(1);
@@ -62,7 +66,7 @@ if (["待面试", "待反馈"].includes(theInterviewStatus)) {
 
 // 查看简历 \/
 const viewResume = (id: string) => {
-  const { data, error, loading } = useRequest(() => getResumeById({ id }));
+  const { data, error } = useRequest(() => getResumeById({ id }));
   watch([data, error], ([newData, newError]) => {
     if (newError) {
       console.log("请求失败:", newError);
@@ -78,7 +82,7 @@ const commentIsOpen = ref(false);
 const interviewEvaluationmessage = ref<string>("");
 const viewComment = (id: string) => {
   commentIsOpen.value = true;
-  const { data, error, loading } = useRequest(() =>
+  const { data, error } = useRequest(() =>
     getCommentByInterviewRecordId({ id }),
   );
   watch([data, error], ([newData, newError]) => {
@@ -94,15 +98,15 @@ const viewComment = (id: string) => {
 //写面评 \/
 const writeInterviewEvaluationIsOpen = ref(false);
 const writeInterviewEvaluation = (id: string) => {
+  console.log(id);
   writeInterviewEvaluationIsOpen.value = true;
-
 };
 
 </script>
 <template>
   <WriteInterviewEvaluation
-    :is-open="writeInterviewEvaluationIsOpen"
     :id="InterviewRecordId"
+    :is-open="writeInterviewEvaluationIsOpen"
     @close="writeInterviewEvaluationIsOpen = false"
   />
   <InterviewEvaluationShow
@@ -115,11 +119,11 @@ const writeInterviewEvaluation = (id: string) => {
       <div class="message-show-top">
         <div class="message-show-time">
           <span class="min-width inline-block">
-            {{ dateTime.date }}
+            {{ dateTime.time1 }}
           </span>
           &nbsp;
           <span class="min-width inline-block">
-            {{ dateTime.time }}
+            {{ dateTime.time2 }}
           </span>
         </div>
         <div class="message-show-address">
@@ -157,13 +161,14 @@ const writeInterviewEvaluation = (id: string) => {
       </div>
     </CardContent>
     <CardFooter class="message-show-button">
-      <Button class="btn-style"
-       v-show="isShowButton === 2"
+      <Button
+      v-show="isShowButton === 2"
+       class="btn-style"
        @click="writeInterviewEvaluation(InterviewRecordId)"
        >面试评价</Button>
       <Button
-        class="btn-style"
         v-show="isShowButton === 3"
+        class="btn-style"
         @click="viewComment(InterviewRecordId)"
         >查看面评</Button
       >

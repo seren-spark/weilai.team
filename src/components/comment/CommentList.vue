@@ -21,12 +21,33 @@ const getFirstComment = async () => {
 
   if (data.value?.code === 200) {
     comments.length = 0;
-    comments.push(...data.value.data.postCommentOne);
+    const commentList = data.value.data.postCommentOne;
+    commentList.forEach((comment: any) => {
+      const { commentTxt } = comment;
+      const splitPattern = "<!-- IMG_SPLIT -->";
+      const parts = commentTxt.split(splitPattern);
+      const texts = parts
+        .filter((part: string, index: number) => index % 2 === 0)
+        .join("");
+      const imgUrls = parts
+        .filter((part: string, index: number) => index % 2 !== 0)
+        .join("");
+
+      comments.push({
+        ...comment,
+        texts,
+        imgUrls,
+      });
+    });
+    // comments.push(...data.value.data.postCommentOne);
   } else {
     console.log(error);
     comments.length = 0;
   }
 };
+console.log(comments);
+
+//分割图片和文本
 
 // 在组件挂载后调用获取评论
 onMounted(() => {

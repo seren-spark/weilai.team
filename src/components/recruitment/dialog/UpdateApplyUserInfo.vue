@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div class="outer" @click="close" v-if="props.isOpen">
+    <div v-if="props.isOpen" class="outer" @click="close">
       <form @submit.prevent="handleSubmit">
         <div class="text-center title">
           <p>修改用户信息</p>
@@ -16,8 +16,8 @@
             <FormLabel>班级</FormLabel>
             <FormControl>
               <Input
-                class="input"
                 v-model="formData.clazz"
+                class="input"
                 placeholder="写入想要修改的班级"
                 @focus="clearError('clazz')"
               />
@@ -35,8 +35,8 @@
             <FormLabel>名字</FormLabel>
             <FormControl>
               <Input
-                class="input"
                 v-model="formData.name"
+                class="input"
                 placeholder="输入想要修改的名字"
                 @focus="clearError('name')"
               />
@@ -54,8 +54,8 @@
             <FormLabel>年级</FormLabel>
             <FormControl>
               <Input
-                class="input"
                 v-model="formData.grade"
+                class="input"
                 placeholder="输入想要修改的年级"
                 @focus="clearError('grade')"
               />
@@ -73,8 +73,8 @@
             <FormLabel>邮箱</FormLabel>
             <FormControl>
               <Input
-                class="input"
                 v-model="formData.email"
+                class="input"
                 placeholder="输入要修改的邮箱"
                 @focus="clearError('email')"
               />
@@ -90,8 +90,8 @@
             <FormLabel>qq</FormLabel>
             <FormControl>
               <Input
-                class="input"
                 v-model="formData.qq"
+                class="input"
                 placeholder="输入想修改的qq"
                 @focus="clearError('qq')"
               />
@@ -134,8 +134,8 @@
             <FormLabel>学号</FormLabel>
             <FormControl>
               <Input
-                class="input"
                 v-model="formData.studentId"
+                class="input"
                 placeholder="输入想修改的学号"
                 @focus="clearError('studentId')"
               />
@@ -152,8 +152,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, reactive, ref, watch } from "vue";
-import { z } from "zod"; // 引入 Zod
+import { reactive, ref } from "vue";
+import { z } from "zod";
 import {
   FormField,
   FormItem,
@@ -172,12 +172,15 @@ import { Button } from "@/components/ui/button";
 import { updateApplyUserInfo } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import { watchEffect } from "vue";
-import {useAlert} from "@/composables/useAlert"
-const {showAlert} = useAlert()
+import { useAlert } from "@/composables/useAlert";
+const { showAlert } = useAlert();
 
 const props = defineProps({
   isOpen: Boolean,
-  id: String,
+  id: {
+    type: String,
+    default: "",
+  },
 });
 const emit = defineEmits(["close"]);
 const close = (event: Event) => {
@@ -248,9 +251,9 @@ const handleSubmit = async () => {
     await formSchema.parseAsync(formData);
     console.log("表单验证成功:", formData);
     // 在这里处理表单提交逻辑
-    const { data, error, loading } = useRequest(() =>
+    const { data } = useRequest(() =>
       updateApplyUserInfo({
-        id:String(props.id) ,
+        id: String(props.id),
         clazz: formData.clazz,
         email: formData.email,
         grade: formData.grade,
@@ -260,7 +263,7 @@ const handleSubmit = async () => {
         studentId: formData.studentId,
       }),
     );
-        watchEffect(() => {
+    watchEffect(() => {
       // console.log("data.value:", data.value);
       // 监听 data 变化，当请求成功时，关闭对话框
       if (data.value) {

@@ -1,138 +1,5 @@
 <template>
   <div class="mySchedule">
-    <!-- <Dialog v-if="userStore.isSelf">
-      <DialogTrigger as-child class="mb-4">
-        <Button variant="outline" class="bg-green-100 text-green-600">
-          添加课程
-        </Button>
-      </DialogTrigger>
-      <DialogContent
-        class="sm:max-w-[425px] bg-white max-h-[500px] overflow-y-auto"
-      >
-        <DialogClose id="dialogClose"></DialogClose>
-
-        <DialogHeader>
-          <DialogTitle>添加课程</DialogTitle>
-          <DialogDescription>
-            在这里添加您的课程，完成之后点击保存即可
-          </DialogDescription>
-        </DialogHeader>
-        <div class="grid gap-4 py-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="courseName" class="text-right"> 课程名称 </Label>
-            <Input id="courseName" class="col-span-3" v-model="courseName" />
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="weeks" class="text-right"> 课程周数 </Label>
-            <Input id="weeks" class="col-span-3" v-model="weeks" />
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="weekTime" class="text-right"> 课程日期 </Label>
-            <Select v-model="weekTime">
-              <SelectTrigger class="col-span-3">
-                <SelectValue placeholder="选择日期" />
-              </SelectTrigger>
-              <SelectContent class="bg-white">
-                <SelectGroup>
-                  <SelectItem
-                    value="0"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    周一
-                  </SelectItem>
-                  <SelectItem
-                    value="1"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    周二
-                  </SelectItem>
-                  <SelectItem
-                    value="2"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    周三
-                  </SelectItem>
-                  <SelectItem
-                    value="3"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    周四
-                  </SelectItem>
-                  <SelectItem
-                    value="4"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    周五
-                  </SelectItem>
-                  <SelectItem
-                    value="5"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    周六
-                  </SelectItem>
-                  <SelectItem
-                    value="6"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    周日
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="courseTime" class="text-right"> 上课时间 </Label>
-            <Select v-model="courseTime">
-              <SelectTrigger class="col-span-3">
-                <SelectValue placeholder="选择时间" />
-              </SelectTrigger>
-              <SelectContent class="bg-white">
-                <SelectGroup>
-                  <SelectItem
-                    value="1-2"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    1-2节
-                  </SelectItem>
-                  <SelectItem
-                    value="3-4"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    3-4节
-                  </SelectItem>
-                  <SelectItem
-                    value="5-6"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    5-6节
-                  </SelectItem>
-                  <SelectItem
-                    value="7-8"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    7-8节
-                  </SelectItem>
-                  <SelectItem
-                    value="9-10"
-                    class="cursor-pointer hover:bg-gray-100"
-                  >
-                    9-10节
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="coursePlace" class="text-right"> 上课地点 </Label>
-            <Input id="coursePlace" class="col-span-3" v-model="coursePlace" />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" @click="submitAddForm"> 保存 </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog> -->
-
     <Dialog v-if="userStore.isSelf">
       <DialogTrigger as-child>
         <Button
@@ -143,7 +10,7 @@
         </Button>
       </DialogTrigger>
       <DialogContent
-        class="sm:max-w-[425px] bg-white max-h-[500px] overflow-y-auto"
+        class="sm:max-w-[425px] bg-white max-h-[900px] overflow-y-auto"
       >
         <DialogHeader>
           <DialogTitle>添加课程</DialogTitle>
@@ -304,7 +171,7 @@
               <FormMessage />
             </FormItem>
           </FormField>
-          <Button type="submit"> 保存 </Button>
+          <Button type="submit" class="mt-2"> 保存 </Button>
         </form>
       </DialogContent>
     </Dialog>

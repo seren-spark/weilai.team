@@ -1,6 +1,6 @@
 <template>
     <div class="myPosts">
-        <NoData v-if="userPost.length == 0"></NoData>
+        <NoData v-if="userPost.length == 0" class="mt-[50px] mb-[50px]"></NoData>
 
         <template v-if="userPost.length != 0">
             <div class="postsData">

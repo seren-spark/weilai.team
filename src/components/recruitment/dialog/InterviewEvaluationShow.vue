@@ -1,32 +1,37 @@
+<!-- eslint-disable vue/no-v-html -->
 <script setup lang="ts">
+import { defineProps, defineEmits, computed } from "vue";
+import {marked} from "marked";
 
 const props = defineProps<{
   message: string;
   isOpen: boolean;
 }>();
 
+
+const safeHtml=computed(()=> marked(props.message));
+
+
 const emit = defineEmits(["close"]);
-const close = (event: Event) => {
+const close = (event: Event): void => {
   // 点击遮罩层关闭
   if (event.target === event.currentTarget) {
     emit("close");
   }
-  return;
+  return void 0;
 };
-
 </script>
 <!-- <InterviewEvaluationShow /> -->
 <template>
   <Teleport to="body">
-    <div class="outer" v-if="isOpen" @click="close($event)">
+    <div v-if="isOpen" class="outer" @click="close($event)">
       <div class="interview-evaluation-container">
         <div class="title">
           <h2>面试评价展示页</h2>
         </div>
         <div class="content">
-          <p>
-            {{ message }}
-          </p>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <p v-html="safeHtml"></p>
         </div>
       </div>
     </div>
@@ -37,7 +42,7 @@ const close = (event: Event) => {
 .interview-evaluation-container {
   width: 400px;
   height: 300px;
-  background-color:var(--popover);
+  background-color: var(--popover);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -60,7 +65,7 @@ const close = (event: Event) => {
     height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: left;
   }
 }
 </style>
