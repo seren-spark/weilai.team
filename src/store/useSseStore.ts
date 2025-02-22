@@ -20,7 +20,7 @@ export const useSseStore = defineStore("sse", () => {
   const isConnected = ref<boolean>(false);
   const observers: Record<
     SSEEventType,
-    Observer<SSEMessageData | SSENoticeData | Event>[]
+    Observer<SSEMessageData | SSENoticeData>[]
   > = {
     message: [],
     notice: [],
@@ -114,7 +114,7 @@ export const useSseStore = defineStore("sse", () => {
   // 订阅事件
   const subscribe = (
     eventType: SSEEventType,
-    callback: Observer<SSEMessageData | SSENoticeData | Event>,
+    callback: Observer<SSEMessageData | SSENoticeData>,
   ) => {
     observers[eventType].push(callback);
   };
@@ -122,7 +122,7 @@ export const useSseStore = defineStore("sse", () => {
   // 取消订阅事件
   const unsubscribe = (
     eventType: SSEEventType,
-    callback: Observer<SSEMessageData | SSENoticeData | Event>,
+    callback: Observer<SSEMessageData | SSENoticeData>,
   ) => {
     const index = observers[eventType].indexOf(callback);
     if (index > -1) observers[eventType].splice(index, 1);
@@ -131,13 +131,13 @@ export const useSseStore = defineStore("sse", () => {
   // 通知所有订阅者
   const notify = (
     eventType: SSEEventType,
-    data?: SSEMessageData | SSENoticeData | Event,
+    data?: SSEMessageData | SSENoticeData,
   ) => {
     observers[eventType].forEach((observer) => {
       if (data) {
         observer(data);
       } else {
-        observer(new Event(eventType));
+        // observer(new Event(eventType));
       }
     });
   };

@@ -422,7 +422,7 @@ const handleCode = async () => {
 </template>
 <style scoped lang="scss">
 .recruitment-form {
-  margin-top: 50px;
+    margin: 50px 0;
 
   .noWrite {
     border: 1px solid var(--destructive-foreground);

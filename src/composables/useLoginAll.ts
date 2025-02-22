@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 import { useAlert } from "./useAlert";
 import { useSseStore } from "../store/useSseStore";
 import type { ApiResponseData } from "@/types/api-response";
-import { watch } from "vue";
+import { ref, watch } from "vue";
 const sseStore = useSseStore();
 
 const loginStore = useLoginStore();
@@ -27,17 +27,14 @@ interface Data {
   };
 }
 export default function () {
-  const router = useRouter();
-  // 登录
-  function getLogin(
-    account: string | number | undefined,
-    password: string | number | undefined,
-  ) {
-    const getLoginAx = () =>
-      apiClient.post("/index/login", {
-        account,
-        password,
-      });
+    const passed = ref(false);
+    const router = useRouter();
+    // 登录
+    function getLogin(account: string | number | undefined, password: string | number | undefined) {
+        const getLoginAx = () => apiClient.post('/index/login', {
+            account,
+            password
+        })
 
     const { data } = useRequest(getLoginAx, {
       debounceInterval: 500,

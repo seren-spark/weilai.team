@@ -7,7 +7,10 @@
             class="avatar"
             @click="skipPersonCenter(item.userId ? item.userId : 0)"
           >
-            <UserAvatar :avatar="item.headPortrait" />
+            <UserAvatar
+              :avatar="item.headPortrait"
+              customClass="w-[3rem] h-[3rem]"
+            />
           </div>
           <div class="writer-info">
             <div class="name">{{ item.name }}</div>
@@ -426,18 +429,10 @@ const handleScroll = async (e: any) => {
         }
         .avatar {
           cursor: pointer;
-          width: 30px;
-          height: 30px;
         }
       }
       .news-content {
-        padding: 5px 35px;
-
-        font-size: 1vw;
-
         .news-details {
-          font-size: 0.9vw;
-
           p {
             max-height: 30px;
             line-height: 15px;
