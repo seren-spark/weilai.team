@@ -16,7 +16,7 @@ const getToken = (): string => {
   const token = localStorage.getItem("token");
   if (!token) {
     router.push("/login");
-    throw new Error("拿token了吗孩子");
+    throw new Error("token 不存在");
   }
   return JSON.parse(token).value;
 };
