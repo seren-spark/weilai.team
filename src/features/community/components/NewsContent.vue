@@ -49,7 +49,7 @@
     </div>
 
     <div v-else-if="loading" class="loading">
-      <div class="news-item" v-for="item in loadinglen">
+      <div class="news-item" v-for="index in 6">
         <div class="news-writer">
           <div class="flex items-center space-x-4">
             <Skeleton class="h-12 w-12 rounded-full bg-[--muted]" />
@@ -78,6 +78,7 @@
 import { useTagStore } from "@/store/tagTypeStore";
 
 import UserAvatar from "@/components/avatar/UserAvatar.vue";
+// @ts-ignore
 import NoData from "@/components/loading/NoData.vue";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserStore } from "@/store/userStore";
@@ -87,14 +88,16 @@ import {
   // articleList,
   checkType,
   getArticle,
+  getArticle2,
 } from "@community/composables/search";
 import { onMounted, provide, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import NewsFooter from "./NewsFooter.vue";
+import { alertVariants } from "../../../components/ui/alert/index";
 const loadinglen = ref(0);
 const articleList = ref<ArticleList[]>([]);
 const isTag = ref(false);
-const loading = ref(true);
+const loading = ref(false);
 const tagStore = useTagStore();
 const tagType = tagStore.tagType.tagType;
 // 滚动容器
@@ -130,6 +133,8 @@ if (!props.isTag) {
   watch(
     () => route.params,
     (newVal) => {
+      console.log("综合");
+
       let title = (newVal as any).title;
       getArticle(props.type, title, props.page, undefined, props.sort).then(
         (res) => {
@@ -152,23 +157,36 @@ if (!props.isTag) {
   watch(
     () => props.type,
     (newVal) => {
-      loading.value = true;
-      console.log("sort", props.sort);
-      getArticle(
+      console.log(newVal);
+
+      // getArticle(
+      //   newVal,
+      //   props.condition,
+      //   props.page,
+      //   undefined,
+      //   props.sort ? props.sort : 0,
+      // ).then((res) => {
+      //   pages.value = res.pages;
+      //   total.value = res.total;
+      //   loadinglen.value = res.records.length;
+      //   current.value = res.current;
+      //   setTimeout(() => {
+      //     loading.value = false;
+      //     articleList.value = res.records;
+      //   }, 400);
+      // });
+      const { loading: load, data } = getArticle2(
         newVal,
         props.condition,
         props.page,
         undefined,
         props.sort ? props.sort : 0,
-      ).then((res) => {
-        pages.value = res.pages;
-        total.value = res.total;
-        loadinglen.value = res.records.length;
-        current.value = res.current;
-        setTimeout(() => {
-          loading.value = false;
-          articleList.value = res.records;
-        }, 400);
+      );
+      loading.value = load.value;
+      watch(data, () => {
+        console.log(data.value);
+        loading.value = load.value;
+        articleList.value = data.value?.data.records;
       });
     },
     { deep: true, immediate: true },
@@ -227,19 +245,19 @@ const handleScroll = async (e: any) => {
 .loading {
   width: 100%;
   .news-item {
-    padding: 15px;
+    padding: 0.975rem;
     border-radius: 10px;
     min-height: 100px;
-
     background-color: var(--background);
     margin-bottom: 25px;
     .news-writer {
+      margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
       .avatar {
         cursor: pointer;
-        width: 50px;
-        height: 50px;
+        width: 3.125rem;
+        height: 3.125rem;
         img {
           width: 100%;
           height: 100%;
@@ -249,19 +267,19 @@ const handleScroll = async (e: any) => {
       }
 
       .time {
-        font-size: 13px;
+        font-size: 0.825rem;
         color: #909ba6;
       }
     }
     .news-content {
-      padding: 10px 55px;
+      padding: var(--padding);
       display: block;
       &:hover {
         background-color: #f8f8fa;
         cursor: pointer;
       }
       .news-details {
-        font-size: 14.5px;
+        font-size: 0.87rem;
         color: #a7a7a7;
         p {
           max-height: 40px;
@@ -277,47 +295,31 @@ const handleScroll = async (e: any) => {
       }
     }
     .news-label {
-      padding: 5px 55px;
+      padding: var(--padding);
 
       display: flex;
       .type {
-        min-width: 50px;
+        min-width: 3rem;
         width: max-content;
         padding: 0 8px;
-        font-size: 14px;
+        font-size: 0.875rem;
         color: #909ba6;
         text-align: center;
-        border-radius: 15px;
-        border: 2px solid #e1edf8;
+        border-radius: 0.975rem;
+        border: 0.12rem solid #e1edf8;
         margin-right: 8px;
       }
 
       .labels {
         display: flex;
-
         color: #909ba6;
-        font-size: 14px;
+        font-size: 0.82rem;
         .label-item {
+          display: flex;
+          align-items: center;
           margin: 0 5px;
           cursor: pointer;
         }
-      }
-    }
-    .news-footer {
-      display: flex;
-      align-items: center;
-      padding: 5px 55px;
-      & > div {
-        color: var(--secondary-foreground);
-        display: flex;
-        align-items: center;
-        font-size: 13px;
-        margin-right: 10px;
-      }
-      &-icon {
-        color: var(--secondary-foreground);
-        font-size: 17px;
-        margin-right: 5px;
       }
     }
   }
@@ -393,6 +395,8 @@ const handleScroll = async (e: any) => {
           color: #909ba6;
           font-size: 12px;
           .label-item {
+            display: flex;
+            align-items: center;
             margin: 0 5px;
           }
         }
@@ -402,7 +406,7 @@ const handleScroll = async (e: any) => {
 }
 .over {
   text-align: center;
-  font-size: 12px;
+  font-size: 0.825rem;
   color: var(--secondary-foreground);
   font-weight: 500;
 }
@@ -415,7 +419,7 @@ const handleScroll = async (e: any) => {
       min-height: 100px;
 
       background-color: var(--background);
-      margin-bottom: 25px;
+      margin-bottom: 1.5rem;
       .news-writer {
         .name {
           font-size: 1vw;
@@ -424,11 +428,6 @@ const handleScroll = async (e: any) => {
           cursor: pointer;
           width: 30px;
           height: 30px;
-        }
-
-        .time {
-          font-size: 10px;
-          color: #909ba6;
         }
       }
       .news-content {
@@ -457,18 +456,6 @@ const handleScroll = async (e: any) => {
         padding: 5px 35px;
 
         display: flex;
-        .type {
-          min-width: 30px;
-          width: max-content;
-          padding: 0 8px;
-          font-size: 10px;
-          color: #909ba6;
-          text-align: center;
-          border-radius: 15px;
-          border: 2px solid #e1edf8;
-          margin-right: 8px;
-        }
-
         .labels {
           display: flex;
 

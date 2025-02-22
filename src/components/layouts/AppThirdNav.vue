@@ -79,7 +79,7 @@ $font: #8c9296;
     &-ol {
       width: 100%;
       height: 100%;
-      font-size: 0.9vw;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
       flex-wrap: nowrap;
@@ -91,7 +91,7 @@ $font: #8c9296;
       height: 60%;
       border: 0.1vw solid #e0f1f6;
       border-radius: 15px;
-      margin: 0 10px;
+      margin: 0 0.625rem;
       padding: 0 0.7vw;
       text-align: center;
       color: $font;
@@ -172,8 +172,6 @@ $font: #8c9296;
     box-sizing: border-box;
     height: 35px;
     .top-link {
-      font-size: 11px;
-      // line-height: 50px;
       width: max-content;
       height: 100%;
       display: flex;

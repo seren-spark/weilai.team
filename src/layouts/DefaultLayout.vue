@@ -25,11 +25,11 @@ import SidebarTrigger from "@/components/ui/sidebar/SidebarTrigger.vue";
 .default-layout {
   display: flex;
   background-color: #fafafa;
-
+  width: calc(100vw - var(--scrollbar-width));
   &__container {
     flex: 1;
     padding: 1rem;
-    padding-top: 64px;
+    padding-top: 4rem;
   }
 }
 

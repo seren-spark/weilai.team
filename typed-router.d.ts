@@ -51,6 +51,8 @@ declare module 'vue-router/auto-routes' {
     '/community/brainstorm/label': RouteRecordInfo<'/community/brainstorm/label', '/community/brainstorm/label', Record<never, never>, Record<never, never>>,
     '/community/brainstorm/label/[tag]': RouteRecordInfo<'/community/brainstorm/label/[tag]', '/community/brainstorm/label/:tag', { tag: ParamValue<true> }, { tag: ParamValue<false> }>,
     '/community/brainstorm/label/suggest': RouteRecordInfo<'/community/brainstorm/label/suggest', '/community/brainstorm/label/suggest', Record<never, never>, Record<never, never>>,
+    '/community/brainstorm/test': RouteRecordInfo<'/community/brainstorm/test', '/community/brainstorm/test', Record<never, never>, Record<never, never>>,
+    '/community/brainstorm/test2': RouteRecordInfo<'/community/brainstorm/test2', '/community/brainstorm/test2', Record<never, never>, Record<never, never>>,
     '/community/comprehensive': RouteRecordInfo<'/community/comprehensive', '/community/comprehensive', Record<never, never>, Record<never, never>>,
     '/community/comprehensive/hot': RouteRecordInfo<'/community/comprehensive/hot', '/community/comprehensive/hot', Record<never, never>, Record<never, never>>,
     '/community/comprehensive/hot/[title]': RouteRecordInfo<'/community/comprehensive/hot/[title]', '/community/comprehensive/hot/:title', { title: ParamValue<true> }, { title: ParamValue<false> }>,

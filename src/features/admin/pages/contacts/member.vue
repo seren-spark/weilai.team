@@ -69,6 +69,7 @@ function getMembersOfGroup(str: string) {
 
 <template>
   <div class="content" style="display: flex">
+    <!-- 通讯录的侧边栏 -->
     <div id="sidebar-container">
       <SidebarProvider class="relative" id="sidebar-provider">
         <Sidebar
@@ -77,8 +78,8 @@ function getMembersOfGroup(str: string) {
           id="sidebar"
           style="padding: 0.9vw; width: 20vw"
         >
+          <!-- 顶部搜索 -->
           <Search />
-
           <!-- <div class="sidebar-link">
             <RouterLink to="">
               <Button
@@ -158,6 +159,7 @@ function getMembersOfGroup(str: string) {
         </Sidebar>
       </SidebarProvider>
     </div>
+    <!-- 通讯录右边具体内容 -->
     <Member :teamAble="teamAble" :teamUserList="teamUserList"></Member>
   </div>
   <Confirm />
@@ -165,7 +167,6 @@ function getMembersOfGroup(str: string) {
 
 <style lang="scss" scoped>
 $font: #8c9296;
-
 th {
   height: 5.5vh;
 }
@@ -203,10 +204,8 @@ td {
 }
 .content {
   width: 100%;
-
   top: 0;
   margin-bottom: 50px;
-
   background-color: white;
   #sidebar {
     color: var(--secondary-foreground);
@@ -236,7 +235,6 @@ td {
   }
   #sidebar-container {
     width: 20vw;
-
     overflow: hidden;
   }
 }
@@ -289,17 +287,6 @@ td {
     left: 2%;
     transform: translateY(-50%);
   }
-
-  // .command_box {
-  //   background-color: white;
-
-  //   position: relative;
-  //   overflow: visible;
-  //   width: 250px;
-  //   float: right;
-  //   height: 45px;
-  //   border-radius: 25px;
-  // }
 }
 #sideber {
   &-provider {
@@ -355,7 +342,7 @@ td {
   margin: 0 10px;
   text-align: center;
   color: var(--secondary-foreground);
-  font-size: 12px;
+  font-size: 0.75rem;
   display: flex;
   align-items: center;
   span {
