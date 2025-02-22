@@ -204,6 +204,7 @@ const uploadChunkBase = (chunkList: chunkList[]) => {
           })
           .then((response) => {
             if (response.status === 200) {
+              percent.value[currentFileIndex.value + 1] = 100;
               console.log("分片：" + chunkItem.chunkNumber + " 上传成功");
               successCount++;
               if (successCount >= totalChunks) {

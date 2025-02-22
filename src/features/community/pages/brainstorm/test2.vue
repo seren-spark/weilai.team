@@ -12,31 +12,42 @@
         <th style="font-size: 10px; color: #909399; width: 250px">文件名</th>
         <th style="font-size: 12px; color: #909399; width: 100px">文件大小</th>
         <th style="font-size: 12px; color: #909399; width: 150px">上传进度</th>
-        <th style="font-size: 12px; color: #909399; width: 100px">状态</th>
+        <!-- <th style="font-size: 12px; color: #909399; width: 100px">状态</th> -->
       </tr>
     </table>
-    <div v-for="(item, index) in percent">{{ item }}</div>
+    <div
+      v-for="(item, index) in percent"
+      style="width: 0px; height: 0px; opacity: 0"
+    >
+      {{ item }}
+    </div>
     <div class="file-list-wrapper">
       <div v-for="(item, index) in uploadFileList" :key="index">
         <div class="upload-file-item">
-          <div class="file-info-item file-name" :title="item.name">
+          <div
+            class="file-info-item file-name"
+            style="font-size: 14px; color: #909399; width: 250px"
+            :title="item.name"
+          >
             {{ item.name }}
           </div>
 
-          <div class="file-info-item file-size">
+          <div
+            class="file-info-item file-size"
+            style="font-size: 14px; color: #909399; width: 250px"
+          >
             {{ transformByte(item.size) }}
             <!-- {{ item.size }} -->
           </div>
           <div class="file-info-item file-progress">
-            <div
-              class="file-progress-bar"
-              :style="{ width: item.uploadProgress + '%' }"
-            ></div>
-            <span>{{ item.uploadProgress }}%</span>
+         
+            <span style="font-size: 14px; color: #909399; width: 250px"
+              >{{ item.uploadProgress }}%</span
+            >
           </div>
-          <div class="file-info-item file-size">
+          <!-- <div class="file-info-item file-size">
             <span :class="getStatusClass(item.status)">{{ item.status }}</span>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
