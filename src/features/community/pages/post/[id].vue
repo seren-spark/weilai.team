@@ -32,6 +32,20 @@ export interface PostDetailResponse {
 // 从路由获取参数
 const route = useRoute<"/community/post/[id]">();
 const postId = route.params.id;
+const uniqueId = ref<number | null>(null);
+
+if (route.query.uniqueId) {
+  const queryUniqueId = Array.isArray(route.query.uniqueId)
+    ? route.query.uniqueId[0]
+    : route.query.uniqueId;
+  if (typeof queryUniqueId === "string") {
+    const parsedUniqueId = parseInt(queryUniqueId, 10);
+    uniqueId.value = isNaN(parsedUniqueId) ? null : parsedUniqueId;
+  } else {
+    uniqueId.value = null;
+  }
+}
+
 const { showAlert } = useAlert();
 const getPost = () => {
   return apiClient.get(`/post/selectOne/${postId}`);
@@ -118,13 +132,14 @@ watch(
       :is-collect="isCollect"
       :handle-like-click="handleLike"
       :handle-collect="handleCollect"
+      :unique-id="uniqueId"
     ></ArticleHeader>
     <EditorContent
       class="article-detail__content"
       :editor="editor"
     ></EditorContent>
   </div>
-  <div class="article-Form">
+  <div v-if="uniqueId != 1" class="article-Form">
     <CommentList :post-id="postId"></CommentList>
   </div>
 </template>

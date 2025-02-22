@@ -8,6 +8,9 @@ import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
 import apiClient from "@/api/axios";
 import { useRequest } from "vue-request";
+import router from "@/router";
+import { useUserStore } from "@/store/userStore";
+const userStore = useUserStore();
 
 const props = defineProps<{
   message: SSEMessageData;
@@ -76,14 +79,27 @@ const splitResult = computed(() => {
     imgUrls,
   };
 });
+//跳转个人中心;
+function skipPersonCenter(id: number) {
+  userStore.setUserId(id);
+  userStore.setIsSelf(false);
+
+  router.push({
+    path: `/personalCenter/userInfo`,
+  });
+}
 </script>
 
 <template>
   <div class="mesItem">
-    <UserAvatar class="avatar" :avatar="props.message.headPortrait" />
+    <UserAvatar
+      class="avatar"
+      :avatar="props.message.headPortrait"
+      @click="skipPersonCenter(props.message.senderId)"
+    />
     <div class="mesContent">
       <div class="details">
-        <div class="name">
+        <div class="name" @click="skipPersonCenter(props.message.senderId)">
           {{ props.message.username }}
           <span v-if="props.message.messageType === 1" class="type"
             >点赞了你的文章</span
