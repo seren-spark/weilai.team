@@ -89,6 +89,7 @@ const filterOneSeletedItems = ref([
   },
 ]);
 const handleFilterConditionOne = (value: string, title: string) => {
+  // console.log(value, title);
   if (value === "init" || value === "") {
     return;
   }
@@ -207,7 +208,6 @@ watch(
       [data, error, loading],
       ([newData, newError]) => {
         if (newData?.data.data) {
-          // console.log(newData.data.data.data);
           messageCard.value = newData.data.data.map((card: any) => {
             return {
               ApplyUserId: card.userId,

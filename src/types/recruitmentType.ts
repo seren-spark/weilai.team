@@ -107,7 +107,7 @@ export interface IUpdateApplyUserDTO {
 export interface IUpdateInterviewResultDTO {
   comment: string;
   id: string; // 面试记录id
-  round: string;
+  isSecond: string;
   status: string;
   userId: string; // 面试人员id
 }

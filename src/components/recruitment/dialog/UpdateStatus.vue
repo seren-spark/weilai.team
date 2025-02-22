@@ -22,7 +22,7 @@ import { useAlert } from '@/composables/useAlert';
 const { showAlert } = useAlert();
 
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "refreshPage"]);
 
 
 const props = defineProps<{
@@ -49,12 +49,12 @@ const handleSubmit = () => {
     return;
   }
   // 提交表单
-  // updateApplyUserStatus({ids:props.ids,interviewStatus:selectStatus.value});
   const { run } = useRequest(updateApplyUserStatus, {
     manual: true,
     onSuccess: () => {
-      showAlert("修改成功", "pass");
+      emit("refreshPage");
       emit("close");
+      showAlert("修改成功", "pass");
     },
     onError: () => {
       showAlert("修改失败", "error");
