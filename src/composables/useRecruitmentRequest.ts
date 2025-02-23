@@ -286,20 +286,21 @@ export const getAllInterviewUser = ({
   });
 };
 
-//安排面试官
-//状态参数标记 round 1全部，1代表一面、2代表二面
+//安排面试
+//状态参数标记
 export const arrangeInterviewer = ({
   id,
-  interviewTime,
+  startTime,
+  endTime,
   place,
   firstHr,
   secondHr,
   thirdHr,
 }: IArrangeInterviewDTO) => {
-  console.log(id, interviewTime, place, firstHr, secondHr, thirdHr);
+  console.log(id, place,startTime,endTime, firstHr, secondHr, thirdHr);
   return axios.post(
     `${BASE_UEL}recruit/interview/scheduleInterviewer`,
-    { id, interviewTime, place, firstHr, secondHr, thirdHr },
+    { id,startTime,endTime,  place, firstHr, secondHr, thirdHr },
     {
       headers: {
         "Content-Type": "application/json",
