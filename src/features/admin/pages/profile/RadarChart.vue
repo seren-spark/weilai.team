@@ -30,6 +30,7 @@ const chartConfig = {
     },
 };
 
+
 const radarChart = ref<HTMLElement | null>(null);
 
 onMounted(() => {
@@ -63,15 +64,26 @@ onMounted(() => {
                 {
                     type: 'radar',
 
-                    data:
-                        chartData.map(item => ({
-                            value: item.desktop,
-                            name: item.type,
+                    // data:
+                    // chartData.map(item => ({
+                    //     value: item.desktop,
+                    //     name: item.type,
+                    //     areaStyle: {
+                    //         color: chartConfig.desktop.color,
+                    //         opacity: 0.3
+                    //     }
+                    // }))
+                    data: [
+                        {
+                            // 将每个指标的值按顺序放入数组
+                            value: chartData.map(item => item.desktop),
+                            name: chartConfig.desktop.label,
                             areaStyle: {
                                 color: chartConfig.desktop.color,
                                 opacity: 0.3
                             }
-                        }))
+                        }
+                    ]
                 }
             ]
         };
