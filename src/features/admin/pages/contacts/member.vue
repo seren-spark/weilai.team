@@ -80,33 +80,6 @@ function getMembersOfGroup(str: string) {
         >
           <!-- 顶部搜索 -->
           <Search />
-          <!-- <div class="sidebar-link">
-            <RouterLink to="">
-              <Button
-                variant="outline"
-                size="sm"
-                class="gap-1 sidebar-link-item"
-              >
-                <Icon icon="lsicon:control-outline" />
-                <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  组织管理
-                </span>
-              </Button>
-            </RouterLink>
-
-            <RouterLink to="">
-              <Button
-                variant="outline"
-                size="sm"
-                class="gap-1 sidebar-link-item"
-              >
-                <Icon icon="lsicon:control-outline" />
-                <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  添加组织
-                </span>
-              </Button>
-            </RouterLink>
-          </div> -->
           <SidebarContent>
             <SidebarGroup>
               <SidebarMenu class="sidebar-menu">
@@ -135,7 +108,7 @@ function getMembersOfGroup(str: string) {
                       <SidebarMenuSub>
                         <SidebarMenuSubItem v-for="subItem in item.group">
                           <SidebarMenuSubButton as-child>
-                            <a
+                            <!-- <a
                               class="group-item"
                               @click.prevent="
                                 router.push(
@@ -146,7 +119,21 @@ function getMembersOfGroup(str: string) {
                               <span>{{
                                 getMembersOfGroup(subItem).title
                               }}</span>
-                            </a>
+                            </a> -->
+                            <router-link
+                              class="group-item"
+                              :to="`/admin/contacts/member/${item.grade + ',' + getMembersOfGroup(subItem).info} `"
+                              @click.prevent="
+                                router.push(
+                                  `/admin/contacts/member/${item.grade + ',' + getMembersOfGroup(subItem).info} `,
+                                )
+                              "
+                              active-class="custom-class"
+                            >
+                              <span>{{
+                                getMembersOfGroup(subItem).title
+                              }}</span>
+                            </router-link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       </SidebarMenuSub>
@@ -167,6 +154,9 @@ function getMembersOfGroup(str: string) {
 
 <style lang="scss" scoped>
 $font: #8c9296;
+.custom-class {
+  color: var(--primary-foreground);
+}
 th {
   height: 5.5vh;
 }

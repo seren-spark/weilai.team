@@ -32,6 +32,7 @@ import { RouterLink, useRoute, useRouter } from "vue-router";
 import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";
 import SidebarHeader from "../ui/sidebar/SidebarHeader.vue";
+
 const { data, executeRequest } = useRequest()
 // 获取个人id用于渲染
 interface Info{
@@ -39,19 +40,25 @@ interface Info{
   expires:number
 }
 let info:Info=JSON.parse(localStorage.getItem("userId") as string)
+console.log(info);
 
 
 const messageStore = useMessageStore();
 const noticeStore = useNoticeStore();
 const userInfo=ref<UserInfo>();
 async function getUserInfo (){
+  console.log(info);
+  
   await executeRequest({ url: `/user/getUserInfoByUserId/${info.value}`,method: 'get' })
+  
   userInfo.value=data.value.data as UserInfo
+
+  
 }
 getUserInfo()
 
 watch(()=>data.value,()=>{
- 
+  console.log(data.value);
 })
 const {  logout } = UserLogin()
 const route = useRoute();

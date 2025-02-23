@@ -55,9 +55,9 @@ const legendItems = computed(() => props.data.map((item, i) => ({
   inactive: false,
 })))
 
-// const totalValue = computed(() => props.data.reduce((prev, curr) => {
-//   return prev + curr[props.category]
-// }, 0))
+const totalValue = computed(() => props.data.reduce((prev, curr) => {
+  return prev + curr[props.category]
+}, 0))
 </script>
 
 <template>
@@ -75,8 +75,9 @@ const legendItems = computed(() => props.data.map((item, i) => ({
         :value="(d: Data) => d[category]"
         :sort-function="sortFunction"
         :color="colors"
-        :arc-width="type === 'donut' ? 25 : 0"
+        :arc-width="type === 'donut' ? 20 : 0"
         :show-background="false"
+        :central-label="type === 'donut' ? valueFormatter(totalValue) : ''"
         :events="{
           [Donut.selectors.segment]: {
             click: (d: Data, ev: PointerEvent, i: number, elements: HTMLElement[]) => {

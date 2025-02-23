@@ -11,6 +11,24 @@ let articleList = ref<ArticleList[]>([]);
 let searchResult = ref<ArticleList[]>([]);
 let userInfo = ref<Data>({} as Data);
 let artList = ref<ArticleList[]>([]);
+export function getArticle2(
+  type: number | string = 0,
+  condition = "",
+  page = 1,
+  startTime: Date | string = "",
+  sort = 0,
+) {
+  const getArticle = () => {
+    return apiClient.get(
+      `/admin_post/selectAll?condition=${condition}&page=${page}&sort=${sort}&startTime=${startTime}&type=${type}`,
+    );
+  };
+  const { data, loading } = req(getArticle, {
+    loadingKeep: 600,
+  });
+  let res = ref<any>();
+  return { loading, data };
+}
 export async function getArticle(
   type: number | string = 0,
   condition = "",
@@ -31,7 +49,6 @@ export async function getArticle(
 
   return res.data;
 }
-
 export async function deletes(ids: string) {
   return apiClient.put(`/admin_post/deletes/${ids}`);
 }

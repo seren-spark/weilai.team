@@ -36,7 +36,11 @@
             :key="notice.noticeId"
             class="noticess"
           >
-            <NoticeItem :notice="notice" :notice-list="noticeList" />
+            <NoticeItem
+              :notice="notice"
+              :notice-list="noticeList"
+              :get-not-read-count="getNotReadCount"
+            />
           </div>
         </div>
       </div>
@@ -67,6 +71,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const notices = ref<SSENoticeData[]>([]);
+
 const pageNumber = ref(1);
 const pageSize = ref(10);
 const sseStore = useSseStore();
@@ -82,6 +87,7 @@ onMounted(() => {
   });
   noticeList();
 });
+
 //获取公告列表
 const noticeList = async () => {
   await executeRequest({
@@ -115,6 +121,7 @@ const getNotReadCount = async () => {
     }
   }
 };
+getNotReadCount();
 //全部已读
 const readAllNotice = async () => {
   await showConfirm({

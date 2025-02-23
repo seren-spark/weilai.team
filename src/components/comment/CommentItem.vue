@@ -9,6 +9,9 @@ import { formatPostTime } from "@/utils/formatPostTime";
 import { useAlert } from "@/composables/useAlert";
 import UserAvatar from "../avatar/UserAvatar.vue";
 import { showConfirm } from "@/composables/useConfirm";
+import router from "@/router";
+import { useUserStore } from "@/store/userStore";
+const userStore = useUserStore();
 
 const props = defineProps({
   comment: {
@@ -29,6 +32,7 @@ const props = defineProps({
     required: true,
   },
 });
+
 const { showAlert } = useAlert();
 const { data, executeRequest } = useRequest();
 const isFormVisible = ref(false);
@@ -142,14 +146,31 @@ onMounted(async () => {
   await getSecondComment(props.comment.commentId);
 });
 defineExpose({ userInfo });
+//跳转个人中心;
+function skipPersonCenter(id: number) {
+  userStore.setUserId(id);
+  userStore.setIsSelf(false);
+
+  router.push({
+    path: `/personalCenter/userInfo`,
+  });
+}
 </script>
 
 <template>
   <div class="comment-item" :class="{ 'is-reply': isReply }">
-    <UserAvatar class="avatar" :avatar="userInfo.headPortrait" />
+    <UserAvatar
+      class="avatar"
+      :avatar="userInfo.headPortrait"
+      @click="skipPersonCenter(props.comment.userId)"
+    />
     <div class="content-box">
       <div class="user-info">
-        <span class="nickname">{{ userInfo.name }}</span>
+        <span
+          class="nickname"
+          @click="skipPersonCenter(props.comment.userId)"
+          >{{ userInfo.name }}</span
+        >
         <span class="time">{{ commentTime }}</span>
       </div>
       <div class="comment-text">
@@ -340,11 +361,11 @@ defineExpose({ userInfo });
         }
       }
       .likeIcon.liked {
-        color: #619fc9;
+        color: #3995d3;
         filter: drop-shadow(0 0 10px rgba(0, 187, 255, 0.8));
       }
       .like-btn.liked {
-        color: #619fc9;
+        color: #3995d3;
         text-shadow: 0 0 10px rgba(0, 187, 255, 0.8);
       }
 
@@ -408,7 +429,7 @@ defineExpose({ userInfo });
     width: 85%;
     min-height: 80px;
     overflow: hidden;
-    border-bottom: 1px solid #d9d7d7;
+    // border-top: 1px solid #d9d7d7;
     .avatar {
       width: 40px;
       height: 40px;
@@ -472,7 +493,7 @@ defineExpose({ userInfo });
           }
         }
         .liked {
-          color: #619fc9;
+          color: #3995d3;
           filter: drop-shadow(0 0 15px rgba(0, 187, 255, 0.8));
         }
 
