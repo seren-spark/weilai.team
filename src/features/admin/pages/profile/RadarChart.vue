@@ -46,13 +46,19 @@ onMounted(() => {
         const option = {
             tooltip: {
                 trigger: 'item',
-                formatter: function (params) {
+                formatter: function (params: { name: any; value: any; }) {
                     const typeName = params.name;
                     const value = params.value;
-                    return `<div>
-                        <p>类别: ${typeName}</p>
-                        <p>数值: ${value}</p>
-                    </div>`;
+                    let tooltipHtml = `<div>
+                        <p>${typeName}</p>`
+                    value.forEach((value: any, index: number) => {
+                        tooltipHtml += `<p class="tooltipItem">${indicators[index].name}: ${value}</p>`;
+                    })
+                    tooltipHtml += `</div>`;
+                    return tooltipHtml;
+                },
+                textStyle: {
+                    color: "rgb(91 91 91)"
                 }
             },
             radar: {
@@ -87,7 +93,6 @@ onMounted(() => {
                 }
             ]
         };
-        console.log(option.series);
         myChart.setOption(option);
     }
 });
@@ -110,5 +115,9 @@ onMounted(() => {
     }
 
     .card-content {}
+
+    .tooltipItem {
+        font-size: 13px;
+    }
 }
 </style>
