@@ -30,6 +30,7 @@ const chartConfig = {
     },
 };
 
+
 const radarChart = ref<HTMLElement | null>(null);
 
 onMounted(() => {
@@ -45,13 +46,19 @@ onMounted(() => {
         const option = {
             tooltip: {
                 trigger: 'item',
-                formatter: function (params) {
+                formatter: function (params: { name: any; value: any; }) {
                     const typeName = params.name;
                     const value = params.value;
-                    return `<div>
-                        <p>类别: ${typeName}</p>
-                        <p>数值: ${value}</p>
-                    </div>`;
+                    let tooltipHtml = `<div>
+                        <p>${typeName}</p>`
+                    value.forEach((value: any, index: number) => {
+                        tooltipHtml += `<p class="tooltipItem">${indicators[index].name}: ${value}</p>`;
+                    })
+                    tooltipHtml += `</div>`;
+                    return tooltipHtml;
+                },
+                textStyle: {
+                    color: "rgb(91 91 91)"
                 }
             },
             radar: {
@@ -63,19 +70,29 @@ onMounted(() => {
                 {
                     type: 'radar',
 
-                    data:
-                        chartData.map(item => ({
-                            value: item.desktop,
-                            name: item.type,
+                    // data:
+                    // chartData.map(item => ({
+                    //     value: item.desktop,
+                    //     name: item.type,
+                    //     areaStyle: {
+                    //         color: chartConfig.desktop.color,
+                    //         opacity: 0.3
+                    //     }
+                    // }))
+                    data: [
+                        {
+                            // 将每个指标的值按顺序放入数组
+                            value: chartData.map(item => item.desktop),
+                            name: chartConfig.desktop.label,
                             areaStyle: {
                                 color: chartConfig.desktop.color,
                                 opacity: 0.3
                             }
-                        }))
+                        }
+                    ]
                 }
             ]
         };
-        console.log(option.series);
         myChart.setOption(option);
     }
 });
@@ -98,5 +115,9 @@ onMounted(() => {
     }
 
     .card-content {}
+
+    .tooltipItem {
+        font-size: 13px;
+    }
 }
 </style>
