@@ -1,22 +1,9 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <template>
   <Teleport to="body">
+    <div v-if="props.isOpen" class="outer" @click="close($event)"></div>
     <transition name="fade">
       <div v-if="isOpen" class="arrange-interviewer-wrapper">
-        <!-- 箭头图标 -->
-        <div class="arrow" @click="emit('close')">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1em"
-            height="1em"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="rgba(0,0,0,0.5)"
-              d="m6.59 6.84l5.66 5.66l-5.66 5.66l-.7-.71l4.95-4.95l-4.95-4.95zm4 0l5.66 5.66l-5.66 5.66l-.7-.71l4.95-4.95l-4.95-4.95z"
-            />
-          </svg>
-        </div>
         <div class="arrange-interviewer">
           <div class="title text-center">
             <p>安排面试</p>
@@ -26,10 +13,11 @@
             <!-- 申请人字段 -->
             <FormField name="ApplyUser" class="ApplyUser">
               <FormItem>
-                <FormLabel class="m-3 m-b-2">申请人</FormLabel>
+                <FormLabel class="m-3 m-b-2 input-title">申请人</FormLabel>
                 <FormControl>
                   <Input
                     v-model="formData.ApplyUser"
+                    class="input-item"
                     placeholder="填写申请人"
                   />
                 </FormControl>
@@ -39,9 +27,13 @@
             <!-- 面试地点字段 -->
             <FormField name="place" class="place">
               <FormItem>
-                <FormLabel class="m-3">面试地点</FormLabel>
+                <FormLabel class="m-3 input-title">面试地点</FormLabel>
                 <FormControl>
-                  <Input v-model="formData.place" placeholder="安排面试地点" />
+                  <Input
+                    v-model="formData.place"
+                    class="input-item"
+                    placeholder="安排面试地点"
+                  />
                 </FormControl>
                 <span class="form-message">{{ errors.place }}</span>
               </FormItem>
@@ -49,7 +41,7 @@
             <!-- 面试官字段 -->
             <FormField name="interviewer" class="interviewer">
               <FormItem class="flex flex-col">
-                <FormLabel class="m-3">面试官</FormLabel>
+                <FormLabel class="m-3 input-title">面试官</FormLabel>
                 <Popover>
                   <PopoverTrigger as-child>
                     <FormControl>
@@ -57,7 +49,7 @@
                         variant="outline"
                         role="combobox"
                         :class="[
-                          'pl-3 text-left font-normal',
+                          'pl-3 text-left font-normal font-control',
                           formData.interviewer.length === 0 &&
                             'text-muted-foreground',
                         ]"
@@ -71,7 +63,7 @@
                                       (choice) => choice?.value === interviewer,
                                     )?.label || "",
                                 )
-                                .join(", ")
+                                .join(" | ")
                             : "选择面试官"
                         }}
                         <ChevronsUpDownIcon
@@ -84,10 +76,11 @@
                     <Command>
                       <CommandInput
                         v-model="searchName"
+                        class="input-item"
                         placeholder="搜索面试官"
                       />
                       <CommandList>
-                        <CommandEmpty>未找到该面试官</CommandEmpty>
+                        <CommandEmpty class="font-control" >未找到该面试官</CommandEmpty>
                         <CommandGroup>
                           <CommandItem
                             v-for="choice in choices"
@@ -123,21 +116,18 @@
             <!-- 面试日期字段 -->
             <FormField name="date" class="date">
               <FormItem class="flex flex-col">
-                <FormLabel class="m-3">面试日期 </FormLabel>
+                <FormLabel class="m-3 input-title">面试日期 </FormLabel>
                 <Popover>
                   <PopoverTrigger as-child>
                     <FormControl>
                       <Button
                         variant="outline"
                         :class="[
-                          'pl-3 text-left font-normal',
+                          'pl-3 text-left font-normal font-control',
                           !formData.date && 'text-muted-foreground',
                         ]"
                       >
-                        <CalendarIcon
-                          class="mr-2 h-4 w-4 shrink-0 opacity-50"
-                        />
-                        {{
+                          {{
                           formData.date
                             ? format(
                                 new Date(
@@ -149,6 +139,8 @@
                               )
                             : `选择面试日期`
                         }}
+
+
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -167,10 +159,11 @@
             <!-- 开始时间字段 -->
             <FormField name="startTime" class="startTime">
               <FormItem>
-                <FormLabel class="m-3">开始时间</FormLabel>
+                <FormLabel class="m-3 input-title">开始时间</FormLabel>
                 <FormControl>
                   <Input
                     v-model="formData.startTime"
+                    class="input-item"
                     placeholder="填写开始时间"
                   />
                 </FormControl>
@@ -180,17 +173,19 @@
             <!-- 结束时间字段 -->
             <FormField name="endTime" class="endTime">
               <FormItem>
-                <FormLabel class="m-3">结束时间</FormLabel>
+                <FormLabel class="m-3 input-title">结束时间</FormLabel>
                 <FormControl>
                   <Input
                     v-model="formData.endTime"
+                    class="input-item"
                     placeholder="填写结束时间"
                   />
                 </FormControl>
                 <span class="form-message">{{ errors.endTime }}</span>
               </FormItem>
             </FormField>
-            <Button class="btn-style" type="submit">保存</Button>
+            <Button class="btn-style arrange-submit" type="submit">保存</Button>
+            <Button class="btn-style arrange-cancel" @click="emit('close')">取消</Button>
           </form>
         </div>
       </div>
@@ -222,7 +217,6 @@ import {
 } from "@/components/ui/command";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { CalendarIcon } from "@radix-icons/vue";
 import { z } from "zod"; // 引入 Zod
 import type { DateValue } from "@internationalized/date";
 import {
@@ -232,6 +226,14 @@ import {
 import { useRequest } from "vue-request";
 import { useAlert } from "@/composables/useAlert";
 const { showAlert } = useAlert();
+
+const close = (event: Event) => {
+  // 点击遮罩层关闭
+  if (event.target === event.currentTarget) {
+    emit("close");
+  }
+  return;
+};
 
 const props = defineProps<{
   isOpen: boolean;
@@ -348,12 +350,6 @@ onMounted(() => {
   });
 });
 
-const formatDate = (date: DateValue | null) => {
-  return date
-    ? format(new Date(date.year, date.month - 1, date.day), "yyyy-MM-dd")
-    : "选择日期";
-};
-
 const selectedInterviewersIds = ref<string[]>([]);
 
 //获取到选择的面试官的id
@@ -404,12 +400,12 @@ const handleSubmit = () => {
     Object.keys(errors).forEach((key) => {
       errors[key as keyof typeof errors] = "";
     });
-    let dateString = `${formatDate(formData.date as any)}-${formData.startTime}-${formData.endTime}`;
     // 提交表单数据
     const { data } = useRequest(() =>
       arrangeInterviewer({
         id: props.id,
-        interviewTime: dateString,
+        startTime: `${formData.date} ${formData.startTime}`,
+        endTime: `${formData.date} ${formData.endTime}`,
         place: formData.place,
         firstHr: selectedInterviewersIds.value[0],
         secondHr: selectedInterviewersIds.value[1],
@@ -417,18 +413,13 @@ const handleSubmit = () => {
       }),
     );
     watchEffect(() => {
-      if (data.value) {
-        console.log("data.value:", data.value);
-        // showAlert("安排面试成功", "pass");
-        // emit("close");
+      console.log("data", data.value?.data);
+      if (data.value?.data.code === 200) {
+        showAlert("面试安排成功", "pass");
+        emit("close");
+      }else{
+        showAlert(data?.value?.data.message , "error");
       }
-      // if (data.value?) {
-      //   showAlert("安排面试成功", "pass");
-      //   emit("close");
-      // }
-      // if (error.value) {
-      //   showAlert("安排面试失败", "error");
-      // }
     });
   } else {
     console.error("表单数据无效:", result.error);
@@ -444,6 +435,9 @@ const handleSubmit = () => {
 @use "@/assets/styles/recruitment.scss";
 .interviewer-selected {
   background-color: var(--accent);
+  border-left: 3px solid var(--accent);
+  padding-left: 5px;
+  margin-left: -5px;
 }
 .btn-style {
   margin: 0 auto;
@@ -453,28 +447,15 @@ const handleSubmit = () => {
   border: solid 1px var(--input);
   cursor: pointer;
 }
-.arrow {
-  width: 35px;
-  height: 35px;
-  margin-left: 10px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 10px;
-  z-index: 100;
-  font-size: 30px;
-  text-align: center;
-  line-height: 50px;
-  cursor: pointer;
-}
+
 .arrange-interviewer-wrapper {
   padding: 50px;
-  width: 40%;
+  width: 500px;
   height: 100%;
   background-color: var(--popover);
   position: fixed;
   top: 0;
-  left: 60%;
+  right: 0;
   z-index: 43;
   display: flex;
   justify-content: start;
@@ -485,40 +466,63 @@ const handleSubmit = () => {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 .arrange-interviewer {
-  width: 80%;
+  width: 100%;
   background-color: var(--popover);
   height: 100%;
   position: relative;
-  padding: 0 40px;
 }
 form {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  padding: 30px;
   width: 100%;
 }
 .form-message {
   color: var(--destructive-foreground);
   font-size: 12px;
 }
-
-// 时间选择器样式
-.vue__time-picker {
+.input-title {
+  font-size: 0.8rem;
+}
+.input-item {
   width: 100%;
-  input {
-    padding: 10px;
-    border: 1px solid #ccc;
+  padding: 10px;
+  border: 1px solid #ccc;
+  &::placeholder {
+    color: #ccc;
+    font-size: 0.7rem;
   }
+}
+.font-control {
+  font-size: 0.7rem;
+}
+
+
+.arrange-submit {
+ width: 120px;
+ position: absolute;
+  bottom: 20px;
+  left: 20px;
+  border: 1px solid #ccc;
+  font-size: 0.8rem;
+  background-color: var(--accent);
+}
+.arrange-cancel {
+  width: 120px;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  border: 1px solid #ccc;
+  font-size: 0.8rem;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
+  transform: translateY(-100%);
 }
 </style>

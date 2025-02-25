@@ -30,7 +30,7 @@ watch(
   () => props.isPublishing,
   (newValue) => {
     console.log(newValue);
-  },                                                                                             
+  },
 );
 
 defineEmits<{
@@ -51,7 +51,7 @@ defineEmits<{
               class="post-header__title-input w-auto"
               type="text"
               placeholder="🎉  输入文章标题"
-              :model-value="postTitle"
+              :model-value="props.postTitle"
               @update:model-value="(val) => $emit('update:postTitle', val)"
             ></TitleInput>
           </TooltipTrigger>

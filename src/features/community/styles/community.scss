@@ -1,14 +1,14 @@
 .content {
-  padding: 0 45px;
+  padding: 0 3rem;
   width: 100%;
   height: auto;
 }
 
-@media screen and (max-width: 1200px) {
-  .content {
-    padding: 0 10px;
-  }
-}
+// @media screen and (max-width: 1200px) {
+//   .content {
+//     padding: 0 10px;
+//   }
+// }
 @media screen and (max-width: 768px) {
   .content {
     padding: 0 0;

@@ -16,28 +16,22 @@ type filterItem = {
   label: string;
   drapdownItems: {
     condition: string;
+    id: string;
     isSeleted: boolean | false;
   }[];
 };
 
 const selectedItems = ref<string[]>([]);
+const selectedIds = ref<string[]>([]);
 
 const props = defineProps<{
   filterMoreSeletedItem: filterItem;
 }>();
-watch(
-  props.filterMoreSeletedItem,
-  () => {
-    // 监听 filterMoreSeletedItem 的变化，更新 selectedItems
-    selectedItems.value = props.filterMoreSeletedItem.drapdownItems
-      .filter((item) => item.isSeleted)
-      .map((item) => item.condition);
-  },
-  {
-    deep: true,
-  },
-);
+
+const emit = defineEmits(["update:selectedIds"]);
+
 const handleCheckboxChange = (item: {
+  id: string;
   condition: string;
   isSeleted: boolean;
 }) => {
@@ -46,17 +40,34 @@ const handleCheckboxChange = (item: {
     item.isSeleted = false;
     console.log("最多只能选择3个");
   } else {
-    // 更新 selectedItems
+    // 更新 selectedItems 和 selectedIds
     if (item.isSeleted) {
       selectedItems.value.push(item.condition);
+      selectedIds.value.push(item.id);
     } else {
       selectedItems.value = selectedItems.value.filter(
         (s) => s !== item.condition,
       );
+      selectedIds.value = selectedIds.value.filter((id) => id !== item.id);
     }
+    emit("update:selectedIds", selectedIds.value);
   }
 };
+watch(
+  () => props.filterMoreSeletedItem.drapdownItems,
+  (newItems) => {
+    selectedItems.value = newItems
+      .filter((item) => item.isSeleted)
+      .map((item) => item.condition);
+    selectedIds.value = newItems
+      .filter((item) => item.isSeleted)
+      .map((item) => item.id);
+    emit("update:selectedIds", selectedIds.value);
+  },
+  { deep: true },
+);
 </script>
+
 <template>
   <div class="checkbox-group long-dashed-border">
     <DropdownMenu>
@@ -89,6 +100,7 @@ const handleCheckboxChange = (item: {
     </div>
   </div>
 </template>
+
 <style lang="scss" scoped>
 @use "@/assets/styles";
 @use "@/assets/styles/recruitment.scss";

@@ -7,7 +7,6 @@ import {
   Pagination,
   AutoLongerInput,
   UpdateStatus,
-  // ModalDialog,
   UpdateApplyUserInfo,
   ArrangeInterviewer,
 } from "@/components/recruitment";
@@ -23,14 +22,15 @@ import {
 import { useRequest } from "vue-request";
 import type {
   IAllApplyUserVO,
-  // IResponseDataApplyUser,
   IAllApplyUserDTO,
   IGradeData,
 } from "@/types/recruitmentType";
 import { interviewStatusMap } from "@/types/recruitmentType";
 import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
+import * as XLSX from "xlsx";
 const { showAlert } = useAlert();
+
 const searchValue = ref("");
 const handleInput = (value: string) => {
   console.log(value);
@@ -62,39 +62,17 @@ const candidates_itemsObjArr = ref([
       },
     ],
   },
-  {
-    title: "班级",
-    label: "选择要筛选的班级",
-    ref: "init",
-    arr: [
-      {
-        condition: "计科233",
-      },
-      {
-        condition: "物联233",
-      },
-      {
-        condition: "数据233",
-      },
-    ],
-  },
 ]);
 
-//获得子组件的过滤条件
-const handleFilterCondition = (value: string, title: string) => {
-  console.log(value, title);
-  if (value === "init" || value === "") {
-    return;
-  }
+//处理筛选条件
+const handleFilterConditions = (value: string, title: string) => {
   if (title === "年级") {
     grade.value = value;
-  }
-  if (title === "性别") {
+    return;
+  } else if (title === "性别") {
     sex.value = value;
+    return;
   }
-  // if (title === "班级") {
-  //   clazz.value = value;
-  // }
 };
 
 const dateRange = ref(null); // 初始化日期范围
@@ -104,6 +82,9 @@ const handleDateRangeUpdate = (newDateRange: never) => {
   dateRange.value = newDateRange;
   handleDateRange();
 };
+let formattedRange = "";
+let startTime = ref<string>("");
+let endTime = ref<string>("");
 //对dateRange进行处理
 const handleDateRange = () => {
   // 将日期范围转换为字符串格式
@@ -112,9 +93,10 @@ const handleDateRange = () => {
   }
   const startDate = Reflect.get(dateRange.value, "start");
   const endDate = Reflect.get(dateRange.value, "end");
-  const formattedRange = `${startDate} - ${endDate}`;
-  // console.log(formattedRange);
-  dateString.value = formattedRange;
+  formattedRange = `${startDate}@${endDate}`;
+  const [start, end] = formattedRange.split("@");
+  startTime.value = start;
+  endTime.value = end;
 };
 
 const isReset = ref(false);
@@ -127,7 +109,9 @@ const resetCondition = () => {
   grade.value = "";
   sex.value = "";
   dateRange.value = null;
-  dateString.value = "";
+  startTime.value = "";
+  endTime.value = "";
+  searchValue.value = "";
   isReset.value = true;
   setTimeout(() => {
     isReset.value = false;
@@ -163,7 +147,6 @@ const pageSize = ref(10);
 const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);
-// const getApplyUserData = ref<IResponseDataApplyUser | null>(null);
 
 //从分页组件拿到页码信息并更新
 const changePage = (newPage: number) => {
@@ -239,11 +222,6 @@ const arrangeInterview = (id: string, name?: string) => {
   currentArrangeInterviewName.value = name || "";
 };
 
-// 淘汰
-// const eliminateCandidate = (id: string) => {
-//   console.log(id, "淘汰");
-// };
-
 // 删除候选人
 const DeleteCandidate = (id: string) => {
   confirmDeleteCandidate(id);
@@ -259,7 +237,7 @@ const confirmDeleteCandidate = (id: string) => {
         [data, error],
         ([newData, newError]) => {
           if (newError) {
-            console.log("请求失败:", newError);
+            showAlert("删除失败", "error");
             return;
           }
           if (newData) {
@@ -334,9 +312,8 @@ fetchAllGrade();
 
 const grade = ref<string>("");
 const sex = ref<string>("");
-const dateString = ref<string>("");
 
-watch([grade, sex, dateString, searchValue, status], () => {
+watch([grade, sex, startTime, endTime, searchValue, status], () => {
   pageNo.value = 1;
 });
 
@@ -347,7 +324,8 @@ const getAllApplyUserRequestParams = computed(() => ({
   condition: searchValue.value,
   grade: grade.value,
   sex: sex.value,
-  dateString: dateString.value,
+  startTime: startTime.value,
+  endTime: endTime.value,
 }));
 
 //设置一个状态变量，用来强制更新
@@ -355,10 +333,8 @@ const updateParameter = ref<boolean>(false);
 
 watch(
   [getAllApplyUserRequestParams, updateParameter],
-  ([newParams, _]) => {
-    console.log(newParams, _);
+  ([newParams]) => {
     const { data, error } = useRequest(() => getAllApplyUser(newParams));
-
     watch(
       [data, error],
       ([newData, newError]) => {
@@ -367,7 +343,6 @@ watch(
           return;
         }
         if (newData) {
-          console.log("请求成功:", newData.data.data.data);
           total.value = newData.data.data.total;
           //拿到数据后逆序渲染
           tableData.value = newData.data.data.data.map(
@@ -397,10 +372,66 @@ watch(
   },
 );
 
+const excelHeaders = ref([
+  {
+    title: "姓名",
+    key: "name",
+  },
+  {
+    title: "年级",
+    key: "session",
+  },
+  {
+    title: "班级",
+    key: "clazz",
+  },
+  {
+    title: "性别",
+    key: "gender",
+  },
+  {
+    title: "状态",
+    key: "state",
+  },
+]);
+
+const exportToExcelFunction = <T,>(data: Array<T>) => {
+  const filteredData = data.map((item: T) => {
+    const newItem: Partial<T> = {};
+    excelHeaders.value.forEach((Header) => {
+      newItem[Header.key as keyof T] = item[Header.key as keyof T];
+    });
+    return newItem;
+  });
+
+  // 创建一个工作簿
+  const workbook = XLSX.utils.book_new();
+
+  // 将表格数据转换为工作表
+  const worksheet = XLSX.utils.json_to_sheet(filteredData);
+
+  // 自定义导出表格的表头，使用组件内定义的 headers 中的 title 字段
+  const customHeaders = excelHeaders.value.map((item) => item.title);
+
+  // 在工作表第一行添加自定义表头
+  XLSX.utils.sheet_add_aoa(worksheet, [customHeaders], { origin: "A1" });
+
+  // 将工作表添加到工作簿
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+  // 生成 Excel 文件并触发下载
+  XLSX.writeFile(workbook, "导出信息表.xlsx");
+};
+
+//导出excel表格
+const exportExcel = () => {
+  exportToExcelFunction(tableData.value);
+};
+
 //dialog
 const updateStatus = ref(false);
 const currentTableSelectIds = ref<string[]>([]);
-//修改状态、
+//修改状态
 const handleTableSelectIds = (ids: string[]) => {
   currentTableSelectIds.value = ids;
 };
@@ -412,6 +443,11 @@ const handleEditStatus = () => {
   //把修改状态的弹窗组件展示
   updateStatus.value = true;
 };
+
+const refreshPage = () => {
+  updateParameter.value = !updateParameter.value;
+};
+
 const updateApplyUserInfo = ref(false);
 const arrangeInterviewerDialog = ref(false);
 </script>
@@ -433,12 +469,13 @@ const arrangeInterviewerDialog = ref(false);
       :ids="currentTableSelectIds"
       :is-open="updateStatus"
       @close="updateStatus = false"
+      @refresh-page="refreshPage"
     />
 
     <div class="filter-items">
       <FilterCondition
         :items-obj-arr="candidates_itemsObjArr"
-        @filter_condition="handleFilterCondition"
+        @filter_condition="handleFilterConditions"
       ></FilterCondition>
       <div class="date-picker">
         <DataRangePicker
@@ -464,14 +501,16 @@ const arrangeInterviewerDialog = ref(false);
       <ToggleShow
         :toggle-items="toggleItems"
         @transfer-toggle-show-status="handleToggleShowStatus"
-      ></ToggleShow>
+      />
 
       <div class="handle-btns">
         <!-- <Button type="primary" class="btn-style">安排面试</Button> -->
         <Button type="primary" class="btn-style" @click="handleEditStatus"
           >修改状态</Button
         >
-        <Button type="primary" class="btn-style">结果导出</Button>
+        <Button type="primary" class="btn-style" @click="exportExcel"
+          >结果导出</Button
+        >
       </div>
     </div>
 
@@ -479,7 +518,11 @@ const arrangeInterviewerDialog = ref(false);
       <DataTable
         :items="tableData"
         :headers="headers"
-        :action-items="actionItems"
+        :action-items="
+          status === 0
+            ? actionItems
+            : actionItems.filter((item, index) => index !== 2)
+        "
         @send-selected-ids="handleTableSelectIds"
       ></DataTable>
       <div class="pagination-container">

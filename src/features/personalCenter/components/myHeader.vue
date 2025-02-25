@@ -78,7 +78,7 @@
                 保存
               </button>
 
-              
+
             </div>
           </DialogContent>
         </Dialog>
@@ -366,7 +366,7 @@ const handleFileChange = (event) => {
 function uploadFile() {
 
   const formData = new FormData();
-  formData.append('headPortrait', avatar.value);    
+  formData.append('headPortrait', avatar.value);
   executeRequest({
     url: "/user/updateUserHeadPortrait",
     method: "put",
@@ -514,12 +514,12 @@ async function getUserInfo() {
   if (data.value && data.value.code == 200) {
     Object.assign(userInfo, data.value.data);
     console.log("用户信息：", userInfo);
-        
+
     phone.value = userInfo.phone;
     qq.value = userInfo.qq;
     userDestination.value = userInfo.userDestination;
-    graduationDestination.value = userInfo.graduationDestination;   
-    
+    graduationDestination.value = userInfo.graduationDestination;
+
     imageUrl.value = userInfo.headPortrait;
   }
   console.log("请求结果", data.value);

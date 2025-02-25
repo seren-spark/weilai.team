@@ -37,7 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+// @ts-ignore
 import NoData from "@/components/loading/NoData.vue";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -52,7 +52,8 @@ import { useDateFormatter } from "@/composables/useDateFormatter";
 import { cn } from "@/lib/utils";
 import router from "@/router";
 import type { ArticleList } from "@/types/Community";
-import { checkType, deletes, getArticle } from "@community/composables/search";
+import { checkType } from "@community/composables/search";
+import { deletes, getArticle } from "@admin/composables/useCommunity";
 import { Icon } from "@iconify/vue";
 import { getLocalTimeZone, type DateValue } from "@internationalized/date";
 import { Calendar as CalendarIcon, MoreHorizontal } from "lucide-vue-next";
@@ -201,18 +202,18 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
                 <div class="select-type">
                   <span>类型:</span>
                   <Select v-model="selectType">
-                    <SelectTrigger class="w-[180px]">
+                    <SelectTrigger class="w-[11.25rem]">
                       <SelectValue placeholder="请选择" />
                     </SelectTrigger>
                     <SelectContent class="bg-white">
-                      <SelectGroup class="text-[0.9vw]">
-                        <SelectItem class="text-[0.9vw]" value="1">
+                      <SelectGroup class="text-[0.9rem]">
+                        <SelectItem class="text-[0.9rem]" value="1">
                           博客</SelectItem
                         >
-                        <SelectItem class="text-[0.9vw]" value="3"
+                        <SelectItem class="text-[0.9rem]" value="3"
                           >交流
                         </SelectItem>
-                        <SelectItem class="text-[0.9vw]" value="4">
+                        <SelectItem class="text-[0.9rem]" value="4">
                           头脑风暴
                         </SelectItem>
                       </SelectGroup>
@@ -418,29 +419,9 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
 </template>
 
 <style lang="scss" scoped>
+@import "@admin/styles/table.scss";
 $font: #8c9296;
-tr {
-  text-align: center;
-  font-size: 14.5px;
-  height: 40px !important;
-  box-sizing: border-box;
-  &:nth-child(even) {
-    background-color: #f8f8fa;
-  }
-}
-#tb {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-}
-th {
-  text-align: center;
-  font-size: 1vw;
-  color: var(--secondary-foreground);
-}
-td {
-  padding: 0.5em;
-  font-size: 1vw;
-}
+
 .group-leader {
   background-color: var(--secondary);
 }
@@ -464,32 +445,6 @@ td {
   margin-bottom: 50px;
   background-color: white;
   padding-top: 5px;
-  #sidebar {
-    color: var(--secondary-foreground);
-    width: 20rem;
-    .sidebar-link {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      &-item {
-        display: flex;
-        align-items: center;
-        padding: 5px 20px;
-        font-size: 14px;
-        color: var(--secondary-foreground);
-        margin: 0 5px;
-        border-radius: var(--radius);
-        border: 1.5px solid #e8ebec;
-      }
-    }
-  }
-  #sidebar-container {
-    width: 20rem;
-    overflow: hidden;
-  }
-}
-.sidebar-menu {
-  color: var(--secondary-foreground);
 }
 
 .header-link {
@@ -500,33 +455,36 @@ td {
   width: 100%;
   .select-type {
     select {
-      font-size: 0.9vw;
+      font-size: 0.825rem;
     }
   }
   .select {
     &-type,
     &-time {
       margin-right: 5px;
-
       span {
         width: max-content;
-        padding: 0.2vw;
-        font-size: 0.9vw;
-        margin-right: 5px;
+        padding: 0.2rem;
+        font-size: 0.825rem;
+        margin-right: 0.3rem;
       }
       display: flex;
-      font-size: 14px;
+      font-size: 0.825rem;
       color: var(--secondary-foreground);
       align-items: center;
     }
     &-time {
       &-btn {
         width: 15vw;
+        height: 2rem;
+        font-size: 0.825rem;
       }
     }
     &-type {
       button {
         outline: none;
+        height: 2rem;
+        padding: 0 0.625rem;
       }
     }
   }
@@ -546,7 +504,7 @@ td {
       width: 110px;
       margin: 0 5px;
       padding: 5px;
-      font-size: 13px;
+      font-size: 0.825rem;
       border: 1.5px solid var(--border);
       border-radius: var(--radius);
       &:hover {
@@ -584,9 +542,9 @@ td {
       list-style: none;
       outline-style: none;
       width: 180px;
-      height: 40px;
-      font-size: 0.9vw;
-      border: 1px solid var(--border);
+      height: 2rem;
+      font-size: 0.825rem;
+      border: 0.125rem solid var(--border);
       border-radius: var(--radius);
       padding: 5px 10px;
       padding-left: 10px;
@@ -622,15 +580,15 @@ td {
   margin: 0 10px;
   width: max-content;
   height: max-content;
-  padding: 1vh 1.5vw;
-  font-size: 0.9vw;
+  padding: 0.35rem 1.5rem;
+  font-size: 0.825rem;
   border-radius: 8px;
   background-color: var(--primary);
   color: var(--primary-foreground);
 }
 .reset {
   color: var(--secondary-foreground);
-  font-size: 0.9vw;
+  font-size: 0.9rem;
   &:hover {
     cursor: pointer;
   }
@@ -682,40 +640,7 @@ td {
     width: 100%;
     .select-type {
       select {
-        font-size: 0.9vw;
-      }
-    }
-    .select {
-      &-type,
-      &-time {
-        margin-right: 5px;
-
-        span {
-          width: max-content;
-          padding: 0.2vw;
-          font-size: 0.9vw;
-          margin-right: 5px;
-        }
-        display: flex;
-        font-size: 14px;
-        color: var(--secondary-foreground);
-        align-items: center;
-      }
-      &-time {
-        &-btn {
-          width: 15vw;
-          font-size: 0.9vw;
-          height: 30px;
-          padding: 0 10px;
-        }
-      }
-      &-type {
-        button {
-          outline: none;
-          width: 150px;
-          height: 30px;
-          padding: 0px 10px;
-        }
+        font-size: 0.9rem;
       }
     }
   }
@@ -732,22 +657,6 @@ td {
       float: right;
       position: relative;
 
-      &_input_box {
-        position: relative;
-      }
-      input {
-        text-decoration: none;
-        list-style: none;
-        outline-style: none;
-        width: 180px;
-
-        height: 30px;
-        font-size: 0.9vw;
-        border: 2px solid var(--border);
-        border-radius: var(--radius);
-        padding: 0px 10px;
-        padding-left: 10px;
-      }
       .search-icon {
         position: absolute;
         top: 50%;

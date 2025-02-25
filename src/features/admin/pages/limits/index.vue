@@ -95,6 +95,7 @@ const changeAuthorityList = ref([]);
 
 const isAllSelected = ref(false);
 const handleItemSelect = (authority: string) => {
+
   const index = changeAuthorityList.value.indexOf(authority);
 
   if (index === -1) {

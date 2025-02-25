@@ -27,5 +27,4 @@ import HotTag from "@/features/community/components/tag/HotTag.vue";
     display: none;
   }
 }
-
 </style>

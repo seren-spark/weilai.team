@@ -6,7 +6,7 @@
           <Icon
             icon="bitcoin-icons:search-filled"
             color="#b9c2d0"
-            font-size="26px"
+            font-size="1.6rem"
           />
         </span>
         <input
@@ -152,7 +152,6 @@ function handleClick(e: Event) {
 <style scoped lang="scss">
 .search_container {
   margin-bottom: 10px;
-  height: 45px;
 }
 .search {
   position: relative;
@@ -164,12 +163,12 @@ function handleClick(e: Event) {
     list-style: none;
     outline-style: none;
     width: 100%;
-    height: 40px;
+    height: 2.5rem;
     border: 1px solid #d0d9e4;
     border-radius: 8px;
-    padding: 5px 10px;
-    padding-left: 30px;
-    font-size: 14px;
+    padding: 0.3rem 0.6rem;
+    padding-left: 1.8rem;
+    font-size: 0.95rem;
   }
   .search-icon {
     position: absolute;
@@ -182,8 +181,9 @@ function handleClick(e: Event) {
   &_list {
     border-radius: var(--radius);
     background-color: white;
-    position: relative;
+    position: absolute;
     z-index: 15;
+    width: 100%;
     padding: 5px 5px;
     box-shadow:
       0px 2px 5px rgba(0, 0, 0, 0.1),

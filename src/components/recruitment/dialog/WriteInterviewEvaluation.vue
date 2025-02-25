@@ -29,7 +29,7 @@
                   <SelectValue placeholder="选择面试去向" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="-2">待二面</SelectItem>
+                  <SelectItem value="-4">待二面</SelectItem>
                   <SelectItem value="3">淘汰</SelectItem>
                   <SelectItem value="2">已录取</SelectItem>
                 </SelectContent>
@@ -64,7 +64,11 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
-const emit = defineEmits(["close"]);
+import { evaluateInterview } from "@/composables/useRecruitmentRequest";
+import { useAlert } from "@/composables/useAlert";
+const { showAlert } = useAlert();
+
+const emit = defineEmits(["close", "refreshPage"]);
 const close = (event: Event) => {
   // 点击遮罩层关闭
   if (event.target === event.currentTarget) {
@@ -73,13 +77,11 @@ const close = (event: Event) => {
   return;
 };
 
-const props = defineProps({
-  isOpen: Boolean,
-  id: {
-    type: String,
-    default: "",
-  },
-});
+const props = defineProps<{
+  isOpen: boolean;
+  id: string;
+  userId: string;
+}>();
 
 const formData = ref({
   interviewEvaluation: "",
@@ -131,7 +133,17 @@ const handleSubmit = () => {
     };
 
     // 校验成功，执行提交逻辑
-    console.log("表单数据:", formData.value);
+    evaluateInterview({
+      id: props.id,
+      userId: props.userId,
+      isSecond: formData.value.status === "-4" ? "1" : "0",
+      comment: formData.value.interviewEvaluation,
+      status: formData.value.status === "-4" ? "3" : formData.value.status,
+    }).then(() => {
+      showAlert("面评提交成功", "pass");
+      emit("close");
+      emit("refreshPage");
+    });
   }
 };
 </script>

@@ -18,6 +18,7 @@ defineProps<{
   tags: string[] | undefined;
   isLike: boolean | undefined;
   isCollect: boolean | undefined;
+  uniqueId: number | null;
   handleLikeClick: () => void;
   handleCollect: () => void;
 }>();
@@ -44,7 +45,7 @@ defineProps<{
       </div>
     </div>
 
-    <div class="article-header__meta">
+    <div v-if="uniqueId != 1" class="article-header__meta">
       <div class="news-footer">
         <div class="news-view">
           <Icon icon="iconamoon:eye-light" class="news-footer-icon" /><span

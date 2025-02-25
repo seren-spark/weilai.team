@@ -32,15 +32,10 @@ if ("user" in route.params) {
 </script>
 
 <style scoped lang="scss">
-.content {
-  padding: 0 50px;
-  width: 100%;
-  height: auto;
-}
+@use "@community/styles/community.scss";
+
 @media screen and (max-width: 768px) {
   .content {
-    padding: 0 0;
-    padding-bottom: 60px;
     .bg {
       position: fixed;
       top: 0;

@@ -98,7 +98,10 @@ const handleDialogOpen = (newValue: boolean) => {
     <DialogTrigger as-child>
       <Button variant="outline" size="sm" class="h-7 gap-1 header-btn">
         <Icon icon="proicons:person-2" />
-        <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
+        <span
+          class="sr-only sm:not-sr-only sm:whitespace-nowrap"
+          style="font-size: 0.875rem"
+        >
           设置组长
         </span>
       </Button>

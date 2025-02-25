@@ -8,6 +8,9 @@ import { useAlert } from "@/composables/useAlert";
 const { data, executeRequest } = useRequest();
 import type { SSENoticeData } from "../../../../types/sseType";
 import { showConfirm } from "@/composables/useConfirm";
+import router from "@/router";
+import { useUserStore } from "../../../../store/userStore";
+const userStore = useUserStore();
 import {
   Tooltip,
   TooltipContent,
@@ -26,24 +29,26 @@ interface NoticeContent {
 }
 const noticeContentRef = ref<HTMLElement | null>(null);
 const isShow = ref(false);
-const showText = ref("展开");
+const userId = ref(JSON.parse(localStorage.getItem("userId") || "{}").value);
+console.log(userId.value);
 const { showAlert } = useAlert();
-const toggleContent = () => {
-  if (showText.value === "收起") {
-    noticeContentRef.value!.style.overflow = "hidden";
-    noticeContentRef.value!.style.height = "10px";
-    showText.value = "展开";
-  } else {
-    showText.value = isShow.value ? "收起" : "展开";
-    if (isShow.value) {
-      noticeContentRef.value!.style.overflow = "visible";
-      noticeContentRef.value!.style.height = "auto";
-    } else {
-      noticeContentRef.value!.style.overflow = "hidden";
-      noticeContentRef.value!.style.height = "50px";
-    }
-  }
-};
+// const showText = ref("展开");
+// const toggleContent = () => {
+//   if (showText.value === "收起") {
+//     noticeContentRef.value!.style.overflow = "hidden";
+//     noticeContentRef.value!.style.height = "10px";
+//     showText.value = "展开";
+//   } else {
+//     showText.value = isShow.value ? "收起" : "展开";
+//     if (isShow.value) {
+//       noticeContentRef.value!.style.overflow = "visible";
+//       noticeContentRef.value!.style.height = "auto";
+//     } else {
+//       noticeContentRef.value!.style.overflow = "hidden";
+//       noticeContentRef.value!.style.height = "50px";
+//     }
+//   }
+// };
 onMounted(() => {
   nextTick(() => {
     if (noticeContentRef.value) {
@@ -60,6 +65,7 @@ onMounted(() => {
 const props = defineProps<{
   notice: SSENoticeData;
   noticeList: Function;
+  getNotReadCount: Function;
 }>();
 
 const createAt = formatPostTime(props.notice.createAt);
@@ -76,7 +82,7 @@ function handleNotice() {
       jsonObj.content[0].content.length > 0
     ) {
       let targetText = jsonObj.content[0].content[0].text;
-      noticeText = targetText.slice(0, 5);
+      noticeText = targetText;
     }
   } catch (error) {
     console.error("解析JSON字符串失败:", error);
@@ -117,6 +123,7 @@ const readNotice = async (noticeId: string) => {
       console.log(data.value);
       if (data.value?.code === 200) {
         props.noticeList();
+        props.getNotReadCount();
         showAlert("标记已读成功", "pass");
       } else {
         console.log(data.value);
@@ -126,6 +133,15 @@ const readNotice = async (noticeId: string) => {
     })
     .catch(() => {});
 };
+//跳转个人中心;
+function skipPersonCenter(id: number) {
+  userStore.setUserId(id);
+  userStore.setIsSelf(false);
+
+  router.push({
+    path: `/personalCenter/userInfo`,
+  });
+}
 
 //修改公告
 const editNotice = () => {};
@@ -138,16 +154,29 @@ const editNotice = () => {};
       <!-- 个人信息以及编辑操作 -->
       <div class="userInfo">
         <div class="action">
-          <div class="publish-avatar">
+          <div
+            class="publish-avatar"
+            @click="skipPersonCenter(props.notice.senderId)"
+          >
             <UserAvatar :avatar="props.notice.headPortrait" />
           </div>
-          <div class="nickName">{{ props.notice.username }}</div>
+          <div
+            class="nickName"
+            @click="skipPersonCenter(props.notice.senderId)"
+          >
+            {{ props.notice.username }}
+          </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span class="edit" @click="editNotice()"
-                  ><Icon icon="mage:edit-pen" class="editIcon"
-                /></span>
+                <RouterLink to="/noticeEdit">
+                  <span
+                    v-if="userId === props.notice.senderId"
+                    class="edit"
+                    @click="editNotice()"
+                    ><Icon icon="mage:edit-pen" class="editIcon"
+                  /></span>
+                </RouterLink>
               </TooltipTrigger>
               <TooltipContent>
                 <p>编辑</p>
@@ -158,6 +187,7 @@ const editNotice = () => {};
             <Tooltip>
               <TooltipTrigger>
                 <span
+                  v-if="userId === props.notice.senderId"
                   class="delete"
                   @click="deleteNotice(props.notice.noticeId)"
                   ><Icon icon="fluent:delete-24-regular" class="deleteIcon"
@@ -170,7 +200,10 @@ const editNotice = () => {};
           </TooltipProvider>
           <TooltipProvider v-if="props.notice.status === 0">
             <Tooltip>
-              <TooltipTrigger class="tooltip_trigger">
+              <TooltipTrigger
+                v-if="userId != props.notice.senderId"
+                class="tooltip_trigger"
+              >
                 <span class="alRead" @click="readNotice(props.notice.noticeId)"
                   ><Icon
                     icon="material-symbols:mark-email-read-outline-rounded"
@@ -188,21 +221,28 @@ const editNotice = () => {};
         <div class="publish-time">{{ createAt }}</div>
       </div>
       <!-- 公告内容 -->
-      <div class="noticeDetalis">
-        <div class="notice-title">{{ props.notice.title }}</div>
-        <div ref="noticeContentRef" class="notice-content">
-          {{ noticeTxt }}
-        </div>
-        <!-- <div class="notice-urls">
+      <RouterLink
+        :to="{
+          path: `/community/post/${props.notice.noticeId}`,
+          query: { uniqueId: 1 },
+        }"
+      >
+        <div class="noticeDetalis">
+          <div class="notice-title">{{ props.notice.title }}</div>
+          <div ref="noticeContentRef" class="notice-content">
+            {{ noticeTxt }}
+          </div>
+          <!-- <div class="notice-urls">
               <div v-for="url in props.notice.noticeUrls" :key="url">
                 <img :src="url">
               </div>
             </div> -->
-      </div>
-      <div class="show" v-show="isShow" @click="toggleContent">
+        </div>
+      </RouterLink>
+      <!-- <div class="show" v-show="isShow" @click="toggleContent">
         {{ showText
         }}<Icon icon="cuida:caret-down-outline" class="arrowsIcon" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -282,7 +322,7 @@ const editNotice = () => {};
   }
   .noticeDetalis {
     width: 100%;
-    padding: 10px 0;
+    padding: 10px 5px;
     .notice-urls {
       width: 100%;
       display: flex;
@@ -297,7 +337,7 @@ const editNotice = () => {};
       width: 100%;
       font-weight: bold;
       font-size: 15px;
-      margin: 0 0 5px 0;
+      margin: 0px 0 10px 0px;
       color: rgb(66, 65, 65);
     }
     .notice-content {
@@ -312,6 +352,9 @@ const editNotice = () => {};
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 4;
     }
+  }
+  .noticeDetalis:hover {
+    background-color: rgb(248, 248, 250);
   }
   .show {
     cursor: pointer;
