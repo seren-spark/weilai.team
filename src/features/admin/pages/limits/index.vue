@@ -95,21 +95,35 @@ const changeAuthorityList = ref([]);
 
 const isAllSelected = ref(false);
 const handleItemSelect = (authority: string) => {
+
   const index = changeAuthorityList.value.indexOf(authority);
 
   if (index === -1) {
     // 如果没有选中，则添加权限
     changeAuthorityList.value.push(authority);
+    console.log("添加", changeAuthorityList.value);
   } else {
     // 如果已经选中，则移除权限
     changeAuthorityList.value.splice(index, 1);
-  }
-  if (changeAuthorityList.value.length == authorityList.length) {
-    isAllSelected.value = true;
-  } else {
-    isAllSelected.value = false;
+    console.log("移除", changeAuthorityList.value);
   }
 };
+// 监听changeAuthorityList的变化，如果长度等于authorityList的长度，则全选
+watch(
+  () => changeAuthorityList.value,
+  (newVal) => {
+    console.log("watch显示", newVal);
+
+    if (newVal.length == authorityList.length) {
+      isAllSelected.value = true;
+    } else {
+      isAllSelected.value = false;
+    }
+  },
+  {
+    deep: true,
+  },
+);
 const handleSelectAll = () => {
   if (isAllSelected.value) {
     changeAuthorityList.value = authorityList;
@@ -178,7 +192,7 @@ function reset() {
             <CardHeader class="card_header p-0">
               <div class="header-link">
                 <div class="select-type">
-                  <span>筛选：</span>
+                  <span class="text-sm">筛选：</span>
                   <div class="ml-2 mr-2 flex">
                     <input
                       type="checkbox"
@@ -202,7 +216,7 @@ function reset() {
                 </div>
                 <div class="flex items-center">
                   <div class="header-search">
-                    <span>姓名 </span>
+                    <span class="text-sm">姓名：</span>
                     <div class="search_input_box">
                       <input
                         placeholder="请输入姓名"
@@ -467,8 +481,6 @@ td {
       // }
       span {
         width: max-content;
-        padding: 0.2vw;
-        margin-right: 5px;
       }
 
       display: flex;
@@ -531,7 +543,6 @@ td {
   align-items: center;
 
   span {
-    font-size: 0.9vw;
     width: max-content;
     color: var(--secondary-foreground);
     margin-right: 5px;
@@ -556,6 +567,9 @@ td {
       border-radius: var(--radius);
       padding: 5px 10px;
       padding-left: 10px;
+    }
+    input:focus {
+      border: 1px solid rgb(136, 188, 255);
     }
 
     .search-icon {
