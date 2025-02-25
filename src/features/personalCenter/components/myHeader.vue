@@ -29,12 +29,59 @@
     <div class="myInfo">
       <div class="container-left">
         <UserAvatar
-          class="w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-20"
+          class="w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-10 "
           :avatar="userInfo.headPortrait"
         />
-        <div class="bg-gray-100  w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-10">
-          
-        </div>
+        <Dialog v-if="userStore.isSelf">
+          <DialogTrigger as-child>
+            <div
+              class="w-[100px] h-[100px] absolute -mt-[50px] mr-[20px] ml-[20px] rounded-full z-20 bg-black addAvatar"
+            >
+              <img
+                src="@/assets/img/addAvatar.png"
+                class="w-[40px] h-[40px] ml-[30px] mt-[30px] text-[#fff] z-20"
+              />
+            </div>
+          </DialogTrigger>
+          <DialogContent
+            class="sm:max-w-[425px] bg-white max-h-[500px] overflow-y-auto"
+          >
+            <DialogHeader>
+              <DialogTitle>头像修改</DialogTitle>
+              <DialogDescription> </DialogDescription>
+            </DialogHeader>
+
+            <div class="flex flex-col items-center">
+              <input
+                type="file"
+                id="avatar"
+                @change="handleFileChange"
+                accept="image/*"
+                style="display: none"
+              />
+              <div>
+                <label for="avatar" class="cursor-pointer rounded-full">
+                  <img
+                    :src="imageUrl  || '/defaultAvatar.png'"
+                    style="width: 200px; height: 200px"
+                    class="rounded-full border-2 border-blue-400 object-cover"
+                  />
+                </label>
+              </div>
+              <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+              <p v-if="uploadStatus">{{ uploadStatus }}</p>
+              <button
+                @click="uploadFile"
+                :disabled="!avatar"
+                class="mt-4 bg-blue-400 p-2 text-white rounded-lg"
+              >
+                保存
+              </button>
+
+              
+            </div>
+          </DialogContent>
+        </Dialog>
         <div class="infoBox">
           <p class="nameAndSex">
             {{ userInfo.name }}
@@ -52,6 +99,7 @@
           <p class="job">{{ userInfo.direction }}</p>
         </div>
       </div>
+
       <div class="container-right" v-if="userStore.isSelf">
         <Dialog>
           <DialogTrigger as-child>
@@ -72,6 +120,7 @@
                 在这里修改您的信息，完成之后点击保存即可
               </DialogDescription>
             </DialogHeader>
+
             <form @submit="onSubmit">
               <FormField v-slot="{ componentField }" name="phone">
                 <FormItem>
@@ -98,7 +147,7 @@
                     />
                   </FormControl>
                   <FormDescription></FormDescription>
-                  <FormMessage class="my-2"/>
+                  <FormMessage class="my-2" />
                 </FormItem>
               </FormField>
               <FormField
@@ -275,8 +324,66 @@ import * as z from "zod";
 import { useAlert } from "@/composables/useAlert";
 import router from "@/router";
 import { get } from "http";
+import { use } from "marked";
 const { showAlert } = useAlert();
 
+const avatar = ref(null);
+const imageUrl = ref("");
+const uploadStatus = ref("");
+const errorMessage = ref('');
+
+// 处理文件选择
+const imageSchema = z.instanceof(File)
+  .refine(
+    (file) => file.size <= 5 * 1024 * 1024, // 文件大小不超过 5MB
+    { message: '文件大小不能超过 5MB' }
+  )
+  .refine(
+    (file) => file.type.startsWith('image/'), // 文件类型必须是图片
+    { message: '只能上传图片文件' }
+  );
+
+// 处理文件选择
+const handleFileChange = (event) => {
+  const selectedFile = event.target.files[0];
+  if (!selectedFile) return;
+
+  // 使用 Zod 验证文件
+  const validationResult = imageSchema.safeParse(selectedFile);
+  if (!validationResult.success) {
+    errorMessage.value = validationResult.error.issues[0].message; // 显示错误信息
+    avatar.value = null;
+    imageUrl.value = '';
+    return;
+  }
+
+  // 验证通过
+  errorMessage.value = '';
+  avatar.value = selectedFile;
+  imageUrl.value = URL.createObjectURL(selectedFile); // 预览图片
+};
+
+function uploadFile() {
+
+  const formData = new FormData();
+  formData.append('headPortrait', avatar.value);    
+  executeRequest({
+    url: "/user/updateUserHeadPortrait",
+    method: "put",
+    requestData: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }).then(() => {
+    console.log("修改成功：", data.value);
+    showAlert("修改成功", "pass");
+    getUserInfo();
+  }).catch((error) => {
+    console.log("修改失败：", error);
+    showAlert("修改失败", "fail");
+  });
+
+};
 const phoneNumberRegex = /^1[3-9]\d{9}$/;
 const qqNumberRegex = /^[1-9][0-9]{4,10}$/;
 const formSchema = toTypedSchema(
@@ -348,7 +455,18 @@ const onSubmit = form.handleSubmit((values) => {
     getUserInfo();
   });
 });
-
+const avatarSubmit = form.handleSubmit((values) => {
+  console.log("修改信息表单提交成功!", values);
+  executeRequest({
+    url: "/user/updateUserInfo",
+    method: "put",
+    requestData: values,
+  }).then(() => {
+    console.log("修改成功：", data.value);
+    showAlert("修改成功", "pass");
+    getUserInfo();
+  });
+});
 const userStore = useUserStore();
 console.log("pinia///", userStore.userId, userStore.isSelf);
 watch(
@@ -360,9 +478,10 @@ watch(
       userId = userStore.userId;
     }
     getUserInfo();
-  },{
-    deep: true
-  }
+  },
+  {
+    deep: true,
+  },
 );
 const plugin = Autoplay({
   delay: 2000,
@@ -395,11 +514,13 @@ async function getUserInfo() {
   if (data.value && data.value.code == 200) {
     Object.assign(userInfo, data.value.data);
     console.log("用户信息：", userInfo);
-
+        
     phone.value = userInfo.phone;
     qq.value = userInfo.qq;
     userDestination.value = userInfo.userDestination;
-    graduationDestination.value = userInfo.graduationDestination;
+    graduationDestination.value = userInfo.graduationDestination;   
+    
+    imageUrl.value = userInfo.headPortrait;
   }
   console.log("请求结果", data.value);
 }
@@ -505,6 +626,14 @@ function initForm() {
     padding: 20px;
     text-align: center;
     color: #999;
+  }
+}
+.addAvatar {
+  opacity: 0; /* 初始状态隐藏 */
+  transition: opacity 0.3s ease; /* 添加过渡效果 */
+  cursor: pointer;
+  &:hover {
+    opacity: 0.65; /* 鼠标悬停时显示 */
   }
 }
 </style>
