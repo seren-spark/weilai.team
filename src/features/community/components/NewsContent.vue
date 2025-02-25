@@ -121,11 +121,14 @@ const pages = ref<number>(1);
 const total = ref<number>(0);
 const current = ref<number>(1);
 const isOver = ref<boolean>(false);
+
 //跳转个人中心;
 function skipPersonCenter(id: number) {
-  userStore.setUserId(id);
-  userStore.setIsSelf(false);
-
+  console.log((userStore.getMyId() as number) == id);
+  if (!((userStore.getMyId() as number) == id)) {
+    userStore.userId = id;
+    userStore.isSelf = false;
+  }
   router.push({
     path: `/personalCenter/userInfo`,
   });

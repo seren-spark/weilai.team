@@ -4,6 +4,7 @@ import { useRequest } from "@/composables/useRequest";
 import type { ArticleList, Data } from "@/types/Community";
 import { ref, watch } from "vue";
 import { useRequest as req } from "vue-request";
+import type { AdminResponseData } from "../../../types/admin-community";
 
 const { showAlert } = useAlert();
 const { executeRequest, error, loading, data } = useRequest();
@@ -11,23 +12,26 @@ let articleList = ref<ArticleList[]>([]);
 let searchResult = ref<ArticleList[]>([]);
 let userInfo = ref<Data>({} as Data);
 let artList = ref<ArticleList[]>([]);
-export function getArticle2(
+let adminPostData = ref<AdminResponseData>();
+export function getAdminPost(
   type: number | string = 0,
   condition = "",
   page = 1,
   startTime: Date | string = "",
   sort = 0,
 ) {
-  const getArticle = () => {
+  const getArticle = (page = 1) => {
     return apiClient.get(
       `/admin_post/selectAll?condition=${condition}&page=${page}&sort=${sort}&startTime=${startTime}&type=${type}`,
     );
   };
-  const { data, loading } = req(getArticle, {
-    loadingKeep: 600,
+  const { data, loading, run } = req(getArticle);
+  watch(data, () => {
+    console.log("发请求了");
+    adminPostData = data;
+    console.log(adminPostData);
   });
-  let res = ref<any>();
-  return { loading, data };
+  return { loading, data, run };
 }
 export async function getArticle(
   type: number | string = 0,
@@ -36,7 +40,6 @@ export async function getArticle(
   startTime: Date | string = "",
   sort = 0,
 ) {
-  setTimeout(() => {}, 1000);
   await executeRequest({
     url: `/admin_post/selectAll?condition=${condition}&page=${page}&sort=${sort}&startTime=${startTime}&type=${type}`,
     method: "get",
@@ -53,4 +56,4 @@ export async function deletes(ids: string) {
   return apiClient.put(`/admin_post/deletes/${ids}`);
 }
 
-export { articleList, error, loading, searchResult };
+export { articleList, error, loading, searchResult, adminPostData };

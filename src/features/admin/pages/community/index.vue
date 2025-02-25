@@ -51,18 +51,26 @@ import { showConfirm } from "@/composables/useConfirm";
 import { useDateFormatter } from "@/composables/useDateFormatter";
 import { cn } from "@/lib/utils";
 import router from "@/router";
-import type { ArticleList } from "@/types/Community";
 import { checkType } from "@community/composables/search";
-import { deletes, getArticle } from "@admin/composables/useCommunity";
+import {
+  adminPostData,
+  deletes,
+  getAdminPost,
+  getArticle,
+} from "@admin/composables/useCommunity";
 import { Icon } from "@iconify/vue";
 import { getLocalTimeZone, type DateValue } from "@internationalized/date";
 import { Calendar as CalendarIcon, MoreHorizontal } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useRequest } from "vue-request";
+
+import type { AdminPost, AdminResponseData } from "@/types/admin-community";
+import { Position } from "@unovis/ts";
+
 const { showAlert } = useAlert();
 const { formatDatetoDay } = useDateFormatter();
 
-const postList = ref<ArticleList[]>([]);
+const postList = ref<AdminPost[]>([]);
 // 初始化数据
 const isAllSelected = ref(false);
 const selectType = ref("");
@@ -94,7 +102,24 @@ const getArticleInAdmin = () => {
     pageSize.value = res.size;
   });
 };
-getArticleInAdmin();
+
+const { data: postData, run: runGetArticle } = getAdminPost();
+
+watch(
+  postData,
+  () => {
+    console.log("postData", postData.value);
+    const res = postData.value as AdminResponseData;
+    if (res.code == 2007) {
+      postList.value = res.data.records;
+      total.value = res.data.total;
+      pageSize.value = res.data.size;
+    }
+  },
+  { deep: true },
+);
+
+// getArticleInAdmin();
 // 改变页数
 const changePage = (newPage: number) => {
   page.value = newPage;
@@ -102,9 +127,12 @@ const changePage = (newPage: number) => {
 };
 
 watch(page, (newPage) => {
-  getArticle(undefined, undefined, newPage).then((res) => {
-    postList.value = res.records;
-  });
+  // getArticle(undefined, undefined, newPage).then((res) => {
+  //   postList.value = res.records;
+  // });
+
+  console.log("页数变了");
+  runGetArticle(newPage);
 });
 // 搜索文章的方法
 async function searchArticle() {
@@ -128,6 +156,9 @@ async function searchArticle() {
 // 删除文章(单选)
 const { data, run } = useRequest(deletes, { manual: true });
 function deleteArticles(oneId?: number) {
+  console.log(oneId, "oneId");
+  console.log(postList.value);
+
   if (oneId !== 0) {
     deleteTodos.value.push(oneId as number);
     const str = deleteTodos.value.join(",");

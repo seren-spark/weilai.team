@@ -8,9 +8,9 @@ export interface UserData {
     pageInfo: PageInfo;
   };
 }
-export interface AdminData {
-  data: AdminPostInfo;
-}
+// export interface AdminData {
+//   data: AdminPostInfo;
+// }
 export interface SearchData {
   data: ArticleList[];
 }
@@ -27,25 +27,25 @@ export interface ArticleInfo {
   total: number;
   code: number;
 }
-export interface AdminPostInfo {
-  countId: number;
-  current: number;
-  maxLimit: number;
-  optimizeCountSql: boolean;
-  orders: [];
-  pages: number;
-  records: AdminPost[];
-  searchCount: boolean;
-  size: number;
-  total: number;
-}
+// export interface AdminPostInfo {
+//   countId: number;
+//   current: number;
+//   maxLimit: number;
+//   optimizeCountSql: boolean;
+//   orders: [];
+//   pages: number;
+//   records: AdminPost[];
+//   searchCount: boolean;
+//   size: number;
+//   total: number;
+// }
 
-export interface AdminPost {
-  name: string;
-  postTime: string;
-  title: string;
-  type: number;
-}
+// export interface AdminPost {
+//   name: string;
+//   postTime: string;
+//   title: string;
+//   type: number;
+// }
 export interface UserInfo {
   headPortrait: string;
   name: string;

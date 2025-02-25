@@ -1,4 +1,4 @@
-<script setup>
+<script setup name="NoInter">
 function goBack() {
   window.history.back();
 }
@@ -25,7 +25,6 @@ function goBack() {
   align-items: center;
   width: 100%;
   height: 100vh;
-  background-color: #e5e5e5;
 
   .noInter-center {
     // width: 80%;
