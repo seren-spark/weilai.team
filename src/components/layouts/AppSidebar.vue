@@ -33,6 +33,7 @@ import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";
 import SidebarHeader from "../ui/sidebar/SidebarHeader.vue";
 
+
 const { data, executeRequest } = useRequest()
 // 获取个人id用于渲染
 interface Info{
@@ -41,7 +42,6 @@ interface Info{
 }
 let info:Info=JSON.parse(localStorage.getItem("userId") as string)
 console.log(info);
-
 
 const messageStore = useMessageStore();
 const noticeStore = useNoticeStore();
@@ -56,6 +56,7 @@ async function getUserInfo (){
   
 }
 getUserInfo()
+
 
 watch(()=>data.value,()=>{
   console.log(data.value);
