@@ -28,7 +28,7 @@
             :key="message.messageId"
             class="mess"
           >
-            <MesItem :message="message" @system="run()" />
+            <MesItem :message="message" @comment="run()" />
           </div>
         </div>
       </div>
@@ -47,10 +47,9 @@ import MesItem from "../../compontent/MesItem.vue";
 import { onMounted, ref, watch } from "vue";
 import { useSseStore } from "../../../../store/useSseStore";
 import { useMessageStore } from "@/store/messageStore";
-import type { SSEMessageData } from "../../../../types/sseType";
+import type { SSEMessageData, SSENoticeData } from "../../../../types/sseType";
 import { useAlert } from "@/composables/useAlert";
 import apiClient from "@/api/axios";
-import { type AxiosResponse } from "axios";
 import { useRequest } from "vue-request";
 const { showAlert } = useAlert();
 const messageStore = useMessageStore();
@@ -61,10 +60,10 @@ const pageSize = 10;
 const pageNumber = 1;
 const totalCount = ref(0);
 onMounted(() => {
-  sseStore.subscribe("message", (message: SSEMessageData) => {
-    if (message.messageType == messageType) {
-      messages.value.unshift(message);
-      console.log(message);
+  sseStore.subscribe("message", (data: SSENoticeData | SSEMessageData) => {
+    if ("messageId" in data && data.messageType === messageType) {
+      messages.value.unshift(data as SSEMessageData);
+      console.log(data);
       messageStore.setNotificationStatus(true);
     }
   });
@@ -77,12 +76,9 @@ const messageList = () => {
     `/message/getMessageInfo?messageType=${messageType}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
   );
 };
-const { data, run, loading } = useRequest<AxiosResponse<SSEMessageData>>(
-  messageList,
-  {
-    loadingKeep: 1000,
-  },
-);
+const { data, run, loading } = useRequest(messageList, {
+  loadingKeep: 650,
+});
 watch(
   () => data.value,
   () => {

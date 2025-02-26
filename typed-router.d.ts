@@ -82,6 +82,7 @@ declare module 'vue-router/auto-routes' {
     '/community/discussion/recommend': RouteRecordInfo<'/community/discussion/recommend', '/community/discussion/recommend', Record<never, never>, Record<never, never>>,
     '/community/discussion/user': RouteRecordInfo<'/community/discussion/user', '/community/discussion/user', Record<never, never>, Record<never, never>>,
     '/community/discussion/user/[user]': RouteRecordInfo<'/community/discussion/user/[user]', '/community/discussion/user/:user', { user: ParamValue<true> }, { user: ParamValue<false> }>,
+    '/community/nothing/': RouteRecordInfo<'/community/nothing/', '/community/nothing', Record<never, never>, Record<never, never>>,
     '/community/notice': RouteRecordInfo<'/community/notice', '/community/notice', Record<never, never>, Record<never, never>>,
     '/community/notice/': RouteRecordInfo<'/community/notice/', '/community/notice', Record<never, never>, Record<never, never>>,
     '/community/notice/NoticeItem': RouteRecordInfo<'/community/notice/NoticeItem', '/community/notice/NoticeItem', Record<never, never>, Record<never, never>>,

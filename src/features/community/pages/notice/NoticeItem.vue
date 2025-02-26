@@ -142,9 +142,6 @@ function skipPersonCenter(id: number) {
     path: `/personalCenter/userInfo`,
   });
 }
-
-//修改公告
-const editNotice = () => {};
 </script>
 
 <template>
@@ -170,10 +167,7 @@ const editNotice = () => {};
             <Tooltip>
               <TooltipTrigger>
                 <RouterLink to="/noticeEdit">
-                  <span
-                    v-if="userId === props.notice.senderId"
-                    class="edit"
-                    @click="editNotice()"
+                  <span v-if="userId === props.notice.senderId" class="edit"
                     ><Icon icon="mage:edit-pen" class="editIcon"
                   /></span>
                 </RouterLink>
