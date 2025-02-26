@@ -29,22 +29,40 @@
     <div class="myInfo">
       <div class="container-left">
         <UserAvatar
-          class="w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-10 "
+          class="w-[100px] h-[100px] -mt-[50px] mr-[20px] ml-[20px] z-10"
           :avatar="userInfo.headPortrait"
         />
-        <Dialog v-if="userStore.isSelf">
-          <DialogTrigger as-child>
+        <div
+        v-if="userStore.isSelf"
+          class="w-[100px] h-[100px] absolute -mt-[50px] mr-[20px] ml-[20px] rounded-full z-20 bg-black addAvatar"
+        >
+          <label for="avatar">
             <div
-              class="w-[100px] h-[100px] absolute -mt-[50px] mr-[20px] ml-[20px] rounded-full z-20 bg-black addAvatar"
+              class="w-[100px] h-[100px] flex items-center justify-center rounded-full"
             >
               <img
                 src="@/assets/img/addAvatar.png"
-                class="w-[40px] h-[40px] ml-[30px] mt-[30px] text-[#fff] z-20"
+                class="w-[40px] h-[40px] text-[#fff] z-20"
               />
             </div>
+          </label>
+          <input
+            type="file"
+            id="avatar"
+            @change="handleFileChange"
+            accept="image/*"
+            style="display: none"
+            ref="avatarInput"
+          />
+        </div>
+        <Dialog v-if="userStore.isSelf">
+          <DialogTrigger as-child>
+            <button class="hidden" ref="openAvatarDialog">
+              打开头像修改对话框
+            </button>
           </DialogTrigger>
           <DialogContent
-            class="sm:max-w-[425px] bg-white max-h-[500px] overflow-y-auto"
+            class="sm:max-w-[500px] bg-white max-h-[500px] overflow-y-auto"
           >
             <DialogHeader>
               <DialogTitle>头像修改</DialogTitle>
@@ -52,33 +70,46 @@
             </DialogHeader>
 
             <div class="flex flex-col items-center">
-              <input
-                type="file"
-                id="avatar"
-                @change="handleFileChange"
-                accept="image/*"
-                style="display: none"
-              />
-              <div>
-                <label for="avatar" class="cursor-pointer rounded-full">
+              <div></div>
+
+              <div class="flex items-center">
+                <div class="flex flex-col items-center">
+                  <vue-cropper
+                    class=""
+                    ref="cropper"
+                    :src="imageUrl"
+                    :aspect-ratio="1 / 1"
+                    :auto-crop-area="1"
+                    :view-mode="2"
+                    style="width: 200px; height: 200px; border: 1px solid"
+                    guides
+                    background
+                  ></vue-cropper>
+                  <div>
+                    <button
+                      @click="cropImage"
+                      class="mt-4 bg-blue-400 p-2 text-white rounded-lg"
+                    >
+                      裁剪图片
+                    </button>
+                  </div>
+                </div>
+                <div class="ml-2 flex flex-col items-center">
                   <img
-                    :src="imageUrl  || '/defaultAvatar.png'"
-                    style="width: 200px; height: 200px"
-                    class="rounded-full border-2 border-blue-400 object-cover"
+                    class="w-[200px] h-[200px] rounded-full border-2 border-blue-200"
+                    :src="croppedImage"
                   />
-                </label>
+                  <span class="mt-4 p-2">头像预览</span>
+                </div>
               </div>
-              <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
               <p v-if="uploadStatus">{{ uploadStatus }}</p>
               <button
                 @click="uploadFile"
-                :disabled="!avatar"
+                :disabled="!croppedImage"
                 class="mt-4 bg-blue-400 p-2 text-white rounded-lg"
               >
                 保存
               </button>
-
-
             </div>
           </DialogContent>
         </Dialog>
@@ -325,22 +356,27 @@ import { useAlert } from "@/composables/useAlert";
 import router from "@/router";
 import { get } from "http";
 import { use } from "marked";
+import VueCropper from "vue-cropperjs";
+import "cropperjs/dist/cropper.css";
+
 const { showAlert } = useAlert();
 
-const avatar = ref(null);
 const imageUrl = ref("");
 const uploadStatus = ref("");
-const errorMessage = ref('');
-
+const cropper = ref(null); // 裁剪组件实例
+const croppedImage = ref(""); // 裁剪后的图片 URL
+const openAvatarDialog = ref(null);
+const avatarInput = ref(null);
 // 处理文件选择
-const imageSchema = z.instanceof(File)
+const imageSchema = z
+  .instanceof(File)
   .refine(
     (file) => file.size <= 5 * 1024 * 1024, // 文件大小不超过 5MB
-    { message: '文件大小不能超过 5MB' }
+    { message: "文件大小不能超过 5MB" },
   )
   .refine(
-    (file) => file.type.startsWith('image/'), // 文件类型必须是图片
-    { message: '只能上传图片文件' }
+    (file) => file.type.startsWith("image/"), // 文件类型必须是图片
+    { message: "只能上传图片文件" },
   );
 
 // 处理文件选择
@@ -351,38 +387,52 @@ const handleFileChange = (event) => {
   // 使用 Zod 验证文件
   const validationResult = imageSchema.safeParse(selectedFile);
   if (!validationResult.success) {
-    errorMessage.value = validationResult.error.issues[0].message; // 显示错误信息
-    avatar.value = null;
-    imageUrl.value = '';
+    showAlert(validationResult.error.issues[0].message, "error");
+    croppedImage.value = null;
+    imageUrl.value = "";
     return;
   }
 
-  // 验证通过
-  errorMessage.value = '';
-  avatar.value = selectedFile;
+  // 验证通过 - 显示裁剪组件
+  openAvatarDialog.value.click();
+  croppedImage.value = selectedFile;
   imageUrl.value = URL.createObjectURL(selectedFile); // 预览图片
+  event.target.value = ""; // 清空 input
 };
 
 function uploadFile() {
+  cropper.value.getCroppedCanvas().toBlob((blob) => {
+    // 创建 FormData 对象
+    const formData = new FormData();
+    formData.append("headPortrait", blob); // 将 Blob 添加到 FormData
 
-  const formData = new FormData();
-  formData.append('headPortrait', avatar.value);
-  executeRequest({
-    url: "/user/updateUserHeadPortrait",
-    method: "put",
-    requestData: formData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  }).then(() => {
-    console.log("修改成功：", data.value);
-    showAlert("修改成功", "pass");
-    getUserInfo();
-  }).catch((error) => {
-    console.log("修改失败：", error);
-    showAlert("修改失败", "fail");
+    // 上传到服务器
+    executeRequest({
+      url: "/user/updateUserHeadPortrait",
+      method: "put",
+      requestData: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      .then(() => {
+        showAlert("修改成功", "pass");
+        croppedImage.value = null;
+        imageUrl.value = "";
+        avatarInput.value.value = '';
+        getUserInfo();
+      })
+      .catch((error) => {
+        showAlert("修改失败", "fail");
+      });
   });
+}
+const cropImage = () => {
+  cropper.value.getCroppedCanvas().toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
 
+    croppedImage.value = url; // 显示裁剪后的图片
+  });
 };
 const phoneNumberRegex = /^1[3-9]\d{9}$/;
 const qqNumberRegex = /^[1-9][0-9]{4,10}$/;
@@ -455,18 +505,6 @@ const onSubmit = form.handleSubmit((values) => {
     getUserInfo();
   });
 });
-const avatarSubmit = form.handleSubmit((values) => {
-  console.log("修改信息表单提交成功!", values);
-  executeRequest({
-    url: "/user/updateUserInfo",
-    method: "put",
-    requestData: values,
-  }).then(() => {
-    console.log("修改成功：", data.value);
-    showAlert("修改成功", "pass");
-    getUserInfo();
-  });
-});
 const userStore = useUserStore();
 console.log("pinia///", userStore.userId, userStore.isSelf);
 watch(
@@ -519,8 +557,6 @@ async function getUserInfo() {
     qq.value = userInfo.qq;
     userDestination.value = userInfo.userDestination;
     graduationDestination.value = userInfo.graduationDestination;
-
-    imageUrl.value = userInfo.headPortrait;
   }
   console.log("请求结果", data.value);
 }
