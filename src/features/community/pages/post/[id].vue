@@ -12,6 +12,7 @@ import { formatPostTime } from "@/utils/formatPostTime";
 import { likeData, likeRun } from "../../composables/Like";
 import { collectRun, collectData } from "../../composables/Collect";
 import { useAlert } from "@/composables/useAlert";
+import router from "@/router";
 
 export interface PostDetailResponse {
   userId: number;
@@ -56,6 +57,7 @@ const formattedPostTime = computed(() => {
   if (data.value?.data.postTime) {
     return formatPostTime(data.value?.data.postTime);
   }
+  return "";
 });
 
 const { editor } = useAppEditor(false);
@@ -68,9 +70,14 @@ watch(
     if (data.value?.data.postTxt) {
       editor.value?.commands.setContent(JSON.parse(data.value?.data.postTxt));
     }
+
     isCollect.value = data.value?.data.isCollect;
     isLike.value = data.value?.data.isLike;
     likeCount.value = data.value?.data.likeCount || 0;
+    //帖子不存在
+    if (data.value?.code == 2004) {
+      router.push("/community/nothing");
+    }
   },
   { immediate: true },
 );
