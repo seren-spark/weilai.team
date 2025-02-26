@@ -285,7 +285,7 @@ getNotReadCount()
                     class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg p-0"
                     side="bottom"
                     :side-offset="4"
-                  ><router-link to="/personalCenter/userInfo">
+                  ><router-link :to="`/personalCenter/userInfo`" @click="skipToPersonalCenter">
                     <DropdownMenuItem class="drop-menu-item">
                       <BadgeCheck />
                     个人资料

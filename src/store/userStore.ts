@@ -2,9 +2,7 @@ import { defineStore } from "pinia";
 export const useUserStore = defineStore("user", {
   // 定义初始状态
   state: () => ({
-    userId: localStorage.getItem("userId")
-      ? Number(JSON.parse(localStorage.getItem("userId") as string).value)
-      : 0,
+    userId: getMyId(),
     isSelf: true,
   }),
 
@@ -17,7 +15,7 @@ export const useUserStore = defineStore("user", {
       return Number(JSON.parse(localStorage.getItem("userId") as string).value);
     },
     reset() {
-      this.userId = 0;
+      this.userId = getMyId();
       this.isSelf = true;
     },
   },
@@ -30,3 +28,6 @@ export const useUserStore = defineStore("user", {
     storage: localStorage,
   },
 });
+
+const getMyId = () =>
+  Number(JSON.parse(localStorage.getItem("userId") as string).value);

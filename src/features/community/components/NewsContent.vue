@@ -128,7 +128,10 @@ function skipPersonCenter(id: number) {
   if (!((userStore.getMyId() as number) == id)) {
     userStore.userId = id;
     userStore.isSelf = false;
+  } else {
+    userStore.isSelf = true;
   }
+
   router.push({
     path: `/personalCenter/userInfo`,
   });
