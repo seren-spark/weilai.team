@@ -37,13 +37,13 @@ watch(status, (newValue) => {
     <MenubarMenu>
       <MenubarTrigger v-for="item in toggleItems" :key="item.index">
         <Button
-          ref="activeButton"
+        style="transition: box-shadow 0.5s ease;"
           :class="item.isActive ? 'active' : 'not-active'"
           @click="(event) => toggleActive(item.index, event)"
         >
           {{ item.title }}
         </Button>
-        <div v-show="item.isActive" class="active-indicator"></div>
+        <!-- <div v-show="item.isActive" class="active-indicator"></div> -->
       </MenubarTrigger>
 
     </MenubarMenu>
@@ -65,19 +65,12 @@ $undertone: #647499;
 .active {
   color: skyblue;
   background-color: white;
+  box-shadow:0 3px 0 skyblue, 0 -1px 0 skyblue;
 }
 .not-active {
   color: black;
   border: none;
   background-color: white;
+  box-shadow: 0 2px 0 transparent;
 }
-.active-indicator {
-  width: 80px;
-  position: absolute;
-  bottom: 0;
-  left: 10px;
-  height: 4px;
-  background-color: skyblue;
-}
-
 </style>
