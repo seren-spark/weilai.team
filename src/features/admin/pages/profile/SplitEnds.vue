@@ -8,9 +8,6 @@ const data = [
     { name: '后端', total: 20, predicted: 20 },
     { name: '考研', total: 2, predicted: 2 },
     { name: '实习', total: 10, predicted: 10 }
-    // { name: 'Apr', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-    // { name: 'May', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-    // { name: 'Jun', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
 ]
 
 const colors = ['#e8cf94', '#58b99d', '#cfd1d3', '#3d79b1']
