@@ -41,14 +41,13 @@ interface Info{
   expires:number
 }
 let info:Info=JSON.parse(localStorage.getItem("userId") as string)
-console.log(info);
+
 
 const messageStore = useMessageStore();
 const noticeStore = useNoticeStore();
 const userInfo=ref<UserInfo>();
 async function getUserInfo (){
-  console.log(info);
-  
+
   await executeRequest({ url: `/user/getUserInfoByUserId/${info.value}`,method: 'get' })
   
   userInfo.value=data.value.data as UserInfo
@@ -127,7 +126,9 @@ interface SubItemInterface {
   redirect?:string;
 }
 const userStore=useUserStore()
+watch(() => userStore.avatar, (newValue, oldValue)=>{
 
+})
 function skipToPersonalCenter(){
   userStore.reset();
   router.push('/personalCenter/userInfo')
@@ -274,7 +275,7 @@ getNotReadCount()
                       class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
                       <!-- <img src="@/assets/img/headImg.jpg" alt="" class="avatar" /> -->
-                       <div class="avatar"> <Avatar  :avatar="userInfo?.headPortrait"  /></div>
+                       <div class="avatar"> <Avatar  :avatar="userStore.avatar"  /></div>
 
                       <div class="grid flex-1 text-left text-sm leading-tight">
                         <span class="truncate">{{ userInfo?.name }}</span>
