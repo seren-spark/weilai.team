@@ -28,7 +28,7 @@ addTagType.addTag(typeData.value);
     "thirdNavItems": [
       {
         "title": "头脑风暴",
-        "path": "/community/brainstorm",
+        "path": "/community/brainstorm/detail",
         "icon": "i-mdi-file-document-multiple-outline"
       },
       {

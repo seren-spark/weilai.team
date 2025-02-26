@@ -108,18 +108,6 @@ function getMembersOfGroup(str: string) {
                       <SidebarMenuSub>
                         <SidebarMenuSubItem v-for="subItem in item.group">
                           <SidebarMenuSubButton as-child>
-                            <!-- <a
-                              class="group-item"
-                              @click.prevent="
-                                router.push(
-                                  `/admin/contacts/member/${item.grade + ',' + getMembersOfGroup(subItem).info} `,
-                                )
-                              "
-                            >
-                              <span>{{
-                                getMembersOfGroup(subItem).title
-                              }}</span>
-                            </a> -->
                             <router-link
                               class="group-item"
                               :to="`/admin/contacts/member/${item.grade + ',' + getMembersOfGroup(subItem).info} `"
