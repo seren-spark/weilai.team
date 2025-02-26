@@ -64,7 +64,7 @@ export default function () {
           });
 
           let headPortrait = res.data.headPortrait;
-          userstore.setUserId(Number(resData.userId), headPortrait);
+          userstore.setUserInfo(Number(resData.userId), headPortrait);
 
           router.push("/");
           sseStore.connect();

@@ -136,29 +136,47 @@ function skipPersonCenter(id: number) {
     path: `/personalCenter/userInfo`,
   });
 }
-
+console.log(route.params);
 if (!props.isTag) {
   // 搜索数据要用的
   watch(
     () => route.params,
-    (newVal) => {
+    (newVal, oldVal) => {
       console.log("综合");
-
+      console.log(newVal, oldVal);
       let title = (newVal as any).title;
-      getArticle(props.type, title, props.page, undefined, props.sort).then(
-        (res) => {
-          loading.value = true;
-          console.log(res);
-          pages.value = res.pages;
-          total.value = res.total;
-          loadinglen.value = res.records.length;
-          current.value = res.current;
-          setTimeout(() => {
-            loading.value = false;
-            articleList.value = res.records;
-          }, 400);
-        },
+      console.log(title, "title");
+      // getArticle(props.type, title, props.page, undefined, props.sort).then(
+      //   (res) => {
+      //     loading.value = true;
+      //     console.log(res);
+      //     pages.value = res.pages;
+      //     total.value = res.total;
+      //     loadinglen.value = res.records.length;
+      //     current.value = res.current;
+      //     setTimeout(() => {
+      //       loading.value = false;
+      //       articleList.value = res.records;
+      //     }, 400);
+      //   },
+      // );
+      const { loading: load, data } = getArticle2(
+        props.type,
+        title,
+        props.page,
+        props.sort,
       );
+      watch(data, () => {
+        pages.value = data.value?.data.pages;
+        total.value = data.value?.data.total;
+        console.log(data.value);
+        loading.value = load.value;
+        current.value = data.value?.data.current;
+        articleList.value = data.value?.data.records;
+      });
+    },
+    {
+      immediate: true,
     },
   );
   // 传递数据
@@ -186,9 +204,9 @@ if (!props.isTag) {
       // });
       const { loading: load, data } = getArticle2(
         newVal,
-        props.condition,
+        props.condition || (route.params as { title?: string }).title || "",
         props.page,
-        undefined,
+
         props.sort ? props.sort : 0,
       );
       loading.value = load.value;

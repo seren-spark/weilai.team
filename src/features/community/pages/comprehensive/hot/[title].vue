@@ -21,9 +21,12 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 const title = ref("");
+console.log("route", route);
 if ("title" in route.params) {
+  console.log("title", route.params.title);
   title.value = route.params.title as string;
 } else {
+  console.error("title is not in route.params");
   title.value = "";
 }
 </script>

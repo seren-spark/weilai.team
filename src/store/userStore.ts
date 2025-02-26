@@ -8,7 +8,7 @@ interface UserState {
 export const useUserStore = defineStore("user", {
   // 定义初始状态
   state: (): UserState => ({
-    userId: getMyId(),
+    userId: 0,
     isSelf: true,
     avatar: "",
   }),
@@ -19,6 +19,11 @@ export const useUserStore = defineStore("user", {
       this.userId = id;
       this.avatar = avatar;
     },
+    setUserInfo(id: number, avatar: string) {
+      this.userId = id;
+      this.avatar = avatar;
+    },
+
     getMyId() {
       return Number(JSON.parse(localStorage.getItem("userId") as string).value);
     },
