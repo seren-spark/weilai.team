@@ -63,8 +63,12 @@
               </EditMembers>
             </div>
           </CardHeader>
+
           <CardContent class="p-0">
-            <Table id="tb" ref="tableRef">
+            <div class="no-data" v-show="!userList.length">
+              <p>请选择组别</p>
+            </div>
+            <Table id="tb" ref="tableRef" v-if="userList.length">
               <TableHeader>
                 <TableRow>
                   <TableHead class="hidden w-[100px] md:table-cell text-left">
@@ -86,8 +90,10 @@
                   <TableHead class="hidden md:table-cell"> 操作 </TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody ref="tbodyRef" v-model="userList">
                 <!-- 属性class=group-leader 为组长样式  -->
+                <!-- 如果没有值，则显示选择组别  -->
 
                 <TableRow
                   v-for="(user, index) in userList"
@@ -565,7 +571,21 @@ td {
 .dropdown_menu_content {
   background-color: white;
 }
-
+// 无数据的样式
+.no-data {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 0.125rem solid var(--border);
+  p {
+    color: var(--secondary-foreground);
+    font-size: 1.5rem;
+    text-align: center;
+    width: 100%;
+  }
+}
 @media screen and (max-width: 1400px) {
   .content {
     span {

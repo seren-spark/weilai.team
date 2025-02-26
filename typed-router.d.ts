@@ -19,6 +19,7 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
+    '/[...path]': RouteRecordInfo<'/[...path]', '/:path(.*)', { path: ParamValue<true> }, { path: ParamValue<false> }>,
     '/admin': RouteRecordInfo<'/admin', '/admin', Record<never, never>, Record<never, never>>,
     '/admin/attendance': RouteRecordInfo<'/admin/attendance', '/admin/attendance', Record<never, never>, Record<never, never>>,
     '/admin/community': RouteRecordInfo<'/admin/community', '/admin/community', Record<never, never>, Record<never, never>>,
@@ -56,7 +57,7 @@ declare module 'vue-router/auto-routes' {
     '/community/blog/user': RouteRecordInfo<'/community/blog/user', '/community/blog/user', Record<never, never>, Record<never, never>>,
     '/community/blog/user/[user]': RouteRecordInfo<'/community/blog/user/[user]', '/community/blog/user/:user', { user: ParamValue<true> }, { user: ParamValue<false> }>,
     '/community/brainstorm': RouteRecordInfo<'/community/brainstorm', '/community/brainstorm', Record<never, never>, Record<never, never>>,
-    '/community/brainstorm/': RouteRecordInfo<'/community/brainstorm/', '/community/brainstorm', Record<never, never>, Record<never, never>>,
+    '/community/brainstorm/detail': RouteRecordInfo<'/community/brainstorm/detail', '/community/brainstorm/detail', Record<never, never>, Record<never, never>>,
     '/community/brainstorm/label': RouteRecordInfo<'/community/brainstorm/label', '/community/brainstorm/label', Record<never, never>, Record<never, never>>,
     '/community/brainstorm/label/[tag]': RouteRecordInfo<'/community/brainstorm/label/[tag]', '/community/brainstorm/label/:tag', { tag: ParamValue<true> }, { tag: ParamValue<false> }>,
     '/community/brainstorm/label/suggest': RouteRecordInfo<'/community/brainstorm/label/suggest', '/community/brainstorm/label/suggest', Record<never, never>, Record<never, never>>,

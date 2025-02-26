@@ -85,7 +85,7 @@ const subNavs = [
   },
   {
     title: "交流",
-    icon: "weui:time-outlined",
+    icon: "material-symbols-light:partner-exchange-rounded",
     path: "/community/discussion",
     appPath:"/community/dicusstion/hot",
   },
@@ -101,13 +101,13 @@ const items = [
   {
     title: "首页",
     url: "",
-    icon: "bitcoin-icons:home-outline",
+    icon: "material-symbols:home-outline",
     redirect: "",
   },
   {
     title: "社区",
     url: "community/",
-    icon: "fluent:people-community-20-regular",
+    icon: "fluent:people-community-32-regular",
     redirect: "community/comprehensive/hot",
   },
   {
@@ -228,7 +228,7 @@ getNotReadCount()
                         class="sidebar__link mb-1 "
                         @click="skipToPersonalCenter"
                       >
-                        <Icon icon="bi:person" />&nbsp;
+                        <Icon icon="gravity-ui:person" />&nbsp;
                         <span>个人资料</span>
                       </RouterLink>
                     </SidebarMenuButton>
@@ -238,7 +238,7 @@ getNotReadCount()
                         active-class="sidebar__link--active"
                         class="sidebar__link"
                       >
-                        <Icon icon="mage:box-3d-notification" />&nbsp;
+                        <Icon icon="mage:box-3d-notification" style="stroke-width: 3;"  />&nbsp;
                         <span>消息</span>
                         <span
                          v-if="messageStore.hasNewMessage"
@@ -285,7 +285,7 @@ getNotReadCount()
                     class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg p-0"
                     side="bottom"
                     :side-offset="4"
-                  ><router-link to="/personalCenter/userInfo">
+                  ><router-link :to="`/personalCenter/userInfo`" @click="skipToPersonalCenter">
                     <DropdownMenuItem class="drop-menu-item">
                       <BadgeCheck />
                     个人资料

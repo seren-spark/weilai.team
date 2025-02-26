@@ -13,7 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import {
   Select,
   SelectContent,
@@ -51,18 +50,20 @@ import { showConfirm } from "@/composables/useConfirm";
 import { useDateFormatter } from "@/composables/useDateFormatter";
 import { cn } from "@/lib/utils";
 import router from "@/router";
-import type { ArticleList } from "@/types/Community";
 import { checkType } from "@community/composables/search";
-import { deletes, getArticle } from "@admin/composables/useCommunity";
+import { deletes, getAdminPost } from "@admin/composables/useCommunity";
 import { Icon } from "@iconify/vue";
 import { getLocalTimeZone, type DateValue } from "@internationalized/date";
 import { Calendar as CalendarIcon, MoreHorizontal } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useRequest } from "vue-request";
+
+import type { AdminPost, AdminResponseData } from "@/types/admin-community";
+
 const { showAlert } = useAlert();
 const { formatDatetoDay } = useDateFormatter();
 
-const postList = ref<ArticleList[]>([]);
+const postList = ref<AdminPost[]>([]);
 // 初始化数据
 const isAllSelected = ref(false);
 const selectType = ref("");
@@ -71,30 +72,38 @@ const value = ref<DateValue>();
 const condition = ref("");
 // 声明一个批量删除的数组
 const deleteTodos = ref<Array<number>>([]);
-
 let total = ref<number>();
 let page = ref(1);
 let pageSize = ref(10);
-
 watch(value, (newVal) => {
   const selectTimeValue = newVal;
   if (selectTimeValue) {
     let { year, month, day } = selectTimeValue;
-
     selectTime.value = `${year}-${month}-${day} 00:00:00`;
   }
 });
 // 批量删除的方法
 
 // 进行搜索
-const getArticleInAdmin = () => {
-  getArticle(undefined, condition.value).then((res) => {
-    postList.value = res.records;
-    total.value = res.total;
-    pageSize.value = res.size;
-  });
+const searchArticleInAdmin = () => {
+  runGetAdminPost(undefined, condition.value);
 };
-getArticleInAdmin();
+
+const { data: postData, run: runGetAdminPost } = getAdminPost();
+
+watch(
+  postData,
+  () => {
+    const res = postData.value as AdminResponseData;
+    if (res.code == 2007) {
+      postList.value = res.data.records;
+      total.value = res.data.total;
+      pageSize.value = res.data.size;
+    }
+  },
+  { deep: true },
+);
+
 // 改变页数
 const changePage = (newPage: number) => {
   page.value = newPage;
@@ -102,31 +111,31 @@ const changePage = (newPage: number) => {
 };
 
 watch(page, (newPage) => {
-  getArticle(undefined, undefined, newPage).then((res) => {
-    postList.value = res.records;
-  });
+  runGetAdminPost(newPage);
 });
 // 搜索文章的方法
 async function searchArticle() {
   let selectTimeValue = value.value;
+  let endTime;
   if (selectTimeValue) {
     let { year, month, day } = selectTimeValue;
     selectTime.value = `${year}-${month}-${day} 00:00:00`;
+    endTime = `${year}-${month}-${day + 1} 00:00:00`;
   } else {
     selectTime.value = "";
   }
-  let res = await getArticle(
-    selectType.value,
-    condition.value || undefined,
+  runGetAdminPost(
     page.value || 1,
+    condition.value || undefined,
+    selectType.value,
     selectTime.value || "",
+    endTime,
   );
-  postList.value = res.records;
-  total.value = res.total;
-  pageSize.value = res.size;
 }
 // 删除文章(单选)
 const { data, run } = useRequest(deletes, { manual: true });
+
+// 删除文章
 function deleteArticles(oneId?: number) {
   if (oneId !== 0) {
     deleteTodos.value.push(oneId as number);
@@ -147,8 +156,6 @@ function deleteArticles(oneId?: number) {
     });
   }
 }
-// 监听删除请求数据变化
-
 // 实现全选反选多选
 function handleSelectAll() {
   if (postList.value.length === 0) return;
@@ -157,15 +164,14 @@ function handleSelectAll() {
     item.selected = isAllSelected.value;
   });
 }
+//刷新
 function reset() {
   value.value = undefined;
   selectType.value = "";
   condition.value = "";
-  getArticleInAdmin();
+  runGetAdminPost();
 }
 const handleItemSelect = (item: any) => {
-  console.log(postList.value);
-
   isAllSelected.value = true;
   postList.value.forEach((item: any) => {
     if (!item.selected) {
@@ -256,13 +262,13 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
                   </Popover>
                 </div>
                 <div class="header-search">
-                  <span>作者/标题:</span>
+                  <span>作者/标题/内容:</span>
                   <div class="search_input_box">
                     <input
                       placeholder="请输入关键词"
                       class="search_input"
                       v-model="condition"
-                      @keydown.enter="getArticleInAdmin"
+                      @keydown.enter="searchArticleInAdmin"
                     />
                   </div>
                 </div>
@@ -501,7 +507,7 @@ $font: #8c9296;
       padding: 10px;
       text-align: center;
       color: var(--secondary-foreground);
-      width: 110px;
+      width: 7rem;
       margin: 0 5px;
       padding: 5px;
       font-size: 0.825rem;
@@ -534,14 +540,11 @@ $font: #8c9296;
     float: right;
     position: relative;
 
-    &_input_box {
-      position: relative;
-    }
     input {
       text-decoration: none;
       list-style: none;
       outline-style: none;
-      width: 180px;
+      width: 11rem;
       height: 2rem;
       font-size: 0.825rem;
       border: 0.125rem solid var(--border);
@@ -582,7 +585,7 @@ $font: #8c9296;
   height: max-content;
   padding: 0.35rem 1.5rem;
   font-size: 0.825rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background-color: var(--primary);
   color: var(--primary-foreground);
 }

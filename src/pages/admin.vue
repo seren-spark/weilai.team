@@ -14,13 +14,13 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
     "subNavItems": [
       {
         "title": "概况",
-        "icon": "material-symbols-light:overview-key-outline",
+        "icon": "material-symbols:overview-key-outline",
         "path": "/admin/profile",
         "redirect": "/admin/profile"
       },
       {
         "title": "通讯录",
-        "icon": "ph:address-book-tabs-light",
+        "icon": "ph:address-book-tabs",
         "path": "/admin/contacts",
         "redirect": "/admin/contacts/member"
       },
@@ -31,17 +31,17 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
       },
       {
         "title": "招新管理",
-        "icon": "arcticons:studentid",
+        "icon": "ph:student",
         "path": "/admin/recruitment/recruitment"
       },
       {
         "title": "考勤管理",
-        "icon": "weui:time-outlined",
+        "icon": "tdesign:time",
         "path": "/admin/attendance"
       },
       {
         "title": "权限管理",
-        "icon": "material-symbols-light:shield-lock-outline",
+        "icon": "material-symbols:shield-lock-outline-rounded",
         "path": "/admin/limits"
       }
     ]
