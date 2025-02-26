@@ -9,13 +9,14 @@ import type {
   IGetInterviewUserDTO,
   IArrangeInterviewDTO,
 } from "@/types/recruitmentType";
+
 // 招新模块
-const BASE_UEL = "http://49.232.183.67:8087/";
+const BASE_UEL = `http:${import.meta.env.VITE_API_BASE_URL}/`;
 const getToken = (): string => {
   const token = localStorage.getItem("token");
   if (!token) {
     router.push("/login");
-    throw new Error("拿token了吗孩子");
+    throw new Error("token 不存在");
   }
   return JSON.parse(token).value;
 };
@@ -285,20 +286,21 @@ export const getAllInterviewUser = ({
   });
 };
 
-//安排面试官
-//状态参数标记 round 1全部，1代表一面、2代表二面
+//安排面试
+//状态参数标记
 export const arrangeInterviewer = ({
   id,
-  interviewTime,
+  startTime,
+  endTime,
   place,
   firstHr,
   secondHr,
   thirdHr,
 }: IArrangeInterviewDTO) => {
-  console.log(id, interviewTime, place, firstHr, secondHr, thirdHr);
+  console.log(id, place,startTime,endTime, firstHr, secondHr, thirdHr);
   return axios.post(
     `${BASE_UEL}recruit/interview/scheduleInterviewer`,
-    { id, interviewTime, place, firstHr, secondHr, thirdHr },
+    { id,startTime,endTime,  place, firstHr, secondHr, thirdHr },
     {
       headers: {
         "Content-Type": "application/json",

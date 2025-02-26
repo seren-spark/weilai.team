@@ -14,13 +14,13 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
     "subNavItems": [
       {
         "title": "综合",
-        "icon": "material-symbols-light:overview-key-outline",
+        "icon": "icon-park-outline:all-application",
         "path": "/community/comprehensive",
         "redirect": "/community/comprehensive/hot"
       },
       {
         "title": "博客",
-        "icon": "material-symbols:article-outline",
+        "icon": "uil:blogger-alt",
         "path": "/community/blog",
         "redirect": "/community/blog/hot"
       },
@@ -31,14 +31,14 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
       },
       {
         "title": "交流",
-        "icon": "weui:time-outlined",
+        "icon": "lucide-lab:coins-exchange",
         "path": "/community/discussion",
         "redirect": "/community/discussion/recommend"
       },
       {
         "title": "头脑风暴",
-        "icon": "weui:time-outlined",
-        "path": "/community/brainstorm"
+        "icon": "icon-park-outline:thinking-problem",
+        "path": "/community/brainstorm/detail"
       }
     ]
   }

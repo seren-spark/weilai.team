@@ -1,4 +1,4 @@
-type OnClickFunction = (id: string, name?: string) => void;
+type OnClickFunction = (id: string, name?: string,) => void;
 
 //面试状态
 export const enum interviewStatus {
@@ -129,7 +129,8 @@ export interface IGetInterviewUserDTO {
 export interface IArrangeInterviewDTO {
   id: string;
   place: string;
-  interviewTime: string;
+  startTime: string;
+  endTime: string;
   // 面试官id
   firstHr: string;
   secondHr: string;

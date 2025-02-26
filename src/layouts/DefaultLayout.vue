@@ -40,6 +40,10 @@ import SidebarTrigger from "@/components/ui/sidebar/SidebarTrigger.vue";
   .default-layout__container {
     padding: 0;
   }
+
+  .default-layout {
+    width: 100%;
+  }
 }
 @media screen and (min-width: 1800px) {
   .default-layout__container {

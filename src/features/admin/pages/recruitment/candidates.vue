@@ -18,7 +18,6 @@ import {
   getAllGrade,
   getResumeById,
   deleteApplyUserById,
-  // exportResultExcel,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import type {

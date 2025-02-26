@@ -89,7 +89,6 @@ $undertone: #647499;
   width: 150px;
 }
 .filter-title {
-  width: 100px;
   display: inline-flex;
   flex-direction: row;
   justify-content: center;
