@@ -40,6 +40,11 @@ const centerObj = defineProps({
     align-items: center;
     background-color: #fff;
     position: relative;
+    transition: all 0.3s ease;
+
+    &:hover{
+        transform: scale(1.05);
+    }
 
     &:nth-child(2) {
         // margin: 0 0 10% 0;
