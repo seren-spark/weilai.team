@@ -8,9 +8,7 @@ import { useAlert } from "@/composables/useAlert";
 const { data, executeRequest } = useRequest();
 import type { SSENoticeData } from "../../../../types/sseType";
 import { showConfirm } from "@/composables/useConfirm";
-import router from "@/router";
-import { useUserStore } from "../../../../store/userStore";
-const userStore = useUserStore();
+import { skipPersonCenter } from "@/composables/useCommunity";
 import {
   Tooltip,
   TooltipContent,
@@ -133,15 +131,6 @@ const readNotice = async (noticeId: string) => {
     })
     .catch(() => {});
 };
-//跳转个人中心;
-function skipPersonCenter(id: number) {
-  userStore.setUserId(id);
-  userStore.setIsSelf(false);
-
-  router.push({
-    path: `/personalCenter/userInfo`,
-  });
-}
 </script>
 
 <template>

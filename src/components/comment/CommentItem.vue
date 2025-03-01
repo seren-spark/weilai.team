@@ -9,9 +9,7 @@ import { formatPostTime } from "@/utils/formatPostTime";
 import { useAlert } from "@/composables/useAlert";
 import UserAvatar from "../avatar/UserAvatar.vue";
 import { showConfirm } from "@/composables/useConfirm";
-import router from "@/router";
-import { useUserStore } from "@/store/userStore";
-const userStore = useUserStore();
+import { skipPersonCenter } from "@/composables/useCommunity";
 
 const props = defineProps({
   comment: {
@@ -146,15 +144,6 @@ onMounted(async () => {
   await getSecondComment(props.comment.commentId);
 });
 defineExpose({ userInfo });
-//跳转个人中心;
-function skipPersonCenter(id: number) {
-  userStore.setUserId(id);
-  userStore.setIsSelf(false);
-
-  router.push({
-    path: `/personalCenter/userInfo`,
-  });
-}
 </script>
 
 <template>
@@ -285,7 +274,7 @@ function skipPersonCenter(id: number) {
     height: 45px;
     margin-right: 10px;
     border-radius: 50%;
-    padding: 2px;
+    padding-top: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -293,8 +282,8 @@ function skipPersonCenter(id: number) {
     overflow: hidden;
 
     img {
-      width: 100%;
-      height: 100%;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       object-fit: cover;
     }
