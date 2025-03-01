@@ -1,11 +1,16 @@
 import apiClient from "@/api/axios";
 import { useAlert } from "@/composables/useAlert";
 import { useRequest } from "@/composables/useRequest";
-import type { ContactData, MemeberData } from "@/types/contacts";
-import { ref } from "vue";
-const { showAlert } = useAlert();
-const { executeRequest, error, loading, data } = useRequest();
-const contactsData = ref<ContactData>();
+import type {
+  ContactData,
+  MemeberData,
+  modifyManyUser,
+  TeamUser,
+} from "@/types/contacts";
+
+useAlert();
+const { executeRequest, loading, data } = useRequest();
+
 export async function getMembers(pageNumber = 1, pageSize = 10) {
   await executeRequest({
     url: `/userManager/teamInfo/getTeamUserList/${pageNumber}/${pageSize}`,
@@ -34,7 +39,6 @@ export async function searchMember(content = "") {
     url: `/userManager/teamInfo/searchTeamUser?content=${content}`,
     method: "get",
   });
-  const res = data.value as ContactData;
 }
 export async function getMemberInfo(userId: number) {
   await executeRequest({
@@ -44,20 +48,20 @@ export async function getMemberInfo(userId: number) {
   const res = data.value as MemeberData;
   return res.data;
 }
-export async function setLeader(leaderInfo: {}) {
+export async function setLeader(leaderInfo: { group: string; userId: number }) {
   await executeRequest({
     url: "/userManager/teamInfo/setGroupLabel",
     method: "post",
     requestData: leaderInfo,
   });
-  console.log(data.value);
+
   return data.value;
 }
-export async function updateInfo(updateTeamUserInfoDTO: {}) {
+export async function updateInfo(updateTeamUserInfoDTO: TeamUser) {
   await executeRequest({
     url: "/userManager/teamInfo/modifyTeamUserInfo",
     method: "put",
-    requestData: updateTeamUserInfoDTO,
+    requestData: updateTeamUserInfoDTO as unknown as Record<string, unknown>,
   });
   return data.value;
 }
@@ -69,13 +73,13 @@ export async function getMembersByGrade(grade: string) {
   return data.value;
 }
 
-export async function addMember(addUserDTO: {}) {
+export async function addMember(addUserDTO: TeamUser) {
   return apiClient.post("/userManager/teamInfo/assUser", addUserDTO);
 }
 export async function deletes(id: number[]) {
   return apiClient.delete(`/userManager/teamInfo/deleteTeamUserInfo?id=${id} `);
 }
-export async function changeInfosForMembers(modifyManyUserDTO: {}) {
+export async function changeInfosForMembers(modifyManyUserDTO: modifyManyUser) {
   return apiClient.put(
     `/userManager/teamInfo/modifyManyUser `,
     modifyManyUserDTO,

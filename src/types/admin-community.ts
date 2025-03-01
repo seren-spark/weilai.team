@@ -22,4 +22,5 @@ export interface AdminPost {
   title: string;
   type: number;
   id: number;
+  selected?: boolean;
 }

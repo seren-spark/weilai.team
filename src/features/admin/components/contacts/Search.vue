@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/require-v-for-key -->
 <template>
   <div class="search_container">
     <div class="search">
@@ -10,19 +11,19 @@
           />
         </span>
         <input
+          ref="inputRef"
+          v-model="searchValue"
           placeholder="请输入关键词"
           class="search_input"
-          ref="inputRef"
           @keydown.enter="() => {}"
-          v-model="searchValue"
           @focus="isVisible = true"
         />
       </div>
 
-      <div class="search_list" v-show="searchValue && isVisible">
-        <div class="search_empty" v-if="!searchList.length">未找到搜索结果</div>
-        <div class="search_item" v-for="item in searchList">
-          <MemberInfo :userId="item.id">
+      <div v-show="searchValue && isVisible" class="search_list">
+        <div v-if="!searchList.length" class="search_empty">未找到搜索结果</div>
+        <div v-for="item in searchList" class="search_item">
+          <MemberInfo :user-id="item.id">
             <DialogTrigger as-child>
               <span class="search-item"
                 ><Icon icon="bi:person-fill" />{{ item.name }}</span
@@ -38,26 +39,25 @@
 <script setup lang="ts">
 import { DialogTrigger } from "@/components/ui/dialog";
 import { useRequest } from "@/composables/useRequest";
-import type { ArticleList, UserInfo } from "@/types/community";
+import type {  UserInfo } from "@/types/community";
 import type { searchData, TeamUserList } from "@/types/contacts";
 import { debounce } from "@community/composables/search";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+
 import MemberInfo from "./MemberInfo.vue";
 // import { searchMember } from "../../composables/useContacts";
 const isVisible = ref(false);
-const router = useRouter();
+
 const searchValue = ref();
-const { executeRequest, error, loading, data } = useRequest();
+const { executeRequest, data } = useRequest();
 const searchList = ref<TeamUserList[]>([]);
-const filterList = ref<ArticleList[]>([]);
+
 const searchUserList = ref<UserInfo[]>([]);
-const filterUserList = ref<UserInfo[]>([]);
-const route = useRoute();
-const path = route.path;
+
+
 // 接受父组件传来的函数
-const props = defineProps({
+ defineProps({
   content: {
     type: String,
     default: "",
@@ -75,7 +75,7 @@ async function searchMember(content = "") {
 }
 
 // 用于记录已经出现的标题
-const titleMap = new Map<string, boolean>();
+
 let body = document.body as HTMLElement;
 body.addEventListener("click", handleClick);
 // 监视输入框的输入

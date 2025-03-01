@@ -24,7 +24,7 @@ console.log(props.customClass);
       <Avatar class="w-full h-full ">
         <AvatarImage :src="avatar ? avatar : ''" alt="@radix-vue" id="avatarImage"  class="h-full w-full " />
         <AvatarFallback>
-          <img src="/public/defaultAvatar.png" class="default-avatar"></img>
+          <img src="/public/defaultAvatar.png" class="default-avatar"/>
         </AvatarFallback>
       </Avatar>
     </div>

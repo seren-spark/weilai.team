@@ -1,4 +1,4 @@
-<script setup></script>
+<script setup name="NoData"></script>
 <template>
   <div class="noDataContainer">
     <div class="noData">

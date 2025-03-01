@@ -2,17 +2,18 @@
   <div style="display: flex">
     <div class="content">
       <div id="search">
-        <Search :isUser="true" />
+        <Search :is-user="true" />
       </div>
       <div id="news">
         <div v-if="userList.length > 0">
-          <UserContent :userList="userList" :content="user" />
+          <UserContent :user-list="userList" :content="user" />
         </div>
         <div v-else-if="load">
           <div
+            v-for="index in 10"
+            :key="index"
             class="news-item"
             style="display: flex; align-items: center"
-            v-for="index in 10"
           >
             <div>
               <div class="flex items-center space-x-4 bg-[white]">
@@ -25,7 +26,7 @@
             </div>
           </div>
         </div>
-        <div v-else="load && !userList.length">
+        <div v-else>
           <NoData />
         </div>
         <div v-if="isOver && userList.length > 0" class="over">已经到底了</div>
@@ -40,15 +41,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Rightbar from "@/components/community/Rightbar.vue";
 import Search from "@community/components/Search.vue";
 import UserContent from "@/features/community/components/user-display/UserContent.vue";
-import { useRequest } from "@/composables/useRequest";
 import { useRequest as req } from "vue-request";
-import { useUserStore } from "@/store/userStore";
+
 import type { UserData, UserInfo } from "@/types/community";
 import { onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import apiClient from "@/api/axios";
-
-const { executeRequest, error, loading, data } = useRequest();
 const route = useRoute();
 const user = ref("");
 const userList = ref<UserInfo[]>([]);
@@ -61,10 +59,10 @@ if ("user" in route.params) {
 const current = ref<number>(1);
 const pages = ref<number>(1);
 const total = ref<number>(0);
-const content = ref("");
+const searchContent = ref("");
 const isOver = ref(false);
 let load = ref(true);
-const props = defineProps({
+defineProps({
   content: {
     type: String,
     default: "",
@@ -75,12 +73,13 @@ const props = defineProps({
   },
 });
 
+interface RouteParams {
+  user?: string;
+}
 watch(
   () => route.params,
   (newVal) => {
-    console.log((newVal as any).user);
-    console.log("路由变了");
-    let user = (newVal as any).user;
+    let user = (newVal as RouteParams).user;
     runGetUserList(user);
   },
 );
@@ -123,7 +122,7 @@ onMounted(async () => {
   window.addEventListener("scroll", handleScroll, true);
 });
 
-const handleScroll = async (e: any) => {
+const handleScroll = async () => {
   let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
   const clientHeight =
     document.documentElement.clientHeight || document.body.clientHeight;
@@ -133,7 +132,7 @@ const handleScroll = async (e: any) => {
   if (scrollTop + clientHeight > scrollHeight - 100) {
     if (current.value < pages.value) {
       current.value++;
-      runGetUserList(content.value, pages.value);
+      runGetUserList(searchContent.value, pages.value);
     }
   }
 };

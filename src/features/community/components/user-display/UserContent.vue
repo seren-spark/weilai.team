@@ -1,14 +1,15 @@
 <template>
   <a
-    class="news-item"
     v-for="item in userList"
+    :key="item.userId"
+    class="news-item"
     @click="skipPersonCenter(item.userId)"
   >
     <div class="news-writer">
       <div class="avatar">
         <Avatar
           :avatar="item.headPortrait"
-          :customClass="`w-[3rem] h-[3rem]`"
+          :custom-class="`w-[3rem] h-[3rem]`"
         />
       </div>
       <div class="writer-info">
@@ -26,12 +27,10 @@
 
 <script setup lang="ts">
 import Avatar from "@/components/avatar/UserAvatar.vue";
-import type {
-  UserInfo,
-} from "@/types/community";
+import type { UserInfo } from "@/types/community";
 
 import { skipPersonCenter } from "@/composables/useCommunity";
-const props = withDefaults(
+withDefaults(
   defineProps<{
     content: string;
     pageNumber?: number;

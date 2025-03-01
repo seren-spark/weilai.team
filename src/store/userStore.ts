@@ -41,8 +41,8 @@ export const useUserStore = defineStore("user", {
 export const getMyId = () =>
   Number(JSON.parse(localStorage.getItem("userId") as string).value);
 export async function getUserAvatarInfo() {
-  let id = getMyId();
-  let res = await apiClient({
+  const id = getMyId();
+  const res = await apiClient({
     url: `/user/getUserInfoByUserId/${id}`,
     method: "get",
   });

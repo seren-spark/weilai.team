@@ -8,13 +8,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { modifyManyUser } from "@/types/contacts";
+import type { modifyManyUser, TeamUserList } from "@/types/contacts";
 
 import { useAlert } from "@/composables/useAlert";
 import { reactive, ref, watch } from "vue";
 import { useRequest } from "vue-request";
 import { changeInfosForMembers } from "../../composables/useContacts";
-const { data, run, loading } = useRequest(changeInfosForMembers, {
+import type { ApiResponseData } from "@/types/api-response";
+const { data, run } = useRequest(changeInfosForMembers, {
   manual: true,
 });
 const { showAlert } = useAlert();
@@ -37,11 +38,11 @@ const groupNums = reactive({
 });
 const props = defineProps<{
   userId?: number;
-  sendUpdateInfo?: Function;
+  sendUpdateInfo?: (grade: string, group: string) => void;
   grade: string;
   group: string;
   selectIds: Array<number>;
-  updateData: Function;
+  updateData: (grade: string, group: string) => void;
 }>();
 const userInfo = ref<modifyManyUser>({
   clazz: "计科XXX",
@@ -58,7 +59,8 @@ watch(
   () => data.value,
   () => {
     if (data.value) {
-      if ((data.value as any).code == 200) {
+      const response = data.value as ApiResponseData<TeamUserList>;
+      if (response.code == 200) {
         showAlert("修改成功", "pass");
         props.updateData(props.grade, props.group);
       }
@@ -105,25 +107,25 @@ const matchGroup = () => {
       <div class="grid gap-4 py-4">
         <div class="grid grid-cols-6 items-center gap-5">
           <Label for="username" class="text-right"> 年级 : </Label>
-          <Input id="name" class="col-span-4" v-model="userInfo.grade" />
+          <Input id="name" v-model="userInfo.grade" class="col-span-4" />
         </div>
         <div class="grid grid-cols-6 items-center gap-5">
           <Label for="username" class="text-right"> 班级 : </Label>
           <Input
             id="username"
+            v-model="userInfo.clazz"
             default-value="@peduarte"
             class="col-span-4"
-            v-model="userInfo.clazz"
           />
         </div>
         <div class="grid grid-cols-6 items-center gap-5">
           <Label for="username" class="text-right"> 组织 : </Label>
           <Input
             id="username"
+            v-model="groupInput"
             default-value="@peduarte"
             class="col-span-4"
             :placeholder="groupNums[userInfo.group as keyof typeof groupNums]"
-            v-model="groupInput"
           />
           <!-- <Select v-model="userInfo.group">
             <SelectTrigger class="w-[250px]">

@@ -1,4 +1,4 @@
-import { provide } from "vue";
+
 export interface uploadFileResponseData extends responseData {
   data: {
     code: number;

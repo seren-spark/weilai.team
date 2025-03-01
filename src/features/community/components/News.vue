@@ -1,7 +1,7 @@
 <template>
   <div id="news" ref="scrollRef ">
     <div v-if="articleList.length > 0">
-      <div class="news-item" v-for="item in articleList">
+      <div v-for="item in articleList" :key="item.id" class="news-item">
         <div class="news-writer">
           <div
             class="avatar"
@@ -9,7 +9,7 @@
           >
             <UserAvatar
               :avatar="item.headPortrait"
-              customClass="w-[3rem] h-[3rem]"
+              custom-class="w-[3rem] h-[3rem]"
             />
           </div>
           <div class="writer-info">
@@ -47,15 +47,15 @@
         </div> -->
         <NewsLabel :item="item" :tag-type="tagType" />
         <NewsFooter
-          :viewCount="item.viewCount"
-          :likeCount="item.likeCount"
-          :commentCount="item.commentCount"
+          :view-count="item.viewCount"
+          :likecount="item.likeCount"
+          :comment-count="item.commentCount"
         />
       </div>
     </div>
 
     <div v-else-if="loading" class="loading">
-      <div class="news-item" v-for="index in 6">
+      <div v-for="index in 6" :key="index" class="news-item">
         <div class="news-writer">
           <div class="flex items-center space-x-4">
             <Skeleton class="h-12 w-12 rounded-full bg-[--muted]" />
@@ -70,7 +70,7 @@
         </a>
       </div>
     </div>
-    <div v-else="!loading && !articleList.length">
+    <div v-else-if="!loading && articleList.length === 0">
       <NoData />
     </div>
     <!-- 到底了 -->
@@ -82,10 +82,10 @@
 import { useTagStore } from "@/store/tagTypeStore";
 
 import UserAvatar from "@/components/avatar/UserAvatar.vue";
-// @ts-ignore
+// @ts-expect-error:this url is not exist
 import NoData from "@/components/loading/NoData.vue";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserStore } from "@/store/userStore";
+
 import type { ArticleList } from "@/types/community";
 import { formatPostTime } from "@/utils/formatPostTime";
 import {
@@ -94,21 +94,20 @@ import {
   getArticle2,
 } from "@community/composables/search";
 import { onMounted, provide, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import NewsFooter from "./article-display/NewsFooter.vue";
 import { skipPersonCenter } from "@/composables/useCommunity";
 import NewsContent from "./article-display/NewsContent.vue";
 import NewsLabel from "./article-display/NewsLabel.vue";
 const loadinglen = ref(0);
 const articleList = ref<ArticleList[]>([]);
-const isTag = ref(false);
+const isExsitTag = ref(false);
 const loading = ref(false);
 const tagStore = useTagStore();
 const tagType = tagStore.tagType.tagType;
 // 滚动容器
 const scrollRef = ref<HTMLDivElement>();
-const userStore = useUserStore();
-const router = useRouter();
+
 provide("scrollRefFromInner", scrollRef);
 const props = defineProps<{
   type?: number | 0;
@@ -127,22 +126,24 @@ if (!props.isTag) {
   // 如果不是标签详情页
   watch(
     () => route.params,
-    (newVal, oldVal) => {
-      let title = (newVal as any).title;
-      const { loading: load, data } = getArticle2(
-        props.type,
-        title,
-        props.page,
-        props.sort,
-      );
-      watch(data, () => {
-        pages.value = data.value?.data.pages;
-        total.value = data.value?.data.total;
-        console.log(data.value);
-        loading.value = load.value;
-        current.value = data.value?.data.current;
-        articleList.value = data.value?.data.records;
-      });
+    (newVal) => {
+      const title = (newVal as Record<string, string>)?.title;
+      if (title) {
+        const { loading: load, data } = getArticle2(
+          props.type,
+          title,
+          props.page,
+          props.sort,
+        );
+        watch(data, () => {
+          pages.value = data.value?.data.pages || 0;
+          total.value = data.value?.data.total || 0;
+          console.log(data.value);
+          loading.value = load.value;
+          current.value = data.value?.data.current || 0;
+          articleList.value = data.value?.data.records || [];
+        });
+      }
     },
     {
       immediate: true,
@@ -176,7 +177,7 @@ if (!props.isTag) {
       if (newVal) {
         if (newVal.length > 0) {
           articleList.value = newVal;
-          isTag.value = true;
+          isExsitTag.value = true;
         } else {
           loadinglen.value = 0;
           loading.value = false;
@@ -191,7 +192,7 @@ onMounted(async () => {
   window.addEventListener("scroll", handleScroll, true);
 });
 
-const handleScroll = async (e: any) => {
+const handleScroll = async () => {
   let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
   const clientHeight =
     document.documentElement.clientHeight || document.body.clientHeight;
@@ -276,8 +277,6 @@ const handleScroll = async (e: any) => {
           }
         }
       }
-  
-   
     }
   }
 }

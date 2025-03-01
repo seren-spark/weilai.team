@@ -1,15 +1,12 @@
 import apiClient from "@/api/axios";
 
-import { watch, ref } from "vue";
+import { watch,  } from "vue";
 import { useRequest } from "vue-request";
 import axios from "axios";
 export async function uploadFileChunk2(
-  file: any,
-  chunkIndex: number,
-  object: string,
-) {
-  const resData = ref();
+  file: File,
 
+) {
   const uploadfile = () => {
     return apiClient.post(`/upload/multipart/init`, file, {
       headers: {
@@ -27,7 +24,7 @@ export async function uploadFileChunk2(
 
   return data;
 }
-export const uploadFileToMinio = async (url: any, chunk: any, type: any) => {
+export const uploadFileToMinio = async (url: string, chunk: any, type: any) => {
   console.log("minio函数执行了");
 
   await axios

@@ -16,13 +16,15 @@ import { ref, watch } from "vue";
 import { useRequest } from "vue-request";
 import { z } from "zod";
 import { addMember } from "../../composables/useContacts";
+import type { ApiResponseData } from "@/types/api-response";
+import type { TeamUserList } from "@/types/contacts";
 // 定义input样式
-const inputContainerStyle = "grid grid-cols-6 grod-rows-2 items-center gap-1";
+
 const { showAlert } = useAlert();
 const props = defineProps<{
   group: string;
   grade: string;
-  updateData: Function;
+  updateData: (grade: string, group: string) => void;
 }>();
 const group = ref(props.group);
 const grade = ref(props.grade);
@@ -58,7 +60,7 @@ const handleDialogOpen = (newValue: boolean) => {
     // errors.value = {};
   }
 };
-const { data, run, loading } = useRequest(addMember, { manual: true });
+const { data, run } = useRequest(addMember, { manual: true });
 // 定义表单验证格式
 const formSchema = z.object({
   name: z.string().min(2, { message: "名字至少需要2个字符" }),
@@ -97,7 +99,8 @@ watch(
   () => data.value,
   () => {
     if (data.value) {
-      if ((data.value as any).code == 200) {
+      const response = data.value as ApiResponseData<TeamUserList>;
+      if (response.code === 200) {
         showAlert("添加成功", "pass");
         props.updateData(grade.value, group.value);
       }
@@ -123,9 +126,9 @@ watch(
           <Label for="name" class="text-center"> 姓名 :</Label>
           <Input
             id="name"
+            v-model="userInfo.name"
             class="col-span-4 focus:outline-none"
             :error="errors?.name ? true : false"
-            v-model="userInfo.name"
             placeholder="请输入姓名"
             @input="
               () => {
@@ -141,7 +144,7 @@ watch(
             "
           />
           <div class="grid grid-cols-subgrid gap-4 col-span-3">
-            <div class="col-start-2 error flex" v-if="errors?.name">
+            <div v-if="errors?.name" class="col-start-2 error flex">
               <Icon icon="material-symbols:error-outline" />
               {{ errors.name?._errors[0] }}
             </div>
@@ -151,8 +154,8 @@ watch(
           <Label for="username" class="text-center"> 学号 : </Label>
           <Input
             id="username"
-            class="col-span-4"
             v-model="userInfo.studyId"
+            class="col-span-4"
             placeholder="请输入学号"
             :error="errors?.studyId ? true : false"
             @input="
@@ -169,7 +172,7 @@ watch(
             "
           />
           <div class="grid grid-cols-subgrid gap-4 col-span-3">
-            <div class="col-start-2 error flex" v-if="errors?.studyId">
+            <div v-if="errors?.studyId" class="col-start-2 error flex">
               <Icon icon="material-symbols:error-outline" />
               {{ errors.studyId._errors[0] }}
             </div>
@@ -177,7 +180,7 @@ watch(
         </div>
         <div class="grid grid-cols-6 items-center gap-5">
           <Label for="sex" class="text-right"> 性别 :</Label>
-          <RadioGroup class="flex" v-model="userInfo.sex">
+          <RadioGroup v-model="userInfo.sex" class="flex">
             <div class="flex items-center space-x-2">
               <RadioGroupItem id="r1" value="男" />
               <Label for="r1">男</Label>
@@ -191,9 +194,9 @@ watch(
         <div class="input-container">
           <Label for="username" class="text-center"> 邮箱 : </Label>
           <Input
+            v-model="userInfo.email"
             placeholder="请输入邮箱"
             class="col-span-4"
-            v-model="userInfo.email"
             :error="errors?.email ? true : false"
             @input="
               () => {
@@ -207,7 +210,7 @@ watch(
             "
           />
           <div class="grid grid-cols-subgrid gap-4 col-span-3">
-            <div class="col-start-2 error flex" v-if="errors?.email">
+            <div v-if="errors?.email" class="col-start-2 error flex">
               <Icon icon="material-symbols:error-outline" />
               {{ errors.email._errors[0] }}
             </div>
@@ -216,27 +219,27 @@ watch(
         <div class="input-container">
           <Label for="username" class="text-center"> QQ : </Label>
           <Input
+            v-model="userInfo.qq"
             default-value="@peduarte"
             class="col-span-4"
             placeholder="请输入QQ"
-            v-model="userInfo.qq"
           />
         </div>
         <div class="input-container">
           <Label for="username" class="text-center"> 电话 : </Label>
           <Input
+            v-model="userInfo.phone"
             default-value="@peduarte"
             class="col-span-4"
             placeholder="请输入电话"
-            v-model="userInfo.phone"
           />
         </div>
         <div class="input-container">
           <Label for="username" class="text-center"> 班级 : </Label>
           <Input
+            v-model="userInfo.clazz"
             placeholder="请输入班级（格式：计科xxx）"
             class="col-span-4"
-            v-model="userInfo.clazz"
             :error="errors?.clazz ? true : false"
             @input="
               () => {
@@ -252,7 +255,7 @@ watch(
             "
           />
           <div class="grid grid-cols-subgrid gap-4 col-span-3">
-            <div class="col-start-2 error flex" v-if="errors?.clazz">
+            <div v-if="errors?.clazz" class="col-start-2 error flex">
               <Icon icon="material-symbols:error-outline" />
               {{ errors.clazz._errors[0] }}
             </div>

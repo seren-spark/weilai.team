@@ -14,9 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-
-let props = defineProps({
+defineProps({
   item: {
     type: Object,
     default: () => {
