@@ -40,14 +40,35 @@
             <!-- {{ item.size }} -->
           </div>
           <div class="file-info-item file-progress">
-         
             <span style="font-size: 14px; color: #909399; width: 250px"
               >{{ item.uploadProgress }}%</span
             >
           </div>
-          <!-- <div class="file-info-item file-size">
-            <span :class="getStatusClass(item.status)">{{ item.status }}</span>
-          </div> -->
+          <div class="file-info-item file-size">
+            <!-- <span :class="getStatusClass(item.status)">{{ item.status }}</span> -->
+            <div v-if="item.status === '等待上传'" size="medium" type="info">
+              等待上传
+            </div>
+            <div
+              v-else-if="item.status === '校验MD5'"
+              size="medium"
+              type="warning"
+            >
+              校验MD5
+            </div>
+            <div v-else-if="item.status === '正在上传'" size="medium">
+              正在上传
+            </div>
+            <div
+              v-else-if="item.status === '上传成功'"
+              size="medium"
+              type="success"
+            >
+              上传完成
+            </div>
+            <div v-else size="medium">正在上传</div>
+            <div v-else size="medium" type="danger">上传错误</div>
+          </div>
         </div>
       </div>
     </div>
@@ -64,6 +85,16 @@ import {
   transformByte,
   percent,
 } from "@/composables/useUploadFile";
+import { watch } from "vue";
+watch(
+  uploadFileList,
+  (newValue) => {
+    console.log(newValue);
+
+    console.log(555555555555);
+  },
+  { deep: true },
+);
 </script>
 
 <style scoped lang="scss">

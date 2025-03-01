@@ -35,11 +35,6 @@ addTagType.addTag(typeData.value);
         "title": "标签",
         "path": "/community/brainstorm/label/suggest",
         "icon": "i-mdi-file-document-multiple-outline"
-      },
-      {
-        "title": "测试文件2",
-        "path": "/community/brainstorm/test2",
-        "icon": "i-mdi-file-document-multiple-outline"
       }
     ]
   }

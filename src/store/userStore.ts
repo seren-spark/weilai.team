@@ -15,10 +15,6 @@ export const useUserStore = defineStore("user", {
 
   actions: {
     // 存储id
-    setUserId(id: number, avatar: string) {
-      this.userId = id;
-      this.avatar = avatar;
-    },
     setUserInfo(id: number, avatar: string) {
       this.userId = id;
       this.avatar = avatar;
