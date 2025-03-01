@@ -5,7 +5,6 @@ import { defineProps, ref, onMounted, nextTick } from "vue";
 import { useRequest } from "@/composables/useRequest";
 import UserAvatar from "@/components/avatar/UserAvatar.vue";
 import { useAlert } from "@/composables/useAlert";
-const { data, executeRequest } = useRequest();
 import type { SSENoticeData } from "../../../../types/sseType";
 import { showConfirm } from "@/composables/useConfirm";
 import { skipPersonCenter } from "@/composables/useCommunity";
@@ -25,49 +24,18 @@ interface NoticeContent {
     }[];
   }[];
 }
-const noticeContentRef = ref<HTMLElement | null>(null);
-const isShow = ref(false);
-const userId = ref(JSON.parse(localStorage.getItem("userId") || "{}").value);
-console.log(userId.value);
-const { showAlert } = useAlert();
-// const showText = ref("展开");
-// const toggleContent = () => {
-//   if (showText.value === "收起") {
-//     noticeContentRef.value!.style.overflow = "hidden";
-//     noticeContentRef.value!.style.height = "10px";
-//     showText.value = "展开";
-//   } else {
-//     showText.value = isShow.value ? "收起" : "展开";
-//     if (isShow.value) {
-//       noticeContentRef.value!.style.overflow = "visible";
-//       noticeContentRef.value!.style.height = "auto";
-//     } else {
-//       noticeContentRef.value!.style.overflow = "hidden";
-//       noticeContentRef.value!.style.height = "50px";
-//     }
-//   }
-// };
-onMounted(() => {
-  nextTick(() => {
-    if (noticeContentRef.value) {
-      const height = noticeContentRef.value.clientHeight;
-      if (height > 50) {
-        isShow.value = true;
-        noticeContentRef.value.style.overflow = "hidden";
-        noticeContentRef.value.style.height = "50px";
-      }
-    }
-  });
-});
-
 const props = defineProps<{
   notice: SSENoticeData;
   noticeList: Function;
   getNotReadCount: Function;
 }>();
-
+const { data, executeRequest } = useRequest();
+const noticeContentRef = ref<HTMLElement | null>(null);
+const isShow = ref(false);
+const userId = ref(JSON.parse(localStorage.getItem("userId") || "{}").value);
+console.log(userId.value);
+const { showAlert } = useAlert();
 const createAt = formatPostTime(props.notice.createAt);
-
 //转换
 function handleNotice() {
   let noticeText = "";
@@ -131,6 +99,18 @@ const readNotice = async (noticeId: string) => {
     })
     .catch(() => {});
 };
+onMounted(() => {
+  nextTick(() => {
+    if (noticeContentRef.value) {
+      const height = noticeContentRef.value.clientHeight;
+      if (height > 50) {
+        isShow.value = true;
+        noticeContentRef.value.style.overflow = "hidden";
+        noticeContentRef.value.style.height = "50px";
+      }
+    }
+  });
+});
 </script>
 
 <template>
@@ -152,7 +132,7 @@ const readNotice = async (noticeId: string) => {
           >
             {{ props.notice.username }}
           </div>
-          <TooltipProvider>
+          <!-- <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <RouterLink to="/noticeEdit">
@@ -165,7 +145,7 @@ const readNotice = async (noticeId: string) => {
                 <p>编辑</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> -->
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
@@ -222,10 +202,6 @@ const readNotice = async (noticeId: string) => {
             </div> -->
         </div>
       </RouterLink>
-      <!-- <div class="show" v-show="isShow" @click="toggleContent">
-        {{ showText
-        }}<Icon icon="cuida:caret-down-outline" class="arrowsIcon" />
-      </div> -->
     </div>
   </div>
 </template>
