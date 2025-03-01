@@ -97,6 +97,7 @@ import { onMounted, provide, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import NewsFooter from "./NewsFooter.vue";
 import { alertVariants } from "../../../components/ui/alert/index";
+import { skipPersonCenter } from "@/composables/useCommunity";
 const loadinglen = ref(0);
 const articleList = ref<ArticleList[]>([]);
 const isTag = ref(false);
@@ -123,19 +124,19 @@ const current = ref<number>(1);
 const isOver = ref<boolean>(false);
 
 //跳转个人中心;
-function skipPersonCenter(id: number) {
-  console.log((userStore.getMyId() as number) == id);
-  if (!((userStore.getMyId() as number) == id)) {
-    userStore.userId = id;
-    userStore.isSelf = false;
-  } else {
-    userStore.isSelf = true;
-  }
+// function skipPersonCenter(id: number) {
+//   console.log((userStore.getMyId() as number) == id);
+//   if (!((userStore.getMyId() as number) == id)) {
+//     userStore.userId = id;
+//     userStore.isSelf = false;
+//   } else {
+//     userStore.isSelf = true;
+//   }
 
-  router.push({
-    path: `/personalCenter/userInfo`,
-  });
-}
+//   router.push({
+//     path: `/personalCenter/userInfo`,
+//   });
+// }
 console.log(route.params);
 if (!props.isTag) {
   // 搜索数据要用的
