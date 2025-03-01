@@ -27,7 +27,7 @@ import {
 import { useAlert } from "@/composables/useAlert";
 import { useRequest } from "@/composables/useRequest";
 import { cn } from "@/lib/utils";
-import type { TeamUserList } from "@/types/Contacts";
+import type { TeamUserList } from "@/types/contacts";
 import { Check, ChevronsUpDown } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { getMembersByGrade, setLeader } from "../../composables/useContacts";

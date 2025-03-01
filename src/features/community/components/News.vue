@@ -19,7 +19,7 @@
             </div>
           </div>
         </div>
-        <RouterLink
+        <!-- <RouterLink
           :to="{ name: '/community/post/[id]', params: { id: item.id } }"
           target="_blank"
           class="news-content"
@@ -30,8 +30,10 @@
               {{ item.postAbstract }}
             </p>
           </div>
-        </RouterLink>
-        <div class="news-label">
+        </RouterLink> -->
+
+        <NewsContent :item="item" />
+        <!-- <div class="news-label">
           <div class="type">{{ checkType(item.type) }}</div>
           <ul class="labels">
             <RouterLink
@@ -42,7 +44,8 @@
               #{{ tags }}
             </RouterLink>
           </ul>
-        </div>
+        </div> -->
+        <NewsLabel :item="item" :tag-type="tagType" />
         <NewsFooter
           :viewCount="item.viewCount"
           :likeCount="item.likeCount"
@@ -73,8 +76,6 @@
     <!-- 到底了 -->
     <div v-if="isOver && articleList.length > 0" class="over">已经到底了</div>
   </div>
-
-  <!-- <div v-if="loading">加载中</div> -->
 </template>
 
 <script setup lang="ts">
@@ -85,19 +86,19 @@ import UserAvatar from "@/components/avatar/UserAvatar.vue";
 import NoData from "@/components/loading/NoData.vue";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserStore } from "@/store/userStore";
-import type { ArticleList } from "@/types/Community";
+import type { ArticleList } from "@/types/community";
 import { formatPostTime } from "@/utils/formatPostTime";
 import {
-  // articleList,
   checkType,
   getArticle,
   getArticle2,
 } from "@community/composables/search";
 import { onMounted, provide, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import NewsFooter from "./NewsFooter.vue";
-import { alertVariants } from "../../../components/ui/alert/index";
+import NewsFooter from "./article-display/NewsFooter.vue";
 import { skipPersonCenter } from "@/composables/useCommunity";
+import NewsContent from "./article-display/NewsContent.vue";
+import NewsLabel from "./article-display/NewsLabel.vue";
 const loadinglen = ref(0);
 const articleList = ref<ArticleList[]>([]);
 const isTag = ref(false);
@@ -122,45 +123,12 @@ const pages = ref<number>(1);
 const total = ref<number>(0);
 const current = ref<number>(1);
 const isOver = ref<boolean>(false);
-
-//跳转个人中心;
-// function skipPersonCenter(id: number) {
-//   console.log((userStore.getMyId() as number) == id);
-//   if (!((userStore.getMyId() as number) == id)) {
-//     userStore.userId = id;
-//     userStore.isSelf = false;
-//   } else {
-//     userStore.isSelf = true;
-//   }
-
-//   router.push({
-//     path: `/personalCenter/userInfo`,
-//   });
-// }
-console.log(route.params);
 if (!props.isTag) {
-  // 搜索数据要用的
+  // 如果不是标签详情页
   watch(
     () => route.params,
     (newVal, oldVal) => {
-      console.log("综合");
-      console.log(newVal, oldVal);
       let title = (newVal as any).title;
-      console.log(title, "title");
-      // getArticle(props.type, title, props.page, undefined, props.sort).then(
-      //   (res) => {
-      //     loading.value = true;
-      //     console.log(res);
-      //     pages.value = res.pages;
-      //     total.value = res.total;
-      //     loadinglen.value = res.records.length;
-      //     current.value = res.current;
-      //     setTimeout(() => {
-      //       loading.value = false;
-      //       articleList.value = res.records;
-      //     }, 400);
-      //   },
-      // );
       const { loading: load, data } = getArticle2(
         props.type,
         title,
@@ -186,28 +154,10 @@ if (!props.isTag) {
     () => props.type,
     (newVal) => {
       console.log(newVal);
-
-      // getArticle(
-      //   newVal,
-      //   props.condition,
-      //   props.page,
-      //   undefined,
-      //   props.sort ? props.sort : 0,
-      // ).then((res) => {
-      //   pages.value = res.pages;
-      //   total.value = res.total;
-      //   loadinglen.value = res.records.length;
-      //   current.value = res.current;
-      //   setTimeout(() => {
-      //     loading.value = false;
-      //     articleList.value = res.records;
-      //   }, 400);
-      // });
       const { loading: load, data } = getArticle2(
         newVal,
         props.condition || (route.params as { title?: string }).title || "",
         props.page,
-
         props.sort ? props.sort : 0,
       );
       loading.value = load.value;
@@ -299,57 +249,6 @@ const handleScroll = async (e: any) => {
         color: #909ba6;
       }
     }
-    .news-content {
-      padding: var(--padding);
-      display: block;
-      &:hover {
-        background-color: #f8f8fa;
-        cursor: pointer;
-      }
-      .news-details {
-        font-size: 0.87rem;
-        color: #a7a7a7;
-        p {
-          max-height: 40px;
-          line-height: 20px;
-          display: -webkit-box;
-          -webkit-line-clamp: 2; //行数
-          text-overflow: ellipsis; //省略号
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          white-space: normal;
-          word-break: break-all;
-        }
-      }
-    }
-    .news-label {
-      padding: var(--padding);
-
-      display: flex;
-      .type {
-        min-width: 3rem;
-        width: max-content;
-        padding: 0 8px;
-        font-size: 0.875rem;
-        color: #909ba6;
-        text-align: center;
-        border-radius: 0.975rem;
-        border: 0.12rem solid #e1edf8;
-        margin-right: 8px;
-      }
-
-      .labels {
-        display: flex;
-        color: #909ba6;
-        font-size: 0.82rem;
-        .label-item {
-          display: flex;
-          align-items: center;
-          margin: 0 5px;
-          cursor: pointer;
-        }
-      }
-    }
   }
 }
 
@@ -377,58 +276,8 @@ const handleScroll = async (e: any) => {
           }
         }
       }
-      .news-content {
-        padding: 5px 55px;
-        .news-title {
-          font-weight: 540;
-          display: -webkit-box;
-          -webkit-line-clamp: 1; //行数
-          text-overflow: ellipsis; //省略号
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          white-space: normal;
-          word-break: break-all;
-        }
-        .news-details {
-          font-size: 14.5px;
-          color: #a7a7a7;
-          p {
-            max-height: 40px;
-            line-height: 20px;
-            display: -webkit-box;
-            -webkit-line-clamp: 1; //行数
-            text-overflow: ellipsis; //省略号
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            white-space: normal;
-            word-break: break-all;
-          }
-        }
-      }
-      .news-label {
-        display: flex;
-        .type {
-          width: 50px;
-          padding: 0;
-          font-size: 12px;
-          color: #909ba6;
-          text-align: center;
-          border-radius: 15px;
-          border: 2px solid #e1edf8;
-          margin-right: 8px;
-        }
-
-        .labels {
-          display: flex;
-          color: #909ba6;
-          font-size: 12px;
-          .label-item {
-            display: flex;
-            align-items: center;
-            margin: 0 5px;
-          }
-        }
-      }
+  
+   
     }
   }
 }

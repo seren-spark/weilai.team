@@ -2,7 +2,7 @@ import { ref, watch } from "vue";
 import { useRequest } from "vue-request";
 import apiClient from "@/api/axios";
 // import { useRequest } from "@/composables/useRequest";
-import type { ArticleList, Data } from "@/types/Community";
+import type { ArticleList, Data } from "@/types/community";
 import { useTagStore } from "@/store/tagTypeStore";
 
 interface TagData {

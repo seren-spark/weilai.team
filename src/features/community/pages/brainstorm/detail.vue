@@ -18,7 +18,7 @@
 import Search from "@/features/community/components/Search.vue";
 import { ref } from "vue";
 import Rightbar from "../../../../components/community/Rightbar.vue";
-import NewsContent from "../../components/NewsContent.vue";
+import NewsContent from "../../components/News.vue";
 let isLike = ref(true);
 </script>
 <style scoped lang="scss">

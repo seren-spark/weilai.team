@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import Rightbar from "../../../../components/community/Rightbar.vue";
-import NewsContent from "../../components/NewsContent.vue";
+import NewsContent from "../../components/News.vue";
 import Search from "../../components/Search.vue";
 </script>
 

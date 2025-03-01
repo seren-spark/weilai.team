@@ -1,7 +1,7 @@
 import apiClient from "@/api/axios";
 import { useAlert } from "@/composables/useAlert";
 import { useRequest } from "@/composables/useRequest";
-import type { ContactData, MemeberData } from "@/types/Contacts";
+import type { ContactData, MemeberData } from "@/types/contacts";
 import { ref } from "vue";
 const { showAlert } = useAlert();
 const { executeRequest, error, loading, data } = useRequest();

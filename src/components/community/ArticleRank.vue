@@ -60,7 +60,7 @@ import {
 // import { getArticle } from "@/features/community/composables/search";
 import { getArticle2 } from "@/features/community/composables/search";
 import { useTagStore } from "@/store/tagTypeStore";
-import type { ArticleList, Data } from "@/types/Community";
+import type { ArticleList, Data } from "@/types/community";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";
 

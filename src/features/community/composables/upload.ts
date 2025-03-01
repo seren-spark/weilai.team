@@ -1,6 +1,6 @@
 import { useAlert } from "@/composables/useAlert";
 import { useRequest } from "@/composables/useRequest";
-import type { ArticleList, Data } from "@/types/Community";
+import type { ArticleList, Data } from "@/types/community";
 import { ref } from "vue";
 const { showAlert } = useAlert();
 const { executeRequest, error, loading, data } = useRequest();

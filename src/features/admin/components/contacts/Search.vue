@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import { DialogTrigger } from "@/components/ui/dialog";
 import { useRequest } from "@/composables/useRequest";
-import type { ArticleList, UserInfo } from "@/types/Community";
-import type { searchData, TeamUserList } from "@/types/Contacts";
+import type { ArticleList, UserInfo } from "@/types/community";
+import type { searchData, TeamUserList } from "@/types/contacts";
 import { debounce } from "@community/composables/search";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";

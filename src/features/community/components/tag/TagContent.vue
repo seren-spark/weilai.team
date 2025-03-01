@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TagRightBar from "@/features/community/components/tag/TagRightBar.vue";
 import TagSuggest from "@/features/community/components/tag/TagSuggest.vue";
-import NewsContent from "@/features/community/components/NewsContent.vue";
+import NewsContent from "@/features/community/components/News.vue";
 import CommunityTag from "@/features/community/composables/CommunityTag";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";

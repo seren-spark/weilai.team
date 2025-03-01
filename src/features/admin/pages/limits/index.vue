@@ -32,7 +32,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useRequest } from "@/composables/useRequest";
 
-import type { ArticleList } from "@/types/Community";
+import type { ArticleList } from "@/types/community";
 import { checkType, getArticle } from "@community/composables/search";
 import { Icon } from "@iconify/vue";
 import { ref, computed, watch } from "vue";
@@ -95,7 +95,6 @@ const changeAuthorityList = ref([]);
 
 const isAllSelected = ref(false);
 const handleItemSelect = (authority: string) => {
-
   const index = changeAuthorityList.value.indexOf(authority);
 
   if (index === -1) {

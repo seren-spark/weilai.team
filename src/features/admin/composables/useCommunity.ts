@@ -1,7 +1,8 @@
 import apiClient from "@/api/axios";
 import { useAlert } from "@/composables/useAlert";
 import { useRequest } from "@/composables/useRequest";
-import type { ArticleList, Data } from "@/types/Community";
+//@ts-ignore
+import type { ArticleList, Data } from "@/types/community";
 import { ref, watch } from "vue";
 import { useRequest as req } from "vue-request";
 import type { AdminResponseData } from "../../../types/admin-community";
