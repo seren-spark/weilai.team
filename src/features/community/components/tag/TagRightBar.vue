@@ -10,6 +10,7 @@ import {
 import CommunityTag from "../../composables/CommunityTag";
 import { useTagStore } from "@/store/tagTypeStore";
 import NoData from "@/components/loading/NoData.vue";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const tagStore = useTagStore();
 const tagType = tagStore.tagType.tagType;
@@ -20,9 +21,12 @@ interface UseTagList {
   count: number;
 }
 
+const loading = ref(true);
+
 const firstUseTagList = ref<UseTagList[]>([]);
 getUseTagList();
 watch(useTagList, () => {
+  loading.value = false;
   if (useTagList.value.length > 10) {
     firstUseTagList.value = useTagList.value.slice(0, 10);
   } else {
@@ -42,29 +46,40 @@ watch(useTagList, () => {
     </div>
     <hr />
     <ul>
-      <li v-if="firstUseTagList.length === 0">
+      <ul v-if="firstUseTagList.length > 0">
+        <li v-for="(item, index) in firstUseTagList" :key="index">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <router-link
+                  :to="`/community/${tagType}/label/${item.tagName}`"
+                >
+                  <span class="ranking">{{ index + 1 }}</span
+                  ><span>{{ item.tagName }}</span>
+                </router-link>
+              </TooltipTrigger>
+              <TooltipContent class="bg-white">
+                <router-link
+                  :to="`/community/${tagType}}/label/${item.tagName}`"
+                >
+                  <span>{{ item.tagName }}</span>
+                </router-link>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <div class="bar">
+            <Icon v-if="index < 3" icon="bxs:hot" class="hotIcon"></Icon>
+            <span class="rank-num">{{ item.count }}</span>
+          </div>
+        </li>
+      </ul>
+      <ul v-else-if="loading">
+        <li v-for="(item, index) in 6" :key="index">
+          <Skeleton class="h-[30px] w-full" />
+        </li>
+      </ul>
+      <li v-else-if="firstUseTagList.length === 0">
         <NoData />
-      </li>
-      <li v-for="(item, index) in firstUseTagList" :key="index">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <router-link :to="`/community/${tagType}/label/${item.tagName}`">
-                <span class="ranking">{{ index + 1 }}</span
-                ><span>{{ item.tagName }}</span>
-              </router-link>
-            </TooltipTrigger>
-            <TooltipContent class="bg-white">
-              <router-link :to="`/community/${tagType}}/label/${item.tagName}`">
-                <span>{{ item.tagName }}</span>
-              </router-link>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <div class="bar">
-          <Icon v-if="index < 3" icon="bxs:hot" class="hotIcon"></Icon>
-          <span class="rank-num">{{ item.count }}</span>
-        </div>
       </li>
     </ul>
   </div>
@@ -74,19 +89,19 @@ watch(useTagList, () => {
 .article-rank {
   background-color: white;
   border-radius: var(--radius);
-  border-radius: 4px;
-  box-shadow: 0 4px 30px 0 rgba(232, 232, 237, 0.3);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.25rem 1.875rem 0 rgba(232, 232, 237, 0.3);
 }
 
 .rank-top {
   height: 3rem;
-  padding: 5px 10px;
+  padding: 0.3125rem 0.625rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   .tagHeadIcon {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
 
   p {
@@ -94,43 +109,43 @@ watch(useTagList, () => {
     align-items: center;
     color: var(--secondary-foreground);
     height: 100%;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 4rem;
   }
 }
 
 .ranking {
   font-weight: bold;
-  font-size: 17px;
+  font-size: 1rem;
   font-family: sans-serif;
   background-image: linear-gradient(#e9afa6, #eee0d4, #eadccc);
   -webkit-background-clip: text;
   /* Safari 和 Chrome 需要此属性 */
   color: transparent;
   /* 确保文字是透明的 */
-  margin-right: 5px;
+  margin-right: 0.3125rem;
   display: inline-block;
-  width: 30px;
+  width: 1.875rem;
   text-align: center;
 }
 
 ul {
-  padding: 10px 15px;
+  padding: 0.625rem 1rem;
   width: 100%;
 
   .no-data {
     width: 100%;
     text-align: center;
-    font-size: 17px;
+    font-size: 1rem;
   }
 
   li {
-    font-size: 15px;
+    font-size: 1rem;
     color: var(--secondary-foreground);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -144,7 +159,7 @@ ul {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 220px;
+      max-width: 13.75rem;
     }
   }
 
@@ -154,59 +169,59 @@ ul {
 
     .hotIcon {
       color: #f2731e;
-      margin-right: 5px;
+      margin-right: 0.3125rem;
     }
   }
 }
 
 @media screen and (max-width: 1200px) {
   .rank-top {
-    font-size: 14px;
+    // font-size: 14px;
 
     .tagHeadIcon {
-      font-size: 16px;
+      //   font-size: 16px;
     }
 
     p {
       height: 100%;
-      font-size: 12px;
-      line-height: 4rem;
+      //   font-size: 12px;
+      //   line-height: 4rem;
     }
   }
 
   .ranking {
-    font-size: 12px;
+    // font-size: 12px;
   }
 
   ul {
     li {
-      font-size: 12px;
+      //   font-size: 12px;
     }
   }
 }
 
 @media screen and (max-width: 1040px) {
   .rank-top {
-    font-size: 12px;
+    // font-size: 12px;
 
     .tagHeadIcon {
-      font-size: 14px;
+      //   font-size: 14px;
     }
 
     p {
       height: 100%;
-      font-size: 12px;
-      line-height: 4rem;
+      //   font-size: 12px;
+      //   line-height: 4rem;
     }
   }
 
   .ranking {
-    font-size: 12px;
+    // font-size: 12px;
   }
 
   ul {
     li {
-      font-size: 11px;
+      //   font-size: 11px;
     }
   }
 }

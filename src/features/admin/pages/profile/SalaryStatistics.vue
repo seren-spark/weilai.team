@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import HorizontalBar from "./salary/HorizontalBar.vue";
 import MultipeBar from "./salary/MultipeBar.vue";
-import AreaChart from "./salary/AreaChart.vue";
+import AreaChart from "./salary/AreaChartBar.vue";
 </script>
 <template>
   <div class="statistics">
@@ -32,7 +32,16 @@ import AreaChart from "./salary/AreaChart.vue";
     padding: 10px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px 50px;
+    gap: 15px 0;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .statistics {
+    .statistics-content {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+    }
   }
 }
 </style>

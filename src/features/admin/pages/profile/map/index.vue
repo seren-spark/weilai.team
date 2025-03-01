@@ -91,7 +91,7 @@ const handleClickEvent = async (e: echarts.ECElementEvent) => {
   const {
     seriesName,
     name,
-    data: { adcode } = {}, // 提供默认值，防止 undefined
+    data: { adcode } ,
   } = e;
 
   if (typeof adcode === "undefined") return; // 如果 adcode 不存在，直接返回
@@ -179,8 +179,7 @@ const registerRenderMap = (
 // 绘制地图的函数
 const renderMap = (mapName: string, partData: any[], geoJson: any) => {
   const seriesData = getSeriesDataByPart(partData, geoJson);
-  const visualMapMax = getVisualMapMax(seriesData);
-  console.log(seriesData);
+  //   const visualMapMax = getVisualMapMax(seriesData);
   const option = {
     title: {
       text: mapName,
@@ -224,7 +223,8 @@ const renderMap = (mapName: string, partData: any[], geoJson: any) => {
         zoom: 1.25, // 当前视角的缩放比例
         zlevel: 1, // 用于 Canvas 分层，不同zlevel值的图形会放置在不同的 Canvas 中
         // center: [105.5, 33.5],
-        // roam: true,
+        roam: true,
+        // projection: "mercator",
         scaleLimit: {
           min: 0.8,
           max: 2,

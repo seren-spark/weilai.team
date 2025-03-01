@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+// import { reactive, ref } from "vue";
 import { Icon } from "@iconify/vue";
 import CommunityTag from "@/features/community/composables/CommunityTag";
 import { useTagStore } from "@/store/tagTypeStore";
@@ -12,8 +12,7 @@ getAllTagList();
 
 <template>
   <div>
-    <div class="tag-head-bar">
-      <div class="tagHeadNone"></div>
+    <div v-if="allTagList.length > 0" class="tag-head-bar">
       <div class="tag-head-bar-item">
         <router-link
           active-class="active"
@@ -40,6 +39,7 @@ getAllTagList();
         <Icon icon="bytesize:chevron-top"></Icon>
       </span>
     </div>
+    <div v-else class="tagHeadNone"></div>
   </div>
 </template>
 
@@ -48,10 +48,16 @@ getAllTagList();
   color: var(--primary-foreground);
 }
 
+.tagHeadNone{
+    background-color: #ffffff;
+    width: 100%;
+    height: 65px;
+}
+
 .tag-head-bar {
-  max-width: 1336px;
+  max-width: 100%;
   position: absolute;
-  top: 60px;
+  top: 3.75rem;
   display: flex;
   flex-wrap: wrap;
   background-color: #ffffff;
@@ -108,14 +114,6 @@ getAllTagList();
   &:hover .tag-head-bar-few {
     opacity: 1;
   }
-
-  // &:active .tag-head-bar-more {
-  //     opacity: 0;
-  // }
-
-  // &:active .tag-head-bar-few {
-  //     opacity: 1;
-  // }
 }
 
 @media screen and (min-width: 1800px) {

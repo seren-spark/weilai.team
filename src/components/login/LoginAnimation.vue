@@ -65,15 +65,15 @@ onUnmounted(() => {
     color: #000;
     /* 相对定位 */
     position: relative;
-    width: 60px;
-    height: 60px;
+    width: 3.75rem;
+    height: 3.75rem;
     text-align: center;
-    line-height: 60px;
-    font-size: 54px;
+    line-height: 3.75rem;
+    font-size: 3.375rem;
     font-weight: 900;
     /* 斜体 */
     font-style: italic;
-    margin: 0 10px;
+    margin: 0 0.6rem;
     opacity: 0;
   }
 
@@ -119,52 +119,52 @@ onUnmounted(() => {
   .ll {
     /* 绝对定位 */
     position: absolute;
-    margin-left: -480px;
-    width: 60px;
-    height: 60px;
-    border-radius: 3px;
+    margin-left: -30rem;
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 0.18rem;
     opacity: 0;
   }
 
   .x {
-    border: 4px solid #f5b5fc;
+    border: 0.25rem solid #f5b5fc;
     /* 执行动画：动画名称 时长 线性的 停留在最后一帧 */
     animation: xmove 2s linear forwards;
   }
 
   .e {
-    border: 4px solid #96f7d2;
+    border: 0.25rem solid #96f7d2;
     animation: emove 2s linear forwards;
     /* 设置动画延迟 */
     animation-delay: 0.1s;
   }
 
   .l {
-    border: 4px solid #f0f696;
+    border: 0.25rem solid #f0f696;
     animation: lmove 2s linear forwards;
     animation-delay: 0.2s;
   }
 
   .p {
-    border: 4px solid #fcb1b1;
+    border: 0.25rem solid #fcb1b1;
     animation: pmove 2s linear forwards;
     animation-delay: 0.3s;
   }
 
   .i {
-    border: 4px solid #f0f696;
+    border: 0.25rem solid #f0f696;
     animation: imove 2s linear forwards;
     animation-delay: 0.4s;
   }
 
   .n {
-    border: 4px solid #96f7d2;
+    border: 0.25rem solid #96f7d2;
     animation: nmove 2s linear forwards;
     animation-delay: 0.5s;
   }
 
   .a {
-    border: 4px solid #f5b5fc;
+    border: 0.25rem solid #f5b5fc;
     animation: amove 2s linear forwards;
     animation-delay: 0.6s;
   }
@@ -172,8 +172,8 @@ onUnmounted(() => {
   /* 正中间的一条线 */
   .pcov {
     position: absolute;
-    width: 4px;
-    height: 60px;
+    width: 0.25rem;
+    height: 3.75rem;
     background-color: #fcb1b1;
     opacity: 0;
     animation: showp forwards;
@@ -185,43 +185,43 @@ onUnmounted(() => {
   animation: none;
   animation-play-state: paused;
   opacity: 1;
-  height: 150px;
+  height: 9.375rem;
 
   .x {
     animation: none;
     opacity: 1;
-    transform: translate(484px) rotateY(0deg) scale(1, 1);
+    transform: translate(30.25rem) rotateY(0deg) scale(1, 1);
   }
 
   .e {
     animation: none;
     opacity: 1;
-    transform: translate(402px) rotateY(103deg) scale(1.2, 1.2);
+    transform: translate(25.125rem) rotateY(103deg) scale(1.2, 1.2);
   }
 
   .l {
     animation: none;
     opacity: 1;
-    transform: translate(320px) rotateY(103deg) scale(1.3, 1.3);
+    transform: translate(20rem) rotateY(103deg) scale(1.3, 1.3);
   }
 
   .p {
     animation: none;
     opacity: 1;
-    transform: translate(240px) rotateY(90deg) scale(1.6, 1.6);
+    transform: translate(15rem) rotateY(90deg) scale(1.6, 1.6);
   }
 
   .i {
     animation: none;
     opacity: 1;
-    transform: translate(164px) rotateY(77deg) scale(1.3, 1.3);
+    transform: translate(10.25rem) rotateY(77deg) scale(1.3, 1.3);
   }
 
   .n {
     animation: none;
     opacity: 1;
     z-index: -99;
-    transform: translate(80px) rotateY(77deg) scale(1.2, 1.2);
+    transform: translate(5rem) rotateY(77deg) scale(1.2, 1.2);
   }
 
   .a {
@@ -290,21 +290,21 @@ onUnmounted(() => {
 @keyframes nmove {
   30% {
     opacity: 1;
-    transform: translate(30px) rotateY(135deg) scale(1.1, 1.1);
+    transform: translate(1.875rem) rotateY(135deg) scale(1.1, 1.1);
   }
 
   60% {
-    transform: translate(50px) rotateY(45deg) scale(1.1, 1.1);
+    transform: translate(3.125rem) rotateY(45deg) scale(1.1, 1.1);
   }
 
   85% {
-    transform: translate(80px) rotateY(103deg) scale(1.2, 1.2);
+    transform: translate(5rem) rotateY(103deg) scale(1.2, 1.2);
   }
 
   100% {
     opacity: 1;
     z-index: -99;
-    transform: translate(80px) rotateY(77deg) scale(1.2, 1.2);
+    transform: translate(5rem) rotateY(77deg) scale(1.2, 1.2);
   }
 }
 
@@ -312,20 +312,20 @@ onUnmounted(() => {
 @keyframes imove {
   30% {
     opacity: 1;
-    transform: translate(60px) rotateY(135deg) scale(1.2, 1.2);
+    transform: translate(3.75rem) rotateY(135deg) scale(1.2, 1.2);
   }
 
   60% {
-    transform: translate(120px) rotateY(45deg) scale(1.3, 1.3);
+    transform: translate(7.5rem) rotateY(45deg) scale(1.3, 1.3);
   }
 
   85% {
-    transform: translate(160px) rotateY(103deg) scale(1.3, 1.3);
+    transform: translate(10rem) rotateY(103deg) scale(1.3, 1.3);
   }
 
   100% {
     opacity: 1;
-    transform: translate(164px) rotateY(77deg) scale(1.3, 1.3);
+    transform: translate(10.25rem) rotateY(77deg) scale(1.3, 1.3);
   }
 }
 
@@ -333,20 +333,20 @@ onUnmounted(() => {
 @keyframes pmove {
   30% {
     opacity: 1;
-    transform: translate(60px) rotateY(135deg) scale(1.2, 1.2);
+    transform: translate(3.75rem) rotateY(135deg) scale(1.2, 1.2);
   }
 
   60% {
-    transform: translate(120px) rotateY(45deg) scale(1.4, 1.4);
+    transform: translate(7.5rem) rotateY(45deg) scale(1.4, 1.4);
   }
 
   85% {
-    transform: translate(240px) rotateY(135deg) scale(1.6, 1.6);
+    transform: translate(15rem) rotateY(135deg) scale(1.6, 1.6);
   }
 
   100% {
     opacity: 1;
-    transform: translate(240px) rotateY(90deg) scale(1.6, 1.6);
+    transform: translate(15rem) rotateY(90deg) scale(1.6, 1.6);
   }
 }
 
@@ -354,20 +354,20 @@ onUnmounted(() => {
 @keyframes lmove {
   33% {
     opacity: 1;
-    transform: translate(80px) rotateY(135deg) scale(1.2, 1.2);
+    transform: translate(5rem) rotateY(135deg) scale(1.2, 1.2);
   }
 
   66% {
-    transform: translate(240px) rotateY(45deg) scale(1.6, 1.6);
+    transform: translate(15rem) rotateY(45deg) scale(1.6, 1.6);
   }
 
   95% {
-    transform: translate(320px) rotateY(100deg) scale(1.4, 1.4);
+    transform: translate(20rem) rotateY(100deg) scale(1.4, 1.4);
   }
 
   100% {
     opacity: 1;
-    transform: translate(320px) rotateY(103deg) scale(1.3, 1.3);
+    transform: translate(20rem) rotateY(103deg) scale(1.3, 1.3);
   }
 }
 
@@ -375,20 +375,20 @@ onUnmounted(() => {
 @keyframes emove {
   33% {
     opacity: 1;
-    transform: translate(80px) rotateY(135deg) scale(1.2, 1.2);
+    transform: translate(5rem) rotateY(135deg) scale(1.2, 1.2);
   }
 
   66% {
-    transform: translate(240px) rotateY(45deg) scale(1.6, 1.6);
+    transform: translate(15rem) rotateY(45deg) scale(1.6, 1.6);
   }
 
   95% {
-    transform: translate(390px) rotateY(135deg) scale(1.2, 1.2);
+    transform: translate(24.375rem) rotateY(135deg) scale(1.2, 1.2);
   }
 
   100% {
     opacity: 1;
-    transform: translate(402px) rotateY(103deg) scale(1.2, 1.2);
+    transform: translate(25.125rem) rotateY(103deg) scale(1.2, 1.2);
   }
 }
 
@@ -396,20 +396,20 @@ onUnmounted(() => {
 @keyframes xmove {
   25% {
     opacity: 1;
-    transform: translate(100px) rotateY(135deg) scale(1.2, 1.2);
+    transform: translate(6.25rem) rotateY(135deg) scale(1.2, 1.2);
   }
 
   50% {
-    transform: translate(260px) rotateY(45deg) scale(1.6, 1.6);
+    transform: translate(16.25rem) rotateY(45deg) scale(1.6, 1.6);
   }
 
   85% {
-    transform: translate(400px) rotateY(135deg) scale(1.2, 1.2);
+    transform: translate(25rem) rotateY(135deg) scale(1.2, 1.2);
   }
 
   100% {
     opacity: 1;
-    transform: translate(484px) rotateY(0deg) scale(1, 1);
+    transform: translate(30.25rem) rotateY(0deg) scale(1, 1);
   }
 }
 
@@ -442,42 +442,42 @@ onUnmounted(() => {
 @keyframes show4 {
   0% {
     opacity: 1;
-    height: calc(100vh - 110px);
+    height: calc(100vh - 6.875rem);
   }
 
   100% {
     opacity: 1;
-    height: 150px;
+    height: 9.375rem;
   }
 }
 
-@media screen and (max-width: 1400px) {
-  .box {
-    transform: scale(0.91);
-    top: -7px;
-  }
-}
+// @media screen and (max-width: 1400px) {
+//   .box {
+//     transform: scale(0.91);
+//     top: -7px;
+//   }
+// }
 
-@media screen and (max-width: 1200px) {
-  .box {
-    transform: scale(0.8);
-    top: -15px;
-  }
-}
+// @media screen and (max-width: 1200px) {
+//   .box {
+//     transform: scale(0.8);
+//     top: -15px;
+//   }
+// }
 
-@media screen and (max-width: 900px) {
-  .box {
-    transform: scale(0.75);
-    top: 0px;
-    overflow: visible;
-  }
-}
+// @media screen and (max-width: 900px) {
+//   .box {
+//     transform: scale(0.75);
+//     top: 0px;
+//     overflow: visible;
+//   }
+// }
 
-@media screen and (max-width: 400px) {
-  .box {
-    transform: scale(0.65);
-    top: 0px;
-    overflow: visible;
-  }
-}
+// @media screen and (max-width: 400px) {
+//   .box {
+//     transform: scale(0.65);
+//     top: 0px;
+//     overflow: visible;
+//   }
+// }
 </style>

@@ -68,7 +68,7 @@ defineEmits<{
             noWrite: errors?.code?._errors,
             'focus-visible:ring-red-300 error-border': errors?.code?._errors,
           }"
-          style="width: 170px"
+          style="width: 10.625rem"
           :model-value="code"
           @update:model-value="(val) => $emit('update:fontCode', val)"
         />
@@ -76,6 +76,7 @@ defineEmits<{
           class="fontBtn"
           @click="handleCode"
           v-if="!loginStore.isRequesting"
+          style="font-size: 0.9rem"
         >
           获取验证码
         </Button>
@@ -128,28 +129,28 @@ defineEmits<{
 <style scoped lang="scss">
 .fontPassFormInp {
   position: relative;
-  left: -20px;
-  margin: 7px 0;
+  left: -1.25rem;
+  margin: 0.4375rem 0;
 }
 
 .errorHead {
   display: flex;
   align-items: center;
   color: var(--destructive-foreground);
-  font-size: 14px;
+  font-size: 0.875rem;
   position: relative;
-  left: 80px;
-  top: 7px;
+  left: 5rem;
+  top: 0.4375rem;
   height: 0;
 
   .errorIcon {
-    margin-right: 4px;
-    font-size: 16px;
+    margin-right: 0.25rem;
+    font-size: 1rem;
   }
 }
 
 .noWrite {
-  border: 1px solid var(--destructive-foreground);
+  border: 0.0625rem solid var(--destructive-foreground);
   animation: slideIn 0.4s ease-in-out 1;
   // color: var(--destructive-foreground);
 }
@@ -160,15 +161,15 @@ defineEmits<{
   }
 
   25% {
-    transform: translateX(-10px);
+    transform: translateX(-0.625rem);
   }
 
   50% {
-    transform: translateX(10px);
+    transform: translateX(0.625rem);
   }
 
   75% {
-    transform: translateX(-10px);
+    transform: translateX(-0.625rem);
   }
 
   100% {

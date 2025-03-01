@@ -36,7 +36,7 @@ declare module 'vue-router/auto-routes' {
     '/admin/profile/map/': RouteRecordInfo<'/admin/profile/map/', '/admin/profile/map', Record<never, never>, Record<never, never>>,
     '/admin/profile/MapDistribution': RouteRecordInfo<'/admin/profile/MapDistribution', '/admin/profile/MapDistribution', Record<never, never>, Record<never, never>>,
     '/admin/profile/RadarChart': RouteRecordInfo<'/admin/profile/RadarChart', '/admin/profile/RadarChart', Record<never, never>, Record<never, never>>,
-    '/admin/profile/salary/AreaChart': RouteRecordInfo<'/admin/profile/salary/AreaChart', '/admin/profile/salary/AreaChart', Record<never, never>, Record<never, never>>,
+    '/admin/profile/salary/AreaChartBar': RouteRecordInfo<'/admin/profile/salary/AreaChartBar', '/admin/profile/salary/AreaChartBar', Record<never, never>, Record<never, never>>,
     '/admin/profile/salary/HorizontalBar': RouteRecordInfo<'/admin/profile/salary/HorizontalBar', '/admin/profile/salary/HorizontalBar', Record<never, never>, Record<never, never>>,
     '/admin/profile/salary/MultipeBar': RouteRecordInfo<'/admin/profile/salary/MultipeBar', '/admin/profile/salary/MultipeBar', Record<never, never>, Record<never, never>>,
     '/admin/profile/salary/Progress/Progress': RouteRecordInfo<'/admin/profile/salary/Progress/Progress', '/admin/profile/salary/Progress/Progress', Record<never, never>, Record<never, never>>,
