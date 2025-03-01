@@ -92,7 +92,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .card {
     padding: 10px;
-    width: 24%;
+    // width: 24%;
     background-color: #fff;
 
     .card-header {
