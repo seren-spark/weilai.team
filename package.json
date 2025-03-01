@@ -84,6 +84,7 @@
   "devDependencies": {
     "@iconify/vue": "^4.1.2",
     "@tsconfig/node20": "^20.1.4",
+    "@types/echarts": "^5.0.0",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/event-source-polyfill": "^1.0.5",
     "@types/node": "^22.10.1",
