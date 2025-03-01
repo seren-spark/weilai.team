@@ -69,16 +69,6 @@ onMounted(() => {
             series: [
                 {
                     type: 'radar',
-
-                    // data:
-                    // chartData.map(item => ({
-                    //     value: item.desktop,
-                    //     name: item.type,
-                    //     areaStyle: {
-                    //         color: chartConfig.desktop.color,
-                    //         opacity: 0.3
-                    //     }
-                    // }))
                     data: [
                         {
                             // 将每个指标的值按顺序放入数组

@@ -3,6 +3,8 @@ import AllSum from './summary/AllSum.vue';
 import SplitEnds from './SplitEnds.vue';
 import RadarChart from './RadarChart.vue';
 import SalaryStatistics from './SalaryStatistics.vue';
+import MapDistribution from './MapDistribution.vue';
+import chinaMap from './chinaMap.vue';
 </script>
 
 <template>
@@ -13,6 +15,10 @@ import SalaryStatistics from './SalaryStatistics.vue';
     </div>
     <div class="SalaryStatistics">
         <SalaryStatistics />
+    </div>
+    <div class="map">
+        <!-- <MapDistribution /> -->
+         <chinaMap />
     </div>
 </template>
 
