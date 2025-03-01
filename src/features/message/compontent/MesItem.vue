@@ -8,9 +8,7 @@ import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
 import apiClient from "@/api/axios";
 import { useRequest } from "vue-request";
-import router from "@/router";
-import { useUserStore } from "@/store/userStore";
-const userStore = useUserStore();
+import { skipPersonCenter } from "@/composables/useCommunity";
 
 const props = defineProps<{
   message: SSEMessageData;
@@ -79,15 +77,6 @@ const splitResult = computed(() => {
     imgUrls,
   };
 });
-//跳转个人中心;
-function skipPersonCenter(id: number) {
-  userStore.setUserId(id);
-  userStore.setIsSelf(false);
-
-  router.push({
-    path: `/personalCenter/userInfo`,
-  });
-}
 </script>
 
 <template>
