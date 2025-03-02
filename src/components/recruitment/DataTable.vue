@@ -1,3 +1,91 @@
+<template>
+  <Table class="adaptive">
+    <TableCaption></TableCaption>
+    <TableHeader>
+      <TableRow>
+        <TableCell class="font-medium text-center">
+          <Checkbox
+            class="checkbox"
+            :checked="isAllSelected"
+            :checked-not-all="isNotAllSelected"
+            @click="handleSelectAll"
+          />
+        </TableCell>
+        <TableCell
+          v-for="header in headers"
+          :key="header.key"
+          class="font-medium text-center"
+        >
+          {{ header.title }}
+        </TableCell>
+      </TableRow>
+    </TableHeader>
+
+    <TableBody>
+      <template v-if="items.length === 0">
+        <TableRow>
+          <TableCell :colspan="headers.length + 1" class="text-center">
+            <NoData />
+          </TableCell>
+        </TableRow>
+      </template>
+      <template v-else>
+        <TableRow v-for="item in items" :key="item.id" class="hover-tr">
+          <TableCell
+            v-for="(obj, theKey) in item"
+            :key="theKey"
+            class="font-medium text-center"
+          >
+            <template v-if="theKey === 'id'">
+              <Checkbox
+                class="checkbox"
+                :checked="selectedIds.includes(item.id)"
+                :value="theKey"
+                @click="handleSelect(item.id)"
+              />
+            </template>
+            <template v-else>
+              {{ obj }}
+            </template>
+          </TableCell>
+          <!-- 操作框 -->
+          <TableCell class="font-medium">
+            <Popover>
+              <PopoverTrigger>
+                <Icon
+                  icon="tabler:dots"
+                  style="display: inline-block; font-size:1rem; cursor: pointer"
+                />
+              </PopoverTrigger>
+              <PopoverContent class="popover-content" style="z-index: 10">
+                <div>
+                  <div
+                    v-for="(i, index) in actionItems"
+                    :key="index"
+                    class="pop-content-item"
+                    @click="i.onclick(item.id, item.name)"
+                  >
+                    <Icon
+                      :key="index"
+                      :icon="i.icon"
+                      style="
+                        display: inline-block;
+                        font-size: 18px;
+                        cursor: pointer;
+                      "
+                    />
+                    <span class="pop-content-item-text">{{ i.title }}</span>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </TableCell>
+        </TableRow>
+      </template>
+    </TableBody>
+  </Table>
+</template>
+
 <script setup lang="ts">
 import {
   Table,
@@ -21,7 +109,7 @@ import type {
   tableHeadersVO,
 } from "@/types/recruitmentType";
 
-// import NoData from "@/components/loading/NoData.vue";
+import NoData from "@/components/loading/NoData.vue";
 
 const props = defineProps<{
   items: IAllApplyUserVO[];
@@ -79,100 +167,17 @@ watch(
 );
 </script>
 
-<template>
-  <Table class="adaptive">
-    <TableCaption></TableCaption>
-    <TableHeader>
-      <TableRow>
-        <TableCell class="font-medium text-center min-w-120">
-          <Checkbox
-            class="checkbox"
-            :checked="isAllSelected"
-            :checked-not-all="isNotAllSelected"
-            @click="handleSelectAll"
-          />
-        </TableCell>
-        <TableCell
-          v-for="header in headers"
-          :key="header.key"
-          class="font-medium text-center min-w-120"
-        >
-          {{ header.title }}
-        </TableCell>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      <TableRow
-        v-show="items.length === 0"
-        style="font-size: large; height: 40px; text-align: center"
-      >
-        <TableCell colspan="100%"> 暂无数据 </TableCell>
-      </TableRow>
-      <TableRow v-for="item in items" :key="item.id" class="hover-tr">
-        <TableCell
-          v-for="(obj, theKey) in item"
-          :key="theKey"
-          class="font-medium text-center"
-        >
-          <template v-if="theKey === 'id'">
-            <Checkbox
-              class="checkbox"
-              :checked="selectedIds.includes(item.id)"
-              :value="theKey"
-              @click="handleSelect(item.id)"
-            />
-          </template>
-          <template v-else>
-            {{ obj }}
-          </template>
-        </TableCell>
-        <!-- 操作框 -->
-        <TableCell class="font-medium">
-          <Popover>
-            <PopoverTrigger>
-              <Icon
-                icon="tabler:dots"
-                style="display: inline-block; font-size: 18px; cursor: pointer"
-              />
-            </PopoverTrigger>
-            <PopoverContent class="popover-content" style="z-index: 10">
-              <div>
-                <div
-                  v-for="(i, index) in actionItems"
-                  :key="index"
-                  class="pop-content-item"
-                  @click="i.onclick(item.id, item.name)"
-                >
-                  <Icon
-                    :key="index"
-                    :icon="i.icon"
-                    style="
-                      display: inline-block;
-                      font-size: 18px;
-                      cursor: pointer;
-                    "
-                  />
-                  <span class="pop-content-item-text">{{ i.title }}</span>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </TableCell>
-      </TableRow>
-    </TableBody>
-  </Table>
-</template>
 <style lang="scss">
 @use "@/assets/styles/recruitment.scss";
 .adaptive table {
   width: 100%;
-  height: auto;
+  height: 40px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
   box-shadow: 0 0 10px #ccc;
-  overflow: auto;
+  overflow: hidden;
 }
 .hover-tr {
   &:hover {
@@ -180,9 +185,7 @@ watch(
     cursor: pointer;
   }
 }
-.min-w-120 {
-  min-width: 120px;
-}
+
 .popover-content {
   width: 200px;
   height: auto;

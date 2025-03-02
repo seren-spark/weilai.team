@@ -504,7 +504,6 @@ const arrangeInterviewerDialog = ref(false);
       />
 
       <div class="handle-btns">
-        <!-- <Button type="primary" class="btn-style">安排面试</Button> -->
         <Button type="primary" class="btn-style" @click="handleEditStatus"
           >修改状态</Button
         >
@@ -524,7 +523,7 @@ const arrangeInterviewerDialog = ref(false);
             : actionItems.filter((item, index) => index !== 2)
         "
         @send-selected-ids="handleTableSelectIds"
-      ></DataTable>
+     />
       <div class="pagination-container">
         <Pagination
           :total-items="total"
@@ -534,6 +533,7 @@ const arrangeInterviewerDialog = ref(false);
         </Pagination>
       </div>
     </div>
+
   </div>
 </template>
 
