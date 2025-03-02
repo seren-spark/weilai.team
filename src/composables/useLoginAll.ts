@@ -8,6 +8,9 @@ import { useAlert } from "./useAlert";
 import { useSseStore } from "../store/useSseStore";
 import type { ApiResponseData } from "@/types/api-response";
 import { ref, watch } from "vue";
+import { getMyId } from "@/store/userStore";
+import { useUserStore } from "@/store/userStore";
+const userstore = useUserStore();
 const sseStore = useSseStore();
 
 const loginStore = useLoginStore();
@@ -26,20 +29,27 @@ interface Data {
     userId: string;
   };
 }
+
+// 获取用户信息
+
 export default function () {
-    const passed = ref(false);
-    const router = useRouter();
-    // 登录
-    function getLogin(account: string | number | undefined, password: string | number | undefined) {
-        const getLoginAx = () => apiClient.post('/index/login', {
-            account,
-            password
-        })
+  const passed = ref(false);
+  const router = useRouter();
+  // 登录
+  function getLogin(
+    account: string | number | undefined,
+    password: string | number | undefined,
+  ) {
+    const getLoginAx = () =>
+      apiClient.post("/index/login", {
+        account,
+        password,
+      });
 
     const { data } = useRequest(getLoginAx, {
       debounceInterval: 500,
     });
-    watch(data, () => {
+    watch(data, async () => {
       console.log(data);
       const res = data.value as Data;
       const resData = res.data;
@@ -48,6 +58,14 @@ export default function () {
           setLocalStorageWithExpire("token", resData.token, 1000 * 60 * 60);
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
           showAlert("登录成功！", "pass");
+          let res = await apiClient({
+            url: `/user/getUserInfoByUserId/${resData.userId}`,
+            method: "get",
+          });
+
+          let headPortrait = res.data.headPortrait;
+          userstore.setUserInfo(Number(resData.userId), headPortrait);
+
           router.push("/");
           sseStore.connect();
         } else {

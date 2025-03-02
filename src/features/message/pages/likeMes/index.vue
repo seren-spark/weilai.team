@@ -14,10 +14,7 @@
             :key="index"
             class="flex items-center space-x-4"
           >
-            <Skeleton
-              v-if="totalCount != 0"
-              class="h-12 w-12 rounded-full bg-[--muted]"
-            />
+            <Skeleton class="h-12 w-12 rounded-full bg-[--muted]" />
             <div class="space-y-2">
               <Skeleton class="h-4 w-[250px] bg-[--muted]" />
               <Skeleton class="h-4 w-[200px] bg-[--muted]" />
@@ -53,7 +50,6 @@ import type { SSEMessageData, SSENoticeData } from "../../../../types/sseType";
 import { useSseStore } from "../../../../store/useSseStore";
 import { useMessageStore } from "@/store/messageStore";
 import apiClient from "@/api/axios";
-import { type AxiosResponse } from "axios";
 import { useRequest } from "vue-request";
 const messageStore = useMessageStore();
 const sseStore = useSseStore();
@@ -72,21 +68,17 @@ onMounted(() => {
       messageStore.setLikeStatus(true);
     }
   });
-  messageList();
+  run();
 });
-
 //渲染消息列表
 const messageList = () => {
   return apiClient.get(
     `/message/getMessageInfo?messageType=${messageType}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
   );
 };
-const { data, loading, run } = useRequest<AxiosResponse<SSEMessageData>>(
-  messageList,
-  {
-    loadingKeep: 1000,
-  },
-);
+const { data, loading, run } = useRequest(messageList, {
+  loadingKeep: 650,
+});
 watch(
   () => data.value,
   () => {
@@ -100,7 +92,6 @@ watch(
       showAlert("请先登录", "waring");
     } else {
       showAlert("获取失败", "error");
-      console.log(data.value);
     }
   },
 );

@@ -50,7 +50,6 @@ import { onMounted, ref, watch } from "vue";
 import { useMessageStore } from "@/store/messageStore";
 import { useAlert } from "@/composables/useAlert";
 import apiClient from "@/api/axios";
-import { type AxiosResponse } from "axios";
 import { useRequest } from "vue-request";
 const { showAlert } = useAlert();
 const sseStore = useSseStore();
@@ -77,12 +76,9 @@ const messageList = () => {
     `/message/getMessageInfo?messageType=${messageType}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
   );
 };
-const { data, loading, run } = useRequest<AxiosResponse<SSEMessageData>>(
-  messageList,
-  {
-    loadingKeep: 1000,
-  },
-);
+const { data, loading, run } = useRequest(messageList, {
+  loadingKeep: 650,
+});
 watch(
   () => data.value,
   () => {

@@ -8,10 +8,7 @@ import { useAlert } from "@/composables/useAlert";
 import UserAvatar from "../avatar/UserAvatar.vue";
 import { formatPostTime } from "@/utils/formatPostTime";
 import { showConfirm } from "@/composables/useConfirm";
-import router from "@/router";
-import { useUserStore } from "@/store/userStore";
-const userStore = useUserStore();
-
+import { skipPersonCenter } from "@/composables/useCommunity";
 const props = defineProps({
   son: {
     type: Object,
@@ -89,15 +86,6 @@ const deleteComment = async (commentId: number) => {
 const handleReply = () => {
   emit("liked", props.parentId);
 };
-//跳转个人中心;
-function skipPersonCenter(id: number) {
-  userStore.setUserId(id);
-  userStore.setIsSelf(false);
-
-  router.push({
-    path: `/personalCenter/userInfo`,
-  });
-}
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRequest } from "@/composables/useRequest";
-import type { ArticleList, Data, UserData, UserInfo } from "@/types/Community";
+import type { ArticleList, Data, UserData, UserInfo } from "@/types/community";
 import { debounce } from "@community/composables/search";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";

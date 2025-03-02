@@ -19,8 +19,8 @@ const copyrightNumber = ref("320")
 <style lang="scss" scoped>
 .person {
     display: grid;
-    width: 48%;
-    height: 220px;
+    // width: 48%;
+    height: 100%;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 15px 20px;
@@ -28,6 +28,16 @@ const copyrightNumber = ref("320")
 
     a {
         color: #fff;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .person {
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .person {
     }
 }
 

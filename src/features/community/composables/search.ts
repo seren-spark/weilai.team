@@ -1,7 +1,7 @@
 import apiClient from "@/api/axios";
 import { useAlert } from "@/composables/useAlert";
 import { useRequest } from "@/composables/useRequest";
-import type { ArticleList, Data } from "@/types/Community";
+import type { ArticleList, Data } from "@/types/community";
 import { ref, watch } from "vue";
 import { useRequest as req } from "vue-request";
 
@@ -59,13 +59,21 @@ export function getArticle2(
   type: number | string = 0,
   condition = "",
   page = 1,
-  startTime: Date | string = "",
+
   sort = 0,
 ) {
+  console.log("接收到请求，title", condition);
   const getArticle = () => {
-    return apiClient.get(
-      `/post/selectAll?condition=${condition}&page=${page}&sort=${sort}&startTime=${startTime}&type=${type}`,
-    );
+    return apiClient({
+      url: `/post/selectAll`,
+      method: "get",
+      params: {
+        type,
+        condition,
+        page,
+        sort,
+      },
+    });
   };
   const { data, loading } = req(getArticle, {
     loadingKeep: 600,

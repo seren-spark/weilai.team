@@ -1,25 +1,36 @@
 <script lang="ts" setup>
-import { AreaChart } from "@/components/ui/chart-area";
+import { BarChart } from "@/components/ui/chart-bar";
+import CustomChartTooltip from '../CustomChartTooltip.vue'
+
 
 const data = [
-  { name: "17", frontEnd: 25, backEnd: 27 },
-  { name: "18", frontEnd: 34, backEnd: 29 },
-  { name: "19", frontEnd: 30, backEnd: 30 },
-  { name: "20", frontEnd: 26, backEnd: 28 },
-  { name: "21", frontEnd: 25, backEnd: 22 },
-  { name: "22", frontEnd: 22, backEnd: 26 },
-  { name: "23", frontEnd: 20, backEnd: 23 },
+  { name: "17届", total: 10, predicted: 12 },
+  { name: "18届", total: 15, predicted: 11 },
+  { name: "19届", total: 14, predicted: 10 },
+  { name: "20届", total: 10, predicted: 13 },
+  { name: "21届", total: 6, predicted: 8 },
+  { name: "22届", total: 4, predicted: 4 },
+  { name: "23届", total: 5, predicted: 5 },
 ];
 
-const colors = ["#447db3", "#5dba9f"];
+const colors = ["#abdcce", "#9ebcd8"];
 </script>
 <template>
-  <AreaChart
+  <BarChart
     :data="data"
-    :colors="colors"
     index="name"
-    class="h-[100px] w-[400px]"
-    :categories="['frontEnd', 'backEnd']"
+    :categories="['total', 'predicted']"
+    :colors="colors"
+    class="h-[110px]"
+    :rounded-corners="4"
+    :y-formatter="
+      (tick, i) => {
+        return typeof tick === 'number'
+          ? `${new Intl.NumberFormat('us').format(tick).toString()}`
+          : '';
+      }
+    "
+    :custom-tooltip="CustomChartTooltip"
   />
 </template>
 <style lang="scss" scoped></style>

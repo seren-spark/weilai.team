@@ -79,24 +79,6 @@ onUnmounted(() => {
       </CardHeader>
       <CardContent>
         <div class="grid gap-4">
-          <!-- <div class="grid gap-2">
-                        <Label class="inputTitle" for="stuId">账号</Label>
-                        <ErrorHead v-if="noAccount" :message="'请输入账号'"></ErrorHead>
-                        <Input class="formInput" :class="{ 'noWrite': noAccount }" @input="noAccount = false" id="stuId"
-                            placeholder="请输入学号或邮箱" required :model-value="account" />
-                    </div>
-                    <div class="grid gap-2">
-                        <div class="flex items-center justify-between">
-                            <Label class="inputTitle" for="password">密码</Label>
-                        </div>
-                        <ErrorHead v-if="noPassword" :message="'请输入密码'">
-                        </ErrorHead>
-                        <Input class="formInput" :class="{ 'noWrite': noPassword }" @input="noPassword = false"
-                            id="password" type="password" placeholder="请输入密码" required v-model="password" />
-                        <div class="forgotPass flex items-center justify-end">
-                            <ForgotPassword></ForgotPassword>
-                        </div>
-                    </div> -->
           <LoginContent
             :errors="filedErrors"
             :account="loginData.account"
@@ -135,14 +117,14 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .loginOut {
-  width: 400px;
+  width: 24rem;
 }
 
 .loginContent {
-  margin-top: 80px;
+  margin-top: 5.2rem;
   background-color: #ffffff;
   border: none;
-  border-radius: 20px;
+  border-radius: 1rem;
   opacity: 0;
   height: 0;
   overflow: hidden;
@@ -151,27 +133,27 @@ onUnmounted(() => {
 
   .loginTitle {
     text-align: center;
-    font-size: 34px;
-    margin: 7px 0 0px 0;
+    font-size: 2rem;
+    margin: 0.3rem 0 0px 0;
   }
 
   .inputTitle {
-    font-size: 16px;
-    margin: 7px 0 6px 0;
+    font-size: 1rem;
+    margin: 0.3rem 0 0.3rem 0;
   }
 
   .forgotPass {
     position: relative;
-    top: -12px;
+    top: -1.2rem;
   }
 
   .loginButton {
-    margin-bottom: 40px;
-    height: 40px;
-    font-size: 16px;
+    margin-bottom: 2rem;
+    height: 2.5rem;
+    font-size: 1rem;
     border: none;
     box-shadow: none;
-    border-radius: 20px;
+    border-radius: 1.2rem;
     background-color: #e1f2fd;
   }
 
@@ -182,7 +164,7 @@ onUnmounted(() => {
   }
 
   .noWrite {
-    border: 1px solid var(--destructive-foreground);
+    border: 0.08rem solid var(--destructive-foreground);
     // color: var(--destructive-foreground);
   }
 }
@@ -224,65 +206,65 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 1400px) {
-  .loginOut {
-    width: 350px;
-  }
+//   .loginOut {
+//     width: 350px;
+//   }
 
   .loginContent {
-    margin-top: 80px;
+    // margin-top: 80px;
 
     .loginTitle {
       text-align: center;
-      font-size: 30px;
-      margin: 5px 0 0px 0;
+    //   font-size: 30px;
+    //   margin: 5px 0 0px 0;
     }
 
     .inputTitle {
-      font-size: 14px;
-      margin: 3px 0 1px 0;
+    //   font-size: 14px;
+    //   margin: 3px 0 1px 0;
     }
 
     .formInput {
-      height: 36px;
-      font-size: 12px;
+    //   height: 36px;
+    //   font-size: 12px;
     }
 
     .loginButton {
-      height: 35px;
-      font-size: 14px;
-      margin-bottom: 25px;
+    //   height: 35px;
+    //   font-size: 14px;
+    //   margin-bottom: 25px;
     }
   }
 }
 
 @media screen and (max-width: 1200px) {
-  .loginOut {
-    width: 300px;
-  }
+//   .loginOut {
+//     width: 300px;
+//   }
 
   .loginContent {
-    margin-top: 70px;
+    // margin-top: 70px;
 
     .loginTitle {
       text-align: center;
-      font-size: 28px;
-      margin: 0;
+    //   font-size: 28px;
+    //   margin: 0;
     }
 
     .inputTitle {
-      font-size: 12px;
-      margin: 0;
+    //   font-size: 12px;
+    //   margin: 0;
     }
 
     .formInput {
-      height: 28px;
-      font-size: 10px;
+    //   height: 28px;
+    //   font-size: 10px;
     }
 
     .loginButton {
-      height: 28px;
-      font-size: 13px;
-      margin-bottom: 15px;
+    //   height: 28px;
+    //   font-size: 13px;
+    //   margin-bottom: 15px;
     }
   }
 }
@@ -291,46 +273,46 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 500px) {
-  .loginOut {
-    width: 100%;
-    margin: 0;
-  }
+//   .loginOut {
+//     width: 100%;
+//     margin: 0;
+//   }
 
   .loginContent {
     background: none;
-    margin-top: 90px;
+    // margin-top: 90px;
     border: none;
     box-shadow: none;
 
     .loginTitle {
       // display: none;
-      width: 70px;
+    //   width: 70px;
       text-align: start;
-      font-size: 32px;
-      margin: 8px 0 5px 0;
-      padding: 2px 3px;
-      border-bottom: #5abaf9 3px solid;
+    //   font-size: 32px;
+    //   margin: 8px 0 5px 0;
+    //   padding: 2px 3px;
+    //   border-bottom: #5abaf9 3px solid;
     }
 
     .inputTitle {
       display: none;
-      font-size: 18px;
-      margin: 2px 0 5px 0;
+    //   font-size: 18px;
+    //   margin: 2px 0 5px 0;
     }
 
     .formInput {
-      height: 60px;
-      font-size: 20px;
-      border-radius: 40px;
-      padding: 0 20px;
-      margin: 10px 0;
+    //   height: 60px;
+    //   font-size: 20px;
+    //   border-radius: 40px;
+    //   padding: 0 20px;
+    //   margin: 10px 0;
     }
 
     .loginButton {
-      height: 50px;
-      font-size: 24px;
-      border-radius: 25px;
-      margin-bottom: 15px;
+    //   height: 50px;
+    //   font-size: 24px;
+    //   border-radius: 25px;
+    //   margin-bottom: 15px;
     }
   }
 }
