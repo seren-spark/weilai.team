@@ -6,6 +6,7 @@ import {
   ToggleShow,
   QuickShowCard,
   ShortcutOperation,
+  NewNoData,
 } from "@/components/recruitment";
 import { useRequest } from "vue-request";
 import {
@@ -196,7 +197,7 @@ const quickShowItems = ref([
           />
         </div>
         <div class="main-content-show">
-          <div v-show="messageCard.length === 0" class="no-data">暂无数据</div>
+          <NewNoData v-if="messageCard.length === 0" style=" width: 100%;height: 150px;display: flex;align-items: center;justify-content: center;" />
           <MessageCard
             v-for="(item, index) in messageCard"
             :key="index"

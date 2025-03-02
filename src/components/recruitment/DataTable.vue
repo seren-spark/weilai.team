@@ -22,15 +22,13 @@
     </TableHeader>
 
     <TableBody>
-      <template v-if="items.length === 0">
-        <TableRow>
-          <TableCell :colspan="headers.length + 1" class="text-center">
-            <NoData />
+        <TableRow v-show="items.length === 0">
+          <TableCell v-for="i,j in 4"  :key="j" />
+          <TableCell  class="text-center" colspan="1" style="width: 120px;">
+            <NewNoData />
           </TableCell>
         </TableRow>
-      </template>
-      <template v-else>
-        <TableRow v-for="item in items" :key="item.id" class="hover-tr">
+    <TableRow v-for="item in items" :key="item.id" class="hover-tr">
           <TableCell
             v-for="(obj, theKey) in item"
             :key="theKey"
@@ -81,7 +79,6 @@
             </Popover>
           </TableCell>
         </TableRow>
-      </template>
     </TableBody>
   </Table>
 </template>
@@ -109,7 +106,7 @@ import type {
   tableHeadersVO,
 } from "@/types/recruitmentType";
 
-import NoData from "@/components/loading/NoData.vue";
+import {NewNoData} from "@/components/recruitment";
 
 const props = defineProps<{
   items: IAllApplyUserVO[];
@@ -171,7 +168,6 @@ watch(
 @use "@/assets/styles/recruitment.scss";
 .adaptive table {
   width: 100%;
-  height: 40px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -180,6 +176,7 @@ watch(
   overflow: hidden;
 }
 .hover-tr {
+  max-height: 40px;
   &:hover {
     background-color: var(--accent);
     cursor: pointer;
