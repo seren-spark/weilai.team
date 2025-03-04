@@ -143,7 +143,7 @@ const toggleItems = ref([
 ]);
 
 const tableData = ref(<IAllApplyUserVO[]>[]);
-const pageSize = ref(10);
+const pageSize = ref(6);
 const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);

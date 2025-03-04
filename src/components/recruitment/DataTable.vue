@@ -166,14 +166,13 @@ watch(
 
 <style lang="scss">
 @use "@/assets/styles/recruitment.scss";
-.adaptive table {
+.adaptive{
   width: 100%;
-  background-color: #fff;
-  border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
   box-shadow: 0 0 10px #ccc;
   overflow: hidden;
+  white-space: nowrap;
 }
 .hover-tr {
   max-height: 40px;

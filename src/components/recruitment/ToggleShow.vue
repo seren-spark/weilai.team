@@ -43,7 +43,6 @@ watch(status, (newValue) => {
         >
           {{ item.title }}
         </Button>
-        <!-- <div v-show="item.isActive" class="active-indicator"></div> -->
       </MenubarTrigger>
 
     </MenubarMenu>
