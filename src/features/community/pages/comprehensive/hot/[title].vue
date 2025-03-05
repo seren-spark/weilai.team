@@ -15,7 +15,7 @@
 <script setup lang="ts">
 // import { Icon } from "@iconify/vue";
 import Rightbar from "@/components/community/Rightbar.vue";
-import NewsContent from "@community/components/NewsContent.vue";
+import NewsContent from "@/features/community/components/News.vue";
 import Search from "@community/components/Search.vue";
 import { ref } from "vue";
 import { useRoute } from "vue-router";

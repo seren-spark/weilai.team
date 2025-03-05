@@ -127,7 +127,7 @@ export interface IGetInterviewUserDTO {
 
 //安排面试官  数据传输对象 发送
 export interface IArrangeInterviewDTO {
-  id: string;
+  userId: string;
   place: string;
   startTime: string;
   endTime: string;

@@ -36,7 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-// @ts-ignore
+// @ts-expect-error:this url is not find
 import NoData from "@/components/loading/NoData.vue";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -160,7 +160,7 @@ function deleteArticles(oneId?: number) {
 function handleSelectAll() {
   if (postList.value.length === 0) return;
   // 全选
-  postList.value.forEach((item: any) => {
+  postList.value.forEach((item: AdminPost) => {
     item.selected = isAllSelected.value;
   });
 }
@@ -171,15 +171,15 @@ function reset() {
   condition.value = "";
   runGetAdminPost();
 }
-const handleItemSelect = (item: any) => {
+const handleItemSelect = () => {
   isAllSelected.value = true;
-  postList.value.forEach((item: any) => {
+  postList.value.forEach((item: AdminPost) => {
     if (!item.selected) {
       isAllSelected.value = false;
     }
   });
 };
-function df(date: any, format = "yyyy - MM - dd HH:mm") {
+function df(date: Date, format = "yyyy - MM - dd HH:mm") {
   // 获取日期的各个部分，包括分钟
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
@@ -188,7 +188,7 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
   let minutes = date.getMinutes();
   // 根据format字符串进行格式化，包含分钟部分
   let formattedDate = format
-    .replace("yyyy", year)
+    .replace("yyyy", year.toString())
     .replace("MM", month.toString().padStart(2, "0"))
     .replace("dd", day.toString().padStart(2, "0"))
     .replace("HH", hours.toString().padStart(2, "0"))
@@ -231,8 +231,8 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
                   <Popover class="select-time-container">
                     <PopoverTrigger as-child>
                       <Button
-                        variant="outline"
                         v-model="selectTime"
+                        variant="outline"
                         :class="
                           cn(
                             'w-[280px] justify-start text-left font-normal',
@@ -253,8 +253,8 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
                       class="w-full p-0 select-time-content bg-white"
                     >
                       <Calendar
-                        v-model="value"
                         ref="selectTime"
+                        v-model="value"
                         initial-focus
                         locale="zh-CN"
                       />
@@ -265,9 +265,9 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
                   <span>作者/标题/内容:</span>
                   <div class="search_input_box">
                     <input
+                      v-model="condition"
                       placeholder="请输入关键词"
                       class="search_input"
-                      v-model="condition"
                       @keydown.enter="searchArticleInAdmin"
                     />
                   </div>
@@ -301,19 +301,17 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
               </div>
             </CardHeader>
             <CardContent class="card_content">
-              <Table id="tb" v-if="postList.length">
+              <Table v-if="postList.length" id="tb">
                 <TableHeader>
                   <TableRow>
                     <TableHead class="hidden w-[100px] md:table-cell text-left">
                       <input
-                        type="checkbox"
-                        name=""
-                        id=""
                         v-model="isAllSelected"
+                        type="checkbox"
                         @change="handleSelectAll"
                       />
                     </TableHead>
-                    <TableHead class="hidden md:table-cell" id="th"
+                    <TableHead id="th" class="hidden md:table-cell"
                       >文章标题</TableHead
                     >
                     <TableHead class="hidden md:table-cell"> 作者 </TableHead>
@@ -334,10 +332,9 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
                   >
                     <TableCell class="hidden sm:table-cell"
                       ><input
+                        v-model="(item as any).selected"
                         type="checkbox"
                         name=""
-                        id=""
-                        v-model="(item as any).selected"
                         @change="handleItemSelect"
                     /></TableCell>
                     <TableCell class="font-medium table_title">
@@ -407,11 +404,11 @@ function df(date: any, format = "yyyy - MM - dd HH:mm") {
                 <NoData />
               </div>
             </CardContent>
-            <CardFooter class="justify-center" v-show="postList.length">
+            <CardFooter v-show="postList.length" class="justify-center">
               <div class="pagination-container">
                 <Pagination
-                  :totalItems="total"
-                  :pageSize="pageSize"
+                  :total-items="total"
+                  :page-size="pageSize"
                   @update:page="changePage"
                 >
                 </Pagination>
@@ -441,7 +438,7 @@ $font: #8c9296;
     justify-content: space-between;
   }
   &_content {
-    min-height: 580px;
+    min-height: 36.25rem;
     padding-bottom: 5px;
   }
 }

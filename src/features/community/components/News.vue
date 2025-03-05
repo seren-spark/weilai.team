@@ -1,7 +1,7 @@
 <template>
   <div id="news" ref="scrollRef ">
     <div v-if="articleList.length > 0">
-      <div class="news-item" v-for="item in articleList">
+      <div v-for="item in articleList" :key="item.id" class="news-item">
         <div class="news-writer">
           <div
             class="avatar"
@@ -9,7 +9,7 @@
           >
             <UserAvatar
               :avatar="item.headPortrait"
-              customClass="w-[3rem] h-[3rem]"
+              custom-class="w-[3rem] h-[3rem]"
             />
           </div>
           <div class="writer-info">
@@ -19,7 +19,7 @@
             </div>
           </div>
         </div>
-        <RouterLink
+        <!-- <RouterLink
           :to="{ name: '/community/post/[id]', params: { id: item.id } }"
           target="_blank"
           class="news-content"
@@ -30,8 +30,10 @@
               {{ item.postAbstract }}
             </p>
           </div>
-        </RouterLink>
-        <div class="news-label">
+        </RouterLink> -->
+
+        <NewsContent :item="item" />
+        <!-- <div class="news-label">
           <div class="type">{{ checkType(item.type) }}</div>
           <ul class="labels">
             <RouterLink
@@ -42,17 +44,18 @@
               #{{ tags }}
             </RouterLink>
           </ul>
-        </div>
+        </div> -->
+        <NewsLabel :item="item" :tag-type="tagType" />
         <NewsFooter
-          :viewCount="item.viewCount"
-          :likeCount="item.likeCount"
-          :commentCount="item.commentCount"
+          :view-count="item.viewCount"
+          :likecount="item.likeCount"
+          :comment-count="item.commentCount"
         />
       </div>
     </div>
 
     <div v-else-if="loading" class="loading">
-      <div class="news-item" v-for="index in 6">
+      <div v-for="index in 6" :key="index" class="news-item">
         <div class="news-writer">
           <div class="flex items-center space-x-4">
             <Skeleton class="h-12 w-12 rounded-full bg-[--muted]" />
@@ -67,46 +70,44 @@
         </a>
       </div>
     </div>
-    <div v-else="!loading && !articleList.length">
+    <div v-else-if="!loading && articleList.length === 0">
       <NoData />
     </div>
     <!-- 到底了 -->
     <div v-if="isOver && articleList.length > 0" class="over">已经到底了</div>
   </div>
-
-  <!-- <div v-if="loading">加载中</div> -->
 </template>
 
 <script setup lang="ts">
 import { useTagStore } from "@/store/tagTypeStore";
 
 import UserAvatar from "@/components/avatar/UserAvatar.vue";
-// @ts-ignore
+// @ts-expect-error:this url is not exist
 import NoData from "@/components/loading/NoData.vue";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserStore } from "@/store/userStore";
-import type { ArticleList } from "@/types/Community";
+
+import type { ArticleList } from "@/types/community";
 import { formatPostTime } from "@/utils/formatPostTime";
 import {
-  // articleList,
   checkType,
   getArticle,
   getArticle2,
 } from "@community/composables/search";
 import { onMounted, provide, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import NewsFooter from "./NewsFooter.vue";
-import { alertVariants } from "../../../components/ui/alert/index";
+import { useRoute } from "vue-router";
+import NewsFooter from "./article-display/NewsFooter.vue";
+import { skipPersonCenter } from "@/composables/useCommunity";
+import NewsContent from "./article-display/NewsContent.vue";
+import NewsLabel from "./article-display/NewsLabel.vue";
 const loadinglen = ref(0);
 const articleList = ref<ArticleList[]>([]);
-const isTag = ref(false);
+const isExsitTag = ref(false);
 const loading = ref(false);
 const tagStore = useTagStore();
 const tagType = tagStore.tagType.tagType;
 // 滚动容器
 const scrollRef = ref<HTMLDivElement>();
-const userStore = useUserStore();
-const router = useRouter();
+
 provide("scrollRefFromInner", scrollRef);
 const props = defineProps<{
   type?: number | 0;
@@ -121,59 +122,28 @@ const pages = ref<number>(1);
 const total = ref<number>(0);
 const current = ref<number>(1);
 const isOver = ref<boolean>(false);
-
-//跳转个人中心;
-function skipPersonCenter(id: number) {
-  console.log((userStore.getMyId() as number) == id);
-  if (!((userStore.getMyId() as number) == id)) {
-    userStore.userId = id;
-    userStore.isSelf = false;
-  } else {
-    userStore.isSelf = true;
-  }
-
-  router.push({
-    path: `/personalCenter/userInfo`,
-  });
-}
-console.log(route.params);
 if (!props.isTag) {
-  // 搜索数据要用的
+  // 如果不是标签详情页
   watch(
     () => route.params,
-    (newVal, oldVal) => {
-      console.log("综合");
-      console.log(newVal, oldVal);
-      let title = (newVal as any).title;
-      console.log(title, "title");
-      // getArticle(props.type, title, props.page, undefined, props.sort).then(
-      //   (res) => {
-      //     loading.value = true;
-      //     console.log(res);
-      //     pages.value = res.pages;
-      //     total.value = res.total;
-      //     loadinglen.value = res.records.length;
-      //     current.value = res.current;
-      //     setTimeout(() => {
-      //       loading.value = false;
-      //       articleList.value = res.records;
-      //     }, 400);
-      //   },
-      // );
-      const { loading: load, data } = getArticle2(
-        props.type,
-        title,
-        props.page,
-        props.sort,
-      );
-      watch(data, () => {
-        pages.value = data.value?.data.pages;
-        total.value = data.value?.data.total;
-        console.log(data.value);
-        loading.value = load.value;
-        current.value = data.value?.data.current;
-        articleList.value = data.value?.data.records;
-      });
+    (newVal) => {
+      const title = (newVal as Record<string, string>)?.title;
+      if (title) {
+        const { loading: load, data } = getArticle2(
+          props.type,
+          title,
+          props.page,
+          props.sort,
+        );
+        watch(data, () => {
+          pages.value = data.value?.data.pages || 0;
+          total.value = data.value?.data.total || 0;
+          console.log(data.value);
+          loading.value = load.value;
+          current.value = data.value?.data.current || 0;
+          articleList.value = data.value?.data.records || [];
+        });
+      }
     },
     {
       immediate: true,
@@ -185,28 +155,10 @@ if (!props.isTag) {
     () => props.type,
     (newVal) => {
       console.log(newVal);
-
-      // getArticle(
-      //   newVal,
-      //   props.condition,
-      //   props.page,
-      //   undefined,
-      //   props.sort ? props.sort : 0,
-      // ).then((res) => {
-      //   pages.value = res.pages;
-      //   total.value = res.total;
-      //   loadinglen.value = res.records.length;
-      //   current.value = res.current;
-      //   setTimeout(() => {
-      //     loading.value = false;
-      //     articleList.value = res.records;
-      //   }, 400);
-      // });
       const { loading: load, data } = getArticle2(
         newVal,
         props.condition || (route.params as { title?: string }).title || "",
         props.page,
-
         props.sort ? props.sort : 0,
       );
       loading.value = load.value;
@@ -225,7 +177,7 @@ if (!props.isTag) {
       if (newVal) {
         if (newVal.length > 0) {
           articleList.value = newVal;
-          isTag.value = true;
+          isExsitTag.value = true;
         } else {
           loadinglen.value = 0;
           loading.value = false;
@@ -240,7 +192,7 @@ onMounted(async () => {
   window.addEventListener("scroll", handleScroll, true);
 });
 
-const handleScroll = async (e: any) => {
+const handleScroll = async () => {
   let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
   const clientHeight =
     document.documentElement.clientHeight || document.body.clientHeight;
@@ -298,57 +250,6 @@ const handleScroll = async (e: any) => {
         color: #909ba6;
       }
     }
-    .news-content {
-      padding: var(--padding);
-      display: block;
-      &:hover {
-        background-color: #f8f8fa;
-        cursor: pointer;
-      }
-      .news-details {
-        font-size: 0.87rem;
-        color: #a7a7a7;
-        p {
-          max-height: 40px;
-          line-height: 20px;
-          display: -webkit-box;
-          -webkit-line-clamp: 2; //行数
-          text-overflow: ellipsis; //省略号
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          white-space: normal;
-          word-break: break-all;
-        }
-      }
-    }
-    .news-label {
-      padding: var(--padding);
-
-      display: flex;
-      .type {
-        min-width: 3rem;
-        width: max-content;
-        padding: 0 8px;
-        font-size: 0.875rem;
-        color: #909ba6;
-        text-align: center;
-        border-radius: 0.975rem;
-        border: 0.12rem solid #e1edf8;
-        margin-right: 8px;
-      }
-
-      .labels {
-        display: flex;
-        color: #909ba6;
-        font-size: 0.82rem;
-        .label-item {
-          display: flex;
-          align-items: center;
-          margin: 0 5px;
-          cursor: pointer;
-        }
-      }
-    }
   }
 }
 
@@ -373,58 +274,6 @@ const handleScroll = async (e: any) => {
           }
           .time {
             display: none;
-          }
-        }
-      }
-      .news-content {
-        padding: 5px 55px;
-        .news-title {
-          font-weight: 540;
-          display: -webkit-box;
-          -webkit-line-clamp: 1; //行数
-          text-overflow: ellipsis; //省略号
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          white-space: normal;
-          word-break: break-all;
-        }
-        .news-details {
-          font-size: 14.5px;
-          color: #a7a7a7;
-          p {
-            max-height: 40px;
-            line-height: 20px;
-            display: -webkit-box;
-            -webkit-line-clamp: 1; //行数
-            text-overflow: ellipsis; //省略号
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            white-space: normal;
-            word-break: break-all;
-          }
-        }
-      }
-      .news-label {
-        display: flex;
-        .type {
-          width: 50px;
-          padding: 0;
-          font-size: 12px;
-          color: #909ba6;
-          text-align: center;
-          border-radius: 15px;
-          border: 2px solid #e1edf8;
-          margin-right: 8px;
-        }
-
-        .labels {
-          display: flex;
-          color: #909ba6;
-          font-size: 12px;
-          .label-item {
-            display: flex;
-            align-items: center;
-            margin: 0 5px;
           }
         }
       }

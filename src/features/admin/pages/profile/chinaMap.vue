@@ -8,8 +8,6 @@ import MapDrilling from "./map/index.vue";
 </template>
 <style lang="scss" scoped>
 .map-wrapper {
-  //   width: 100vw;
-  //   height: 100vh;
   overflow: hidden;
   width: 100%;
   height: 100%;

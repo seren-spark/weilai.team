@@ -19,7 +19,7 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
-    '/[...path]': RouteRecordInfo<'/[...path]', '/:path(.*)', { path: ParamValue<true> }, { path: ParamValue<false> }>,
+    '/[...404]': RouteRecordInfo<'/[...404]', '/:404(.*)', { 404: ParamValue<true> }, { 404: ParamValue<false> }>,
     '/admin': RouteRecordInfo<'/admin', '/admin', Record<never, never>, Record<never, never>>,
     '/admin/attendance': RouteRecordInfo<'/admin/attendance', '/admin/attendance', Record<never, never>, Record<never, never>>,
     '/admin/community': RouteRecordInfo<'/admin/community', '/admin/community', Record<never, never>, Record<never, never>>,
@@ -36,7 +36,7 @@ declare module 'vue-router/auto-routes' {
     '/admin/profile/map/': RouteRecordInfo<'/admin/profile/map/', '/admin/profile/map', Record<never, never>, Record<never, never>>,
     '/admin/profile/MapDistribution': RouteRecordInfo<'/admin/profile/MapDistribution', '/admin/profile/MapDistribution', Record<never, never>, Record<never, never>>,
     '/admin/profile/RadarChart': RouteRecordInfo<'/admin/profile/RadarChart', '/admin/profile/RadarChart', Record<never, never>, Record<never, never>>,
-    '/admin/profile/salary/AreaChart': RouteRecordInfo<'/admin/profile/salary/AreaChart', '/admin/profile/salary/AreaChart', Record<never, never>, Record<never, never>>,
+    '/admin/profile/salary/AreaChartBar': RouteRecordInfo<'/admin/profile/salary/AreaChartBar', '/admin/profile/salary/AreaChartBar', Record<never, never>, Record<never, never>>,
     '/admin/profile/salary/HorizontalBar': RouteRecordInfo<'/admin/profile/salary/HorizontalBar', '/admin/profile/salary/HorizontalBar', Record<never, never>, Record<never, never>>,
     '/admin/profile/salary/MultipeBar': RouteRecordInfo<'/admin/profile/salary/MultipeBar', '/admin/profile/salary/MultipeBar', Record<never, never>, Record<never, never>>,
     '/admin/profile/salary/Progress/Progress': RouteRecordInfo<'/admin/profile/salary/Progress/Progress', '/admin/profile/salary/Progress/Progress', Record<never, never>, Record<never, never>>,

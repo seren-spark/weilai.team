@@ -27,7 +27,10 @@ defineEmits<{
   <div class="grid gap-2">
     <Label class="inputTitle" for="stuId">账号</Label>
     <div v-if="errors?.account?._errors" class="errorHead">
-      <Icon class="errorIcon" icon="ri:account-circle-2-line"></Icon>
+      <Icon
+        class="errorIcon"
+        icon="material-symbols-light:account-circle"
+      ></Icon>
       <span>{{ errors?.account?._errors[0] }}</span>
     </div>
     <Input
@@ -48,7 +51,10 @@ defineEmits<{
       <Label class="inputTitle" for="password">密码</Label>
     </div>
     <div v-if="errors?.password?._errors" class="errorHead">
-      <Icon class="errorIcon" icon="pepicons-pop:key-circle"></Icon>
+      <Icon
+        class="errorIcon"
+        icon="material-symbols-light:build-circle-outline"
+      ></Icon>
       <span>{{ errors?.password?._errors[0] }}</span>
     </div>
     <Input
@@ -71,24 +77,25 @@ defineEmits<{
 </template>
 <style lang="scss" scoped>
 .inputTitle {
-  font-size: 16px;
-  margin: 14px 0 4px 0;
+  font-size: 1rem;
+  margin: 0.9rem 0 0.2rem 0;
 }
 
 .forgotPass {
   position: relative;
-  top: -12px;
+  top: -0.8rem;
 }
 
 .errorHead {
   display: flex;
   align-items: center;
   color: var(--destructive-foreground);
-  font-size: 14px;
+  font-size: 0.9rem;
 
   .errorIcon {
-    margin-right: 4px;
-    font-size: 16px;
+    margin-right: 0.2rem;
+    font-size: 1.3rem;
+    font-weight: 900;
   }
 }
 
@@ -122,29 +129,29 @@ defineEmits<{
 
 @media screen and (max-width: 1400px) {
   .inputTitle {
-    font-size: 14px;
-    margin: 3px 0 1px 0;
+    // font-size: 14px;
+    // margin: 3px 0 1px 0;
   }
 
   .formInput {
-    height: 36px;
-    font-size: 12px;
+    // height: 36px;
+    // font-size: 12px;
   }
 }
 
 @media screen and (max-width: 1200px) {
   .inputTitle {
-    font-size: 12px;
-    margin: 0;
+    // font-size: 12px;
+    // margin: 0;
   }
 
   .formInput {
-    height: 28px;
-    font-size: 10px;
+    // height: 28px;
+    // font-size: 10px;
   }
 
   .errorHead {
-    font-size: 11px;
+    // font-size: 11px;
   }
 }
 
@@ -154,16 +161,16 @@ defineEmits<{
 @media screen and (max-width: 500px) {
   .inputTitle {
     display: none;
-    font-size: 18px;
-    margin: 2px 0 5px 0;
+    // font-size: 18px;
+    // margin: 2px 0 5px 0;
   }
 
   .formInput {
-    height: 60px;
-    font-size: 20px;
-    border-radius: 40px;
-    padding: 0 20px;
-    margin: 10px 0;
+    // height: 60px;
+    // font-size: 20px;
+    // border-radius: 40px;
+    // padding: 0 20px;
+    // margin: 10px 0;
   }
 }
 </style>

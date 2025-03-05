@@ -289,7 +289,7 @@ export const getAllInterviewUser = ({
 //安排面试
 //状态参数标记
 export const arrangeInterviewer = ({
-  id,
+  userId,
   startTime,
   endTime,
   place,
@@ -297,10 +297,10 @@ export const arrangeInterviewer = ({
   secondHr,
   thirdHr,
 }: IArrangeInterviewDTO) => {
-  console.log(id, place,startTime,endTime, firstHr, secondHr, thirdHr);
+  console.log(userId, place,startTime,endTime, firstHr, secondHr, thirdHr);
   return axios.post(
     `${BASE_UEL}recruit/interview/scheduleInterviewer`,
-    { id,startTime,endTime,  place, firstHr, secondHr, thirdHr },
+    { userId,startTime,endTime,  place, firstHr, secondHr, thirdHr },
     {
       headers: {
         "Content-Type": "application/json",

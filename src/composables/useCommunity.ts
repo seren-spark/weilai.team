@@ -1,11 +1,9 @@
 import { useUserStore } from "@/store/userStore";
 
-import { useRouter } from "vue-router";
-const userStore = useUserStore();
-
-const router = useRouter();
+import router from "@/router";
 export function skipPersonCenter(id: number) {
-  console.log((userStore.getMyId() as number) == id);
+  const userStore = useUserStore();
+  //   const router = useRouter();
   if (!((userStore.getMyId() as number) == id)) {
     userStore.userId = id;
     userStore.isSelf = false;
@@ -13,7 +11,5 @@ export function skipPersonCenter(id: number) {
     userStore.isSelf = true;
   }
 
-  router.push({
-    path: `/personalCenter/userInfo`,
-  });
+  router.push(`/personalCenter/userInfo`);
 }

@@ -36,12 +36,13 @@ watchEffect((cleanupFn) => {
 <style lang="scss" scoped>
 .horizontal {
   .horizontal-bar-item {
-    width: 100%;
-    margin-bottom: 10px;
+    width: 90%;
+    padding-top: 10px;
+    margin-bottom: 20px;
 
     .horizontal-bar-title {
-      margin-bottom: 3px;
-      font-size: 16px;
+      margin-bottom: 0.25rem;
+      font-size: 1.2rem;
       letter-spacing: 0.05em;
     }
 

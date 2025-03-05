@@ -90,7 +90,6 @@ const changeAuthorityList = ref([]);
 
 const isAllSelected = ref(false);
 const handleItemSelect = (authority: string) => {
-
   const index = changeAuthorityList.value.indexOf(authority);
 
   if (index === -1) {
@@ -201,7 +200,7 @@ function reset() {
                   v-for="item in authorityList"
                     :key="item"
                     class="ml-2 mr-2 flex"
-                    
+
                   >
                     <input
                       type="checkbox"
@@ -237,7 +236,7 @@ function reset() {
               <Table id="tb">
                 <TableHeader>
                   <TableRow>
-                    <TableHead id="th" class="hidden md:table-cell" 
+                    <TableHead id="th" class="hidden md:table-cell"
                       >学号</TableHead
                     >
                     <TableHead class="hidden md:table-cell">姓名</TableHead>
@@ -266,7 +265,7 @@ function reset() {
                       v-for="authority in item.authority"
                         :key="authority"
                         :class="authority"
-                        
+
                         variant="outline"
                         >{{ authorityTransformer(authority) }}
                       </Badge>

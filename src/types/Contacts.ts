@@ -24,7 +24,7 @@ export interface TeamUser {
   clazz: string;
   grade: string;
   group: string;
-  id: number;
+  id?: number;
   name: string;
   studyId: string;
 }

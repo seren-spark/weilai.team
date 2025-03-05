@@ -18,11 +18,6 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
         "title": "文章管理",
         "path": "/admin/community",
         "icon": "i-mdi-file-document-multiple-outline"
-      },
-      {
-        "title": "测试",
-        "path": "/admin/community/test",
-        "icon": "i-mdi-file-document-multiple-outline"
       }
     ]
   }

@@ -15,10 +15,6 @@ export const useUserStore = defineStore("user", {
 
   actions: {
     // 存储id
-    setUserId(id: number, avatar: string) {
-      this.userId = id;
-      this.avatar = avatar;
-    },
     setUserInfo(id: number, avatar: string) {
       this.userId = id;
       this.avatar = avatar;
@@ -45,8 +41,8 @@ export const useUserStore = defineStore("user", {
 export const getMyId = () =>
   Number(JSON.parse(localStorage.getItem("userId") as string).value);
 export async function getUserAvatarInfo() {
-  let id = getMyId();
-  let res = await apiClient({
+  const id = getMyId();
+  const res = await apiClient({
     url: `/user/getUserInfoByUserId/${id}`,
     method: "get",
   });
