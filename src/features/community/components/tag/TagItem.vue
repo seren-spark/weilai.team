@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
+import { defineProps } from "vue";
+import { Skeleton } from "@/components/ui/skeleton";
 
 defineProps<{
   name: string | number;
@@ -8,13 +9,13 @@ defineProps<{
 </script>
 
 <template>
-  <Skeleton class="h-4 w-[32px]" v-if="loading" />
+  <Skeleton v-if="loading" class="h-4 w-[32px]"  />
   <RouterLink
     v-else
     class="tag"
     :to="{ name: '/community/blog/label/[tag]', params: { tag: name } }"
   >
-    <span class="tag__prefix" :style="{ color: '#2A0798' }">#</span>
+    <span class="tag__prefix" :style="{ color: '#747472' }">#</span>
     <span class="tag__name">{{ name }}</span>
   </RouterLink>
 </template>
@@ -23,22 +24,13 @@ defineProps<{
 .tag {
   padding: 0.2rem 0.75rem;
   border-radius: calc(var(--radius) * 2);
-  border: 1px solid transparent;
   font-size: 0.75rem;
-  background-color: rgba(42, 7, 152, 0.1);
-  box-shadow:
-    inset 0 0 0 1px rgba(86, 39, 101, 0.1),
-    inset 0 0 0 1px rgba(86, 39, 101, 0.1),
-    inset 0 0 0 1px rgba(86, 39, 101, 0.1);
-  color: var(--muted-foreground);
+  background-color: #e7f3f9;
+  color: #8f8f8f;
   transition: all 0.5s ease;
 
   &:hover {
     background-color: rgba(41, 7, 152, 0.05);
-  }
-
-  &__prefix {
-    opacity: 0.7;
   }
 
   &__name {

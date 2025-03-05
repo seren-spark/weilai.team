@@ -68,7 +68,7 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "unplugin-vue-router": "^0.10.9",
-    "vee-validate": "^4.14.7",
+    "vee-validate": "^4.15.0",
     "vue": "^3.5.13",
     "vue-avatar-cropper": "^6.1.1",
     "vue-cropperjs": "^5.0.0",
