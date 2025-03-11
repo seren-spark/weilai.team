@@ -37,7 +37,7 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
       {
         "title": "考勤管理",
         "icon": "tdesign:time",
-        "path": "/admin/attendance"
+        "path": "/admin/attendance/overview"
       },
       {
         "title": "权限管理",

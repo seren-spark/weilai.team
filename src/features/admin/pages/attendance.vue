@@ -15,8 +15,13 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
     "title": "考勤管理",
     "thirdNavItems": [
       {
-        "title": "考勤管理",
-        "path": "/admin/attendance",
+        "title": "考勤概览",
+        "path": "/admin/attendance/overview",
+        "icon": "i-mdi-file-document-multiple-outline"
+      },
+      {
+        "title": "考勤统计",
+        "path": "/admin/attendance/statistics",
         "icon": "i-mdi-file-document-multiple-outline"
       }
     ]
