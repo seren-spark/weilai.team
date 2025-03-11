@@ -2,7 +2,7 @@
 import TheTopNav from "@/components/layouts/AppThirdNav.vue";
 import { useTagStore } from "@/store/tagTypeStore";
 import { ref } from "vue";
-const type = ref(4);
+
 interface TagData {
   type: number;
   tagType: string;
@@ -34,6 +34,11 @@ addTagType.addTag(typeData.value);
       {
         "title": "标签",
         "path": "/community/brainstorm/label/suggest",
+        "icon": "i-mdi-file-document-multiple-outline"
+      },
+      {
+        "title": "文件上传",
+        "path": "/community/brainstorm/test2",
         "icon": "i-mdi-file-document-multiple-outline"
       }
     ]

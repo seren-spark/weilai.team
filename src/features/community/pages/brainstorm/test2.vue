@@ -16,7 +16,8 @@
       </tr>
     </table>
     <div
-      v-for="(item, index) in percent"
+      v-for="item in percent"
+      :key="item"
       style="width: 0px; height: 0px; opacity: 0"
     >
       {{ item }}
@@ -45,29 +46,9 @@
             >
           </div>
           <div class="file-info-item file-size">
-            <!-- <span :class="getStatusClass(item.status)">{{ item.status }}</span> -->
-            <div v-if="item.status === '等待上传'" size="medium" type="info">
-              等待上传
+            <div type="warning">
+              {{ item.status }}
             </div>
-            <div
-              v-else-if="item.status === '校验MD5'"
-              size="medium"
-              type="warning"
-            >
-              校验MD5
-            </div>
-            <div v-else-if="item.status === '正在上传'" size="medium">
-              正在上传
-            </div>
-            <div
-              v-else-if="item.status === '上传成功'"
-              size="medium"
-              type="success"
-            >
-              上传完成
-            </div>
-            <div v-else size="medium">正在上传</div>
-            <div v-else size="medium" type="danger">上传错误</div>
           </div>
         </div>
       </div>
@@ -85,7 +66,8 @@ import {
   transformByte,
   percent,
 } from "@/composables/useUploadFile";
-import { watch } from "vue";
+
+import { watch, reactive } from "vue";
 watch(
   uploadFileList,
   (newValue) => {

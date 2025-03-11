@@ -1,4 +1,3 @@
-
 export interface uploadFileResponseData extends responseData {
   data: {
     code: number;
@@ -13,13 +12,14 @@ export interface responseData {
   message: string;
 }
 export interface file {
-  status: string;
-  chunkUploadedList: number[];
-  name: string;
-  size: number;
-  uploadProgress: number;
-  chunkList: chunkList[];
-  progressStatus: string;
+  status?: string;
+  chunkUploadedList?: number[];
+  name?: string;
+  size?: number;
+  uploadProgress?: number;
+  chunkList?: chunkList[];
+  progressStatus?: string;
+  raw?: File;
 }
 
 export interface chunkList {

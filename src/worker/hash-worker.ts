@@ -34,7 +34,7 @@ function createFileMd5(file: File) {
       file.slice || (file as any).mozSlice || (file as any).webkitSlice;
     const fileReader = new FileReader();
     const spark = new SparkMD5.ArrayBuffer();
-    const chunkSize = 2097152; // 2MB
+    const chunkSize = 5*1024*1024; // 5MB
     const totalChunks = Math.ceil(file.size / chunkSize);
     let currentChunk = 0;
 
