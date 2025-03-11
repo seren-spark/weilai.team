@@ -143,7 +143,7 @@ const toggleItems = ref([
 ]);
 
 const tableData = ref(<IAllApplyUserVO[]>[]);
-const pageSize = ref(10);
+const pageSize = ref(6);
 const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);
@@ -504,7 +504,6 @@ const arrangeInterviewerDialog = ref(false);
       />
 
       <div class="handle-btns">
-        <!-- <Button type="primary" class="btn-style">安排面试</Button> -->
         <Button type="primary" class="btn-style" @click="handleEditStatus"
           >修改状态</Button
         >
@@ -524,7 +523,7 @@ const arrangeInterviewerDialog = ref(false);
             : actionItems.filter((item, index) => index !== 2)
         "
         @send-selected-ids="handleTableSelectIds"
-      ></DataTable>
+     />
       <div class="pagination-container">
         <Pagination
           :total-items="total"
@@ -534,6 +533,7 @@ const arrangeInterviewerDialog = ref(false);
         </Pagination>
       </div>
     </div>
+
   </div>
 </template>
 

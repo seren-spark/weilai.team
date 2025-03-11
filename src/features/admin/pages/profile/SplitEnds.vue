@@ -35,8 +35,8 @@ const valueFormatter = (tick: number | Date) => typeof tick === 'number' ? `${ne
 .split-ends {
     background-color: #fff;
     padding: 10px;
-    width: 24%;
-    height: 220px;
+    // width: 24%;
+    height: 100%;
     margin-right: 2%;
 
 

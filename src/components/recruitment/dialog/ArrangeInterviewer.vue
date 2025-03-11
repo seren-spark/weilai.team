@@ -16,7 +16,7 @@
                 <FormLabel class="m-3 m-b-2 input-title">申请人</FormLabel>
                 <FormControl>
                   <Input
-                    v-model="formData.ApplyUser"
+                    v-model="formData.ApplyUser as string"
                     class="input-item"
                     placeholder="填写申请人"
                   />
@@ -30,7 +30,7 @@
                 <FormLabel class="m-3 input-title">面试地点</FormLabel>
                 <FormControl>
                   <Input
-                    v-model="formData.place"
+                    v-model="formData.place as string"
                     class="input-item"
                     placeholder="安排面试地点"
                   />
@@ -162,7 +162,7 @@
                 <FormLabel class="m-3 input-title">开始时间</FormLabel>
                 <FormControl>
                   <Input
-                    v-model="formData.startTime"
+                    v-model="formData.startTime as string"
                     class="input-item"
                     placeholder="填写开始时间"
                   />
@@ -176,7 +176,7 @@
                 <FormLabel class="m-3 input-title">结束时间</FormLabel>
                 <FormControl>
                   <Input
-                    v-model="formData.endTime"
+                    v-model="formData.endTime as string"
                     class="input-item"
                     placeholder="填写结束时间"
                   />
@@ -194,7 +194,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineEmits, watchEffect, watch } from "vue";
+import { ref, reactive, defineEmits, watchEffect, watch ,onMounted } from "vue";
 import {
   FormField,
   FormItem,
@@ -243,14 +243,21 @@ const props = defineProps<{
 const emit = defineEmits(["close"]);
 
 // 定义表单数据结构
-const formData = reactive({
-  ApplyUser: "",
-  place: "",
-  interviewer: [] as string[],
-  date: null as DateValue | null,
-  startTime: "",
-  endTime: "",
-});
+const formData = reactive<{
+    ApplyUser: string;
+    place: string;
+    interviewer: string[];
+    date: DateValue | null;
+    startTime: string;
+    endTime: string;
+  }>({
+    ApplyUser: props.name,
+    place: "",
+    interviewer: [],
+    date: null,
+    startTime: "",
+    endTime: "",
+  });
 
 //当props改变时清空所有表单项 没有变化时保留数据
 watch(
@@ -327,7 +334,6 @@ const formSchema = z
 const choices = ref<[{ label: string; value: string; id: string }]>();
 const searchName = ref("");
 //从后端拿到面试官信息
-import { onMounted } from "vue";
 
 onMounted(() => {
   const { data, error } = useRequest(() =>
@@ -403,7 +409,7 @@ const handleSubmit = () => {
     // 提交表单数据
     const { data } = useRequest(() =>
       arrangeInterviewer({
-        id: props.id,
+        userId: props.id,
         startTime: `${formData.date} ${formData.startTime}`,
         endTime: `${formData.date} ${formData.endTime}`,
         place: formData.place,

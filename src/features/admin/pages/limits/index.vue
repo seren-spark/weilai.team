@@ -25,20 +25,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useRequest } from "@/composables/useRequest";
 
-import type { ArticleList } from "@/types/community";
-import { checkType, getArticle } from "@community/composables/search";
-import { Icon } from "@iconify/vue";
-import { ref, computed, watch } from "vue";
-const { executeRequest, error, loading, data } = useRequest();
 
-let pages = 0;
+import { Icon } from "@iconify/vue";
+import { ref,watch } from "vue";
+const { executeRequest, error, data } = useRequest();
+
 let currentPage = 1;
 let total = ref<number>();
 let pageSize = ref(10);
@@ -194,16 +189,18 @@ function reset() {
                   <span class="text-sm">筛选：</span>
                   <div class="ml-2 mr-2 flex">
                     <input
+                    v-model="isTypeAllSelected"
+
                       type="checkbox"
-                      v-model="isTypeAllSelected"
                       @change="handleTypeSelectAll"
                     />
                     &nbsp;全选
                   </div>
                   <div
-                    class="ml-2 mr-2 flex"
-                    v-for="item in authorityList"
+                  v-for="item in authorityList"
                     :key="item"
+                    class="ml-2 mr-2 flex"
+
                   >
                     <input
                       type="checkbox"
@@ -218,9 +215,10 @@ function reset() {
                     <span class="text-sm">姓名：</span>
                     <div class="search_input_box">
                       <input
+                      v-model="content"
+
                         placeholder="请输入姓名"
                         class="search_input"
-                        v-model="content"
                         @keydown.enter="getUserList()"
                       />
                     </div>
@@ -238,7 +236,7 @@ function reset() {
               <Table id="tb">
                 <TableHeader>
                   <TableRow>
-                    <TableHead class="hidden md:table-cell" id="th"
+                    <TableHead id="th" class="hidden md:table-cell"
                       >学号</TableHead
                     >
                     <TableHead class="hidden md:table-cell">姓名</TableHead>
@@ -264,9 +262,10 @@ function reset() {
                     </TableCell>
                     <TableCell class="hidden md:table-cell">
                       <Badge
-                        :class="authority"
-                        v-for="authority in item.authority"
+                      v-for="authority in item.authority"
                         :key="authority"
+                        :class="authority"
+
                         variant="outline"
                         >{{ authorityTransformer(authority) }}
                       </Badge>
@@ -306,8 +305,9 @@ function reset() {
                                 <TableRow>
                                   <TableHead>
                                     <input
+                                    v-model="isAllSelected"
+
                                       type="checkbox"
-                                      v-model="isAllSelected"
                                       @change="handleSelectAll"
                                     />
                                   </TableHead>
@@ -353,8 +353,8 @@ function reset() {
             <CardFooter class="justify-end p-0">
               <div class="pageBox pagination-container">
                 <Pagination
-                  :totalItems="total"
-                  :pageSize="pageSize"
+                  :total-items="total"
+                  :page-size="pageSize"
                   @update:page="handlePageChange"
                 >
                 </Pagination>
