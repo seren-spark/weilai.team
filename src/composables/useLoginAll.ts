@@ -33,7 +33,6 @@ interface Data {
 // 获取用户信息
 
 export default function () {
-  const passed = ref(false);
   const router = useRouter();
   // 登录
   function getLogin(
@@ -58,12 +57,12 @@ export default function () {
           setLocalStorageWithExpire("token", resData.token, 1000 * 60 * 60);
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
           showAlert("登录成功！", "pass");
-          let res = await apiClient({
+          const res = await apiClient({
             url: `/user/getUserInfoByUserId/${resData.userId}`,
             method: "get",
           });
 
-          let headPortrait = res.data.headPortrait;
+          const headPortrait = res.data.headPortrait;
           userstore.setUserInfo(Number(resData.userId), headPortrait);
 
           router.push("/");
@@ -98,7 +97,6 @@ export default function () {
     };
     const { data } = useRequest<ApiResponseData<EmailResponse>>(useGetCodeAx);
     watch(data, () => {
-      console.log(data);
       const res = data.value as EmailResponse;
       if (res.code == 1007) {
         showAlert("验证码发送成功", "pass");
@@ -143,7 +141,6 @@ export default function () {
     const logoutAx = () => apiClient.delete("/index/logout");
     const { data } = useRequest(logoutAx);
     watch(data, () => {
-      console.log(data);
       const res = data.value as Data;
       if (res.code == 200) {
         showAlert("退出登录成功", "pass");

@@ -5,19 +5,44 @@ import RadarChart from "./RadarChart.vue";
 import SalaryStatistics from "./SalaryStatistics.vue";
 // import MapDistribution from "./MapDistribution.vue";
 import chinaMap from "./chinaMap.vue";
+
+import UseOverview from "@/features/admin/composables/useOverview";
+const { profile } = UseOverview();
+console.log(profile);
 </script>
 
 <template>
   <div class="profile-container">
     <div class="profile">
-      <AllSum />
+      <AllSum
+        :all-team-user-count="profile?.allTeamUserCount"
+        :salary-year-all="profile?.salaryYearAll"
+        :lan-qiao-count="profile?.lanQiaoCount"
+        :copyright-count="profile?.copyrightCount"
+      />
       <div class="profileRight">
-        <SplitEnds />
-        <RadarChart />
+        <SplitEnds
+          :java-current="profile?.javaCurrent"
+          :html-current="profile?.htmlCurrent"
+          :exam-current="profile?.examCurrent"
+          :work-current="profile?.workCurrent"
+        />
+        <RadarChart
+          :user-count="profile?.userCount"
+          :post-b="profile?.postB"
+          :post-g="profile?.postG"
+          :post-j="profile?.postJ"
+          :post-t="profile?.postT"
+        />
       </div>
     </div>
     <div class="SalaryStatistics">
-      <SalaryStatistics />
+      <SalaryStatistics
+        :java-all="profile?.javaAll"
+        :html-all="profile?.htmlAll"
+        :html-per="profile?.htmlPer"
+        :java-per="profile?.javaPer"
+      />
     </div>
     <div class="map">
       <!-- <MapDistribution /> -->

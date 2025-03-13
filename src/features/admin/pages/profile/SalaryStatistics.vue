@@ -2,6 +2,8 @@
 import HorizontalBar from "./salary/HorizontalBar.vue";
 import MultipeBar from "./salary/MultipeBar.vue";
 import AreaChart from "./salary/AreaChartBar.vue";
+
+
 </script>
 <template>
   <div class="statistics">
