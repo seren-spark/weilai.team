@@ -66,8 +66,8 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "名字至少需要2个字符" }),
   studyId: z
     .string()
-    .min(1, { message: "学号格式错误" })
-    .max(5, { message: "学号格式错误" }),
+    .min(11, { message: "学号格式错误" })
+    .max(11, { message: "学号格式错误" }),
   email: z.string().email({ message: "邮箱格式错误" }),
 
   clazz: z.string().regex(/^[\u4e00-\u9fa5]{2}\d{3}$/, {

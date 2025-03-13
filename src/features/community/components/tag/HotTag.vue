@@ -8,6 +8,7 @@ import NoData from "@/components/loading/NoData.vue";
 const tagStore = useTagStore();
 const tagType = tagStore.tagType.tagType;
 const { hotTagList, getRecommendTag } = CommunityTag();
+console.log(hotTagList);
 getRecommendTag();
 </script>
 
