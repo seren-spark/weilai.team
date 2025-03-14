@@ -51,7 +51,6 @@ export default function () {
     function getHotTagList() {
         typeData.value = tagStore.tagType;
         type.value = typeData.value.type;
-        console.log(typeData.value.type);
         if (type.value == 0) {
             type.value = "";
         }
