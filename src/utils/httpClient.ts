@@ -1,4 +1,4 @@
-import type { AxiosRequestConfig, AxiosResponse,InternalAxiosRequestConfig } from "axios";
+import type { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import axios from "axios";
 import { useRequest } from "vue-request";
 import { ref } from "vue";
@@ -12,10 +12,9 @@ const axiosInstance = axios.create({
 // 添加请求拦截器
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // console.log("请求拦截器", config.url);
     const token = localStorage.getItem("token");
     if (token) {
-       const Token=JSON.parse(token).value;
+      const Token = JSON.parse(token).value;
       config.headers.Authorization = `Bearer ${Token}`;
     }
     return config;
@@ -28,7 +27,6 @@ axiosInstance.interceptors.request.use(
 // 添加响应拦截器
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    // console.log("响应拦截器", response);
     return response;
   },
   (error) => {
@@ -42,10 +40,13 @@ export function useApiRequest<T>(config: AxiosRequestConfig) {
   const loading = ref(false);
 
   const { run } = useRequest(
-    async () => {
+    async (dynamicConfig?: Partial<AxiosRequestConfig>) => {
       loading.value = true;
       try {
-        const response = await axiosInstance.request<T>(config);
+        const response = await axiosInstance.request<T>({
+          ...config,
+          ...dynamicConfig,
+        });
         data.value = response.data;
       } catch (err) {
         error.value = err as Error;
@@ -65,17 +66,18 @@ export function useApiRequest<T>(config: AxiosRequestConfig) {
     fetchData: run,
   };
 }
-export const apis={
-    addUserLifePhotos:{
-        url:"/user/addUserLifePhoto",
-        method:"POST"
-    },
-    deleteUserLifePhotos:{
-        url:"/user/deleteUserLifePhoto",
-        method:"DELETE"
-    },
-    getUserLifePhotos:{
-        url:"/user/getUserLifePhotoByUserId/{userId}",
-        method:"GET"
-    },
-}
+
+export const apis = {
+  addUserLifePhotos: {
+    url: "/user/addUserLifePhoto",
+    method: "POST",
+  },
+  deleteUserLifePhotos: {
+    url: "/user/deleteUserLifePhoto",
+    method: "DELETE",
+  },
+  getUserLifePhotos: {
+    url: "/user/getUserLifePhotoByUserId/{userId}",
+    method: "GET",
+  },
+};

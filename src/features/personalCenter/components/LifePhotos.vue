@@ -13,7 +13,11 @@
         :src="image"
         alt=""
         class="image"
-        :class="{ 'delete-mode': deleteMode, 'selected': selectedImage === image, 'shake': deleteMode }"
+        :class="{
+          'delete-mode': deleteMode,
+          selected: selectedImage === image,
+          shake: deleteMode,
+        }"
         @click="deleteMode && selectImage(image)"
       />
       <div v-if="images.length > 0" class="image-action">
@@ -48,14 +52,15 @@
 import { NewNoData } from "@/components/recruitment";
 import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/store/userStore";
-import { useApiRequest, apis } from "./httpClient";
+import { useApiRequest, apis } from "@/utils/httpClient";
 import type { ApiResponseData } from "@/types/api-response";
 import { hash } from "@/utils/createHashString";
 import GlobalLoading from "@/components/loading/global-loading.vue";
 import PictureFileUpload from "./picture-file-upload.vue";
 import { useAlert } from "@/composables/useAlert";
 const { showAlert } = useAlert();
-import {showConfirm} from "@/composables/useConfirm";
+import { showConfirm } from "@/composables/useConfirm";
+
 // 图片展示开始
 const {
   data: imagesShowData,
@@ -84,7 +89,6 @@ watch([imagesShowData, getPhotoListError], ([newData, newError]) => {
 });
 // 图片展示结束
 
-const PhotosData = ref<FormData | null>(null);
 const {
   data: addPhotoData,
   error: addPhotoError,
@@ -96,17 +100,16 @@ const {
   headers: {
     "Content-Type": "multipart/form-data",
   },
-  data: PhotosData.value,
 });
 
 const imagesHandle = (files: FileList) => {
-  console.log(files);
-  const formData = new FormData();
- for (let i = 0; i < files.length; i++) {
-    formData.append("lifePhoto",files[i]);
+  const form = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    form.append("lifePhoto", files[i]);
   }
-  PhotosData.value = formData;
-  uploadPhotos();
+  uploadPhotos({
+    data: form,
+  });
 };
 
 watch([addPhotoData, addPhotoError], ([newData, newError]) => {
@@ -121,55 +124,52 @@ watch([addPhotoData, addPhotoError], ([newData, newError]) => {
 });
 
 const deleteMode = ref(false);
-const selectedImage = ref<string | null>(null);
+const selectedImage = ref<string>("");
 
 const toggleDeleteMode = () => {
   deleteMode.value = !deleteMode.value;
-  selectedImage.value = null;
+  selectedImage.value = "";
 };
+
 const {
-  data:deleteData,
-  error:deleteError,
-  fetchData:deletePhoto
-}=useApiRequest<ApiResponseData<string>>({
-  url:apis.deleteUserLifePhotos.url,
-  method:apis.deleteUserLifePhotos.method,
-  headers:{
-    "Content-Type":"application/json",
-  },
-  params:{
-    url:selectedImage.value,
+  data: deleteData,
+  error: deleteError,
+  fetchData: deletePhoto,
+} = useApiRequest<ApiResponseData<string>>({
+  url: apis.deleteUserLifePhotos.url,
+  method: apis.deleteUserLifePhotos.method,
+  headers: {
+    "Content-Type": "application/json",
   },
 });
 
 const selectImage = (image: string) => {
-  selectedImage.value = image;
   showConfirm({
     title: "系统提示",
     content: "确定删除这张照片吗？",
-
   })
-  // 删除图片
-  .then(() => {
-    deletePhoto();
-  })
-  // 删除图片后，退出删除模式
-  deleteMode.value = false;
-  selectedImage.value = null;
-
+    .then(() => {
+      selectedImage.value = image;
+      deletePhoto({ params: { url: selectedImage.value } });
+    })
+    // 删除图片后，退出删除模式
+    .finally(() => {
+      deleteMode.value = false;
+      selectedImage.value = "";
+    });
 };
 
 watch([deleteData, deleteError], ([newData, newError]) => {
-  console.log(deleteData);
   if (newData?.code === 200) {
     getPhotoList();
     showAlert("删除成功", "pass");
+  } else {
+    showAlert(newData?.message ?? "删除失败", "waring");
   }
   if (newError) {
     showAlert(newError?.message || "删除失败", "error");
   }
 });
-
 
 onBeforeMount(() => {
   console.clear();
@@ -232,17 +232,39 @@ onMounted(() => {
 }
 
 @keyframes shake {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(-2deg); }
-  20% { transform: rotate(2deg); }
-  30% { transform: rotate(-2deg); }
-  40% { transform: rotate(2deg); }
-  50% { transform: rotate(-2deg); }
-  60% { transform: rotate(2deg); }
-  70% { transform: rotate(-2deg); }
-  80% { transform: rotate(2deg); }
-  90% { transform: rotate(-2deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(-2deg);
+  }
+  20% {
+    transform: rotate(2deg);
+  }
+  30% {
+    transform: rotate(-2deg);
+  }
+  40% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(-2deg);
+  }
+  60% {
+    transform: rotate(2deg);
+  }
+  70% {
+    transform: rotate(-2deg);
+  }
+  80% {
+    transform: rotate(2deg);
+  }
+  90% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 .image-action {
   display: flex;
