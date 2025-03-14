@@ -1,9 +1,9 @@
-import { watch, defineProps } from "vue";
+import { reactive, watch } from "vue";
 import { useAlert } from "@/composables/useAlert";
 const { showAlert } = useAlert();
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 import axios from "axios";
-import SparkMD5 from "spark-md5";
+
 // 假设以下是你的 API 请求函数
 import {
   initUpload,
@@ -14,18 +14,19 @@ import {
 // 假设这是你的文件后缀类型工具函数
 import { fileSuffixTypeUtil } from "@/utils/fileUtils";
 import type {
-  checkResult,
   chunkList,
   file,
   mergeResponseData,
+  responseData,
 } from "@/types/file";
+
 //创建worker
 const worker = new Worker(new URL("@/worker/hash-worker.ts", import.meta.url), {
   type: "module",
 });
 
 const FILE_UPLOAD_ID_KEY = "file_upload_id";
-const chunkSize = 5 * 1024 * 1024; // 100kb
+const chunkSize = 5 * 1024 * 1024; // 5MB
 const percent = ref<number[]>([]);
 const FileStatus = {
   wait: "等待上传",
@@ -39,18 +40,19 @@ const FileStatus = {
 // 响应式数据
 const simultaneousUploads = ref(3);
 const uploadIdInfo = ref(null);
-const uploadFileList = ref<file[]>([]);
-const currentFileIndex = ref(0);
+const uploadFileList = reactive<file[]>([]);
+
+let currentFileIndex = 0;
 watch(
-  () => uploadFileList.value,
+  () => uploadFileList,
   () => {
-    console.log(uploadFileList.value);
+    console.log(uploadFileList);
   },
   { deep: true },
 );
 watch(
   () => percent.value,
-  (newVal) => {},
+  () => {},
   { deep: true },
 );
 // 初始化文件属性
@@ -62,87 +64,19 @@ const initFileProperties = (file: file) => {
 };
 
 // 处理文件列表变化
-function handleFileChange(event: any) {
-  if (event.target) {
-    const files = event.target.files;
+// 修改 handleFileChange 函数，添加 event 参数的类型声明
+function handleFileChange(event: InputEvent) {
+  const files = (event.target as HTMLInputElement)?.files;
+  if (files) {
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+      const file = files[i] as file;
       initFileProperties(file);
-      uploadFileList.value.push(file);
+      uploadFileList.push(file);
       percent.value.push(0);
     }
-    console.log("uploadFileList中添加文件", uploadFileList.value);
   }
+  console.log("文件列表变化", uploadFileList);
 }
-
-// 移除文件列表
-// const handleRemove = (file: any, fileList:file) => {
-//   uploadFileList.value = fileList;
-// };
-
-// 检查上传文件格式
-const beforeUploadVideo = (file: any) => {
-  let type = file.name.substring(file.name.lastIndexOf(".") + 1);
-  if (["mp4", "ogg", "flv", "avi", "wmv", "rmvb"].indexOf(type) === -1) {
-    showAlert("请上传正确的视频格式", "error");
-    return false;
-  }
-  return true;
-};
-
-// 获取新文件名
-const getNewFileName = (file: any, md5: string) => {
-  return new Date().getTime() + file.name;
-  // return md5 + "-" + file.name;
-};
-
-// 分片读取文件获取文件的 MD5
-const getFileMd5 = (file: File) => {
-  return new Promise((resolve) => {
-    const blobSlice =
-      file.slice || (file as any).mozSlice || (file as any).webkitSlice;
-    const fileReader = new FileReader();
-    console.log(file);
-
-    const totalChunks = Math.ceil(file.size / chunkSize);
-    let currentChunk = 0;
-    const spark = new SparkMD5.ArrayBuffer();
-    console.log("总分片数：" + totalChunks);
-    const loadNext = () => {
-      const start = currentChunk * chunkSize;
-      const end =
-        start + chunkSize >= file.size ? file.size : start + chunkSize;
-      fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
-    };
-
-    fileReader.onload = (e) => {
-      if (e.target?.result) {
-        try {
-          // 检查 e.target.result 是否为 ArrayBuffer 类型
-          if (e.target.result instanceof ArrayBuffer) {
-            spark.append(e.target.result);
-          } else {
-            console.error("读取结果不是 ArrayBuffer 类型");
-          }
-        } catch (error) {
-          console.log("获取Md5错误：" + currentChunk);
-        }
-      }
-      if (currentChunk < totalChunks) {
-        currentChunk++;
-        loadNext();
-      } else {
-        resolve({ md5: spark.end(), totalChunks });
-      }
-    };
-
-    fileReader.onerror = () => {
-      console.warn("读取Md5失败，文件读取错误");
-    };
-
-    loadNext();
-  });
-};
 
 // 文件分片
 const createFileChunk = (file: File, size = chunkSize) => {
@@ -152,16 +86,16 @@ const createFileChunk = (file: File, size = chunkSize) => {
     fileChunkList.push({
       file: file.slice(count, count + size),
     });
-    console.log("文件分片", file.slice(count, count + size));
     count += size;
   }
   return fileChunkList;
 };
 
 // 处理即将上传的分片列表，判断是否有已上传的分片，有则从列表中删除
+// chunkList是即将上传的分片列表
 const processUploadChunkList = (chunkList: any) => {
-  const currentFile = uploadFileList.value[currentFileIndex.value];
-  let chunkUploadedList = currentFile.chunkUploadedList;
+  const currentFile = uploadFileList[currentFileIndex];
+  const chunkUploadedList = currentFile.chunkUploadedList;
   if (
     chunkUploadedList === undefined ||
     chunkUploadedList === null ||
@@ -181,15 +115,16 @@ const processUploadChunkList = (chunkList: any) => {
   return chunkList;
 };
 
-// 上传分片
+// 上传分片使用minio库
 const uploadChunkBase = (chunkList: chunkList[]) => {
+  let successCount = 0;
+  //chunkList是在进行删除过上传后的文件的剩余未上传的列表
+  const totalChunks = chunkList.length;
   return new Promise((resolve) => {
-    let successCount = 0;
-    let totalChunks = chunkList.length;
-
     const handler = () => {
       if (chunkList.length) {
-        const chunkItem = chunkList.shift() as chunkList;
+        const chunkItem = chunkList.shift() as chunkList; //拿出开头的分片
+        //向minio请求库发请求直接上传文件
         axios
           .put(chunkItem.uploadUrl, chunkItem.chunk.file, {
             onUploadProgress: checkChunkUploadProgress(chunkItem),
@@ -199,20 +134,14 @@ const uploadChunkBase = (chunkList: chunkList[]) => {
           })
           .then((response) => {
             if (response.status === 200) {
-              percent.value[currentFileIndex.value + 1] = 100;
+              percent.value[currentFileIndex + 1] = 100;
               console.log("分片：" + chunkItem.chunkNumber + " 上传成功");
               successCount++;
-              if (successCount >= totalChunks) {
-                resolve(true);
-              } else {
-                handler();
-              }
+              handler();
             } else {
               console.log(
                 "上传失败：" + response.status + "，" + response.statusText,
               );
-              chunkList.push(chunkItem);
-              handler();
             }
           })
           .catch((error) => {
@@ -223,6 +152,9 @@ const uploadChunkBase = (chunkList: chunkList[]) => {
             handler();
           });
       }
+      if (successCount >= totalChunks) {
+        resolve(true);
+      }
     };
 
     // 并发
@@ -232,7 +164,7 @@ const uploadChunkBase = (chunkList: chunkList[]) => {
   });
 };
 
-// 获取直接上传的 uri 链接
+// 获取直接上传的 url 链接
 const getFileUploadUrls = (fileParam: any) => {
   return initUpload(fileParam);
 };
@@ -242,21 +174,40 @@ const checkFileUploadedByMd5 = (md5: string) => {
   return checkUpload(md5);
 };
 
-// 合并文件
 const mergeFile = (fileParam: any) => {
-  return mergeUpload(fileParam);
+  return new Promise((resolve, reject) => {
+    mergeUpload(fileParam)
+      .then((response) => {
+        const data: responseData | null = response as mergeResponseData;
+        console.log("@@@", data);
+        if (!data || !data.data) {
+          resolve({ message: FileStatus.error } as responseData);
+        } else {
+          data.message = FileStatus.success;
+          resolve(data);
+        }
+      })
+      .catch((error) => {
+        resolve({ message: FileStatus.error } as responseData);
+      });
+  });
 };
-
 // 检查分片上传进度
 const checkChunkUploadProgress = (item: chunkList) => {
   return (p: any) => {
     item.progress = parseInt(String((p.loaded / p.total) * 100));
+    console.log(item.progress);
+    console.log(item);
+
     console.log(
       "检查分片上传进度：",
-      uploadFileList.value[currentFileIndex.value].uploadProgress,
+      uploadFileList[currentFileIndex].uploadProgress,
     );
-    (percent.value[currentFileIndex.value + 1] =
-      uploadFileList.value[currentFileIndex.value].uploadProgress),
+    console.log(uploadFileList[currentFileIndex].uploadProgress);
+    console.log(uploadFileList);
+
+    (percent.value[currentFileIndex + 1] =
+      uploadFileList[currentFileIndex].uploadProgress),
       updateChunkUploadStatus(item);
   };
 };
@@ -270,22 +221,23 @@ const updateChunkUploadStatus = (item: chunkList) => {
     progressStatus = "success";
   }
   let chunkIndex = item.chunkNumber - 1;
-  const currentFile = uploadFileList.value[currentFileIndex.value];
+  const currentFile = uploadFileList[currentFileIndex];
   let currentChunk = currentFile.chunkList[chunkIndex];
   currentChunk.status = status;
   console.log(
     "更新分片状态，正在上传",
-    uploadFileList.value[currentFileIndex.value].status,
+    uploadFileList[currentFileIndex].status,
   );
 
   currentChunk.progressStatus = progressStatus;
   currentFile.chunkList.splice(chunkIndex, 1, currentChunk);
   getCurrentFileProgress();
+  console.log(uploadFileList[currentFileIndex]);
 };
 
 // 获取当前文件上传进度
 const getCurrentFileProgress = () => {
-  const currentFile = uploadFileList.value[currentFileIndex.value];
+  const currentFile = uploadFileList[currentFileIndex];
   if (!currentFile || !currentFile.chunkList) {
     return;
   }
@@ -294,105 +246,65 @@ const getCurrentFileProgress = () => {
     .map((item) => item.chunk.file.size * item.progress)
     .reduce((acc, cur) => acc + cur);
   let progress = parseInt((uploadedSize / currentFile.size).toFixed(2));
-  currentFile.uploadProgress = progress;
-  uploadFileList.value.splice(currentFileIndex.value, 1, currentFile);
-};
 
-// 保存文件信息到数据库
-const saveFileInfoToDB = (
-  currentFile: File,
-  fileName: string,
-  url: string,
-  md5: string,
-) => {
-  let userInfoCache = JSON.parse(localStorage.getItem("userInfo") as any);
-  let VideoFileInfo = {
-    userId: userInfoCache.id,
-    fileRealName: currentFile.name,
-    fileName: fileName,
-    fileSize: currentFile.size,
-    fileMd5: md5,
-    fileAddress: url,
-    bucketName: "video",
-    fileType: "video",
-  };
-  console.log(VideoFileInfo);
-  uploadFileInfo(VideoFileInfo).then((res: any) => {
-    if (res.status === 200) {
-      console.log("文件信息存储成功");
-      if (uploadFileList.value.length > currentFileIndex.value) {
-        handler();
-      }
-    } else {
-      console.error("文件信息存储失败");
-    }
-  });
+  currentFile.uploadProgress = progress;
+  console.log("progress", progress);
+  uploadFileList[currentFileIndex] = currentFile;
+  console.log(uploadFileList[currentFileIndex].uploadProgress);
 };
 
 // 清空列表
 const clearFileHandler = () => {
-  uploadFileList.value = [];
+  uploadFileList.splice(0, uploadFileList.length);
   uploadIdInfo.value = null;
-  currentFileIndex.value = 0;
+  currentFileIndex = 0;
 };
 
 // 开始上传文件
 const handler = async () => {
-  console.log(uploadFileList.value, "上传文件列表");
-
-  if (uploadFileList.value.length === 0) {
+  if (uploadFileList.length === 0) {
     showAlert("请先选择文件", "waring");
     return;
   }
-  if (currentFileIndex.value >= uploadFileList.value.length) {
+  if (currentFileIndex >= uploadFileList.length) {
+    uploadFileList[currentFileIndex - 1].status = FileStatus.success;
     showAlert("文件上传成功", "pass");
-
     return;
   }
-  const currentFile = uploadFileList.value[currentFileIndex.value] as any;
-  // console.log("当前操作文件：", currentFile);
-
+  const currentFile = uploadFileList[currentFileIndex] as any;
+  console.log("当前操作文件：", currentFile);
+  debugger;
   currentFile.status = FileStatus.getMd5;
-  currentFile.chunkUploadedList = [];
-  console.log(
-    uploadFileList.value[currentFileIndex.value].status,
-    "正在上传md5666666",
-  );
+  currentFile.chunkUploadedList = []; //先将上传过的列表初始化为空
 
   try {
-    // let md5: string;
-    // const totalChunks: any;
     let checkResult: any;
-    worker.postMessage(currentFile);
-
+    worker.postMessage(currentFile); //向子线程发送文件信息
     worker.onmessage = async (e) => {
-      console.log("主线程消息", e);
-
+      //当主线程接收到消息后
       const { md5, totalChunks } = e.data;
       checkResult = await checkFileUploadedByMd5(md5);
-      // const { md5, totalChunks } = (await getFileMd5(currentFile)) as any;
-      // console.log("md5值", md5);
-      // const checkResult = await checkFileUploadedByMd5(md5);
       console.log("检查是否已上传-->", checkResult);
       if (checkResult.code == 3400) {
         return showAlert("该文件已存在", "waring");
       }
-      console.log("code", checkResult.code);
-
       if (checkResult.code == 200) {
+        debugger;
+        //文件已经存在的情况
         console.log("上传成功文件访问地址：" + checkResult.data.url);
         currentFile.status = FileStatus.success;
         currentFile.uploadProgress = 100;
-        currentFileIndex.value++;
+        currentFileIndex++;
         handler();
         return;
       } else if (checkResult.code === 3401) {
         console.log("上传中：", checkResult);
         currentFile.status = FileStatus.uploading;
         let chunkUploadedList = checkResult.data.chunkUploadedList;
-        console.log("chunkUploadedList", chunkUploadedList);
+
         currentFile.chunkUploadedList = chunkUploadedList;
-        console.log("成功上传的分片信息", chunkUploadedList);
+        console.log("已经上传过的上传的分片信息", chunkUploadedList);
+        debugger;
       } else {
         console.log("未上传");
       }
@@ -400,6 +312,9 @@ const handler = async () => {
       currentFile.status = FileStatus.chip;
       let fileChunks = createFileChunk(currentFile, chunkSize);
       let type = fileSuffixTypeUtil(currentFile.name);
+      console.log(chunkSize);
+      console.log(totalChunks, "totalChunks");
+      debugger;
 
       let param = {
         fileName: currentFile.name,
@@ -409,8 +324,10 @@ const handler = async () => {
         fileMd5: md5,
         contentType: "application/octet-stream",
         fileType: type,
-        chunkUploadedList: currentFile.chunkUploadedList,
+        chunkUploadedList: currentFile.chunkUploadedList, //已上传的分片索引+1
       };
+
+      console.log("传过去的数据", param);
 
       let uploadIdInfoResult = await getFileUploadUrls(param);
       let uploadIdInfoData = uploadIdInfoResult.data;
@@ -421,13 +338,18 @@ const handler = async () => {
 
       if (uploadUrls !== undefined) {
         if (fileChunks.length !== uploadUrls.length) {
+          console.log(fileChunks.length, uploadUrls.length);
+
           console.error("文件分片上传地址获取错误");
           return;
         }
       }
 
-      fileChunks.forEach((chunkItem, index) => {
+      fileChunks.map((chunkItem, index) => {
+        console.log("分片信息：", chunkItem);
+
         if (currentFile.chunkUploadedList.indexOf(index + 1) !== -1) {
+          //如果分片已经上传 则直接跳过
           currentFile.chunkList.push({
             chunkNumber: index + 1,
             chunk: chunkItem,
@@ -448,32 +370,29 @@ const handler = async () => {
       });
 
       console.log("所有分片信息：", currentFile.chunkList);
-      let tempFileChunks = [...currentFile.chunkList];
-      currentFile.status = FileStatus.uploading;
+      let tempFileChunks = [];
 
+      currentFile.chunkList.forEach((item) => {
+        tempFileChunks.push(item);
+      });
+      //更新状态
+      currentFile.status = FileStatus.uploading;
       tempFileChunks = processUploadChunkList(tempFileChunks);
       console.log("删除已上传的分片-->", tempFileChunks);
 
       await uploadChunkBase(tempFileChunks);
+
       console.log("---上传完成---");
 
       if (uploadIdInfoData.uploadId === "SingleFileUpload") {
         console.log("单文件上传");
         currentFile.status = FileStatus.success;
-        currentFileIndex.value++;
+        //文件下标偏移
+        currentFileIndex++;
+        //递归上传下一个文件
         handler();
       } else {
         console.log("合并文件-->", currentFile);
-        console.log({
-          uploadId: uploadIdInfoData.uploadId,
-          fileName: currentFile.name,
-          fileMd5: md5,
-          fileType: type,
-          chunkNum: uploadIdInfoData.urlList.length,
-          chunkSize: chunkSize,
-          fileSize: currentFile.size,
-        });
-
         const mergeResult = (await mergeFile({
           uploadId: uploadIdInfoData.uploadId,
           fileName: currentFile.name,
@@ -492,7 +411,7 @@ const handler = async () => {
           localStorage.removeItem(FILE_UPLOAD_ID_KEY);
           currentFile.status = FileStatus.success;
           console.log("文件访问地址：", mergeResult.data);
-          currentFileIndex.value++;
+          currentFileIndex++;
           handler();
         }
       }
@@ -544,7 +463,6 @@ function transformByte(size: number) {
 }
 export {
   handleFileChange,
-  beforeUploadVideo,
   clearFileHandler,
   handler,
   uploadFileList,

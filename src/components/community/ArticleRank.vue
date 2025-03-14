@@ -38,7 +38,7 @@
           <Skeleton class="h-[30px] w-full" />
         </li>
       </ul>
-      <div v-else="!loading && !articleList.length">
+      <div v-else-if="!loading ">
         <NoData />
       </div>
     </div>
@@ -46,9 +46,8 @@
 </template>
 
 <script setup lang="ts">
-import apiClient from "@/api/axios";
 import { Skeleton } from "@/components/ui/skeleton";
-// @ts-ignore
+// @ts-expect-error:this url is not find
 import NoData from "@/components/loading/NoData.vue";
 import {
   Tooltip,
@@ -57,10 +56,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// import { getArticle } from "@/features/community/composables/search";
 import { getArticle2 } from "@/features/community/composables/search";
 import { useTagStore } from "@/store/tagTypeStore";
-import type { ArticleList, Data } from "@/types/Community";
+import type { ArticleList, Data } from "@/types/community";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";
 

@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import TagRightBar from "@/features/community/components/tag/TagRightBar.vue";
 import TagSuggest from "@/features/community/components/tag/TagSuggest.vue";
-import NewsContent from "@/features/community/components/NewsContent.vue";
+import NewsContent from "@/features/community/components/News.vue";
 import CommunityTag from "@/features/community/composables/CommunityTag";
-import { ref, watch } from "vue";
-import { useRoute } from "vue-router";
-
-const route = useRoute();
+import { watch } from "vue";
 
 const { tagPostList, getPostList } = CommunityTag();
 const props = defineProps({
@@ -15,12 +12,8 @@ const props = defineProps({
     default: "",
   },
 });
+
 function getTag() {
-  // if ("tag" in route.params) {
-  //     tag.value = route.params.tag as string;
-  // } else {
-  //     tag.value = "";
-  // }
   getPostList(props.tag);
 }
 getTag();
@@ -32,14 +25,11 @@ watch(props, (newVal) => {
 
 <template>
   <div class="tag-container">
-    <!-- <div>标签</div> -->
-    <!-- <tag-word-cloud></tag-word-cloud> -->
     <div class="all-article">
       <NewsContent :tagPostList="tagPostList" :isTag="true" />
     </div>
     <div class="right-bar">
       <tag-suggest style="margin: 0 0 30px 0"></tag-suggest>
-      <!-- <HotTag style="width: 350px;"></HotTag> -->
       <tag-right-bar></tag-right-bar>
     </div>
   </div>
@@ -47,7 +37,7 @@ watch(props, (newVal) => {
 
 <style scoped lang="scss">
 .tag-container {
-  margin-top: 110px;
+  margin-top: 5rem;
   display: flex;
 
   .all-article {

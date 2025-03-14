@@ -4,3 +4,4 @@ export { default as UpdateApplyUserInfo } from "./UpdateApplyUserInfo.vue";
 export { default as ArrangeInterviewer } from "./ArrangeInterviewer.vue";
 export { default as InterviewEvaluationShow } from "./InterviewEvaluationShow.vue";
 export { default as WriteInterviewEvaluation } from "./WriteInterviewEvaluation.vue";
+export { default as NewNoData} from "./NewNoData.vue";

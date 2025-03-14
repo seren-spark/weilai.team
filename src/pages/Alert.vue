@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, BadgeCheck, BadgeAlert, BadgeX } from "lucide-vue-next";
-import { defineProps, computed, ref, watch } from "vue";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { BadgeCheck, BadgeAlert, BadgeX } from "lucide-vue-next";
+import { defineProps, computed } from "vue";
 
 // message:提示框内的内容
 // type:提示框类型  { error:错误提示框, waring:警告提示框, pass:成功提示框  }
@@ -23,19 +23,23 @@ const icon = computed(() => {
       return BadgeAlert;
     case "error":
       return BadgeX;
+    default:
+      return null;
   }
 });
 
-const variantClass = computed(() => {
-  switch (propsData.type) {
-    case "pass":
-      return "pass";
-    case "waring":
-      return "waring";
-    case "error":
-      return "error";
-  }
-});
+// const variantClass = computed(() => {
+//   switch (propsData.type) {
+//     case "pass":
+//       return "pass";
+//     case "waring":
+//       return "waring";
+//     case "error":
+//       return "error";
+//     default:
+//       return null;
+//   }
+// });
 </script>
 
 <template>

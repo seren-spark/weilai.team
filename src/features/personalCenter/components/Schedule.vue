@@ -1,6 +1,6 @@
 <template>
   <div class="mySchedule">
-    <Dialog v-if="userStore.isSelf">
+    <Dialog v-if="userStore.isSelf" v-model:open="open">
       <DialogTrigger as-child>
         <Button
           variant="outline"
@@ -15,7 +15,7 @@
         <DialogHeader>
           <DialogTitle>添加课程</DialogTitle>
           <DialogDescription>
-            在这里添加您的课程，完成之后点击保存即可
+            在这里上传您的课程，完成之后点击保存即可
           </DialogDescription>
         </DialogHeader>
         <form @submit="onSubmit">
@@ -60,46 +60,12 @@
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem
-                      value="0"
+                      v-for="(item, index) in weekTimeArray"
+                      :key="index"
+                      :value="String(index)"
                       class="cursor-pointer hover:bg-gray-100"
                     >
-                      周一
-                    </SelectItem>
-                    <SelectItem
-                      value="1"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      周二
-                    </SelectItem>
-                    <SelectItem
-                      value="2"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      周三
-                    </SelectItem>
-                    <SelectItem
-                      value="3"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      周四
-                    </SelectItem>
-                    <SelectItem
-                      value="4"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      周五
-                    </SelectItem>
-                    <SelectItem
-                      value="5"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      周六
-                    </SelectItem>
-                    <SelectItem
-                      value="6"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      周日
+                      {{ item }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>
@@ -111,7 +77,6 @@
           <FormField v-slot="{ componentField }" name="courseTime">
             <FormItem>
               <FormLabel>上课时间</FormLabel>
-
               <Select v-bind="componentField">
                 <FormControl>
                   <SelectTrigger>
@@ -121,34 +86,12 @@
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem
-                      value="1-2"
+                      v-for="(item, index) in courseTimeArray"
+                      :key="index"
+                      :value="item"
                       class="cursor-pointer hover:bg-gray-100"
                     >
-                      1-2节
-                    </SelectItem>
-                    <SelectItem
-                      value="3-4"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      3-4节
-                    </SelectItem>
-                    <SelectItem
-                      value="5-6"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      5-6节
-                    </SelectItem>
-                    <SelectItem
-                      value="7-8"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      7-8节
-                    </SelectItem>
-                    <SelectItem
-                      value="9-10"
-                      class="cursor-pointer hover:bg-gray-100"
-                    >
-                      9-10节
+                      {{ item }}节
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>
@@ -204,8 +147,8 @@
             {{ dayTransformer(index) }}
           </TableCell>
           <TableCell
-            v-for="(item, index) in day"
-            :key="index"
+            v-for="(item, itemIndex) in day"
+            :key="itemIndex"
             class="p-2 border-[1px] border-black"
           >
             <template v-if="item">
@@ -222,168 +165,22 @@
                   <DropdownMenuContent class="bg-white">
                     <DropdownMenuItem class="text-gray-500 cursor-pointer">
                       <Icon icon="material-symbols:delete-outline" />
-                      <span @click="deleteCourse" :data-id="item.oneCourseId">
+                      <span :data-id="item.oneCourseId" @click="deleteCourse">
                         删除课程
                       </span>
                     </DropdownMenuItem>
-                    <DialogTrigger as-child>
-                      <DropdownMenuItem class="text-gray-500 cursor-pointer">
-                        <Icon icon="jam:write" />
-                        <span>修改课程</span>
-                      </DropdownMenuItem>
-                    </DialogTrigger>
+                    <DropdownMenuItem
+                      class="text-gray-500 cursor-pointer"
+                      @click="
+                        showDialog();
+                        initForm(item, index);
+                      "
+                    >
+                      <Icon icon="jam:write" />
+                      <span>修改课程</span>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <DialogContent
-                  class="sm:max-w-[425px] bg-white max-h-[500px] overflow-y-auto"
-                >
-                  <DialogClose id="dialogClose"></DialogClose>
-
-                  <DialogHeader>
-                    <DialogTitle>修改课程</DialogTitle>
-                    <DialogDescription>
-                      在这里修改您的课程，完成之后点击保存即可
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div class="grid gap-4 py-4">
-                    <div class="grid grid-cols-4 items-center gap-4">
-                      <Label for="courseName" class="text-right">
-                        课程名称
-                      </Label>
-                      <Input
-                        id="courseName"
-                        class="col-span-3"
-                        :default-value="item.courseName"
-                      />
-                    </div>
-                    <div class="grid grid-cols-4 items-center gap-4">
-                      <Label for="weeks" class="text-right"> 课程周数 </Label>
-                      <Input
-                        id="weeks"
-                        class="col-span-3"
-                        :default-value="item.weeks"
-                      />
-                    </div>
-                    <div class="grid grid-cols-4 items-center gap-4">
-                      <Label for="weekTime" class="text-right">
-                        课程日期
-                      </Label>
-                      <Select :default-value="index" id="weekTime">
-                        <SelectTrigger class="col-span-3">
-                          <SelectValue placeholder="选择日期" />
-                        </SelectTrigger>
-                        <SelectContent class="bg-white">
-                          <SelectGroup>
-                            <SelectItem
-                              value="0"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              周一
-                            </SelectItem>
-                            <SelectItem
-                              value="1"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              周二
-                            </SelectItem>
-                            <SelectItem
-                              value="2"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              周三
-                            </SelectItem>
-                            <SelectItem
-                              value="3"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              周四
-                            </SelectItem>
-                            <SelectItem
-                              value="4"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              周五
-                            </SelectItem>
-                            <SelectItem
-                              value="5"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              周六
-                            </SelectItem>
-                            <SelectItem
-                              value="6"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              周日
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div class="grid grid-cols-4 items-center gap-4">
-                      <Label for="courseTime" class="text-right">
-                        上课时间
-                      </Label>
-                      <Select :default-value="item.courseTime" id="courseTime">
-                        <SelectTrigger class="col-span-3">
-                          <SelectValue placeholder="选择时间" />
-                        </SelectTrigger>
-                        <SelectContent class="bg-white">
-                          <SelectGroup>
-                            <SelectItem
-                              value="1-2"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              1-2节
-                            </SelectItem>
-                            <SelectItem
-                              value="3-4"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              3-4节
-                            </SelectItem>
-                            <SelectItem
-                              value="5-6"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              5-6节
-                            </SelectItem>
-                            <SelectItem
-                              value="7-8"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              7-8节
-                            </SelectItem>
-                            <SelectItem
-                              value="9-10"
-                              class="cursor-pointer hover:bg-gray-100"
-                            >
-                              9-10节
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div class="grid grid-cols-4 items-center gap-4">
-                      <Label for="coursePlace" class="text-right">
-                        上课地点
-                      </Label>
-                      <Input
-                        id="coursePlace"
-                        class="col-span-3"
-                        :default-value="item.coursePlace"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      type="submit"
-                      @click="submitChangeForm(item.oneCourseId)"
-                    >
-                      保存
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
               </Dialog>
             </template>
           </TableCell>
@@ -398,7 +195,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -406,42 +202,32 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import Button from "@/components/ui/button/Button.vue";
 
 import { useRequest } from "@/composables/useRequest";
-const { data, error, loading, executeRequest } = useRequest();
 import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
-const { getLocalStorageWithExpire, setLocalStorageWithExpire } =
-  useLocalStorageWithExpire();
 
-import { reactive, watch, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import { useUserStore } from "@/store/userStore";
 
 import { showConfirm } from "@/composables/useConfirm";
@@ -459,6 +245,26 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useAlert } from "@/composables/useAlert";
+const open = ref(false);
+watch(
+  () => open,
+  () => {
+    if (!open.value) {
+      isAddForm.value = true;
+      oneCourseId.value = 0;
+      form.reset();
+    }
+  },
+);
+const showDialog = () => {
+  open.value = true;
+};
+
+const weekTimeArray = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+const courseTimeArray = ["1-2", "3-4", "5-6", "7-8", "9-10"];
+
+const { data, executeRequest } = useRequest();
+const { getLocalStorageWithExpire } = useLocalStorageWithExpire();
 const { showAlert } = useAlert();
 
 const userStore = useUserStore();
@@ -470,7 +276,20 @@ if (userStore.isSelf) {
 } else {
   userId = userStore.userId;
 }
-
+watch(
+  () => userStore,
+  () => {
+    if (userStore.isSelf) {
+      userId = getLocalStorageWithExpire("userId");
+    } else {
+      userId = userStore.userId;
+    }
+    getSchedule();
+  },
+  {
+    deep: true,
+  },
+);
 let courseList = reactive({});
 
 async function getSchedule() {
@@ -505,107 +324,75 @@ function deleteCourse(e) {
       console.log("取消删除");
     });
 }
+const isAddForm = ref(true);
+const oneCourseId = ref(0);
+const initForm = (item, weekTime) => {
+  console.log("修改课程", item, weekTime);
 
-let weeks = ref("");
-let weekTime = ref("");
-let courseName = ref("");
-let courseTime = ref("");
-let coursePlace = ref("");
-// async function submitAddForm() {
-//   console.log(
-//     weeks.value,
-//     weekTime.value,
-//     courseName.value,
-//     courseTime.value,
-//     coursePlace.value,
-//   );
-//   const dataToSend = {
-//     weeks: weeks.value,
-//     weekTime: Number(weekTime.value),
-//     courseName: courseName.value,
-//     courseTime: courseTime.value,
-//     coursePlace: coursePlace.value,
-//   };
-//   await executeRequest({
-//     url: "/user/addUserCourse",
-//     method: "post",
-//     requestData: dataToSend,
-//   });
-//   weeks.value = "";
-//   weekTime.value = "";
-//   courseName.value = "";
-//   courseTime.value = "";
-//   coursePlace.value = "";
-//   document.getElementById("dialogClose").click();
-//   if (data.value.code === 200) {
-//     console.log(data.value);
-//   }
-//   console.log(error.value);
-//   getSchedule();
-// }
+  oneCourseId.value = item.oneCourseId;
+  isAddForm.value = false;
+  form.resetForm({
+    values: {
+      coursePlace: item.coursePlace,
+      courseTime: item.courseTime,
+      weekTime: weekTime,
+      weeks: item.weeks,
+      courseName: item.courseName,
+    },
+  });
+};
 const formSchema = toTypedSchema(
   z.object({
     coursePlace: z
       .string({ required_error: "请填写上课地点" })
-      .max(10, "上课地点不能超过10个字"),
+      .max(10, "上课地点不能超过10个字")
+      .min(2, "上课地点不能少于2个字"),
     courseTime: z.string(),
     weekTime: z.string(),
     weeks: z
       .string({ required_error: "请填写课程周数" })
-      .max(10, "课程周数不能超过10个字"),
+      .max(10, "课程周数不能超过10个字")
+      .min(2, "课程周数不能少于2个字"),
     courseName: z
       .string({ required_error: "请填写课程名称" })
-      .max(10, "课程名称不能超过10个字"),
+      .max(10, "课程名称不能超过10个字")
+      .min(2, "课程名称不能少于2个字"),
   }),
 );
+
 const form = useForm({
   validationSchema: formSchema,
 });
+
 const onSubmit = form.handleSubmit((values) => {
-  console.log("修改信息表单提交成功!", values);
+  if (isAddForm.value) {
+    executeRequest({
+      url: `/user/addUserCourse`,
+      method: "post",
+      requestData: values,
+    }).then(() => {
+      console.log("上传成功：", data.value);
+      showAlert("上传成功", "pass");
+      getSchedule();
+    });
+  } else {
+    values.oneCourseId = oneCourseId.value;
+    console.log("修改信息表单", values);
+    executeRequest({
+      url: `/user/updateUserCourse`,
+      method: "put",
+      requestData: values,
+    }).then(() => {
+      console.log("修改成功：", data.value);
+      showAlert("修改成功", "pass");
+      getSchedule();
+    });
+  }
+  open.value = false;
+  form.reset();
+  isAddForm.value = true;
+  oneCourseId.value = 0;
 });
-let changeCourseName = ref("");
-let changeCourseTime = ref("");
-let changeWeeks = ref("");
-let changeCoursePlace = ref("");
-let changeWeekTime = ref("");
-async function submitChangeForm(oneCourseId) {
-  //获取输入框
-  const courseNameInput = document.getElementById("courseName");
-  const courseTimeInput = document.getElementById("courseTime");
-  const weeksInput = document.getElementById("weeks");
-  const coursePlaceInput = document.getElementById("coursePlace");
-  const weekTimeInput = document.getElementById("weekTime");
-  //获取输入框的值
-  changeCourseName.value = courseNameInput.value;
-  changeCourseTime.value = courseTimeInput.value;
-  changeWeeks.value = weeksInput.value;
-  changeCoursePlace.value = coursePlaceInput.value;
-  changeWeekTime.value = weekTimeInput.value;
-  // 封装成对象
-  const dataToSend = {
-    courseName: changeCourseName.value,
-    courseTime: changeCourseTime.value,
-    weeks: changeWeeks.value,
-    coursePlace: changeCoursePlace.value,
-    weekTime: Number(changeWeekTime.value),
-    oneCourseId: oneCourseId,
-  };
-  document.getElementById("dialogClose").click();
-
-  console.log(dataToSend);
-  // 发送请求
-  await executeRequest({
-    url: "/user/updateUserCourse",
-    method: "put",
-    requestData: dataToSend,
-  });
-
-  console.log(data.value);
-
-  getSchedule();
-}
-
 function dayTransformer(day) {
   switch (day) {
     case "0":

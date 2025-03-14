@@ -17,7 +17,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import router from "@/router";
-import type { TeamInfo, TeamUserList } from "@/types/Contacts";
+import type { TeamInfo, TeamUserList } from "@/types/contacts";
 import { Icon } from "@iconify/vue";
 import { ChevronRight } from "lucide-vue-next";
 import { ref } from "vue";

@@ -122,7 +122,7 @@ const handleFont = async () => {
       </Button>
     </DialogTrigger>
     <DialogContent
-      class="max-w-full sm:max-w-[425px] md:max-w-[400px] lg:max-w-[380px] xl:max-w-[425px]"
+      class="max-w-full sm:max-w-[27rem] md:max-w-[27rem] lg:max-w-[26.75rem] xl:max-w-[27rem]"
     >
       <DialogHeader>
         <DialogTitle class="fontPassTitle">找回密码</DialogTitle>
@@ -204,13 +204,13 @@ const handleFont = async () => {
 
 .fontPassFormInp {
   position: relative;
-  left: -15px;
-  margin: 7px 0;
+  left: -0.9375rem;
+  margin: 0.4375rem 0;
 }
 
 .fontPassTitle {
-  font-size: 22px;
-  margin-bottom: 5px;
+  font-size: 1.375rem;
+  margin-bottom: 0.3125rem;
 }
 
 .fontBtn {
@@ -224,8 +224,8 @@ const handleFont = async () => {
 }
 
 .trueBtn {
-  width: 100px;
-  margin: 0 20px 20px 0;
+  width: 6.25rem;
+  margin: 0 1.25rem 1.25rem 0;
 }
 
 @keyframes slideIn {
@@ -234,15 +234,15 @@ const handleFont = async () => {
   }
 
   25% {
-    transform: translateX(-10px);
+    transform: translateX(-1.25rem);
   }
 
   50% {
-    transform: translateX(10px);
+    transform: translateX(1.25rem);
   }
 
   75% {
-    transform: translateX(-10px);
+    transform: translateX(-1.25rem);
   }
 
   100% {
@@ -251,43 +251,43 @@ const handleFont = async () => {
 }
 
 @media screen and (max-width: 1400px) {
-  .inpTit {
-    font-size: 14px;
-  }
+  //   .inpTit {
+  //     font-size: 14px;
+  //   }
 
-  .fontPassBtn {
-    font-size: 14px;
-  }
+  //   .fontPassBtn {
+  //     font-size: 14px;
+  //   }
 }
 
 @media screen and (max-width: 1200px) {
-  .inpTit {
-    font-size: 13px;
-  }
+  //   .inpTit {
+  //     font-size: 13px;
+  //   }
 
-  .fontPassBtn {
-    font-size: 12px;
-  }
+  //   .fontPassBtn {
+  //     font-size: 12px;
+  //   }
 }
 
 @media screen and (min-width: 1024px) {
 }
 
 @media screen and (max-width: 756px) {
-  .fontBtnOut {
-    align-items: end;
-  }
+  //   .fontBtnOut {
+  //     align-items: end;
+  //   }
 
-  .fontPassBtn {
-    font-size: 18px;
-  }
+  //   .fontPassBtn {
+  //     font-size: 18px;
+  //   }
 }
 
 @media screen and (max-width: 400px) {
-  .fontPassConcent {
-    .fontPassFormInp {
-      left: -32px;
-    }
-  }
+  //   .fontPassConcent {
+  //     .fontPassFormInp {
+  //       left: -32px;
+  //     }
+  //   }
 }
 </style>

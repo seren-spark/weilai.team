@@ -10,11 +10,13 @@
         <CarouselItem v-for="(item, index) in userInfo.lifePhoto" :key="index">
           <div class="p-1">
             <Card>
-              <CardContent class="flex items-center justify-center p-2">
+              <CardContent
+                class="flex items-center justify-center p-2 w-[100%] aspect-video"
+              >
                 <img
                   :src="item ? item : '/logo.png'"
                   alt="生活照片"
-                  class="w-[100%] h-[300px] object-cover"
+                  class="w-[100%] h-[100%] object-cover"
                 />
               </CardContent>
             </Card>
@@ -33,7 +35,7 @@
           :avatar="userInfo.headPortrait"
         />
         <div
-        v-if="userStore.isSelf"
+          v-if="userStore.isSelf"
           class="w-[100px] h-[100px] absolute -mt-[50px] mr-[20px] ml-[20px] rounded-full z-20 bg-black addAvatar"
         >
           <label for="avatar">
@@ -47,17 +49,17 @@
             </div>
           </label>
           <input
-            type="file"
             id="avatar"
-            @change="handleFileChange"
+            ref="avatarInput"
+            type="file"
             accept="image/*"
             style="display: none"
-            ref="avatarInput"
+            @change="handleFileChange"
           />
         </div>
         <Dialog v-if="userStore.isSelf">
           <DialogTrigger as-child>
-            <button class="hidden" ref="openAvatarDialog">
+            <button ref="openAvatarDialog" class="hidden">
               打开头像修改对话框
             </button>
           </DialogTrigger>
@@ -72,11 +74,11 @@
             <div class="flex flex-col items-center">
               <div></div>
 
-              <div class="flex items-center">
+              <div class="flex flex-col items-center md:flex-row">
                 <div class="flex flex-col items-center">
                   <vue-cropper
-                    class=""
                     ref="cropper"
+                    class=""
                     :src="imageUrl"
                     :aspect-ratio="1 / 1"
                     :auto-crop-area="1"
@@ -87,14 +89,14 @@
                   ></vue-cropper>
                   <div>
                     <button
-                      @click="cropImage"
                       class="mt-4 bg-blue-400 p-2 text-white rounded-lg"
+                      @click="cropImage"
                     >
                       裁剪图片
                     </button>
                   </div>
                 </div>
-                <div class="ml-2 flex flex-col items-center">
+                <div class="ml-2 flex flex-col items-center mt-4 md:mt-0">
                   <img
                     class="w-[200px] h-[200px] rounded-full border-2 border-blue-200"
                     :src="croppedImage"
@@ -104,9 +106,9 @@
               </div>
               <p v-if="uploadStatus">{{ uploadStatus }}</p>
               <button
-                @click="uploadFile"
                 :disabled="!croppedImage"
                 class="mt-4 bg-blue-400 p-2 text-white rounded-lg"
+                @click="uploadFile"
               >
                 保存
               </button>
@@ -117,13 +119,13 @@
           <p class="nameAndSex">
             {{ userInfo.name }}
             <Icon
-              style="display: inline-block"
               v-if="userInfo.sex == '男'"
+              style="display: inline-block"
               icon="fluent-emoji-flat:male-sign"
             />
             <Icon
-              style="display: inline-block"
               v-if="userInfo.sex == '女'"
+              style="display: inline-block"
               icon="fluent-emoji-flat:female-sign"
             />
           </p>
@@ -131,12 +133,13 @@
         </div>
       </div>
 
-      <div class="container-right" v-if="userStore.isSelf">
+      <div v-if="userStore.isSelf" class="container-right">
+        <!-- 修改信息对话框 -->
         <Dialog>
           <DialogTrigger as-child>
             <Button
               variant="outline"
-              class="bg-blue-100 text-blue-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-100"
+              class="bg-blue-100 text-blue-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-100 ml-2"
               @click="initForm"
             >
               修改信息
@@ -232,10 +235,10 @@
 
     <div class="moreInfoBox">
       <div class="arrowBox" @click="changeIsShow">
-        <Icon width="20px" v-show="!isShow" icon="quill:chevron-down" />
-        <Icon width="20px" v-show="isShow" icon="quill:chevron-up" />
+        <Icon v-show="!isShow" width="20px" icon="quill:chevron-down" />
+        <Icon v-show="isShow" width="20px" icon="quill:chevron-up" />
       </div>
-      <div class="moreInfo" v-show="isShow">
+      <div v-show="isShow" class="moreInfo">
         <p>
           <Icon
             style="display: inline-block; font-size: 18px"
@@ -289,8 +292,8 @@
     </div>
 
     <div
-      class="lastLoginTime"
       v-if="userInfo.lastLoginTime && userStore.isSelf"
+      class="lastLoginTime"
     >
       <p>
         <Icon style="display: inline-block" icon="mdi:calendar-outline" />
@@ -308,15 +311,12 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -338,13 +338,9 @@ import { useUserStore } from "@/store/userStore";
 
 // 引入hooks并调用
 import { useRequest } from "@/composables/useRequest";
-const { data, error, loading, executeRequest } = useRequest();
+const { data, executeRequest } = useRequest();
 import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
-const { getLocalStorageWithExpire, setLocalStorageWithExpire } =
-  useLocalStorageWithExpire();
-import { useDateFormatter } from "@/composables/useDateFormatter";
-import type { RefSymbol } from "@vue/reactivity";
-import { Store } from "lucide-vue-next";
+const { getLocalStorageWithExpire } = useLocalStorageWithExpire();
 import UserAvatar from "@/components/avatar/UserAvatar.vue";
 import { formatPostTime } from "@/utils/formatPostTime";
 
@@ -353,9 +349,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 
 import { useAlert } from "@/composables/useAlert";
-import router from "@/router";
-import { get } from "http";
-import { use } from "marked";
 import VueCropper from "vue-cropperjs";
 import "cropperjs/dist/cropper.css";
 
@@ -414,17 +407,15 @@ function uploadFile() {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    })
-      .then(() => {
-        showAlert("修改成功", "pass");
-        croppedImage.value = null;
-        imageUrl.value = "";
-        avatarInput.value.value = '';
-        getUserInfo();
-      })
-      .catch((error) => {
-        showAlert("修改失败", "fail");
-      });
+    }).then(() => {
+      showAlert("修改成功", "pass");
+      userStore.avatar = croppedImage.value;
+
+      croppedImage.value = null;
+      imageUrl.value = "";
+      avatarInput.value.value = "";
+      getUserInfo();
+    });
   });
 }
 const cropImage = () => {

@@ -23,45 +23,60 @@
       </div>
       <div class="postsListBox">
         <ul>
-          <li v-for="item in userPost" :key="item.id">
-            <div class="postInfo">
-              <h1 class="postTitle">{{ item.title }}</h1>
-              <p class="postDesc">{{ item.postAbstract }}</p>
-              <p class="postFooter">
-                <span class="postTime"
-                  >{{ formatDateToYYYYMMDD(item.putTime) }} 发布</span
-                >
-                ·
-                <span class="likesNum">{{ item.postLikeCount }} 点赞</span>
-                ·
-                <span class="commentsNum">{{ item.commentCount }} 评论</span>
-                ·
-                <span class="collectNum">{{ item.collectCount }} 收藏</span>
-                ·
-                <span class="viewNum">{{ item.viewCount }} 阅读</span>
-              </p>
-            </div>
-            <DropdownMenu v-if="userStore.isSelf">
-              <DropdownMenuTrigger class="ellipsis h-4">
-                <Icon icon="lucide:ellipsis" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent class="bg-white">
-                <DropdownMenuItem class="text-gray-500 cursor-pointer">
-                  <Icon icon="material-symbols:delete-outline" />
-                  <span @click="deletePost(item.id)"> 删除文章 </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem class="text-gray-500 cursor-pointer">
-                  <Icon icon="jam:write" />
-                  <span>修改文章</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </li>
+          <router-link
+            v-for="item in userPost"
+            :key="item.postId"
+            :to="`/community/post/${item.postId}`"
+            target="_blank"
+          >
+            <li>
+              <div class="postInfo">
+                <h1 class="postTitle">{{ item.title }}</h1>
+                <p class="postDesc">{{ item.postAbstract }}</p>
+                <div v-if="item.tags.length != 0" class="mb-2">
+                  <TagItem
+                    v-for="tag in item.tags"
+                    :key="tag.id"
+                    :name="tag"
+                    class="mr-2"
+                  ></TagItem>
+                </div>
+                <p class="postFooter">
+                  <span class="postTime"
+                    >{{ formatPostTime(item.putTime) }} 发布</span
+                  >
+                  ·
+                  <span class="likesNum">{{ item.postLikeCount }} 点赞</span>
+                  ·
+                  <span class="commentsNum">{{ item.commentCount }} 评论</span>
+                  ·
+                  <span class="collectNum">{{ item.collectCount }} 收藏</span>
+                  ·
+                  <span class="viewNum">{{ item.viewCount }} 阅读</span>
+                </p>
+              </div>
+              <DropdownMenu v-if="userStore.isSelf">
+                <DropdownMenuTrigger class="ellipsis h-4">
+                  <Icon icon="lucide:ellipsis" class="text-2xl"/>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="bg-white">
+                  <DropdownMenuItem class="text-gray-500 cursor-pointer">
+                    <Icon icon="material-symbols:delete-outline"  />
+                    <span @click="deletePost(item.id)"> 删除文章 </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem class="text-gray-500 cursor-pointer">
+                    <Icon icon="jam:write" />
+                    <span>修改文章</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </li>
+          </router-link>
         </ul>
         <div class="pageBox pagination-container">
           <Pagination
-            :totalItems="total"
-            :pageSize="pageSize"
+            :total-items="total"
+            :page-size="pageSize"
             @update:page="handlePageChange"
           >
           </Pagination>
@@ -78,29 +93,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Button from "@/components/ui/button/Button.vue";
 import Pagination from "@/components/recruitment/Pagination.vue";
 
 //引入ref
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 // 引入hooks并使用
 import { useRequest } from "@/composables/useRequest";
-const { data, error, loading, executeRequest } = useRequest();
+const { data, executeRequest } = useRequest();
 import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
-const { getLocalStorageWithExpire, setLocalStorageWithExpire } =
-  useLocalStorageWithExpire();
-import { useDateFormatter } from "@/composables/useDateFormatter";
-import { get } from "@vueuse/core";
-const { formatDateToYYYYMMDD } = useDateFormatter();
+const { getLocalStorageWithExpire } = useLocalStorageWithExpire();
+import { formatPostTime } from "@/utils/formatPostTime";
 import { useUserStore } from "@/store/userStore";
 import NoData from "@/components/loading/NoData.vue";
 import { showConfirm } from "@/composables/useConfirm";
-
+import TagItem from "@/features/community/components/tag/TagItem.vue";
 const userStore = useUserStore();
 console.log("pinia///", userStore);
 // 获取userId
@@ -110,7 +119,20 @@ if (userStore.isSelf) {
 } else {
   userId = userStore.userId;
 }
-
+watch(
+  () => userStore,
+  () => {
+    if (userStore.isSelf) {
+      userId = getLocalStorageWithExpire("userId");
+    } else {
+      userId = userStore.userId;
+    }
+    getPosts();
+  },
+  {
+    deep: true,
+  },
+);
 //定义userPostAllInfo，储存当前用户的文章数据
 let userPostAllInfo = ref({
   allCollectCount: 0,
@@ -120,7 +142,6 @@ let userPostAllInfo = ref({
 });
 
 //定义页码信息
-let pages = 0;
 let currentPage = 1;
 let total = ref<number>();
 let pageSize = ref(10);
@@ -145,9 +166,6 @@ async function getPosts() {
     Object.assign(userPostAllInfo.value, postData.userPostAllInfo);
     userPost.value = postData.userPost;
     console.log("我的文章", userPost.value);
-
-    pages = postData.pageInfo.pages;
-    total = postData.pageInfo.total;
   }
   if (data.value && data.value.code == 6001) {
     console.log("未发表过帖子");

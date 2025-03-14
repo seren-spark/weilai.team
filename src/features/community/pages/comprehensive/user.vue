@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import User from "@community/components/User.vue";
+import User from "@/features/community/components/User.vue";
 </script>
 
 <style scoped lang="scss">

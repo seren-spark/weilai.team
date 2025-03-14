@@ -1,4 +1,5 @@
 <template>
+  <!-- 用于手机端背景 -->
   <div>
     <div class="bg">
       <div class="bg-top"></div>
