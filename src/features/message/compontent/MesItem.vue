@@ -83,7 +83,7 @@ const splitResult = computed(() => {
   <div class="mesItem">
     <UserAvatar
       class="avatar"
-      :avatar="props.message.headPortrait"
+      :avatar="props.message.headPortrait || ''"
       @click="skipPersonCenter(props.message.senderId)"
     />
     <div class="mesContent">

@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 interface NoticeContent {
   type: string;
   content: {
@@ -24,11 +25,17 @@ interface NoticeContent {
     }[];
   }[];
 }
+
+// 定义函数类型
+type NoticeListFunc = () => void;
+type GetNotReadCountFunc = () => void;
+
 const props = defineProps<{
   notice: SSENoticeData;
-  noticeList: Function;
-  getNotReadCount: Function;
+  noticeList: NoticeListFunc;
+  getNotReadCount: GetNotReadCountFunc;
 }>();
+
 const { data, executeRequest } = useRequest();
 const noticeContentRef = ref<HTMLElement | null>(null);
 const isShow = ref(false);
@@ -36,7 +43,8 @@ const userId = ref(JSON.parse(localStorage.getItem("userId") || "{}").value);
 console.log(userId.value);
 const { showAlert } = useAlert();
 const createAt = formatPostTime(props.notice.createAt);
-//转换
+
+// 转换
 function handleNotice() {
   let noticeText = "";
   try {
@@ -55,9 +63,10 @@ function handleNotice() {
   }
   return noticeText;
 }
+
 let noticeTxt = handleNotice();
 
-//删除单个公告
+// 删除单个公告
 const deleteNotice = async (noticeId: string) => {
   showConfirm({
     content: "确定删除该公告吗？",
@@ -76,7 +85,8 @@ const deleteNotice = async (noticeId: string) => {
     })
     .catch(() => {});
 };
-//标记单个为已读
+
+// 标记单个为已读
 const readNotice = async (noticeId: string) => {
   showConfirm({
     content: "确定标记该公告为已读吗？",
@@ -93,12 +103,12 @@ const readNotice = async (noticeId: string) => {
         showAlert("标记已读成功", "pass");
       } else {
         console.log(data.value);
-
         showAlert("标记失败", "error");
       }
     })
     .catch(() => {});
 };
+
 onMounted(() => {
   nextTick(() => {
     if (noticeContentRef.value) {

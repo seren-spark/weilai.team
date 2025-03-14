@@ -59,6 +59,7 @@ const messageType = 3;
 const pageSize = 10;
 const pageNumber = 1;
 const totalCount = ref(0);
+
 onMounted(() => {
   sseStore.subscribe("message", (data: SSEMessageData | SSENoticeData) => {
     if ("messageId" in data && data.messageType === messageType) {

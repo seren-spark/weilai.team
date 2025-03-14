@@ -60,8 +60,7 @@ import { useRequest } from "@/composables/useRequest";
 import { useSseStore } from "../../../../store/useSseStore";
 import { useNoticeStore } from "@/store/UseNoticeStore";
 import { showConfirm } from "@/composables/useConfirm";
-const { data, executeRequest } = useRequest();
-import type { SSENoticeData } from "../../../../types/sseType";
+import type { SSENoticeData, SSEMessageData } from "../../../../types/sseType";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,19 +70,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const notices = ref<SSENoticeData[]>([]);
-
 const pageNumber = ref(1);
 const pageSize = ref(10);
 const sseStore = useSseStore();
-let total = ref(0);
-let notReadCount = ref(0);
 const noticeStore = useNoticeStore();
 const { showAlert } = useAlert();
+const { data, executeRequest } = useRequest();
+let total = ref(0);
+let notReadCount = ref(0);
 
 onMounted(() => {
-  sseStore.subscribe("notice", (notice: SSENoticeData) => {
-    notices.value.unshift(notice);
-    console.log(notice);
+  sseStore.subscribe("notice", (data: SSENoticeData | SSEMessageData) => {
+    if ("noticeId" in data) {
+      notices.value.unshift(data as SSENoticeData);
+      console.log(data);
+    }
   });
   noticeList();
 });
