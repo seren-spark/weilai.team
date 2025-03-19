@@ -288,6 +288,34 @@
           />&ensp;毕业去向:
           <span>{{ userInfo.graduationDestination }}</span>
         </p>
+        <p>
+          <Icon
+            style="display: inline-block; font-size: 18px"
+            icon="f7:money-yen"
+          />&ensp;毕业薪资:
+          <span>{{ `${userInfo.salaryYear / 1000}k` }}</span>
+        </p>
+        <p>
+          <Icon
+            style="display: inline-block; font-size: 18px"
+            icon="tabler:award"
+          />&ensp;蓝桥杯获奖:
+          <span>{{ userInfo.lanQiaoCount }}</span>
+        </p>
+        <p>
+          <Icon
+            style="display: inline-block; font-size: 18px"
+            icon="ph:map-pin-area-bold"
+          />&ensp;所在地区:
+          <span>{{ userInfo.area }}</span>
+        </p>
+        <p>
+          <Icon
+            style="display: inline-block; font-size: 18px"
+            icon="material-symbols:copyright-outline"
+          />&ensp;软著数量:
+          <span>{{ userInfo.copyrightCount }}</span>
+        </p>
       </div>
     </div>
 
@@ -633,12 +661,14 @@ function initForm() {
     .moreInfo {
       margin-top: 10px;
       width: 100%;
-
+      display: flex;
+      flex-wrap: wrap;
+      padding-left: 20px;
       p {
         height: 22px;
+        width: 50%;
         line-height: 22px;
-        margin: 10px;
-        margin-left: 20px;
+        margin-top: 5px;
         color: #999;
         font-size: 14px;
       }

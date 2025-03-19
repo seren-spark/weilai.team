@@ -18,9 +18,10 @@
                 <div v-if="item.tags.length != 0" class="mb-2">
                   <TagItem
                     v-for="tag in item.tags"
-                    :key="tag.id"
+                    :key="tag"
                     :name="tag"
                     class="mr-2"
+                    :tag="tag"
                   ></TagItem>
                 </div>
                 <p class="postFooter">
@@ -37,16 +38,14 @@
                   <span class="viewNum">{{ item.viewCount }} 阅读</span>
                 </p>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger class="ellipsis">
-                  <Icon icon="lucide:ellipsis" />
+              <DropdownMenu v-if="userStore.isSelf">
+                <DropdownMenuTrigger class="ellipsis h-4">
+                  <Icon icon="lucide:ellipsis" class="text-2xl" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent class="p-0 bg-white">
-                  <DropdownMenuLabel>操作</DropdownMenuLabel>
-                  <DropdownMenuItem>
-                    <Button class="operationsBtn cancelCollect"
-                      >取消收藏</Button
-                    >
+                <DropdownMenuContent class="bg-white">
+                  <DropdownMenuItem class="text-gray-500 cursor-pointer">
+                    <Icon icon="mdi:star-off" />
+                    <span @click="cancelCollect(item.postId)"> 取消收藏 </span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -75,14 +74,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import TagItem from "@/features/community/components/tag/TagItem.vue";
-import Button from "@/components/ui/button/Button.vue";
 import Pagination from "@/components/recruitment/Pagination.vue";
 //引入ref
 import { ref, watch } from "vue";
+import { showConfirm } from "@/composables/useConfirm";
 
 // 引入hooks并使用
 import { useRequest } from "@/composables/useRequest";
@@ -140,20 +138,32 @@ async function getUserCollect() {
     userCollect.value = postData.userCollect;
     total = postData.pageInfo.total;
     console.log("我的收藏", data.value);
+  }else if(data.value && data.value.code == 6002){
+    userCollect.value = [];
+    total = 0;
   } else {
     console.log(data.value.message);
   }
 }
+const cancelCollect = async (postId: number) => {
+  showConfirm({
+    content: "你确定要取消收藏该文章吗"
+  }).then(() => {
+    executeRequest({ url: `/post/collect/${postId}`, method: "post" }).then(() => {
+      console.log('取消收藏结果',data.value);
+      showAlert({
+        content: "取消收藏成功"
+      });
+      getUserCollect();
+    });
+  });
+};
 //打开页面立刻调用一次获取文章
 getUserCollect();
 </script>
 <style lang="scss" scoped>
 .operationsBtn {
   width: 100%;
-}
-
-.cancelCollect {
-  background-color: #97d5ff;
 }
 
 .myCollections {
@@ -176,6 +186,7 @@ getUserCollect();
         background-color: white;
         padding: 10px;
         border: 1px solid #d9d9d9;
+        align-items: center;
 
         .postInfo {
           margin-left: 20px;
@@ -215,7 +226,7 @@ getUserCollect();
 
 @media (max-width: 768px) {
   .myCollections .postsListBox ul li .postInfo .postFooter {
-    font-size: 10px;
+    font-size: 9px;
   }
 }
 </style>
