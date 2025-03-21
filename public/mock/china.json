@@ -2,7 +2,7 @@
   "data": [
     { "adcode": 110000, "name": "北京", "value": 10 },
     { "adcode": 120000, "name": "天津", "value": 1 },
-    { "adcode": 130000, "name": "河北", "value": 2 }, 
+    { "adcode": 130000, "name": "河北", "value": 2 },
     { "adcode": 140000, "name": "山西", "value": 1 },
     { "adcode": 150000, "name": "内蒙古", "value": 0 },
     { "adcode": 210000, "name": "辽宁", "value": 0 },

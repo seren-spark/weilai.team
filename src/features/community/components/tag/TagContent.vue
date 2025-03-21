@@ -12,6 +12,7 @@ const props = defineProps({
     default: "",
   },
 });
+
 function getTag() {
   getPostList(props.tag);
 }

@@ -36,7 +36,7 @@
                 <div v-if="item.tags.length != 0" class="mb-2">
                   <TagItem
                     v-for="tag in item.tags"
-                    :key="tag.id"
+                    :key="tag"
                     :name="tag"
                     class="mr-2"
                   ></TagItem>
@@ -62,7 +62,7 @@
                 <DropdownMenuContent class="bg-white">
                   <DropdownMenuItem class="text-gray-500 cursor-pointer">
                     <Icon icon="material-symbols:delete-outline"  />
-                    <span @click="deletePost(item.id)"> 删除文章 </span>
+                    <span @click="deletePost(item.postId)"> 删除文章 </span>
                   </DropdownMenuItem>
                   <DropdownMenuItem class="text-gray-500 cursor-pointer">
                     <Icon icon="jam:write" />
@@ -75,12 +75,12 @@
         </ul>
         <div class="pageBox pagination-container">
           <Pagination
-            :total-items="total"
+            :total-items="userPostAllInfo.allPostCount"
             :page-size="pageSize"
             @update:page="handlePageChange"
           >
           </Pagination>
-          <span class="postsNum">共 {{ total }} 篇文章</span>
+          <span class="postsNum">共 {{ userPostAllInfo.allPostCount }} 篇文章</span>
         </div>
       </div>
     </template>
@@ -110,6 +110,8 @@ import { useUserStore } from "@/store/userStore";
 import NoData from "@/components/loading/NoData.vue";
 import { showConfirm } from "@/composables/useConfirm";
 import TagItem from "@/features/community/components/tag/TagItem.vue";
+import { useAlert } from "@/composables/useAlert";
+const { showAlert } = useAlert();
 const userStore = useUserStore();
 console.log("pinia///", userStore);
 // 获取userId
@@ -143,7 +145,6 @@ let userPostAllInfo = ref({
 
 //定义页码信息
 let currentPage = 1;
-let total = ref<number>();
 let pageSize = ref(10);
 
 //定义userPost，储存当前页的文章数据
@@ -168,20 +169,29 @@ async function getPosts() {
     console.log("我的文章", userPost.value);
   }
   if (data.value && data.value.code == 6001) {
+    userPost.value = [];
     console.log("未发表过帖子");
   }
 }
 //打开页面立刻调用一次获取文章
 getPosts();
 
-function deletePost(id: number) {
+async function deletePost(id: number) {
+  console.log("删除文章id",id);
+  
   showConfirm({
     content: "你确定要删除该文章吗",
     description: "一旦删除文章将不存在",
   }).then(() => {
-    executeRequest({ url: `/post/delete/${id}`, method: "put" }).then(() => {
-      console.log(data.value);
-      getPosts();
+   executeRequest({ url: `/post/delete/${id}`, method: "put" }).then(() => {
+      if (data.value && data.value.code == 2002) {
+        showAlert("删除成功", "pass");
+        getPosts();
+      } else {
+        showAlert("删除失败", "error");
+
+        
+      }
     });
   });
 }

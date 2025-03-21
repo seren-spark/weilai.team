@@ -232,15 +232,13 @@ const writeInterviewEvaluation = () => {
   align-items: center;
   width: 100px;
   height: 100%;
-  margin-top: 2em;
+  margin-top: 1rem;
   position: absolute;
   right: 16px;
-  // margin-left: 4em;
-  //
   gap: 10px;
   @media screen and (max-width: 1300px) {
     position: relative;
-    margin-left: 1em;
+    margin-left: 1rem;
   }
 }
 .message-show-staus {
