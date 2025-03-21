@@ -67,7 +67,7 @@ const formSchema = z.object({
   studyId: z
     .string()
     .min(1, { message: "学号格式错误" })
-    .max(5, { message: "学号格式错误" }),
+    .max(11, { message: "学号格式错误" }),
   email: z.string().email({ message: "邮箱格式错误" }),
 
   clazz: z.string().regex(/^[\u4e00-\u9fa5]{2}\d{3}$/, {
@@ -89,7 +89,9 @@ const handleConfirm = () => {
     console.log(addInfoObj);
     run(addInfoObj);
     // 关闭对话框
-    dialogVisible.value = false;
+    console.log(111);
+
+    // dialogVisible.value = false;
     if (dialogRef.value) {
       dialogRef.value.$emit("update:open", false); // 触发 'update:open' 事件通知 Dialog 组件更新状态
     }
@@ -102,7 +104,12 @@ watch(
       const response = data.value as ApiResponseData<TeamUserList>;
       if (response.code === 200) {
         showAlert("添加成功", "pass");
+        dialogVisible.value = false;
         props.updateData(grade.value, group.value);
+      } else {
+        showAlert(response.message, "error");
+        dialogVisible.value = true;
+        console.log(222);
       }
     }
   },

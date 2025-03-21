@@ -1,6 +1,4 @@
-<script setup>
-
-</script>
+<script setup lang="ts"></script>
 <template>
   <div class="noDataContainer">
     <div class="noData">

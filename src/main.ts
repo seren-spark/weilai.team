@@ -5,6 +5,8 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+// 引入路由鉴权
+import "./permission";
 const pinia = createPinia();
 const app = createApp(App);
 pinia.use(piniaPluginPersistedstate);

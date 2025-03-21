@@ -3,7 +3,7 @@ import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
 import { useRequest } from "vue-request";
 import apiClient from "@/api/axios";
 import { useLoginStore } from "@/store/useLoginStore";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAlert } from "./useAlert";
 import { useSseStore } from "../store/useSseStore";
 import type { ApiResponseData } from "@/types/api-response";
@@ -35,6 +35,7 @@ interface Data {
 export default function () {
   const passed = ref(false);
   const router = useRouter();
+  const route = useRoute();
   // 登录
   function getLogin(
     account: string | number | undefined,
@@ -65,8 +66,9 @@ export default function () {
 
           let headPortrait = res.data.headPortrait;
           userstore.setUserInfo(Number(resData.userId), headPortrait);
+          let redirect = route.query.redirect as string;
 
-          router.push("/");
+          router.push({ path: redirect || "/" });
           sseStore.connect();
         } else {
           showAlert("服务器返回数据异常", "error");
@@ -147,7 +149,8 @@ export default function () {
       const res = data.value as Data;
       if (res.code == 200) {
         showAlert("退出登录成功", "pass");
-        router.push("/login");
+        localStorage.removeItem("token");
+        router.push({ path: "/login", query: { redirect: route.path } });
       }
     });
   }
