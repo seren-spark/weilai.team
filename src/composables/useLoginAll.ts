@@ -3,19 +3,21 @@ import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
 import { useRequest } from "vue-request";
 import apiClient from "@/api/axios";
 import { useLoginStore } from "@/store/useLoginStore";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter, useRoute, type RouteRecordRaw } from "vue-router";
 import { useAlert } from "./useAlert";
 import { useSseStore } from "../store/useSseStore";
 import type { ApiResponseData } from "@/types/api-response";
 import { ref, watch } from "vue";
-import { getMyId } from "@/store/userStore";
+
 import { useUserStore } from "@/store/userStore";
+
 const userstore = useUserStore();
 const sseStore = useSseStore();
 
 const loginStore = useLoginStore();
 const { setLocalStorageWithExpire } = useLocalStorageWithExpire();
 const { showAlert } = useAlert();
+
 interface EmailResponse {
   code: number;
   message?: string;
@@ -27,14 +29,17 @@ interface Data {
   data?: {
     token: string;
     userId: string;
+    permissions: string[];
   };
 }
 
 // 获取用户信息
-
 export default function () {
   const router = useRouter();
   const route = useRoute();
+
+  //  过滤路由信息
+
   // 登录
   function getLogin(
     account: string | number | undefined,
@@ -50,13 +55,14 @@ export default function () {
       debounceInterval: 500,
     });
     watch(data, async () => {
-      console.log(data);
       const res = data.value as Data;
       const resData = res.data;
       if (res.code == 1000) {
         if (resData) {
           setLocalStorageWithExpire("token", resData.token, 1000 * 60 * 60);
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
+          userstore.permissions = resData.permissions;
+
           showAlert("登录成功！", "pass");
           const res = await apiClient({
             url: `/user/getUserInfoByUserId/${resData.userId}`,

@@ -23,7 +23,7 @@ import { useNoticeStore } from "@/store/UseNoticeStore";
 import { useUserStore } from "@/store/userStore";
 import { Icon } from "@iconify/vue";
 import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-vue-next";
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";
@@ -47,7 +47,10 @@ getUserInfo();
 const { logout } = UserLogin();
 const route = useRoute();
 const router = useRouter();
-const subNavItems = route.meta.subNavItems as SubItemInterface[] | undefined;
+
+let subNavItems = route.meta.subNavItems as SubItemInterface[] | undefined;
+let currentUrl = ref("");
+//手机端
 const subNavs = [
   {
     title: "综合",
@@ -103,11 +106,13 @@ const items = [
   },
 ];
 
-interface SubItemInterface {
+export interface SubItemInterface {
   title: string;
   icon: string;
   path: string;
   redirect?: string;
+  name?: string;
+  roles?: string;
 }
 
 function skipToPersonalCenter() {
@@ -129,6 +134,26 @@ const getNotReadCount = async () => {
   }
 };
 getNotReadCount();
+// 定义权限
+const permissionsRouter = {
+  team_admin: ["/admin", "profile", "contacts"],
+  community_admin: ["/admin", "community", "contacts", ""],
+  recruit_admin: ["/admin", "recruitment"],
+  admin_plus: ["/admin", "permission"],
+};
+// 获取当前用户的权限
+let userPermissons = userStore.permissions;
+// 权限管理
+function permisson(subItem: SubItemInterface) {
+  return route.matched[0].path.includes("/admin") && subItem.roles
+    ? userPermissons.includes(subItem.roles)
+    : true;
+}
+
+function skipRedirect(item: any) {
+  currentUrl.value = item.url;
+  router.push(`/${item.redirect}`);
+}
 </script>
 
 <template>
@@ -155,7 +180,7 @@ getNotReadCount();
                         :to="`/${item.url}`"
                         active-class="sidebar__link--active"
                         class="sidebar__link"
-                        @click="router.push(`/${item.redirect}`)"
+                        @click="skipRedirect(item)"
                       >
                         <Icon :icon="`${item.icon}`" />&nbsp;
                         <span>{{ item.title }}</span>
@@ -176,31 +201,35 @@ getNotReadCount();
             <SidebarGroup v-show="subNavItems?.length" id="sub-nav">
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <SidebarMenuItem
-                    v-for="(item, index) in subNavItems"
-                    :key="index"
-                    class="sidebar__item"
-                  >
-                    <SidebarMenuButton class="sidebar__button">
-                      <RouterLink
-                        :to="item.path"
-                        active-class="sidebar__sub-link--active"
-                        class="sidebar__sub-link"
-                        @click="
-                          router.push(item.redirect ? item.redirect : item.path)
-                        "
-                      >
-                        <Icon :icon="`${item.icon}`" />&nbsp;
-                        <span>{{ item.title }}</span>
-                        <span
-                          v-if="
-                            item.title === '公告' && noticeStore.hasUnreadNotice
+                  <template v-for="(item, index) in subNavItems" :key="index">
+                    <SidebarMenuItem
+                      class="sidebar__item"
+                      v-if="permisson(item)"
+                    >
+                      <SidebarMenuButton class="sidebar__button">
+                        <RouterLink
+                          :to="item.path"
+                          active-class="sidebar__sub-link--active"
+                          class="sidebar__sub-link"
+                          @click="
+                            router.push(
+                              item.redirect ? item.redirect : item.path,
+                            )
                           "
-                          class="noticeDot"
-                        ></span>
-                      </RouterLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                        >
+                          <Icon :icon="`${item.icon}`" />&nbsp;
+                          <span>{{ item.title }}</span>
+                          <span
+                            v-if="
+                              item.title === '公告' &&
+                              noticeStore.hasUnreadNotice
+                            "
+                            class="noticeDot"
+                          ></span>
+                        </RouterLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </template>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -266,7 +295,6 @@ getNotReadCount();
                       size="lg"
                       class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
-                      <!-- <img src="@/assets/img/headImg.jpg" alt="" class="avatar" /> -->
                       <div class="avatar">
                         <Avatar :avatar="userStore.avatar" />
                       </div>

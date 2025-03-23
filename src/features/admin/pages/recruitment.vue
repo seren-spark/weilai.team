@@ -11,6 +11,7 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
 {
   "meta": {
     "title": "招新管理",
+    "roles": "recruit_admin",
     "thirdNavItems": [
       {
         "title": "首页",

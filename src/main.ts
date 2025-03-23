@@ -8,6 +8,7 @@ import router from "./router";
 // 引入路由鉴权
 import "./permission";
 const pinia = createPinia();
+export default pinia
 const app = createApp(App);
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
