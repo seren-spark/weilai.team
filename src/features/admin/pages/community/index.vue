@@ -36,7 +36,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-// @ts-expect-error:this url is not find
 import NoData from "@/components/loading/NoData.vue";
 import { Calendar } from "@/components/ui/calendar";
 import {
