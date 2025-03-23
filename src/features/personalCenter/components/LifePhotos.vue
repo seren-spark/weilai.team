@@ -1,12 +1,17 @@
 <template>
-  <Teleport v-if="addPhotoLoading" to="body">
+  <div v-if="addPhotoLoading" class="outer">
     <GlobalLoading />
-  </Teleport>
+  </div>
+
+
   <div>
-    <div class="title">
-      <p>Life Pictures</p>
-    </div>
     <div class="images-container">
+      <div v-if="getPhotoListLoading" class="loading">
+        <GlobalLoading />
+      </div>
+      <div v-else-if="images.length === 0" class="no-data">
+        <NewNoData />
+      </div>
       <img
         v-for="image in images"
         :key="hash(image)"
@@ -20,7 +25,7 @@
         }"
         @click="deleteMode && selectImage(image)"
       />
-      <div v-if="images.length > 0" class="image-action">
+      <div v-if="!getPhotoListLoading" class="image-action">
         <PictureFileUpload class="action-item" @upload:images="imagesHandle" />
         <div class="action-item delete" @click="toggleDeleteMode">
           <svg
@@ -38,12 +43,7 @@
           </svg>
         </div>
       </div>
-      <div v-if="getPhotoListLoading" class="loading">
-        <GlobalLoading />
-      </div>
-      <div v-else-if="images.length === 0" class="no-data">
-        <NewNoData />
-      </div>
+
     </div>
   </div>
 </template>
@@ -102,14 +102,20 @@ const {
   },
 });
 
-const imagesHandle = (files: FileList) => {
-  const form = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    form.append("lifePhoto", files[i]);
+const imagesHandle = async (files: FileList) => {
+  const batchSize = 3;
+  const totalBatches = Math.ceil(files.length / batchSize);
+
+  for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+    const form = new FormData();
+    const start = batchIndex * batchSize;
+    const end = Math.min(start + batchSize, files.length);
+
+    for (let i = start; i < end; i++) {
+      form.append("lifePhoto", files[i]);
+    }
+    uploadPhotos({ data: form });
   }
-  uploadPhotos({
-    data: form,
-  });
 };
 
 watch([addPhotoData, addPhotoError], ([newData, newError]) => {
@@ -181,23 +187,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use "@/assets/styles/public.scss";
-.title {
-  width: 100%;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 1.5rem 2rem 0 2rem;
-  p {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    font-style: italic;
-    background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
-    color: transparent;
-    background-clip: text;
-  }
-}
 .images-container {
   position: relative;
   top: 0.5rem;
@@ -286,5 +275,9 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
   }
+}
+.global-loading{
+  position: fixed;
+  margin: 0 auto;
 }
 </style>

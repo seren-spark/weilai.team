@@ -1,10 +1,9 @@
 <template>
   <div>
     <p class="time">日期</p>
-    <Popover class="select-time-container">
+    <Popover>
       <PopoverTrigger as-child>
         <Button
-          v-model="selectTime"
           variant="outline"
           :class="
             cn(
@@ -12,23 +11,13 @@
               !value && 'text-muted-foreground',
             )
           "
-          class="select-time-btn"
         >
           <CalendarIcon class="mr-2 h-4 w-4" />
-          {{
-            value
-              ? df(value.toDate(getLocalTimeZone()), "yyyy-MM-dd")
-              : "选择日期"
-          }}
+          {{ value ? df(value.toDate(getLocalTimeZone())) : df(new Date()) }}
         </Button>
       </PopoverTrigger>
-      <PopoverContent class="w-full p-0 select-time-content bg-white">
-        <Calendar
-          ref="selectTime"
-          v-model="value"
-          initial-focus
-          locale="zh-CN"
-        />
+      <PopoverContent class="w-auto p-0">
+        <Calendar v-model="value" initial-focus locale="zh-CN" />
       </PopoverContent>
     </Popover>
   </div>
@@ -42,20 +31,45 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, MoreHorizontal } from "lucide-vue-next";
+import { Calendar as CalendarIcon } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { getLocalTimeZone, type DateValue } from "@internationalized/date";
-import { ref } from "vue";
-let selectTime = ref<DateValue | null>(null);
+import { ref, watch } from "vue";
+
 const value = ref<DateValue>();
-function df(date: Date, format = "yyyy - MM - dd HH:mm") {
-  // 获取日期的各个部分，包括分钟
+// 定义 props 和 emits
+const props = defineProps(["modelValue"]);
+const emits = defineEmits(["update:model-value"]);
+
+// 使用局部变量存储 modelValue 的值
+let localModelValue = ref<DateValue | null>(props.modelValue || null);
+
+// 监听 props.modelValue 的变化并同步到局部变量
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    localModelValue.value = newValue || null;
+  },
+);
+watch(
+  () => value.value,
+  () => {
+    console.log(value.value);
+  },
+);
+
+// 监听局部变量的变化并通知父组件
+watch(value, (newValue) => {
+  emits("update:model-value", newValue);
+});
+
+// 格式化日期函数
+function df(date: Date, format = "yyyy - MM - dd") {
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
   let day = date.getDate();
   let hours = date.getHours();
   let minutes = date.getMinutes();
-  // 根据format字符串进行格式化，包含分钟部分
   let formattedDate = format
     .replace("yyyy", year.toString())
     .replace("MM", month.toString().padStart(2, "0"))

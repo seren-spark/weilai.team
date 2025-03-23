@@ -28,11 +28,11 @@ import Member from "./member/[member].vue";
 const userCount = ref(0);
 const teamUserList = ref<TeamUserList[]>([]);
 const teamAble = ref<TeamInfo[]>([]);
-const isVisible = ref(false);
-interface Item {
-  name: string;
-  description: string;
-}
+// const isVisible = ref(false);
+// interface Item {
+//   name: string;
+//   description: string;
+// }
 
 getMembers().then((res) => {
   userCount.value = res.userCount;
@@ -40,10 +40,7 @@ getMembers().then((res) => {
   teamUserList.value = res.teamUserList;
 });
 
-const items: Item[] = [
-  { name: "Item 1", description: "This is item 1" },
-  { name: "Item 1", description: "This is item 1" },
-];
+
 
 function getMembersOfGroup(str: string) {
   let parts = str.split("$");

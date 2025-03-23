@@ -1,13 +1,34 @@
-import { searchData } from '../../../../../types/Contacts';
 <script setup lang="ts">
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
+import type { AttendanceOverview } from "@/types/attendance-overview";
+import { computed, watch } from "vue";
+
+//
+const props = defineProps<{ data: AttendanceOverview | undefined }>();
+watch(
+  () => props.data,
+  (newValue) => {
+    console.log(newValue);
+  },
+);
+
+// 出勤率
+const rate = computed(() => {
+  if (
+    !props.data ||
+    props.data.userCountShould === 0 ||
+    props.data.userCountCurrent === undefined ||
+    props.data.userCountShould === undefined
+  ) {
+    return 0;
+  }
+  return (props.data?.userCountCurrent / props.data?.userCountShould) * 100;
+});
 </script>
 
 <template>
@@ -18,7 +39,7 @@ import {
         <span>应到人数</span>
       </CardHeader>
       <CardContent class="card-content">
-        <h1>34</h1>
+        <h1>{{ data?.userCountShould }}</h1>
         &nbsp;
         <span>人</span>
       </CardContent>
@@ -30,7 +51,7 @@ import {
         <span>打卡人数</span>
       </CardHeader>
       <CardContent class="card-content">
-        <h1>34</h1>
+        <h1>{{ data?.userCountCurrent }}</h1>
         &nbsp;
         <span>人</span>
       </CardContent>
@@ -42,7 +63,7 @@ import {
         <span>出勤率</span>
       </CardHeader>
       <CardContent class="card-content">
-        <h1>90</h1>
+        <h1>{{ rate }}</h1>
         &nbsp;
         <span>%</span>
       </CardContent>
@@ -54,7 +75,7 @@ import {
         <span>请假人数</span>
       </CardHeader>
       <CardContent class="card-content">
-        <h1>4</h1>
+        <h1>{{ data?.leavesUserCount }}</h1>
         &nbsp;
         <span>人</span>
       </CardContent>
@@ -66,7 +87,7 @@ import {
         <span>迟到人数</span>
       </CardHeader>
       <CardContent class="card-content">
-        <h1>0</h1>
+        <h1>{{ data?.lateUserCount }}</h1>
         &nbsp;
         <span>人</span>
       </CardContent>
