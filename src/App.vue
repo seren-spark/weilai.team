@@ -4,6 +4,7 @@ import { useAlert } from "./composables/useAlert";
 import { useRoute } from "vue-router";
 const { alertState } = useAlert();
 const route = useRoute();
+import chat from "@/components/ai-service/index.vue";
 console.log(route);
 </script>
 
@@ -15,4 +16,5 @@ console.log(route);
     :type="alertState.type"
   />
   <RouterView></RouterView>
+  <chat></chat>
 </template>
