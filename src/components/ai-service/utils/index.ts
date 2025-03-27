@@ -7,7 +7,6 @@ export const getWebsocketUrl = () => {
     let url = "wss://spark-api.xf-yun.com/v3.5/chat";
     let host = "spark-api.xf-yun.com";
     let apiKeyName = "api_key";
-    // let date = new Date().toGMTString();
     let date = new Date().toUTCString();
     let algorithm = "hmac-sha256";
     let headers = "host date request-line";

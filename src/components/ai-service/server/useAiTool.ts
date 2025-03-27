@@ -60,8 +60,10 @@ async function fetchAnswer(question: string) {
       return;
     }
     newText += data.payload.choices.text[0].content;
+
     answer.value = marked.parse(newText) as string;
-    // respondHoodle(result);
+    console.log(answer.value);
+
     if (data.header.code !== 0) {
       console.log("出错了", data.header.code, ":", data.header.message);
       // 出错了"手动关闭连接"

@@ -121,9 +121,9 @@ const { answer, loading, error, getAnswer } = useAiTool();
 const closeComponent = () => {
   if (isShow.value == true) {
     outing();
-    // setTimeout(() => {
-    emit("closeChat", false);
-    // }, 300);
+    setTimeout(() => {
+      emit("closeChat", false);
+    }, 300);
   } else {
     isShow.value = true;
   }
@@ -147,6 +147,7 @@ const setSubmit = (questionText: string) => {
 onMounted(() => {
   LoadingFn();
 });
+
 
 function LoadingFn() {
   const line = gsap.timeline();
@@ -190,17 +191,12 @@ watch(loading, (newValue) => {
   if (newValue == false) {
     chatList.value.push({
       role: "assistant",
-      content: marked.parse(answer.value) as string,
+      content: answer.value,
     });
   }
   scrollToBottom();
 });
-watch(answer, (newValue) => {
-  scrollToBottom();
-  nextTick(() => {
-    answer.value = marked.parse(newValue) as string;
-  });
-});
+
 const chatContainer = ref<HTMLElement | null>(null);
 function scrollToBottom() {
   if (chatContainer.value) {
@@ -210,9 +206,11 @@ function scrollToBottom() {
 </script>
 
 <style scoped lang="scss">
+$ai-width: 22rem;
+$ai-height: 30rem;
 .chatOpen {
-  height: calc(100% - 2rem);
-  width: 350px;
+  height: $ai-height;
+  width: $ai-width;
   position: fixed;
   right: 0.1rem;
   z-index: 10000000;
@@ -223,10 +221,10 @@ function scrollToBottom() {
   bottom: 0;
   background-color: white;
   border-radius: 12px;
-  width: 350px;
+  width: $ai-width;
   box-shadow: 2px 2px 10px 4px rgba(0, 0, 0, 0.15);
   height: 100%;
-  min-height: 250px;
+  min-height: $ai-height;
   max-height: 500px;
   .subjectColor {
     background: linear-gradient(45deg, rgb(90, 136, 253), rgb(0, 206, 188));
@@ -234,20 +232,20 @@ function scrollToBottom() {
     font-size: 0.825rem;
   }
   .chatHeader {
-    height: 80px;
+    height: 5rem;
     background: linear-gradient(45deg, rgb(90, 136, 253), rgb(0, 206, 188));
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-    padding: 18px 20px;
+    padding: 1.2rem 1.3rem;
     position: relative;
     flex: 0 0 auto;
     z-index: 3;
     box-shadow: 0 4px 10px rgba(85, 106, 160, 0.2);
     .chatAvatar {
       background-color: inherit;
-      height: 46px;
-      width: 46px;
-      line-height: 46px;
+      height: 2.8rem;
+      width: 2.8rem;
+      line-height: 2.8rem;
       text-align: center;
       padding: 7px;
       display: inline-block;
@@ -273,9 +271,9 @@ function scrollToBottom() {
       width: calc(100% - 90px);
       text-overflow: ellipsis;
       overflow: hidden;
-      height: 44px;
-      margin-left: 12px;
-      font-size: 12px;
+      height: 3rem;
+      margin-left: 0.7rem;
+      font-size: 0.7rem;
       position: relative;
       .chatTitleCon,
       .chatTitleSub {
@@ -283,17 +281,17 @@ function scrollToBottom() {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        height: 22px;
+        height: 1.5rem;
         position: absolute;
         left: 0;
         max-width: 100%;
         font-weight: 300;
-        line-height: 18px;
-        bottom: -5px;
+        line-height: 1.5rem;
+        bottom: -0.3rem;
       }
       .chatTitleCon {
         top: 0px;
-        font-size: 18px;
+        font-size: 1.1rem;
         line-height: 22px;
         font-weight: 700;
         top: 0;
@@ -301,10 +299,10 @@ function scrollToBottom() {
     }
     .chatTitleClose {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      width: 22px;
-      height: 22px;
+      top: 1rem;
+      right: 1rem;
+      width: 1.2rem;
+      height: 1.2rem;
       border-radius: 2px;
       background-color: none;
       font-weight: 800;
@@ -313,39 +311,36 @@ function scrollToBottom() {
       cursor: pointer;
       padding-top: 2px;
       background-color: rgba(238, 238, 238, 0);
-      // &:hover {
-      //   background-color: rgba(238, 238, 238, 0.4);
-      // }
     }
   }
   .chatConversation {
-    padding: 0 15px;
+    padding: 0 0.975rem;
     overflow: hidden auto;
     overflow-x: hidden;
     overflow-y: auto;
-    height: calc(100% - 175px);
-    margin-bottom: 90px;
+    height: calc(100% - 11rem);
+    margin-bottom: 5.625rem;
     flex: 0 1 auto;
     background: #fff;
     z-index: 2;
     position: relative;
-    border-bottom-right-radius: 12px;
-    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
     .topExplain {
       margin-top: 10px;
       text-align: center;
-      font-size: 12px;
+      font-size: 0.75rem;
     }
     .indexBubble {
       position: relative;
-      margin: 16px 0;
+      margin: 1rem 0;
       overflow: hidden;
       width: 100%;
       .BubbleAvatar {
-        width: 40px;
+        width: 2.5rem;
         box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.1);
-        height: 40px;
-        line-height: 40px;
+        height: 2.5rem;
+        line-height: 2.5rem;
         text-align: center;
         clear: left;
         position: relative;
@@ -353,8 +348,8 @@ function scrollToBottom() {
         color: #0d1626;
         border-radius: 50%;
         position: absolute;
-        left: 2px;
-        top: 3px;
+        left: 0.1rem;
+        top: 0.3rem;
         img {
           max-height: 100%;
           width: 100%;
@@ -371,7 +366,7 @@ function scrollToBottom() {
       .BubbleContentLeft {
         float: left;
         border-radius: 12px 12px 12px 3px;
-        margin-left: 50px;
+        margin-left: 3.125rem;
         background: rgba(84, 152, 243, 0.08);
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
         color: #252525;
@@ -382,7 +377,7 @@ function scrollToBottom() {
         line-height: 1.4;
         word-break: break-word;
         max-width: 85%;
-        font-size: 14px;
+        font-size: 0.8rem;
         letter-spacing: 0;
       }
 
@@ -390,30 +385,30 @@ function scrollToBottom() {
         float: right;
         clear: right;
         border-radius: 12px 12px 3px 12px;
-        min-width: 16px;
+        width: 1rem;
       }
       .BubbleConten {
         position: relative;
         line-height: 1.4;
-        padding: 12px 20px;
+        padding: 0.75rem 1.2rem;
         word-break: break-word;
         max-width: 85%;
-        font-size: 14px;
+        font-size: 0.8rem;
         letter-spacing: 0;
       }
     }
     .questionList {
       float: right;
       display: block;
-      width: 100%;
+      width: 85%;
       list-style: none;
       text-align: right;
-      margin: 6px 0;
+      margin: 0.375rem 0;
       .questionListItem {
         cursor: pointer;
-        padding: 8px 10px;
+        padding: 0.5rem 0.52rem;
         display: inline-block;
-        margin: 5px 0 5px 5px;
+        margin: 0.35rem 0 0.35rem 0.35rem;
         color: #252525;
         border-radius: 20px;
         border: 1px solid transparent;
@@ -438,11 +433,11 @@ function scrollToBottom() {
       position: relative;
       z-index: 5;
       .chatTextareaInput {
-        padding: 0 20px;
+        padding: 0 1.25rem;
         border-top: 1px solid #f3f7ff;
         position: relative;
-        min-height: 30px;
-        height: 30px;
+        min-height: 1.875rem;
+        height: 1.875rem;
         padding-top: 8px;
         margin: 0px;
         textarea {
@@ -456,28 +451,28 @@ function scrollToBottom() {
           resize: none;
           margin: 0;
           padding: 0;
-          line-height: 20px;
+          line-height: 1.25rem;
           overflow-x: hidden;
-          font-size: 14px;
+          font-size: 0.875rem;
         }
       }
     }
   }
   .chatFooter {
     display: flex;
-    margin-top: 17px;
-    padding: 0 20px 10px 20px;
+    margin-top: 1rem;
+    padding: 0 1.25rem 0.625rem 1.25rem;
     border-radius: 12px;
     .chatFooterWww {
       text-align: right;
       line-height: 30px;
       button {
         cursor: pointer;
-        width: 60px;
-        line-height: 32px;
+        width: 3.75rem;
+        line-height: 2rem;
         border: none;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-        border-radius: 40px;
+        border-radius: 2.5rem;
         margin-left: 5px;
         transition: all 0.2s;
         &:hover {

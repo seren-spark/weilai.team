@@ -19,32 +19,9 @@
             </div>
           </div>
         </div>
-        <!-- <RouterLink
-          :to="{ name: '/community/post/[id]', params: { id: item.id } }"
-          target="_blank"
-          class="news-content"
-        >
-          <div class="news-title">{{ item.title }}</div>
-          <div class="news-details">
-            <p>
-              {{ item.postAbstract }}
-            </p>
-          </div>
-        </RouterLink> -->
 
         <NewsContent :item="item" />
-        <!-- <div class="news-label">
-          <div class="type">{{ checkType(item.type) }}</div>
-          <ul class="labels">
-            <RouterLink
-              class="label-item"
-              v-for="tags in item.postTags"
-              :to="`/community/${tagType}/label/${tags}`"
-            >
-              #{{ tags }}
-            </RouterLink>
-          </ul>
-        </div> -->
+
         <NewsLabel :item="item" :tag-type="tagType" />
         <NewsFooter
           :view-count="item.viewCount"
@@ -80,12 +57,9 @@
 
 <script setup lang="ts">
 import { useTagStore } from "@/store/tagTypeStore";
-
 import UserAvatar from "@/components/avatar/UserAvatar.vue";
-// @ts-expect-error:this url is not exist
 import NoData from "@/components/loading/NoData.vue";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import type { ArticleList } from "@/types/community";
 import { formatPostTime } from "@/utils/formatPostTime";
 import {
@@ -262,15 +236,11 @@ const handleScroll = async () => {
       margin-bottom: 8px;
       .news-writer {
         padding-left: 10px;
-        .avatar {
-          width: 40px;
-          height: 40px;
-        }
+        margin: 0rem;
         .writer-info {
           .name {
             color: var(--secondary-foreground);
             font-size: 0.9em;
-            margin-left: 5px;
           }
           .time {
             display: none;
