@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { defineProps, defineEmits } from "vue";
+import { defineEmits } from "vue";
 
 import { Icon } from "@iconify/vue";
 
