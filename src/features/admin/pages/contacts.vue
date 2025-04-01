@@ -11,6 +11,7 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
 {
   "meta": {
     "title": "通讯录",
+    "roles": "team_admin",
     "thirdNavItems": [
       {
         "title": "成员管理",

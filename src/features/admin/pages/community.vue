@@ -13,6 +13,7 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
 {
   "meta": {
     "title": "社区管理",
+    "roles": "community_admin",
     "thirdNavItems": [
       {
         "title": "文章管理",

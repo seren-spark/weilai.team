@@ -10,6 +10,7 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
 
 <route lang="json">
 {
+  "name": "community",
   "meta": {
     "subNavItems": [
       {

@@ -4,6 +4,7 @@ interface UserState {
   userId: number;
   isSelf: boolean;
   avatar: string;
+  permissions: string[];
 }
 export const useUserStore = defineStore("user", {
   // 定义初始状态
@@ -11,6 +12,7 @@ export const useUserStore = defineStore("user", {
     userId: 0,
     isSelf: true,
     avatar: "",
+    permissions: [],
   }),
 
   actions: {
@@ -19,12 +21,15 @@ export const useUserStore = defineStore("user", {
       this.userId = id;
       this.avatar = avatar;
     },
+  
 
     getMyId() {
       return Number(JSON.parse(localStorage.getItem("userId") as string).value);
     },
     reset() {
-      this.userId = getMyId();
+      this.userId = Number(
+        JSON.parse(localStorage.getItem("userId") as string).value,
+      );
       this.isSelf = true;
     },
   },
@@ -38,16 +43,3 @@ export const useUserStore = defineStore("user", {
     storage: localStorage,
   },
 });
-export const getMyId = () =>
-  Number(JSON.parse(localStorage.getItem("userId") as string).value);
-export async function getUserAvatarInfo() {
-  const id = getMyId();
-  const res = await apiClient({
-    url: `/user/getUserInfoByUserId/${id}`,
-    method: "get",
-  });
-  console.log(res);
-  if (res.code == 200) {
-    return res.data.headPortrait;
-  }
-}
