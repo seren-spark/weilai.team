@@ -3,13 +3,14 @@ import {
   FilterCondition,
   DataRangePicker,
   ToggleShow,
-  DataTable,
+  // DataTable,
   Pagination,
   AutoLongerInput,
   UpdateStatus,
   UpdateApplyUserInfo,
   ArrangeInterviewer,
 } from "@/components/recruitment";
+import { DataTable } from "@/components/common";
 import { Icon } from "@iconify/vue";
 import { Button } from "@/components/ui/button";
 import { ref, watch, computed } from "vue";
@@ -20,6 +21,14 @@ import {
   deleteApplyUserById,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  TableCell,
+} from "@/components/ui/table";
 import type {
   IAllApplyUserVO,
   IAllApplyUserDTO,
@@ -281,6 +290,24 @@ const actionItems = ref([
     onclick: DeleteCandidate,
   },
 ]);
+// const currentTableData=ref({
+//   id:"",
+//   name:""
+// })
+// const getCurrentTableData=(id:string,name:string)=>{
+//   currentTableData.value={
+//     id,
+//     name
+//   }
+// }
+const actions = computed(() => {
+  if(status.value === 0){
+    return actionItems.value
+  }
+  else{
+    return actionItems.value.filter((item, index) => index !== 2)
+  }
+});
 
 //拿到后端的所有年级数据
 const fetchAllGrade = () => {
@@ -395,7 +422,7 @@ const excelHeaders = ref([
   },
 ]);
 
-const exportToExcelFunction = <T,>(data: Array<T>) => {
+const exportToExcelFunction = <T>(data: Array<T>) => {
   const filteredData = data.map((item: T) => {
     const newItem: Partial<T> = {};
     excelHeaders.value.forEach((Header) => {
@@ -515,15 +542,42 @@ const arrangeInterviewerDialog = ref(false);
 
     <div class="data-table">
       <DataTable
-        :items="tableData"
-        :headers="headers"
-        :action-items="
-          status === 0
-            ? actionItems
-            : actionItems.filter((item, index) => index !== 2)
-        "
+        :rows="tableData"
+        :columns="headers"
+        :is-show-checkbox=true
+        :actions="actions"
         @send-selected-ids="handleTableSelectIds"
-     />
+      >
+        <template #action="{ currentRow }">
+          <TableCell class="font-medium">
+            <Popover>
+              <PopoverTrigger>
+                <Icon
+                  icon="tabler:dots"
+                  style="display: inline-block; font-size: 1rem; cursor: pointer;"
+                />
+              </PopoverTrigger>
+              <PopoverContent class="popover-content" style="z-index: 10;width: 10rem;">
+                <div>
+                  <div
+                    v-for="(i, index) in actions"
+                    :key="index"
+                    class="pop-content-item"
+                    @click="i.onclick(currentRow.id, currentRow.name)"
+                  >
+                    <Icon
+                      :key="index"
+                      :icon="i.icon"
+                      style="display: inline-block; font-size: 18px; cursor: pointer;"
+                    />
+                    <span class="pop-content-item-text">{{ i.title }}</span>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </TableCell>
+        </template>
+      </DataTable>
       <div class="pagination-container">
         <Pagination
           :total-items="total"
@@ -539,4 +593,34 @@ const arrangeInterviewerDialog = ref(false);
 
 <style lang="scss" scoped>
 @use "@/assets/styles/recruitment.scss";
+.popover-content {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 0 10px #ccc;
+  position: relative;
+  left: -40px;
+  top: 0;
+  z-index: 39;
+  .pop-content-item {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--accent);
+    }
+
+    .pop-content-item-text {
+      font-size: 14px;
+      margin-left: 10px;
+    }
+  }
+}
 </style>
