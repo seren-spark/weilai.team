@@ -98,8 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { Marked } from "marked";
-import { ref, onMounted, watch, onUnmounted, nextTick } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAiTool } from "@/components/ai-service/server/useAiTool";
@@ -107,7 +106,6 @@ import { requestObj } from "@/components/ai-service/config";
 import { useAlert } from "@/composables/useAlert";
 const { showAlert } = useAlert();
 import { Icon } from "@iconify/vue";
-const marked = new Marked({ gfm: true });
 gsap.registerPlugin(ScrollTrigger);
 interface MessageInfo {
   role: string;
@@ -147,7 +145,6 @@ const setSubmit = (questionText: string) => {
 onMounted(() => {
   LoadingFn();
 });
-
 
 function LoadingFn() {
   const line = gsap.timeline();
@@ -385,7 +382,7 @@ $ai-height: 30rem;
         float: right;
         clear: right;
         border-radius: 12px 12px 3px 12px;
-        width: 1rem;
+        min-width: 1rem;
       }
       .BubbleConten {
         position: relative;
