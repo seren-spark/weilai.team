@@ -27,11 +27,18 @@ $undertone: #647499; //浅灰 设置为非强调色 常设置为字体颜色
 }
 .checkbox[checked-not-all="true"] {
   &::after {
-    content: "√";
-    position: absolute;
-    top: 0;
+    content: "\2D";
     left: 0;
+    top: 0;
+    font-size: 1.5rem;
+    color: white;
+    position: absolute;
     width: 100%;
+    height: 100%;
+    background-color: skyblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
