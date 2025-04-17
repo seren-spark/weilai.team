@@ -308,16 +308,6 @@ const actions = computed(() => {
     return actionItems.value.filter((item, index) => index !== 2)
   }
 });
-
-const actions = computed(() => {
-  if(status.value === 0){
-    return actionItems.value
-  }
-  else{
-    return actionItems.value.filter((item, index) => index !== 2)
-  }
-});
-
 //拿到后端的所有年级数据
 const fetchAllGrade = () => {
   const { data, error } = useRequest(() =>
