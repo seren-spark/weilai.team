@@ -139,10 +139,14 @@ const handleSubmit = () => {
       isSecond: formData.value.status === "-4" ? "1" : "0",
       comment: formData.value.interviewEvaluation,
       status: formData.value.status === "-4" ? "3" : formData.value.status,
-    }).then(() => {
+    }).then((data) => {
+      console.log(data);
       showAlert("面评提交成功", "pass");
       emit("close");
       emit("refreshPage");
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 };

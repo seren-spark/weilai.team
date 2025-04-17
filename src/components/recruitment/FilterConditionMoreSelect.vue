@@ -125,7 +125,7 @@ watch(
   gap: 10px;
   padding: 5px;
   .selected-items {
-    font-size: 0.4em;
+    font-size: 0.7em;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
