@@ -13,6 +13,7 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
 {
   "meta": {
     "title": "考勤管理",
+    "roles": "attendance_admin",
     "thirdNavItems": [
       {
         "title": "考勤概览",

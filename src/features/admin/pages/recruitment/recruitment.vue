@@ -242,6 +242,7 @@ const quickShowItems = ref([
   display: inline-block;
   margin-top: 30px;
   border: none;
+  margin-bottom: 30px;
   @media screen and (max-width: 1100px) {
     display: none;
   }
@@ -253,6 +254,7 @@ const quickShowItems = ref([
     flex-direction: column;
     padding: 10px;
     top: 30px;
+    margin: 2rem 0;
     .quick-control-title {
       font-size: 16px;
       font-weight: 500;

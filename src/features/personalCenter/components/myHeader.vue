@@ -201,6 +201,58 @@
                   <FormMessage />
                 </FormItem>
               </FormField>
+              <FormField v-slot="{ componentField }" name="salaryYear">
+                <FormItem>
+                  <FormLabel>毕业薪资（元）</FormLabel>
+                  <FormControl class="my-1">
+                    <Input
+                      type="number"
+                      step="1"
+                      placeholder="请输入毕业薪资"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormDescription> </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="lanQiaoCount">
+                <FormItem>
+                  <FormLabel>蓝桥杯获奖次数</FormLabel>
+                  <FormControl class="my-1">
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="请输入蓝桥杯获奖次数"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormDescription> </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="copyrightCount">
+                <FormItem>
+                  <FormLabel>软著数量</FormLabel>
+                  <FormControl class="my-1">
+                    <Input
+                      type="number"
+                      placeholder="请输入软著数量"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormDescription> </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
+              <ChinaRegionSelect
+                ref="regionRef"
+                :province="regionObj.province"
+                :city="regionObj.city"
+                :district="regionObj.district"
+              />
+
               <FormField v-slot="{ componentField }" name="userDestination">
                 <FormItem>
                   <FormLabel>个性签名</FormLabel>
@@ -293,7 +345,7 @@
             style="display: inline-block; font-size: 18px"
             icon="f7:money-yen"
           />&ensp;毕业薪资:
-          <span>{{ `${userInfo.salaryYear / 1000}k` }}</span>
+          <span>{{ formatCurrency(userInfo.salaryYear) }}</span>
         </p>
         <p>
           <Icon
@@ -382,6 +434,9 @@ import "cropperjs/dist/cropper.css";
 
 const { showAlert } = useAlert();
 
+import ChinaRegionSelect from "./ChinaRegionSelect.vue";
+import { Copy } from "lucide-vue-next";
+
 const imageUrl = ref("");
 const uploadStatus = ref("");
 const cropper = ref(null); // 裁剪组件实例
@@ -423,6 +478,7 @@ const handleFileChange = (event) => {
 
 function uploadFile() {
   cropper.value.getCroppedCanvas().toBlob((blob) => {
+    console.log("blob", blob);
     // 创建 FormData 对象
     const formData = new FormData();
     formData.append("headPortrait", blob); // 将 Blob 添加到 FormData
@@ -467,57 +523,72 @@ const formSchema = toTypedSchema(
       .regex(qqNumberRegex, { message: "请输入正确的QQ账号" })
       .optional(),
     userDestination: z.string().max(50, "个性签名不能超过50个字"),
-    graduationDestination: z.string().max(20, "毕业去向不能超过20个字"),
+    graduationDestination: z
+      .string()
+      .max(20, "毕业去向不能超过20个字")
+      .optional(),
+    lanQiaoCount: z
+      .number({
+        invalid_type_error: "蓝桥杯获奖次数必须填写数字",
+        required_error: "蓝桥杯获奖次数不能为空",
+      })
+      .min(0, "蓝桥杯获奖次数不能少于0次")
+      .max(100, "次数超过合理范围")
+      .optional(),
+    copyrightCount: z
+      .number({
+        invalid_type_error: "软著数量必须填写数字",
+        required_error: "软著数量不能为空",
+      })
+      .min(0, "软著数量不能少于0个")
+      .max(100, "数量超过合理范围")
+      .optional(),
+    salaryYear: z
+      .number({
+        invalid_type_error: "毕业薪资必须填写数字",
+        required_error: "毕业薪资不能为空",
+      })
+      .min(0, "毕业薪资不能少于0元")
+      .optional(),
   }),
+
 );
 
-let userInfo = reactive<UserInfo>({
-  clazz: "",
-  direction: "",
-  email: "",
-  grade: "",
-  graduationDestination: "",
-  group: "",
-  headPortrait: "",
-  lastLoginTime: "",
-  lifePhoto: [],
-  name: "",
-  phone: "",
-  qq: "",
-  sex: "",
-  studyId: "",
-  userDestination: "",
-});
+// 选中省市区的值
 
-// 定义UserInfo接口
-interface UserInfo {
-  clazz: string;
-  direction: string;
-  email: string;
-  grade: string;
-  graduationDestination: string;
-  group: string;
-  headPortrait: string;
-  lastLoginTime: string;
-  lifePhoto: [];
-  name: string;
-  phone: string;
-  qq: string;
-  sex: string;
-  studyId: string;
-  userDestination: string;
-}
+let userInfo = reactive({});
+
+// // 定义UserInfo接口
+// interface UserInfo {
+//   clazz: string;
+//   direction: string;
+//   email: string;
+//   grade: string;
+//   graduationDestination: string;
+//   group: string;
+//   headPortrait: string;
+//   lastLoginTime: string;
+//   lifePhoto: [];
+//   name: string;
+//   phone: string;
+//   qq: string;
+//   sex: string;
+//   studyId: string;
+//   userDestination: string;
+// }
 
 const form = useForm({
   validationSchema: formSchema,
 });
+const regionRef = ref(null);
 
 const onSubmit = form.handleSubmit((values) => {
   console.log("修改信息表单提交成功!", values);
+  console.log("当前选区:", regionRef.value?.selectedRegion);
   executeRequest({
     url: "/user/updateUserInfo",
     method: "put",
-    requestData: values,
+    requestData: { ...values, area: regionRef.value?.selectedRegion },
   }).then(() => {
     console.log("修改成功：", data.value);
     showAlert("修改成功", "pass");
@@ -565,6 +636,7 @@ let phone = ref("");
 let qq = ref("");
 let userDestination = ref("");
 let graduationDestination = ref("");
+let regionObj = ref({});
 // 获取用户信息函数
 async function getUserInfo() {
   await executeRequest({ url: `/user/getUserInfoByUserId/${userId}` });
@@ -576,6 +648,7 @@ async function getUserInfo() {
     qq.value = userInfo.qq;
     userDestination.value = userInfo.userDestination;
     graduationDestination.value = userInfo.graduationDestination;
+    regionObj.value = convertToRegionObject(userInfo.area);
   }
   console.log("请求结果", data.value);
 }
@@ -588,7 +661,25 @@ function initForm() {
     qq: userInfo.qq,
     userDestination: userInfo.userDestination,
     graduationDestination: userInfo.graduationDestination,
+    salaryYear: userInfo.salaryYear,
+    lanQiaoCount: userInfo.lanQiaoCount,
+    copyrightCount: userInfo.copyrightCount,
   });
+}
+
+function formatCurrency(amount = 0) {
+  let parts = amount.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+function convertToRegionObject(str) {
+  const parts = str.split(",");
+  return {
+    country: parts[0] || "",
+    province: parts[1] || "",
+    city: parts[2] || "",
+    district: parts[3] || "",
+  };
 }
 </script>
 <style lang="scss" scoped>

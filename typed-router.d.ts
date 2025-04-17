@@ -20,7 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/[...404]': RouteRecordInfo<'/[...404]', '/:404(.*)', { 404: ParamValue<true> }, { 404: ParamValue<false> }>,
-    '/admin': RouteRecordInfo<'/admin', '/admin', Record<never, never>, Record<never, never>>,
+    'admin': RouteRecordInfo<'admin', '/admin', Record<never, never>, Record<never, never>>,
     '/admin/attendance': RouteRecordInfo<'/admin/attendance', '/admin/attendance', Record<never, never>, Record<never, never>>,
     '/admin/attendance/overview': RouteRecordInfo<'/admin/attendance/overview', '/admin/attendance/overview', Record<never, never>, Record<never, never>>,
     '/admin/attendance/statistics': RouteRecordInfo<'/admin/attendance/statistics', '/admin/attendance/statistics', Record<never, never>, Record<never, never>>,
@@ -52,7 +52,7 @@ declare module 'vue-router/auto-routes' {
     '/admin/recruitment/recruitment': RouteRecordInfo<'/admin/recruitment/recruitment', '/admin/recruitment/recruitment', Record<never, never>, Record<never, never>>,
     '/Alert': RouteRecordInfo<'/Alert', '/Alert', Record<never, never>, Record<never, never>>,
     '/application': RouteRecordInfo<'/application', '/application', Record<never, never>, Record<never, never>>,
-    '/community': RouteRecordInfo<'/community', '/community', Record<never, never>, Record<never, never>>,
+    'community': RouteRecordInfo<'community', '/community', Record<never, never>, Record<never, never>>,
     '/community/blog': RouteRecordInfo<'/community/blog', '/community/blog', Record<never, never>, Record<never, never>>,
     '/community/blog/hot': RouteRecordInfo<'/community/blog/hot', '/community/blog/hot', Record<never, never>, Record<never, never>>,
     '/community/blog/hot/[title]': RouteRecordInfo<'/community/blog/hot/[title]', '/community/blog/hot/:title', { title: ParamValue<true> }, { title: ParamValue<false> }>,

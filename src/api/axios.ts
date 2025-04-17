@@ -35,6 +35,7 @@ apiClient.interceptors.response.use(
   (response) => {
     if (response.data.code === 401) {
       console.log("token过期或未登录");
+      localStorage.removeItem("token");
       router.push("/login");
     }
     return response.data;

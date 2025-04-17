@@ -47,7 +47,6 @@
 
 <script setup lang="ts">
 import { Skeleton } from "@/components/ui/skeleton";
-// @ts-expect-error:this url is not find
 import NoData from "@/components/loading/NoData.vue";
 import {
   Tooltip,

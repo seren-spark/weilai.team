@@ -4,14 +4,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 const props = defineProps<{
   avatar?: string | undefined;
   isLoading?: boolean | undefined;
-  customClass?:string|undefined
+  customClass?: string | undefined;
 }>();
 console.log(props.customClass);
-
+console.log(props.avatar);
 </script>
 
 <template>
-  <div   :class=" ` avatar-container `+customClass?customClass:'' " >
+  <div :class="` avatar-container ` + customClass ? customClass : ''">
     <div v-if="isLoading" class="flex items-center space-x-4">
       <Skeleton class="h-12 w-12 rounded-full" />
       <div class="space-y-2">
@@ -20,11 +20,16 @@ console.log(props.customClass);
       </div>
     </div>
 
-    <div v-else  :class="'avatar-info '+customClass?customClass:'' ">
-      <Avatar class="w-full h-full ">
-        <AvatarImage :src="avatar ? avatar : ''" alt="@radix-vue" id="avatarImage"  class="h-full w-full " />
+    <div v-else :class="'avatar-info ' + customClass ? customClass : ''">
+      <Avatar class="w-full h-full">
+        <AvatarImage
+          :src="avatar ? avatar : ''"
+          alt="@radix-vue"
+          id="avatarImage"
+          class="h-full w-full"
+        />
         <AvatarFallback>
-          <img src="/public/defaultAvatar.png" class="default-avatar"/>
+          <img src="/public/defaultAvatar.png" class="default-avatar" />
         </AvatarFallback>
       </Avatar>
     </div>
@@ -41,7 +46,7 @@ console.log(props.customClass);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  min-height:30px ;
+  min-height: 30px;
   width: 100%;
   height: 100%;
 
@@ -52,15 +57,13 @@ console.log(props.customClass);
     align-items: center;
     gap: 10px;
   }
-  .default-avatar{
+  .default-avatar {
     display: block;
-    
-    width:var(--avatar) ;
-    height:100%;
+
+    width: var(--avatar);
+    height: 100%;
     height: var(--avatar);
-  object-fit: cover;
-  
+    object-fit: cover;
   }
 }
-
 </style>

@@ -11,6 +11,7 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
 {
   "meta": {
     "title": "权限管理",
+    "roles": "admin_plus",
     "thirdNavItems": [
       {
         "title": "权限",
