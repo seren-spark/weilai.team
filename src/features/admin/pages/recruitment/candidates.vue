@@ -290,6 +290,24 @@ const actionItems = ref([
     onclick: DeleteCandidate,
   },
 ]);
+// const currentTableData=ref({
+//   id:"",
+//   name:""
+// })
+// const getCurrentTableData=(id:string,name:string)=>{
+//   currentTableData.value={
+//     id,
+//     name
+//   }
+// }
+const actions = computed(() => {
+  if(status.value === 0){
+    return actionItems.value
+  }
+  else{
+    return actionItems.value.filter((item, index) => index !== 2)
+  }
+});
 
 const actions = computed(() => {
   if(status.value === 0){

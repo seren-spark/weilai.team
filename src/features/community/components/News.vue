@@ -139,7 +139,7 @@ if (!props.isTag) {
       watch(data, () => {
         console.log(data.value);
         loading.value = load.value;
-        articleList.value = data.value?.data.records;
+        articleList.value = data.value?.data.records || [];
       });
     },
     { deep: true, immediate: true },

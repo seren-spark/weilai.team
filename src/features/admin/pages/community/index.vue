@@ -421,7 +421,7 @@ function df(date: Date, format = "yyyy - MM - dd HH:mm") {
 </template>
 
 <style lang="scss" scoped>
-@import "@admin/styles/table.scss";
+@use "@admin/styles/table.scss";
 $font: #8c9296;
 
 .group-leader {
