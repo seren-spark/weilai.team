@@ -3,13 +3,22 @@ import HorizontalBar from "./salary/HorizontalBar.vue";
 import MultipeBar from "./salary/MultipeBar.vue";
 import AreaChart from "./salary/AreaChartBar.vue";
 
-
+const props = defineProps({
+  javaAll: {
+    type: Number,
+    default: 0,
+  },
+  htmlAll: {
+    type: Number,
+    default: 0,
+  },
+});
 </script>
 <template>
   <div class="statistics">
     <div class="statistics-title">历届成员动向</div>
     <div class="statistics-content">
-      <HorizontalBar />
+      <HorizontalBar :java-all="props.javaAll" :html-all="props.htmlAll" />
       <AreaChart />
       <MultipeBar />
     </div>

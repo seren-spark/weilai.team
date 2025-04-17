@@ -2,13 +2,27 @@
 import { Progress } from "./Progress";
 import { ref, watchEffect } from "vue";
 
+const props = defineProps({
+  javaAll: {
+    type: Number,
+    default: 0,
+  },
+  htmlAll: {
+    type: Number,
+    default: 0,
+  },
+});
+
 const progress = ref({
-  frontEnd: 10,
-  backEnd: 10,
+  frontEnd: 0,
+  backEnd: 0,
 });
 watchEffect((cleanupFn) => {
   const timer = setTimeout(
-    () => ((progress.value.frontEnd = 50), (progress.value.backEnd = 70)),
+    () => (
+      (progress.value.frontEnd = props.htmlAll),
+      (progress.value.backEnd = props.javaAll)
+    ),
     500,
   );
   cleanupFn(() => clearTimeout(timer));
@@ -20,6 +34,7 @@ watchEffect((cleanupFn) => {
       <div class="horizontal-bar-title">前端programmer</div>
       <Progress
         v-model="progress.frontEnd"
+        :max="(props.javaAll + props.htmlAll) * 3"
         class="horizontal-bar-content front-end #447db3"
         :colors="''"
       ></Progress>
@@ -28,6 +43,7 @@ watchEffect((cleanupFn) => {
       <div class="horizontal-bar-title">后端programmer</div>
       <Progress
         v-model="progress.backEnd"
+        :max="(props.javaAll + props.htmlAll) * 3"
         class="horizontal-bar-content back-end #5dba9f"
       ></Progress>
     </div>
