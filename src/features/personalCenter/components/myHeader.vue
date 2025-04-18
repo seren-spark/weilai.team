@@ -717,10 +717,6 @@ function convertToRegionObject(str) {
     .infoBox {
       height: 50px;
 
-      .nameAndSex {
-        width: 70px;
-      }
-
       .job {
         font-size: 14px;
         color: #999;
