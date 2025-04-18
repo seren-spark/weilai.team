@@ -126,7 +126,7 @@ watch(
 );
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use "@/assets/styles/recruitment.scss";
 .adaptive {
   width: 100%;
@@ -143,4 +143,5 @@ watch(
     cursor: pointer;
   }
 }
+
 </style>

@@ -1,4 +1,5 @@
 import "@/assets/styles/index.scss";
+import "@/assets/styles/public.scss";
 import Alert from "@/pages/Alert.vue";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";

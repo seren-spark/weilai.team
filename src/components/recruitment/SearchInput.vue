@@ -51,7 +51,6 @@ const input_src = (e: Event) => {
   </div>
 </template>
 <style scoped lang="scss">
-@use "@/assets/styles";
 $boderColor: #393e46;
 .input {
   color: $boderColor;

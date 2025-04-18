@@ -171,7 +171,6 @@ const writeInterviewEvaluation = () => {
   </Card>
 </template>
 <style lang="scss" scoped>
-@use "@/assets/styles";
 @use "@/assets/styles/recruitment";
 
 .min-width {

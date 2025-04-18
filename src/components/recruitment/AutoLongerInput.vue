@@ -63,7 +63,6 @@ watch(isLonger, (newValue) => {
   </div>
 </template>
 <style scoped lang="scss">
-@use "@/assets/styles";
 #longer {
   width: 100%;
   background-color: var(--accent);

@@ -102,7 +102,6 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles";
 @use "@/assets/styles/recruitment.scss";
 .drapdown-btn {
   width: 100px;

@@ -165,7 +165,7 @@ form {
   }
 }
 
-// 表单消息提示区域样式（比如错误提示等）
+// 表单消息提示区域样式
 .error-message {
   color: var(--destructive-foreground);
   font-size: 14px;
