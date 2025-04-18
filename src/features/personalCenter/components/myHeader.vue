@@ -435,7 +435,6 @@ import "cropperjs/dist/cropper.css";
 const { showAlert } = useAlert();
 
 import ChinaRegionSelect from "./ChinaRegionSelect.vue";
-import { Copy } from "lucide-vue-next";
 
 const imageUrl = ref("");
 const uploadStatus = ref("");
