@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div v-else-if="loading" class="loading">
+    <div v-else-if="loading" class="news-loading">
       <div v-for="index in 6" :key="index" class="news-item">
         <div class="news-writer">
           <div class="flex items-center space-x-4">
@@ -203,7 +203,7 @@ const handleScroll = async () => {
 //动态定义头像
 
 #news,
-.loading {
+.news-loading {
   width: 100%;
   .news-item {
     padding: 0.975rem;
@@ -273,7 +273,7 @@ const handleScroll = async () => {
 }
 @media screen and (min-width: 900px) and (max-width: 1300px) {
   #news,
-  .loading {
+  .news-loading {
     .news-item {
       padding: 10px;
       border-radius: 10px;
