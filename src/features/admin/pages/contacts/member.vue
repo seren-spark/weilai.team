@@ -23,6 +23,7 @@ import { ChevronRight } from "lucide-vue-next";
 import { ref } from "vue";
 import Search from "../../components/contacts/Search.vue";
 import { getMembers } from "../../composables/useContacts";
+import { processFiles } from "@/composables/useXlsx";
 import Member from "./member/[member].vue";
 
 const userCount = ref(0);
@@ -39,8 +40,6 @@ getMembers().then((res) => {
   teamAble.value = res.teamAble;
   teamUserList.value = res.teamUserList;
 });
-
-
 
 function getMembersOfGroup(str: string) {
   let parts = str.split("$");
@@ -62,6 +61,20 @@ function getMembersOfGroup(str: string) {
     info: `${parts[0]},${parts[1]}`,
   };
 }
+// const handelXlsx = (e: Event) => {
+//   console.log("点击批量导入了");
+
+//   const target = e.target as HTMLInputElement;
+//   if (target.files) {
+//     processFiles(target.files[0])
+//       .then((response) => {
+//         console.log("上传成功", response);
+//       })
+//       .catch((error) => {
+//         console.error("上传失败", error);
+//       });
+//   }
+// };
 </script>
 
 <template>

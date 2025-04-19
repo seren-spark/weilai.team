@@ -237,8 +237,8 @@ function skip(e: Event) {
     display: flex;
     position: fixed;
     z-index: 5;
-    top: 70px;
-    height: 60px;
+    top: 3.4rem;
+    height: 3.8rem;
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
@@ -257,11 +257,11 @@ function skip(e: Event) {
       list-style: none;
       outline-style: none;
       width: 100%;
-      height: 45px;
+      height: 3rem;
       border: 1px solid #d0d9e4;
       border-radius: 25px;
       padding: 5px 10px;
-      padding-left: 40px;
+      padding-left: 2.5rem;
     }
     .search-icon {
       position: absolute;
@@ -281,7 +281,7 @@ function skip(e: Event) {
       height: 150px;
       text-align: center;
       line-height: 150px;
-      font-size: 15px;
+      font-size: 1rem;
       color: var(--secondary-foreground);
       cursor: default;
     }

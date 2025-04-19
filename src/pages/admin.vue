@@ -20,8 +20,7 @@ let haide = false;
         "icon": "material-symbols:overview-key-outline",
         "path": "/admin/profile",
         "redirect": "/admin/profile",
-
-        "roles": "team_admin"
+        "roles": "profile_admin"
       },
       {
         "name": "contacts",

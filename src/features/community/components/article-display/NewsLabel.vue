@@ -56,21 +56,23 @@ defineProps<{
 @media screen and (max-width: 768px) {
   .news-label {
     display: flex;
+    padding: var(--mobile-padding);
+    padding-top: 0rem;
     .type {
-      width: 50px;
+      width: 3rem;
       padding: 0;
-      font-size: 12px;
+      font-size: 0.8em;
       color: #909ba6;
       text-align: center;
       border-radius: 15px;
-      border: 2px solid #e1edf8;
+      border: 0.1rem solid #e1edf8;
       margin-right: 8px;
     }
 
     .labels {
       display: flex;
       color: #909ba6;
-      font-size: 12px;
+      font-size: 0.8rem;
       .label-item {
         display: flex;
         align-items: center;

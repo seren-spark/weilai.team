@@ -4,12 +4,12 @@
       <div v-for="item in articleList" :key="item.id" class="news-item">
         <div class="news-writer">
           <div
-            class="avatar"
+            :class="customClass"
             @click="skipPersonCenter(item.userId ? item.userId : 0)"
           >
             <UserAvatar
               :avatar="item.headPortrait"
-              custom-class="w-[3rem] h-[3rem]"
+              :custom-class="customClass"
             />
           </div>
           <div class="writer-info">
@@ -67,7 +67,7 @@ import {
   getArticle,
   getArticle2,
 } from "@community/composables/search";
-import { onMounted, provide, ref, watch } from "vue";
+import { onMounted, provide, ref, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 import NewsFooter from "./article-display/NewsFooter.vue";
 import { skipPersonCenter } from "@/composables/useCommunity";
@@ -96,6 +96,12 @@ const pages = ref<number>(1);
 const total = ref<number>(0);
 const current = ref<number>(1);
 const isOver = ref<boolean>(false);
+const isMobile = ref(window.innerWidth <= 768);
+
+const customClass = computed(() => {
+  return isMobile.value ? "w-[2rem] h-[2rem]" : "w-[3rem] h-[3rem]";
+});
+
 if (!props.isTag) {
   // 如果不是标签详情页
   watch(
@@ -194,6 +200,8 @@ const handleScroll = async () => {
 </script>
 
 <style scoped lang="scss">
+//动态定义头像
+
 #news,
 .loading {
   width: 100%;
@@ -207,6 +215,7 @@ const handleScroll = async () => {
       margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
+
       .avatar {
         cursor: pointer;
         width: 3.125rem;
@@ -218,10 +227,15 @@ const handleScroll = async () => {
         }
         margin-right: 5px;
       }
-
-      .time {
-        font-size: 0.825rem;
-        color: #909ba6;
+      .writer-info {
+        margin-left: 0.4rem;
+        .name {
+          font-size: 0.9em;
+        }
+        .time {
+          font-size: 0.825rem;
+          color: #909ba6;
+        }
       }
     }
   }
@@ -229,16 +243,17 @@ const handleScroll = async () => {
 
 @media screen and (max-width: 768px) {
   #news {
-    padding: 0 10px;
-    margin-top: 150px;
+    padding: 0 0.6rem;
+    margin-top: 8rem;
     .news-item {
       padding: 5px;
       margin-bottom: 8px;
       .news-writer {
-        padding-left: 10px;
-        margin: 0rem;
+        padding-left: 0.625rem;
+
         .writer-info {
           .name {
+            margin-left: 0.2rem;
             color: var(--secondary-foreground);
             font-size: 0.9em;
           }

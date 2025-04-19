@@ -4,14 +4,20 @@
   height: auto;
 }
 
-// @media screen and (max-width: 1200px) {
-//   .content {
-//     padding: 0 10px;
-//   }
-// }
 @media screen and (max-width: 768px) {
   .content {
     padding: 0 0;
     padding-bottom: 60px;
+  }
+  #news {
+    padding: 0 0.6rem;
+    margin-top: 8rem;
+    .news-item {
+      padding: 5px;
+      margin-bottom: 8px;
+      .news-writer {
+        padding-left: 0.625rem;
+      }
+    }
   }
 }

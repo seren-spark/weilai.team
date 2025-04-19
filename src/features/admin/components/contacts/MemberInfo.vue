@@ -107,8 +107,9 @@ watch(
   (newVal) => {
     if (newVal) {
       getMemberInfo(newVal).then((res) => {
-        userInfo.value = (res as TeamUserList) || "";
+        console.log(res, "66666");
 
+        userInfo.value = (res as TeamUserList) || "";
         name = userInfo.value.name;
       });
     }
@@ -149,6 +150,13 @@ const handleConfirm = () => {
     dialogRef.value.$emit("update:open", false); // 触发 'update:open' 事件通知 Dialog 组件更新状态
   }
 };
+console.log();
+watch(
+  () => userInfo.value.allGroup,
+  (newValue) => {
+    console.log(newValue);
+  },
+);
 </script>
 
 <template>
@@ -232,14 +240,6 @@ const handleConfirm = () => {
             </SelectContent>
           </Select>
         </div>
-        <!-- <div class="grid grid-cols-6 items-center gap-5">
-          <Label for="username" class="text-right"> 组长 : </Label>
-          <Input
-            id="username"
-            class="col-span-4"
-            v-model="userInfo.ladleName"
-          />
-        </div> -->
       </div>
       <DialogFooter>
         <Button @click="handleConfirm"> 确定 </Button>
@@ -249,6 +249,9 @@ const handleConfirm = () => {
 </template>
 
 <style lang="scss" scoped>
+label {
+  width: 3rem;
+}
 input,
 .select-text {
   color: var(--secondary-foreground);
