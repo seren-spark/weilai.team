@@ -7,8 +7,8 @@
           清空所有({{ totalCount }})
         </div>
       </div>
-      <div class="messageCon">
-        <div v-if="loading" class="loading-item">
+      <div ref="scrollRef" class="messageCon">
+        <div v-if="loading && pageNumber === 1" class="loading-item">
           <div
             v-for="index in 6"
             :key="index"
@@ -30,6 +30,18 @@
           >
             <MesItem :message="message" @like="run()" />
           </div>
+          <div v-if="loadingMore" class="loading-more">
+            <div class="flex items-center space-x-4">
+              <Skeleton class="h-12 w-12 rounded-full bg-[--muted]" />
+              <div class="space-y-2">
+                <Skeleton class="h-4 w-[250px] bg-[--muted]" />
+                <Skeleton class="h-4 w-[200px] bg-[--muted]" />
+              </div>
+            </div>
+          </div>
+          <div v-if="isOver && messages.length > 6" class="over">
+            已经到底了
+          </div>
         </div>
       </div>
     </div>
@@ -44,21 +56,25 @@ import NoData from "../../../../components/loading/NoData.vue";
 import Rightbar from "@/components/community/Rightbar.vue";
 import { Icon } from "@iconify/vue";
 import MesItem from "../../compontent/MesItem.vue";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, onUnmounted } from "vue";
 import { useAlert } from "../../../../composables/useAlert";
 import type { SSEMessageData, SSENoticeData } from "../../../../types/sseType";
 import { useSseStore } from "../../../../store/useSseStore";
 import { useMessageStore } from "@/store/messageStore";
 import apiClient from "@/api/axios";
 import { useRequest } from "vue-request";
+
+const { showAlert } = useAlert();
 const messageStore = useMessageStore();
 const sseStore = useSseStore();
 const messages = ref<SSEMessageData[]>([]);
 const messageType = 1;
 const pageSize = 10;
-const pageNumber = 1;
+const pageNumber = ref(1);
 const totalCount = ref(0);
-const { showAlert } = useAlert();
+const scrollRef = ref<HTMLElement>();
+const loadingMore = ref(false);
+const isOver = ref(false);
 
 onMounted(() => {
   sseStore.subscribe("message", (data: SSENoticeData | SSEMessageData) => {
@@ -69,25 +85,45 @@ onMounted(() => {
     }
   });
   run();
+  window.addEventListener("scroll", handleScroll);
 });
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
+
 //渲染消息列表
 const messageList = () => {
   return apiClient.get(
-    `/message/getMessageInfo?messageType=${messageType}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
+    `/message/getMessageInfo?messageType=${messageType}&pageSize=${pageSize}&pageNumber=${pageNumber.value}`,
   );
 };
+
 const { data, loading, run } = useRequest(messageList, {
   loadingKeep: 650,
 });
+
 watch(
   () => data.value,
   () => {
     if (data.value?.code == 200) {
       totalCount.value = data.value?.data.PageInfo.totalCount;
       const allMessages = data.value?.data.AllMessages || [];
-      messages.value = allMessages;
-      console.log(allMessages);
+
+      if (pageNumber.value === 1) {
+        messages.value = allMessages;
+      } else {
+        messages.value = [...messages.value, ...allMessages];
+      }
+      if (
+        allMessages.length < pageSize ||
+        messages.value.length >= totalCount.value
+      ) {
+        isOver.value = true;
+      }
+
       messageStore.setLikeStatus(false);
+      loadingMore.value = false;
     } else if (data.value?.code == 401) {
       showAlert("请先登录", "waring");
     } else {
@@ -95,6 +131,26 @@ watch(
     }
   },
 );
+
+// 滚动加载更多
+const handleScroll = async () => {
+  if (loadingMore.value || isOver.value) {
+    return;
+  }
+  const scrollTop =
+    document.documentElement.scrollTop || document.body.scrollTop;
+  const clientHeight =
+    document.documentElement.clientHeight || document.body.clientHeight;
+  const scrollHeight =
+    document.documentElement.scrollHeight || document.body.scrollHeight;
+
+  if (scrollTop + clientHeight >= scrollHeight - 100) {
+    loadingMore.value = true;
+    pageNumber.value++;
+    run();
+  }
+};
+
 //清空所有
 function deleteAllMes(messageType: number) {
   return apiClient.delete(
@@ -113,11 +169,14 @@ function deleteAll() {
     })
     .catch(() => {});
 }
+
 watch(
   () => deleteData.value,
   () => {
     if ((deleteData.value as any).code == 200) {
       showAlert("删除成功", "pass");
+      pageNumber.value = 1;
+      isOver.value = false;
       run();
     } else {
       showAlert("删除失败", "error");
@@ -148,6 +207,22 @@ watch(
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+  }
+  .loading-more {
+    width: 100%;
+    padding: 10px;
+    .flex {
+      width: 100%;
+      min-height: 80px;
+    }
+  }
+  .over {
+    text-align: center;
+    font-size: 0.825rem;
+    color: var(--secondary-foreground);
+    font-weight: 500;
+    width: 100%;
+    padding: 10px;
   }
 }
 .mesCon {

@@ -16,16 +16,17 @@ import Button from "@/components/ui/button/Button.vue";
 
 <style scoped lang="scss">
 .titleCon {
-  width: 70%;
+  width: 100%;
   height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
-  z-index: 4;
+  z-index: 6;
   top: 0;
   left: 0;
   margin-top: 15rem;
+  pointer-events: none;
   .title {
     color: white;
     font-size: 63px;
@@ -78,6 +79,7 @@ import Button from "@/components/ui/button/Button.vue";
     z-index: 1;
     transition: 2s;
     overflow: hidden;
+    pointer-events: auto;
   }
   .more::before,
   .more::after {

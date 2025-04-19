@@ -37,16 +37,18 @@ watch(
   () => data.value,
   () => {
     if (data.value?.code === 200) {
-      showAlert("删除成功", "pass");
       if (props.message.messageType === 1 || props.message.messageType === 2) {
         emit("like");
+        showAlert("删除成功", "pass");
       } else if (
         props.message.messageType === 3 ||
         props.message.messageType === 4
       ) {
         emit("comment");
+        showAlert("删除成功", "pass");
       } else if (props.message.messageType === 5) {
         emit("system");
+        showAlert("删除成功", "pass");
       }
     } else if (data.value?.code === 4003) {
       showAlert("未查找到信息", "error");

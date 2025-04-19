@@ -152,6 +152,7 @@ const submitReply = async (commentId: number, userId: number) => {
   if (data.value?.code == 200) {
     showAlert("评论成功", "pass");
     commentTexts.value = "";
+    finalCommentText.value = "";
     photoUrls.value = [];
     imageTags.value = [];
     emit("reply", commentId);

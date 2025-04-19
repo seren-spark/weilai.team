@@ -23,6 +23,8 @@ watch(
   (newValue) => {
     if (newValue) {
       if (newValue.code == 200) {
+        console.log(newValue);
+
         comments.length = 0;
         const commentList = newValue.data.postCommentOne;
         commentList.forEach((comment: any) => {
