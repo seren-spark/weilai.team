@@ -207,6 +207,7 @@ watch(
     watch(
       [data, error, loading],
       ([newData, newError]) => {
+        // console.log(newData);
         if (newData?.data.data) {
           messageCard.value = newData.data.data.map((card: any) => {
             return {

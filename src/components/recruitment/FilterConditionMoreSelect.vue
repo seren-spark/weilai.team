@@ -102,7 +102,6 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles";
 @use "@/assets/styles/recruitment.scss";
 .drapdown-btn {
   width: 100px;
@@ -125,7 +124,7 @@ watch(
   gap: 10px;
   padding: 5px;
   .selected-items {
-    font-size: 0.4em;
+    font-size: 0.7em;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;

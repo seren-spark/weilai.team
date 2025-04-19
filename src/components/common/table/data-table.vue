@@ -67,16 +67,24 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { defineProps, ref, computed, watch } from "vue";
-import type {
-  IAllApplyUserVO,
-  tableHeadersVO,
-} from "@/types/recruitmentType";
 import { NewNoData } from "@/components/recruitment";
 
+// 定义通用的列和行接口
+interface TableColumn {
+  key: string;
+  title: string;
+}
+
+interface TableRowData {
+  id: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
 const props = defineProps<{
-  columns: tableHeadersVO[];//表头
-  rows: IAllApplyUserVO[];// 表格数据
-  isShowCheckbox: boolean;// 是否使用复选框
+  columns: TableColumn[]; // 表头
+  rows: TableRowData[]; // 表格数据
+  isShowCheckbox: boolean; // 是否使用复选框
 }>();
 
 const selectedIds = ref<string[]>([]);
@@ -118,7 +126,7 @@ watch(
 );
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use "@/assets/styles/recruitment.scss";
 .adaptive {
   width: 100%;
@@ -135,4 +143,5 @@ watch(
     cursor: pointer;
   }
 }
+
 </style>

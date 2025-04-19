@@ -9,6 +9,7 @@ const props = withDefaults(
   defineProps<ProgressRootProps & { class?: HTMLAttributes["class"] }>(),
   {
     modelValue: 0,
+    max: 100,
   },
 );
 
@@ -35,7 +36,7 @@ const delegatedProps = computed(() => {
   >
     <ProgressIndicator
       class="h-full w-full flex-1 bg-primary transition-all"
-      :style="`transform: translateX(-${100 - (props.modelValue ?? 0)}%); background-color: ${color}`"
+      :style="`transform: translateX(-${100 - (props.modelValue ?? 0)/max*300}%); background-color: ${color}`"
     />
   </ProgressRoot>
 </template>

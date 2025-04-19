@@ -194,7 +194,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineEmits, watchEffect, watch ,onMounted } from "vue";
+import { ref, reactive, defineEmits, watchEffect, watch, onMounted } from "vue";
 import {
   FormField,
   FormItem,
@@ -225,14 +225,35 @@ import {
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
 import { useAlert } from "@/composables/useAlert";
+
 const { showAlert } = useAlert();
+
+// 定义类型别名
+type FormDataType = {
+  ApplyUser: string;
+  place: string;
+  interviewer: string[];
+  date: DateValue | null;
+  startTime: string;
+  endTime: string;
+};
+
+type ErrorType = {
+  ApplyUser: string;
+  place: string;
+  interviewer: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+};
+
+type ChoiceType = { label: string; value: string; id: string };
 
 const close = (event: Event) => {
   // 点击遮罩层关闭
   if (event.target === event.currentTarget) {
     emit("close");
   }
-  return;
 };
 
 const props = defineProps<{
@@ -243,45 +264,51 @@ const props = defineProps<{
 const emit = defineEmits(["close"]);
 
 // 定义表单数据结构
-const formData = reactive<{
-    ApplyUser: string;
-    place: string;
-    interviewer: string[];
-    date: DateValue | null;
-    startTime: string;
-    endTime: string;
-  }>({
-    ApplyUser: props.name,
-    place: "",
-    interviewer: [],
-    date: null,
-    startTime: "",
-    endTime: "",
-  });
+const formData = reactive<FormDataType>({
+  ApplyUser: props.name,
+  place: "",
+  interviewer: [],
+  date: null,
+  startTime: "",
+  endTime: "",
+});
 
-//当props改变时清空所有表单项 没有变化时保留数据
+// 定义错误对象
+const errors = reactive<ErrorType>({
+  ApplyUser: "",
+  place: "",
+  interviewer: "",
+  date: "",
+  startTime: "",
+  endTime: "",
+});
+
+// 重置表单和错误信息
+
+const resetFormAndErrors = () => {
+  Object.keys(formData).forEach((key) => {
+    if (key === "date") {
+      (formData as  any )[key] = null;
+    } else if (key === "interviewer") {
+      (formData as any)[key] = [];
+    } else {
+      (formData as any)[key] = "";
+    }
+  });
+  Object.keys(errors).forEach((key) => {
+    (errors as any)[key] = "";
+  });
+};
+
+// 当 props 改变时清空所有表单项，没有变化时保留数据
 watch(
   () => props.isOpen,
   () => {
     if (!props.isOpen) {
-      Object.keys(formData).forEach((key) => {
-        if (key === "date") {
-          formData[key] = null;
-        } else if (key === "interviewer") {
-          formData[key] = [];
-        } else {
-          formData[
-            key as Exclude<keyof typeof formData, "date" | "interviewer">
-          ] = "";
-        }
-      });
-      //清空错误信息
-      Object.keys(errors).forEach((key) => {
-        errors[key as keyof typeof errors] = "";
-      });
+      resetFormAndErrors();
     }
     formData.ApplyUser = props.name;
-  },
+  }
 );
 
 // 定义 Zod 模式
@@ -300,7 +327,7 @@ const formSchema = z
         day: z.number(),
       })
       .nullable()
-      .refine((date) => date !== null, "请选择面试日期"), // 修改错误消息
+      .refine((date) => date !== null, "请选择面试日期"),
     startTime: z
       .string()
       .min(1, "开始时间不能为空")
@@ -331,18 +358,19 @@ const formSchema = z
     }
   });
 
-const choices = ref<[{ label: string; value: string; id: string }]>();
+const choices = ref<ChoiceType[]>();
 const searchName = ref("");
-//从后端拿到面试官信息
 
+// 从后端拿到面试官信息
 onMounted(() => {
   const { data, error } = useRequest(() =>
-    getAllInterviewer({ pageNo: 1, pageSize: 100, name: searchName.value }),
+    getAllInterviewer({ pageNo: 1, pageSize: 100, name: searchName.value })
   );
 
   watchEffect(() => {
     if (error.value) {
-      console.log("error", error.value);
+      console.error("获取面试官信息出错:", error.value);
+      showAlert("获取面试官信息失败，请稍后重试", "error");
     }
     if (data.value?.data.code === 200) {
       choices.value = data.value?.data.data.data.map(
@@ -350,7 +378,7 @@ onMounted(() => {
           label: item.name,
           value: item.name,
           id: item.id,
-        }),
+        })
       );
     }
   });
@@ -358,14 +386,14 @@ onMounted(() => {
 
 const selectedInterviewersIds = ref<string[]>([]);
 
-//获取到选择的面试官的id
+// 获取到选择的面试官的 id
 const handleInterviewerChange = (value: string, id: string) => {
   if (formData.interviewer.includes(value)) {
     formData.interviewer = formData.interviewer.filter(
-      (interviewer) => interviewer !== value,
+      (interviewer) => interviewer !== value
     );
     selectedInterviewersIds.value = selectedInterviewersIds.value.filter(
-      (id) => id !== value,
+      (interviewerId) => interviewerId !== id
     );
   } else {
     if (formData.interviewer.length < 3) {
@@ -376,38 +404,23 @@ const handleInterviewerChange = (value: string, id: string) => {
     }
   }
 };
+
 // 处理日期更新
 const handleDateUpdate = (value: DateValue | null) => {
   formData.date = value;
 };
 
-// 定义错误对象
-const errors = reactive({
-  ApplyUser: "",
-  place: "",
-  interviewer: "",
-  date: "",
-  startTime: "",
-  endTime: "",
-});
-
 const handleSubmit = () => {
-  //如果错误信息不为空，清空错误信息
-  Object.keys(errors).forEach((key) => {
-    errors[key as keyof typeof errors] = "";
-  });
+  // 清空错误信息
+  resetFormAndErrors();
 
   // 使用 Zod 进行校验
   const result = formSchema.safeParse(formData);
 
   if (result.success) {
     console.log("表单数据有效:", result.data);
-    // 清空错误消息
-    Object.keys(errors).forEach((key) => {
-      errors[key as keyof typeof errors] = "";
-    });
     // 提交表单数据
-    const { data } = useRequest(() =>
+    const { data, error } = useRequest(() =>
       arrangeInterviewer({
         userId: props.id,
         startTime: `${formData.date} ${formData.startTime}`,
@@ -416,28 +429,32 @@ const handleSubmit = () => {
         firstHr: selectedInterviewersIds.value[0],
         secondHr: selectedInterviewersIds.value[1],
         thirdHr: selectedInterviewersIds.value[2],
-      }),
+      })
     );
+
     watchEffect(() => {
-      console.log("data", data.value?.data);
+      if (error.value) {
+        console.error("面试安排出错:", error.value);
+        showAlert("面试安排失败，请稍后重试", "error");
+      }
       if (data.value?.data.code === 200) {
         showAlert("面试安排成功", "pass");
         emit("close");
-      }else{
-        showAlert(data?.value?.data.message , "error");
+      } else {
+        showAlert(data?.value?.data.message || "面试安排失败", "error");
       }
     });
   } else {
     console.error("表单数据无效:", result.error);
     // 处理校验错误，例如显示错误消息
     result.error.issues.forEach((issue) => {
-      errors[issue.path[0] as keyof typeof errors] = issue.message;
+      errors[issue.path[0] as keyof ErrorType] = issue.message;
     });
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use "@/assets/styles/recruitment.scss";
 .interviewer-selected {
   background-color: var(--accent);

@@ -89,7 +89,7 @@ const resetCondition = () => {
     </PopoverContent>
   </Popover>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 //为时间选择组件 设置选中特效
 @use "@/assets/styles";
 

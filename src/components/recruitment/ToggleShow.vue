@@ -50,7 +50,6 @@ watch(status, (newValue) => {
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles";
 $undertone: #647499;
 
 .toggle-show {

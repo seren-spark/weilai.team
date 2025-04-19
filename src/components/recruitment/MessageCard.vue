@@ -12,7 +12,7 @@ import { watch } from "vue";
 import { InterviewEvaluationShow, WriteInterviewEvaluation } from "./dialog";
 
 interface IProp {
-  userId: string;
+  ApplyUserId: string;
   startTime: string;
   endTime: string;
   InterviewAddress: string;
@@ -95,7 +95,7 @@ const writeInterviewEvaluation = () => {
 <template>
   <WriteInterviewEvaluation
     :id="InterviewRecordId"
-    :user-id="props.cardMessage.userId"
+    :user-id="props.cardMessage.ApplyUserId"
     :is-open="writeInterviewEvaluationIsOpen"
     @refresh-page="emit('refreshPage')"
     @close="writeInterviewEvaluationIsOpen = false"
@@ -164,14 +164,13 @@ const writeInterviewEvaluation = () => {
         @click="viewComment(InterviewRecordId)"
         >查看面评</Button
       >
-      <Button class="btn-style" @click="viewResume(cardMessage.userId)"
+      <Button class="btn-style" @click="viewResume(cardMessage.ApplyUserId)"
         >查看简历</Button
       >
     </CardFooter>
   </Card>
 </template>
 <style lang="scss" scoped>
-@use "@/assets/styles";
 @use "@/assets/styles/recruitment";
 
 .min-width {

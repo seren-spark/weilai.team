@@ -29,9 +29,8 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useRequest } from "@/composables/useRequest";
 
-
 import { Icon } from "@iconify/vue";
-import { ref,watch } from "vue";
+import { ref, watch } from "vue";
 const { executeRequest, error, data } = useRequest();
 
 let currentPage = 1;
@@ -44,6 +43,7 @@ let authorityList = [
   "community_admin",
   "recruit_admin",
   "notice_admin",
+  "attendance_admin",
 ];
 function handlePageChange(newPage: number) {
   currentPage = newPage;
@@ -81,8 +81,10 @@ function authorityTransformer(authority: string) {
     return "招新管理员";
   } else if (authority == "admin_plus") {
     return "权限管理员";
-  } else {
+  } else if (authority == "notice_admin") {
     return "公告管理员";
+  } else {
+    return "考勤管理员";
   }
 }
 
@@ -189,18 +191,16 @@ function reset() {
                   <span class="text-sm">筛选：</span>
                   <div class="ml-2 mr-2 flex">
                     <input
-                    v-model="isTypeAllSelected"
-
+                      v-model="isTypeAllSelected"
                       type="checkbox"
                       @change="handleTypeSelectAll"
                     />
                     &nbsp;全选
                   </div>
                   <div
-                  v-for="item in authorityList"
+                    v-for="item in authorityList"
                     :key="item"
                     class="ml-2 mr-2 flex"
-
                   >
                     <input
                       type="checkbox"
@@ -215,8 +215,7 @@ function reset() {
                     <span class="text-sm">姓名：</span>
                     <div class="search_input_box">
                       <input
-                      v-model="content"
-
+                        v-model="content"
                         placeholder="请输入姓名"
                         class="search_input"
                         @keydown.enter="getUserList()"
@@ -262,10 +261,9 @@ function reset() {
                     </TableCell>
                     <TableCell class="hidden md:table-cell">
                       <Badge
-                      v-for="authority in item.authority"
+                        v-for="authority in item.authority"
                         :key="authority"
                         :class="authority"
-
                         variant="outline"
                         >{{ authorityTransformer(authority) }}
                       </Badge>
@@ -305,8 +303,7 @@ function reset() {
                                 <TableRow>
                                   <TableHead>
                                     <input
-                                    v-model="isAllSelected"
-
+                                      v-model="isAllSelected"
                                       type="checkbox"
                                       @change="handleSelectAll"
                                     />
@@ -688,6 +685,10 @@ td {
 .notice_admin {
   color: #ff64ff;
   border-color: #ff64ff;
+}
+.attendance_admin {
+  color: #6da8ff;
+  border-color: #6da8ff;
 }
 @media (max-width: 768px) {
   .content {
