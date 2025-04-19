@@ -47,7 +47,7 @@
       </div>
       <swiper-slide>
         <img
-          src="../../../../assets/img/homePage/image.png"
+          src="../../../../assets/img/homePage/bg4.png"
           alt=""
           width="100%"
           height="100%"
