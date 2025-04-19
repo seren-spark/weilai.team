@@ -9,7 +9,6 @@ import {
   initUpload,
   checkUpload,
   mergeUpload,
-  uploadFileInfo,
 } from "@/api/file";
 // 假设这是你的文件后缀类型工具函数
 import { fileSuffixTypeUtil } from "@/utils/fileUtils";

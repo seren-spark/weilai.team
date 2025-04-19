@@ -1,19 +1,12 @@
 <template>
   <div class="mySchedule">
     <Dialog v-if="userStore.isSelf" v-model:open="open">
-      <DialogTrigger as-child>
-        <Button
-          variant="outline"
-          class="bg-green-100 text-green-600 hover:border-green-500 hover:text-green-600 hover:bg-green-100 mb-4"
-        >
-          添加课程
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger as-child> </DialogTrigger>
       <DialogContent
         class="sm:max-w-[425px] bg-white max-h-[900px] overflow-y-auto"
       >
         <DialogHeader>
-          <DialogTitle>添加课程</DialogTitle>
+          <DialogTitle> 课程信息 </DialogTitle>
           <DialogDescription>
             在这里上传您的课程，完成之后点击保存即可
           </DialogDescription>
@@ -149,39 +142,49 @@
           <TableCell
             v-for="(item, itemIndex) in day"
             :key="itemIndex"
-            class="p-2 border-[1px] border-black"
+            class="p-2 border-[1px] border-black cursor-pointer relative cell-ctrl group"
+            @click.stop="handleCellClick(index, itemIndex, item)"
           >
             <template v-if="item">
-              <p>周数：{{ item.weeks }}</p>
-              <p>课程：{{ item.courseName }}</p>
-              <p>地点：{{ item.coursePlace }}</p>
-              <Dialog v-if="userStore.isSelf">
-                <DropdownMenu>
-                  <DropdownMenuTrigger class="w-full">
-                    <Button class="p-1 h-full">
-                      <Icon icon="lucide:ellipsis" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent class="bg-white">
-                    <DropdownMenuItem class="text-gray-500 cursor-pointer">
-                      <Icon icon="material-symbols:delete-outline" />
-                      <span :data-id="item.oneCourseId" @click="deleteCourse">
-                        删除课程
-                      </span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      class="text-gray-500 cursor-pointer"
-                      @click="
-                        showDialog();
-                        initForm(item, index);
-                      "
-                    >
-                      <Icon icon="jam:write" />
-                      <span>修改课程</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </Dialog>
+              <template v-if="isActive(index, itemIndex)">
+                <!-- 只显示按钮 -->
+                <div class="flex flex-col gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="text-red-500 border-red-500"
+                    @click.stop="deleteCourse(item.oneCourseId)"
+                  >
+                    删除课程
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    @click.stop="
+                      showDialog();
+                      initForm(item, index);
+                    "
+                  >
+                    修改课程
+                  </Button>
+                </div>
+              </template>
+              <template v-else>
+                <!-- 课程信息正常显示 -->
+                <p>周数：{{ item.weeks }}</p>
+                <p>课程：{{ item.courseName }}</p>
+                <p>地点：{{ item.coursePlace }}</p>
+              </template>
+            </template>
+
+            <!-- 如果 item 不存在，显示添加 Icon（同之前逻辑） -->
+            <template v-else>
+              <div class="flex justify-center items-center h-full min-h-[60px]">
+                <Icon
+                  icon="subway:add"
+                  class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-500"
+                />
+              </div>
             </template>
           </TableCell>
         </TableRow>
@@ -198,12 +201,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -245,6 +248,41 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useAlert } from "@/composables/useAlert";
+
+import { onMounted, onBeforeUnmount } from "vue";
+
+const activeCell = ref(null); // 用于追踪当前激活的单元格：{ rowIndex, colIndex }
+
+function handleCellClick(rowIndex, colIndex, item) {
+  if (!item) {
+    initAddForm(rowIndex, colIndex);
+  }
+  const key = `${rowIndex}-${colIndex}`;
+  if (activeCell.value === key) {
+    activeCell.value = null; // 再次点击取消激活
+  } else {
+    activeCell.value = key;
+  }
+}
+
+function isActive(rowIndex, colIndex) {
+  return activeCell.value === `${rowIndex}-${colIndex}`;
+}
+
+// 点击其他区域时关闭激活状态
+function handleClickOutside(event) {
+  if (!event.target.closest(".cell-ctrl")) {
+    activeCell.value = null;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+
 const open = ref(false);
 watch(
   () => open,
@@ -252,7 +290,7 @@ watch(
     if (!open.value) {
       isAddForm.value = true;
       oneCourseId.value = 0;
-      form.reset();
+      // form.reset();
     }
   },
 );
@@ -308,21 +346,18 @@ function deleteCourse(e) {
     description: "删除后不可恢复",
   })
     .then(() => {
-      let courseId = e.target.dataset.id;
+      let courseId = e;
       executeRequest({
         url: `/user/deleteUserCourse/${courseId}`,
         method: "delete",
       }).then(() => {
         if (data.value && data.value.code == 200) {
-          showAlert({ message: "删除成功", type: "pass" });
+          showAlert("删除成功", "pass");
           console.log("删除成功", data.value);
           getSchedule();
         }
       });
     })
-    .catch(() => {
-      console.log("取消删除");
-    });
 }
 const isAddForm = ref(true);
 const oneCourseId = ref(0);
@@ -338,6 +373,16 @@ const initForm = (item, weekTime) => {
       weekTime: weekTime,
       weeks: item.weeks,
       courseName: item.courseName,
+    },
+  });
+};
+const initAddForm = (weekTime, courseTime) => {
+  showDialog();
+  console.log("weekTime", weekTime, "courseTime", courseTime);
+  form.resetForm({
+    values: {
+      courseTime: courseTimeArray[courseTime],
+      weekTime: weekTime,
     },
   });
 };
@@ -436,6 +481,16 @@ function dayTransformer(day) {
 
     td {
       min-width: 80px;
+
+      .iconControl {
+        opacity: 0;
+        color: #5e5e5e;
+        text-align: center;
+        &:hover {
+          color: #ff4d4d;
+          opacity: 1;
+        }
+      }
 
       &:hover {
         background-color: #f5f5f5;

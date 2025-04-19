@@ -3,7 +3,7 @@
     <Tabs default-value="all">
       <div
         class="flex items-center"
-        style="margin: 5px 0px; height: 5vh; width: 100%"
+        style="margin: 5px 0px; height: 2.5rem; width: 100%"
       >
         <TabsList class="bg-white">
           <div class="top-title">
@@ -17,12 +17,6 @@
             :updateData="updateData"
             :havaLeader="haveLeader"
           />
-          <!-- <Button size="sm" variant="outline" class="h-7 gap-1 header-btn">
-            <Icon icon="proicons:person-2" />
-            <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              编辑组织
-            </span>
-          </Button> -->
         </div>
       </div>
       <hr />
@@ -45,16 +39,40 @@
                 :selectIds="selectIds"
                 :updateData="updateData"
               >
-                <DropdownMenu>
+                <DropdownMenu class="min-w-[4rem]">
                   <DropdownMenuTrigger class="head"
                     >批量管理</DropdownMenuTrigger
                   >
 
-                  <DropdownMenuContent>
+                  <DropdownMenuContent
+                    class="bg-white text-[--secondary-foreground]"
+                  >
                     <DropdownMenuItem @click="deleteMembers"
                       >批量删除</DropdownMenuItem
                     >
-                    <DropdownMenuItem>批量导入</DropdownMenuItem>
+
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <span>批量导入</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent
+                          class="bg-white text-[--secondary-foreground]"
+                        >
+                          <DropdownMenuItem @click="downloadTemplate">
+                            <span>获取模版</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <input
+                              class="xlsx-input"
+                              type="file"
+                              @change="handleXlsx"
+                            />
+                            <span style="position: absolute">导入数据</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
                     <DialogTrigger>
                       <DropdownMenuItem>批量修改</DropdownMenuItem>
                     </DialogTrigger>
@@ -196,7 +214,15 @@ import { DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -218,13 +244,18 @@ import {
   deletes,
   getMembersByGroupAndGrade,
 } from "@/features/admin/composables/useContacts";
-import type { TeamUserList } from "@/types/contacts";
+import type { TeamUserList } from "@/types/Contacts";
 import EditMembers from "@admin/components/contacts/EditMembers.vue";
 import { Icon } from "@iconify/vue";
 import { MoreHorizontal } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useRequest } from "vue-request";
 import { useRoute } from "vue-router";
+import { Input } from "@/components/ui/input";
+import { setActivePinia } from "pinia";
+import apiClient from "@/api/axios";
+//引入批量导入方法
+import { processFiles } from "@/composables/useXlsx";
 const { showAlert } = useAlert();
 const editRowData = ref<TeamUserList>();
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
@@ -262,7 +293,7 @@ if (route.params && "member" in route.params) {
 }
 getMembersByGroupAndGrade(grade.value, group.value).then((res) => {
   userList.value = res.teamUserList;
-  console.log(userList.value);
+
   if (userList.value[0].isLeader) {
     haveLeader.value = true;
   }
@@ -383,13 +414,43 @@ function cancelLeader(id: number) {
     cancel(str, id);
   });
 }
+
+// 批量导入
+
+const handleXlsx = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.files) {
+    processFiles(target.files[0])
+      .then((response) => {
+        showAlert("上传成功", "pass");
+        updateData(grade.value, group.value);
+        target.value = "";
+      })
+      .catch((error) => {
+        showAlert(error, "error");
+      });
+  }
+};
+
+const downloadTemplate = () => {
+  // const link = document.createElement("a");
+  // link.href = "/public/用户导入专用表.xlsx";
+  // link.download = "用户专用表.xlsx";
+  // link.click();
+  const link = document.createElement("a");
+  link.href = "/public/用户导入专用表.xlsx"; // 修正路径
+  link.download = "用户导入模板.xlsx";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 </script>
 
 <style lang="scss" scoped>
 $font: #8c9296;
 
 th {
-  height: 5.5vh;
+  height: 3rem;
 }
 tr {
   text-align: center;
@@ -405,7 +466,7 @@ th {
   color: var(--secondary-foreground);
 }
 td {
-  height: 5vh;
+  height: 2.5rem;
   font-size: 0.9vw;
   padding: 0.7vh 0;
 }
@@ -571,6 +632,9 @@ td {
 .dropdown_menu_content {
   background-color: white;
 }
+div[role="menu"] {
+  min-width: 32px !important;
+}
 // 无数据的样式
 .no-data {
   width: 100%;
@@ -585,6 +649,13 @@ td {
     text-align: center;
     width: 100%;
   }
+}
+.xlsx-input {
+  opacity: 0;
+  height: 0.875rem;
+  width: 4rem;
+  position: relative;
+  z-index: 3;
 }
 @media screen and (max-width: 1400px) {
   .content {

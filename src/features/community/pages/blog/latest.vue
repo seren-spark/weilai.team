@@ -19,11 +19,12 @@ import Search from "../../components/Search.vue";
 </script>
 
 <style scoped lang="scss">
-.content {
-  padding: 0 45px;
-  width: 100%;
-  height: auto;
-}
+// .content {
+//   padding: 0 45px;
+//   width: 100%;
+//   height: auto;
+// }
+@use "@community/styles/community";
 
 @media screen and (max-width: 768px) {
   .content {

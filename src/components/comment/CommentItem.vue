@@ -56,6 +56,8 @@ const getSecondComment = async (commentId: number) => {
   });
 
   if (data.value?.data.postCommentAll) {
+    console.log(data.value);
+
     total.value = data.value.data.pageInfo.total;
     sonComments.value = data.value.data.postCommentAll.map((comment: any) => {
       const replyInfo = createUserInfo();

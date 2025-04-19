@@ -61,8 +61,8 @@ export default function () {
         if (resData) {
           setLocalStorageWithExpire("token", resData.token, 1000 * 60 * 60);
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
-          userstore.permissions = resData.permissions;
-
+          //用户默认有概况权限
+          userstore.permissions = ["profile_admin", ...resData.permissions];
           showAlert("登录成功！", "pass");
           const res = await apiClient({
             url: `/user/getUserInfoByUserId/${resData.userId}`,
@@ -152,6 +152,7 @@ export default function () {
       const res = data.value as Data;
       if (res.code == 200) {
         showAlert("退出登录成功", "pass");
+
         localStorage.removeItem("token");
         router.push({ path: "/login", query: { redirect: route.path } });
       }

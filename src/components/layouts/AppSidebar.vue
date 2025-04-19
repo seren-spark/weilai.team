@@ -134,13 +134,7 @@ const getNotReadCount = async () => {
   }
 };
 getNotReadCount();
-// 定义权限
-const permissionsRouter = {
-  team_admin: ["/admin", "profile", "contacts"],
-  community_admin: ["/admin", "community", "contacts", ""],
-  recruit_admin: ["/admin", "recruitment"],
-  admin_plus: ["/admin", "permission"],
-};
+
 // 获取当前用户的权限
 let userPermissons = userStore.permissions;
 // 权限管理
@@ -352,21 +346,22 @@ function skipRedirect(item: any) {
           v-for="(item, index) in subNavs"
           :key="index"
           :to="item.appPath"
+          active-class="sidebar__sub-link--active"
           class="main-menu-sub-link"
         >
           {{ item.title }}
         </RouterLink>
       </DropdownMenuContent>
     </DropdownMenu>
+    <RouterLink to="/message/likeMes"
+      ><Button class="main-menu-button"
+        ><Icon icon="ph:bell-simple" class="main-menu-icon" />
+
+        <span v-if="messageStore.hasNewMessage" class="dot"></span></Button
+    ></RouterLink>
     <RouterLink to="/personalCenter/userInfo"
       ><Button class="main-menu-button"
         ><Icon icon="bi:person" class="main-menu-icon" /></Button
-    ></RouterLink>
-    <RouterLink to=""
-      ><Button class="main-menu-button main-menu-publish"
-        ><Icon
-          icon="prime:pencil"
-          class="main-menu-icon icon-publish" /></Button
     ></RouterLink>
   </div>
 </template>
@@ -505,6 +500,15 @@ function skipRedirect(item: any) {
 }
 
 @media screen and (max-width: 768px) {
+  .dot {
+    position: absolute;
+    top: 25%;
+    right: 30%;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: #ff0000;
+  }
   .main-menu {
     padding: 8px 25px;
     display: flex;
@@ -515,6 +519,7 @@ function skipRedirect(item: any) {
     height: 60px;
     box-sizing: border-box;
     background-color: white;
+    z-index: 9999;
     &-button {
       width: 45px;
       height: 45px;
@@ -533,6 +538,7 @@ function skipRedirect(item: any) {
       display: flex;
       box-shadow: none;
       padding: 0 10px;
+      position: relative;
     }
     &-icon {
       font-size: 22px;
@@ -552,6 +558,8 @@ function skipRedirect(item: any) {
     }
 
     &-publish {
+      position: absolute;
+      top: -800%;
       border-radius: 50%;
       padding: 12px;
       background: linear-gradient(#67a5e6, #c0d2e6, #eff1f4);
