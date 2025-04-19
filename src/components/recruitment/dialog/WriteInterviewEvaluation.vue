@@ -139,10 +139,14 @@ const handleSubmit = () => {
       isSecond: formData.value.status === "-4" ? "1" : "0",
       comment: formData.value.interviewEvaluation,
       status: formData.value.status === "-4" ? "3" : formData.value.status,
-    }).then(() => {
+    }).then((data) => {
+      console.log(data);
       showAlert("面评提交成功", "pass");
       emit("close");
       emit("refreshPage");
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 };
@@ -161,7 +165,7 @@ form {
   }
 }
 
-// 表单消息提示区域样式（比如错误提示等）
+// 表单消息提示区域样式
 .error-message {
   color: var(--destructive-foreground);
   font-size: 14px;

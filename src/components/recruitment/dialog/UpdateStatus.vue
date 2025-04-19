@@ -105,7 +105,6 @@ const handleSubmit = () => {
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles";
 @use "@/assets/styles/recruitment.scss";
 
 .form-container {

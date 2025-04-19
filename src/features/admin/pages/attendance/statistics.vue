@@ -1,6 +1,25 @@
 <template>
-<div>
-    考勤统计
+<DataTable
+  :columns="columns"
+  :rows="rows"
+  :is-show-checkbox=false
+/>
+<div class="table-footer">
+  <button
+    :class="{'btn-style': true,'btn-disabled': pageNo <= 1,}"
+    :disabled="pageNo <= 1"
+    @click="pageNo--"
+  >
+    Last
+  </button>
+  <span style="text-align: center; vertical-align: middle;">{{ pageNo }}</span>
+  <button
+    :class="{'btn-style': true,'btn-disabled': rows.length < 10,}"
+    :disabled="rows.length < 10"
+    @click="pageNo++"
+  >
+    Next
+  </button>
 </div>
 
 </template>
@@ -8,14 +27,36 @@
 <script setup lang='ts'>
 import { useApiRequest } from '@/utils/httpClient';
 import type { ApiResponseData } from "@/types/api-response";
-import { onMounted,watch} from "vue";
+import { onMounted,ref,watch} from "vue";
+import { DataTable } from '@/components/common';
+import { columns ,CheckTypeMap,CheckType,TimeResultStatus,TimeResultStatusMap }from "./check_in-statistics-consts";
+interface dataDTO {
+  name: string;
+  checkType: CheckType;
+  group: string;
+  baseCheckTime: string;
+  timeResult: TimeResultStatus;
+  userId: string;
+  workDate: string;
+  userCheckTime: string;
+}
+interface CheckInItem {
+  name: string;
+  checkType: string;
+  group: string;
+  baseCheckTime: string;
+  timeResult: string;
+  id: string;
+  workDate: string;
+  userCheckTime: string;
+}
 const {
   data: Data,
   loading: Loading,
   error: Error,
   fetchData: getMessage,
-} = useApiRequest<ApiResponseData<any>>({
-//   url:"/Attendance/getAttendanceInfoBySingleTime",
+} = useApiRequest<ApiResponseData<dataDTO[]>>({
+  // url:"/Attendance/getAttendanceInfoBySingleTime",
 url: "/Attendance/getCheckInfoByTimeSpan",
   method: "GET",
   headers: {
@@ -23,8 +64,30 @@ url: "/Attendance/getCheckInfoByTimeSpan",
   },
 });
 
+const timeFormat = (time: string) => {
+  const date = new Date(time);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+
+const pageNo=ref(1);
+const rows = ref<CheckInItem[]>([]);
+
 watch(Data, (newValue) => {
-  console.table(newValue);
+  console.log(newValue);
+  if (newValue?.data && newValue.code === 200) {
+    rows.value = newValue.data.map((item) => ({
+      name: item.name,
+      checkType: CheckTypeMap[item.checkType],
+      group: item.group,
+      baseCheckTime: timeFormat(item.baseCheckTime),
+      timeResult: TimeResultStatusMap[item.timeResult],
+      userCheckTime: timeFormat(item.userCheckTime),
+      id: item.userId,
+      workDate: timeFormat(item.workDate),
+    }));
+  } else {
+    rows.value = [];
+  }
 });
 watch(Error, (newValue) => {
     console.log(newValue);
@@ -33,19 +96,48 @@ watch(Loading, (newValue) => {
   console.log(newValue);
 });
 
+
+
 onMounted(() => {
+watch(pageNo, (newValue) => {
+  rows.value = [];
+  const currentDate = new Date();
+  const sevenDaysAgo = new Date(currentDate);
+  sevenDaysAgo.setDate(currentDate.getDate() - 7);
   getMessage({ params: {
-    group:"全部",
-    // time:new Date("2025-04-01").toString(),
-    from:new Date("2025-04-01").toString(),
-    to:new Date("2025-04-04").toString(),
-    pageNumber:1,
-    pageSize:10
+    group: "全部",
+    from: sevenDaysAgo.toString(),
+    to: currentDate.toString(),
+    pageNumber:newValue,
+    pageSize:10,
   }
   });
+}, { immediate: true });
+
 });
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.table-footer {
+  display: flex;
+  justify-content:flex-end;
+  align-items: center;
+  align-content: center;
+  margin-top: 20px;
+  font-size: 0.8rem;
+  span{
+    display: block;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    background-color: skyblue;
+    color: white;
+  }
+}
+.btn-disabled {
+  cursor: not-allowed;
+}
 </style>

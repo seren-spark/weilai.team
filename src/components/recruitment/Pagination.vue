@@ -85,8 +85,7 @@ function changePage(page: number) {
   </Pagination>
 </template>
 <style lang="scss" scoped>
-@use "@/assets/styles";
-
+@use "@/assets/styles/recruitment.scss";
 .pagination-container {
   nav {
     display: inline-flex;

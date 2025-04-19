@@ -23,8 +23,6 @@ const props = defineProps<{ quickShowItem: cardMessage }>();
   </Card>
 </template>
 <style lang="scss" scoped>
-@use "@/assets/styles";
-
 .card-message-show {
   width: 100%;
   height: 100px;

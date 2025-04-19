@@ -25,7 +25,6 @@ import { Icon } from "@iconify/vue";
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles";
 @use "@/assets/styles/recruitment.scss";
 .shortcut-operation {
   border: none;
