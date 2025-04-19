@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TeamUserList } from "@/types/contacts";
+import type { TeamUserList } from "@/types/Contacts";
 import { ref, watch } from "vue";
 import * as z from "zod";
 import { Icon } from "@iconify/vue";

@@ -9,7 +9,7 @@ import { useRoute, useRouter } from "vue-router";
 const isVisible = ref(false);
 const router = useRouter();
 const searchValue = ref();
-const { executeRequest, error, loading, data } = useRequest();
+const { executeRequest, data } = useRequest();
 const searchList = ref<ArticleList[]>([]);
 const filterList = ref<ArticleList[]>([]);
 const searchUserList = ref<UserInfo[]>([]);
@@ -57,7 +57,7 @@ watch(searchValue, (newValue) => {
 
 async function searchUser(content = "", pageNumber = 1, pageSize = 10) {
   await executeRequest({
-    url: `/user/searchUser?content=${content}&pageNumber=${pageNumber}&pageSize=10 `,
+    url: `/user/searchUser?content=${content}&pageNumber=${pageNumber}&pageSize=${pageSize} `,
     method: "get",
   });
   let res = data.value as UserData;
@@ -140,7 +140,7 @@ function skip(e: Event) {
 
       <div class="search_list" v-show="searchValue && isVisible && !isUser">
         <div class="search_empty" v-if="!filterList.length">未找到搜索结果</div>
-        <div class="search_item" v-for="item in filterList">
+        <div class="search_item" v-for="item in filterList" :key="item.id">
           <a @click="router.push(`/community/comprehensive/hot/${item.title}`)">
             <span>{{ item.title }}</span>
           </a>
@@ -150,7 +150,11 @@ function skip(e: Event) {
         <div class="search_empty" v-if="!filterUserList.length">
           未找到搜索结果
         </div>
-        <div class="search_item" v-for="item in filterUserList">
+        <div
+          v-for="item in filterUserList"
+          class="search_item"
+          :key="item.userId"
+        >
           <a @click="router.push(`/community/comprehensive/user/${item.name}`)">
             <span>{{ item.name }}</span>
           </a>

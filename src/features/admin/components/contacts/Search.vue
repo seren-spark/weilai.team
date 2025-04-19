@@ -39,14 +39,13 @@
 <script setup lang="ts">
 import { DialogTrigger } from "@/components/ui/dialog";
 import { useRequest } from "@/composables/useRequest";
-import type {  UserInfo } from "@/types/community";
-import type { searchData, TeamUserList } from "@/types/contacts";
+import type { UserInfo } from "@/types/community";
+import type { searchData, TeamUserList } from "@/types/Contacts";
 import { debounce } from "@community/composables/search";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";
 
 import MemberInfo from "./MemberInfo.vue";
-// import { searchMember } from "../../composables/useContacts";
 const isVisible = ref(false);
 
 const searchValue = ref();
@@ -55,9 +54,8 @@ const searchList = ref<TeamUserList[]>([]);
 
 const searchUserList = ref<UserInfo[]>([]);
 
-
 // 接受父组件传来的函数
- defineProps({
+defineProps({
   content: {
     type: String,
     default: "",

@@ -6,7 +6,7 @@ import type {
   MemeberData,
   modifyManyUser,
   TeamUser,
-} from "@/types/contacts";
+} from "@/types/Contacts";
 
 useAlert();
 const { executeRequest, loading, data } = useRequest();

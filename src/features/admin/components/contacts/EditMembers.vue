@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { modifyManyUser, TeamUserList } from "@/types/contacts";
+import type { modifyManyUser, TeamUserList } from "@/types/Contacts";
 
 import { useAlert } from "@/composables/useAlert";
 import { reactive, ref, watch } from "vue";

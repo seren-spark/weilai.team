@@ -244,7 +244,7 @@ import {
   deletes,
   getMembersByGroupAndGrade,
 } from "@/features/admin/composables/useContacts";
-import type { TeamUserList } from "@/types/contacts";
+import type { TeamUserList } from "@/types/Contacts";
 import EditMembers from "@admin/components/contacts/EditMembers.vue";
 import { Icon } from "@iconify/vue";
 import { MoreHorizontal } from "lucide-vue-next";
