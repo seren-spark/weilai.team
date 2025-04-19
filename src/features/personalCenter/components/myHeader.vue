@@ -135,7 +135,7 @@
 
       <div v-if="userStore.isSelf" class="container-right">
         <!-- 修改信息对话框 -->
-        <Dialog>
+        <Dialog v-model:open="open">
           <DialogTrigger as-child>
             <Button
               variant="outline"
@@ -436,6 +436,8 @@ const { showAlert } = useAlert();
 
 import ChinaRegionSelect from "./ChinaRegionSelect.vue";
 
+const open=ref(false);
+
 const imageUrl = ref("");
 const uploadStatus = ref("");
 const cropper = ref(null); // 裁剪组件实例
@@ -550,7 +552,6 @@ const formSchema = toTypedSchema(
       .min(0, "毕业薪资不能少于0元")
       .optional(),
   }),
-
 );
 
 // 选中省市区的值
@@ -593,6 +594,7 @@ const onSubmit = form.handleSubmit((values) => {
     showAlert("修改成功", "pass");
     getUserInfo();
   });
+  open.value = false;
 });
 const userStore = useUserStore();
 console.log("pinia///", userStore.userId, userStore.isSelf);
