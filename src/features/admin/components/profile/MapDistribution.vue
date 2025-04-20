@@ -66,7 +66,7 @@ onMounted(async()=> {
     //   });
 
     // 设置下钻逻辑
-      chart.on('click', (params) => {
+      chart.on('click', (params: any) => {
         handleMapClick(params, chart);
       });
     } catch (error) {
