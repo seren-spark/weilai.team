@@ -81,7 +81,8 @@ import Pagination from "@/components/recruitment/Pagination.vue";
 //引入ref
 import { ref, watch } from "vue";
 import { showConfirm } from "@/composables/useConfirm";
-
+import { useAlert } from "@/composables/useAlert";
+const { showAlert } = useAlert();
 // 引入hooks并使用
 import { useRequest } from "@/composables/useRequest";
 const { data, executeRequest } = useRequest();
@@ -151,9 +152,7 @@ const cancelCollect = async (postId: number) => {
   }).then(() => {
     executeRequest({ url: `/post/collect/${postId}`, method: "post" }).then(() => {
       console.log('取消收藏结果',data.value);
-      showAlert({
-        content: "取消收藏成功"
-      });
+      showAlert("取消收藏成功", "pass");
       getUserCollect();
     });
   });

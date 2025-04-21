@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { BarChart } from "@/components/ui/chart-bar";
-import CustomChartTooltip from '../CustomChartTooltip.vue'
+import ChartTooltip from "../ChartTooltip.vue";
 
 
 const data = [
@@ -30,7 +30,7 @@ const colors = ["#abdcce", "#9ebcd8"];
           : '';
       }
     "
-    :custom-tooltip="CustomChartTooltip"
+    :custom-tooltip="ChartTooltip"
   />
 </template>
 <style lang="scss" scoped></style>

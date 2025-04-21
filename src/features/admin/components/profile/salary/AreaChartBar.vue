@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { AreaChart } from "@/components/ui/chart-area";
-import CustomChartTooltip from "../CustomChartTooltip.vue";
+import ChartTooltip from "../ChartTooltip.vue";
 import { ref } from "vue";
 
 const data = ref([
@@ -24,7 +24,7 @@ const colors = ["#447db3", "#5dba9f"];
       index="name"
       class="h-[110px] w-[100%]"
       :categories="['frontEnd', 'backEnd']"
-      :custom-tooltip="CustomChartTooltip"
+      :custom-tooltip="ChartTooltip"
       :y-formatter="
         (tick, i) => {
           return typeof tick === 'number'
