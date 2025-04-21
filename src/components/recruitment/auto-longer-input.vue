@@ -74,7 +74,7 @@ watch(isLonger, (newValue) => {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  width: 40px;
+  width: 45px;
   height: 100%;
   border-radius: 10px;
   padding: 0 10px;

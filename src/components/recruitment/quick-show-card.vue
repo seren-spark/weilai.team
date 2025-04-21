@@ -30,16 +30,11 @@ const props = defineProps<{ quickShowItem: cardMessage }>();
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid  var(--border);
   border-radius: var(--radius);
   padding: 10px;
   margin: 10px;
   cursor: pointer;
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
-  transition: box-shadow 0.3s ease;
-  &:hover{
-    box-shadow: inset 0 4px 12px rgba(0,0,0,0.15);
-  }
 }
 .card-message-show-content {
   width: 100%;

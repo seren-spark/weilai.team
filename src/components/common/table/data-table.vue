@@ -127,7 +127,6 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/recruitment.scss";
 .adaptive {
   width: 100%;
   border-radius: 5px;
