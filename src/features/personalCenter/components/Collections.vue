@@ -77,7 +77,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import TagItem from "@/features/community/components/tag/TagItem.vue";
-import Pagination from "@/components/recruitment/Pagination.vue";
+import Pagination from "@/components/recruitment/pagination-control.vue";
 //引入ref
 import { ref, watch } from "vue";
 import { showConfirm } from "@/composables/useConfirm";

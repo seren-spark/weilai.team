@@ -95,7 +95,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Pagination from "@/components/recruitment/Pagination.vue";
+import Pagination from "@/components/recruitment/pagination-control.vue";
 
 //引入ref
 import { ref, watch } from "vue";
