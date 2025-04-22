@@ -30,7 +30,7 @@ const props = defineProps<{ quickShowItem: cardMessage }>();
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid  var(--border);
   border-radius: var(--radius);
   padding: 10px;
   margin: 10px;

@@ -473,11 +473,10 @@ onUnmounted(() => {
 //   }
 // }
 
-// @media screen and (max-width: 400px) {
-//   .box {
-//     transform: scale(0.65);
-//     top: 0px;
-//     overflow: visible;
-//   }
-// }
+@media screen and (max-width: 400px) {
+  .box {
+    transform: scale(0.65);
+    overflow: visible;
+  }
+}
 </style>

@@ -31,7 +31,10 @@ watchEffect((cleanupFn) => {
 <template>
   <div class="horizontal">
     <div class="horizontal-bar-item">
-      <div class="horizontal-bar-title">前端programmer</div>
+      <div class="horizontal-bar-title-wrapper">
+        <div class="horizontal-bar-title">前端programmer</div>
+        <div>{{ progress.frontEnd }}人</div>
+      </div>
       <Progress
         v-model="progress.frontEnd"
         :max="(props.javaAll + props.htmlAll) * 3"
@@ -40,7 +43,11 @@ watchEffect((cleanupFn) => {
       ></Progress>
     </div>
     <div class="horizontal-bar-item">
-      <div class="horizontal-bar-title">后端programmer</div>
+      <div class="horizontal-bar-title-wrapper">
+        <div class="horizontal-bar-title">后端programmer</div>
+        <div>{{ progress.backEnd }}人</div>
+      </div>
+      <div class="horizontal-bar-title"></div>
       <Progress
         v-model="progress.backEnd"
         :max="(props.javaAll + props.htmlAll) * 3"
@@ -55,6 +62,12 @@ watchEffect((cleanupFn) => {
     width: 90%;
     padding-top: 10px;
     margin-bottom: 20px;
+
+    .horizontal-bar-title-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
     .horizontal-bar-title {
       margin-bottom: 0.25rem;

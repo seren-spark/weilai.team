@@ -152,7 +152,7 @@
                   <Button
                     variant="outline"
                     size="sm"
-                    class="text-red-500 border-red-500"
+                    class="text-red-600 bg-red-100 hover:text-red-600 hover:bg-red-100 hover:border-red-500"
                     @click.stop="deleteCourse(item.oneCourseId)"
                   >
                     删除课程
@@ -160,6 +160,7 @@
                   <Button
                     variant="outline"
                     size="sm"
+                    class="bg-blue-100 text-blue-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-100"
                     @click.stop="
                       showDialog();
                       initForm(item, index);
@@ -182,7 +183,7 @@
               <div class="flex justify-center items-center h-full min-h-[60px]">
                 <Icon
                   icon="subway:add"
-                  class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-500"
+                  class="opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-gray-400 text-3xl"
                 />
               </div>
             </template>
@@ -344,20 +345,19 @@ function deleteCourse(e) {
     title: "警告",
     content: "确定删除吗？",
     description: "删除后不可恢复",
-  })
-    .then(() => {
-      let courseId = e;
-      executeRequest({
-        url: `/user/deleteUserCourse/${courseId}`,
-        method: "delete",
-      }).then(() => {
-        if (data.value && data.value.code == 200) {
-          showAlert("删除成功", "pass");
-          console.log("删除成功", data.value);
-          getSchedule();
-        }
-      });
-    })
+  }).then(() => {
+    let courseId = e;
+    executeRequest({
+      url: `/user/deleteUserCourse/${courseId}`,
+      method: "delete",
+    }).then(() => {
+      if (data.value && data.value.code == 200) {
+        showAlert("删除成功", "pass");
+        console.log("删除成功", data.value);
+        getSchedule();
+      }
+    });
+  });
 }
 const isAddForm = ref(true);
 const oneCourseId = ref(0);

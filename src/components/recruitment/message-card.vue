@@ -87,7 +87,7 @@ const viewComment = (id: string) => {
   });
 };
 //写面评 \/
-const writeInterviewEvaluationIsOpen = ref(false);
+const writeInterviewEvaluationIsOpen = ref<boolean>(false);
 const writeInterviewEvaluation = () => {
   writeInterviewEvaluationIsOpen.value = true;
 };

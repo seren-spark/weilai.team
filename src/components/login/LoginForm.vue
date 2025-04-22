@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-vue-next";
 import useLogin from "../../composables/useLoginAll";
 import LoginContent from "./LoginContent.vue";
 import { ref, watch, reactive } from "vue";
@@ -106,7 +105,7 @@ onUnmounted(() => {
               }
             "
           ></LoginContent>
-          <Button type="submit" class="loginButton w-full" @click="handleLogin">
+          <Button v-preventReClick type="submit" class="loginButton w-full" @click="handleLogin">
             登录
           </Button>
         </div>
