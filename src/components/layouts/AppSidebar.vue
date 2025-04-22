@@ -23,7 +23,7 @@ import { useNoticeStore } from "@/store/UseNoticeStore";
 import { useUserStore } from "@/store/userStore";
 import { Icon } from "@iconify/vue";
 import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-vue-next";
-import { nextTick, ref } from "vue";
+import { ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";

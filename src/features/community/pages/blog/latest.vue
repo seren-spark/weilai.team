@@ -5,7 +5,6 @@
       <div id="search">
         <Search />
       </div>
-
       <NewsContent :type="1" :sort="1" />
     </div>
     <Rightbar />
@@ -19,28 +18,5 @@ import Search from "../../components/Search.vue";
 </script>
 
 <style scoped lang="scss">
-// .content {
-//   padding: 0 45px;
-//   width: 100%;
-//   height: auto;
-// }
 @use "@community/styles/community";
-
-@media screen and (max-width: 768px) {
-  .content {
-    padding: 0 0;
-    .bg {
-      position: fixed;
-      top: 0;
-      z-index: 0;
-      width: 100%;
-      height: 20%;
-      background-color: #fafafa;
-      &-top {
-        background-image: linear-gradient(#dfe9f3, #ffffff00 100%);
-        height: 30%;
-      }
-    }
-  }
-}
 </style>

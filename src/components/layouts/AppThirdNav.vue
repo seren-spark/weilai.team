@@ -11,6 +11,11 @@ const route = useRoute();
 const thirdNavItems = route.meta.thirdNavItems as ThirdItemInterface[];
 const messageStore = useMessageStore();
 
+const props = defineProps<{
+  title?: string;
+}>();
+console.log(props.title);
+
 interface ThirdItemInterface {
   title: string;
   icon: string;
@@ -22,7 +27,7 @@ interface ThirdItemInterface {
   <div class="topNav">
     <Breadcrumb class="breadcrumb">
       <div class="top-title">
-        <span>{{ route.meta.title }}</span>
+        <span>{{ title ? title : route.meta.title }}</span>
       </div>
       <BreadcrumbList class="top-ol">
         <BreadcrumbItem
@@ -102,9 +107,9 @@ $font: #8c9296;
       width: 80%;
       height: 60%;
       border: 0.1vw solid #e0f1f6;
-      border-radius: 15px;
+      border-radius: 14rem;
       margin: 0 0.625rem;
-      padding: 0 0.7vw;
+      padding: 0 0.6rem;
       text-align: center;
       color: $font;
       display: flex;
@@ -113,19 +118,17 @@ $font: #8c9296;
         display: inline-block;
         width: max-content;
         box-sizing: border-box;
-        // line-height: 0.9vh;
-        font-size: 0.9vw;
+        font-size: 1rem;
         text-align: center;
       }
     }
     &-item {
       text-align: center;
-      // width: 80%;
       width: max-content;
       height: 100%;
       display: flex;
       align-items: center;
-      margin-left: 10px;
+      margin-left: 0.7rem;
     }
     &-label {
       width: 80%;
@@ -194,7 +197,7 @@ $font: #8c9296;
     background-image: linear-gradient(#dfe9f3, #ffffff00 100%);
     height: 3.5rem;
     .top-title {
-      display: none;
+      font-size: 1.2rem;
     }
     // .top-item {
     //   font-size: 20px;

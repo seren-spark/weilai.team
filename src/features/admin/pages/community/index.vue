@@ -281,20 +281,11 @@ function df(date: Date, format = "yyyy - MM - dd HH:mm") {
               </div>
               <div class="header-operation">
                 <div class="operation">
-                  <!-- <button>
-                    <RouterLink
-                      to="/admin/recruitment/detail"
-                      class="addMember operation-btn"
-                    >
-                      <Icon icon="icon-park-outline:people-plus-one" />
-                      &nbsp;
-                      <span>添加成员</span>
-                    </RouterLink>
-                  </button> -->
-                  <button>
-                    <button class="addMember operation-btn">
-                      <span>批量管理</span>
-                    </button>
+                  <button
+                    class="addMember operation-btn"
+                    @click="deleteArticles()"
+                  >
+                    <span>批量管理</span>
                   </button>
                 </div>
               </div>
@@ -361,8 +352,6 @@ function df(date: Date, format = "yyyy - MM - dd HH:mm") {
                     <TableCell class="font-medium table_type">
                       {{ checkType(item.type) }}
                     </TableCell>
-
-                    <!-- <TableCell class="hidden md:table-cell"> 删除 </TableCell> -->
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger as-child>

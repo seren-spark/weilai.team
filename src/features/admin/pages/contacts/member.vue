@@ -61,20 +61,7 @@ function getMembersOfGroup(str: string) {
     info: `${parts[0]},${parts[1]}`,
   };
 }
-// const handelXlsx = (e: Event) => {
-//   console.log("点击批量导入了");
 
-//   const target = e.target as HTMLInputElement;
-//   if (target.files) {
-//     processFiles(target.files[0])
-//       .then((response) => {
-//         console.log("上传成功", response);
-//       })
-//       .catch((error) => {
-//         console.error("上传失败", error);
-//       });
-//   }
-// };
 </script>
 
 <template>

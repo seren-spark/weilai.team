@@ -128,7 +128,12 @@
                       @change="handleItemSelect"
                   /></TableCell>
                   <TableCell class="font-medium">
-                    {{ user.name }}
+                    <div style="display:flex; justify-content:center; position:relative " > 
+                      <span  > {{ user.name }}</span>
+                     
+                      <span v-if="user.isLeader" style="font-size:0.6rem;position:absolute;bottom:-5%;right:15%">(组长)</span>
+                    </div>
+                   
                   </TableCell>
                   <TableCell>
                     {{
@@ -200,6 +205,7 @@
       </TabsContent>
     </Tabs>
   </main>
+  <img src="../../">
 </template>
 
 <script setup lang="ts">
@@ -433,12 +439,8 @@ const handleXlsx = (e: Event) => {
 };
 
 const downloadTemplate = () => {
-  // const link = document.createElement("a");
-  // link.href = "/public/用户导入专用表.xlsx";
-  // link.download = "用户专用表.xlsx";
-  // link.click();
   const link = document.createElement("a");
-  link.href = "/public/用户导入专用表.xlsx"; // 修正路径
+  link.href = `${import.meta.env.VITE_USER_INSERT_MODEL_LINK}`; // 修正路径
   link.download = "用户导入模板.xlsx";
   document.body.appendChild(link);
   link.click();

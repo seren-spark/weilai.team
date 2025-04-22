@@ -17,10 +17,24 @@
 import Rightbar from "@/components/community/Rightbar.vue";
 import NewsContent from "@/features/community/components/News.vue";
 import Search from "@community/components/Search.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 const title = ref("");
+watch(
+  () => title.value,
+  () => {
+    console.log("title changed");
+
+    if ("title" in route.params) {
+      console.log("title", route.params.title);
+      title.value = route.params.title as string;
+    } else {
+      console.error("title is not in route.params");
+      title.value = "";
+    }
+  },
+);
 console.log("route", route);
 if ("title" in route.params) {
   console.log("title", route.params.title);

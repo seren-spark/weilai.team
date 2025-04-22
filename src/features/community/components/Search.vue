@@ -3,6 +3,7 @@ import { useRequest } from "@/composables/useRequest";
 import type { ArticleList, Data, UserData, UserInfo } from "@/types/community";
 import { debounce } from "@community/composables/search";
 import { Icon } from "@iconify/vue";
+import { ServerCog } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -103,7 +104,12 @@ function handleClick(e: Event) {
   }
 }
 function skip(e: Event) {
-  if (searchValue.value) {
+  console.log(searchValue.value, "55555");
+  console.log(searchValue.value);
+
+  console.log(searchValue.value == null, "55555");
+
+  if (searchValue.value != null) {
     router.push(
       `/${pathArr[0]}/${pathArr[1]}/${pathArr[2]}/${searchValue.value}`,
     );

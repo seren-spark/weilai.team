@@ -11,7 +11,6 @@
         <th style="font-size: 10px; color: #909399; width: 250px">文件名</th>
         <th style="font-size: 12px; color: #909399; width: 100px">文件大小</th>
         <th style="font-size: 12px; color: #909399; width: 150px">上传进度</th>
-        <!-- <th style="font-size: 12px; color: #909399; width: 100px">状态</th> -->
       </tr>
     </table>
     <div
@@ -37,7 +36,6 @@
             style="font-size: 14px; color: #909399; width: 250px"
           >
             {{ transformByte(item.size) }}
-            <!-- {{ item.size }} -->
           </div>
           <div class="file-info-item file-progress">
             <span style="font-size: 14px; color: #909399; width: 250px"
