@@ -96,6 +96,7 @@ watch(props, (newVal) => {
 
 @media screen and (max-width: 768px) {
   .tag-container {
+    
     margin-top: 130px;
 
     .all-article {

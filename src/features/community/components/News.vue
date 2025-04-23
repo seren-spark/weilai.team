@@ -248,7 +248,7 @@ const handleScroll = async () => {
 @media screen and (max-width: 768px) {
   #news {
     padding: 0 0.6rem;
-    margin-top: 8rem;
+    // margin-top: 8rem;
     .news-item {
       padding: 5px;
       margin-bottom: 8px;
