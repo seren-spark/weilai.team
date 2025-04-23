@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-// import { Icon } from "@iconify/vue";
 import Rightbar from "@/components/community/Rightbar.vue";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
@@ -128,8 +127,6 @@ if ("title" in route.params) {
   }
 }
 @media screen and (max-width: 768px) {
- 
-
   #news {
     margin-top: 180px;
     .news-item {

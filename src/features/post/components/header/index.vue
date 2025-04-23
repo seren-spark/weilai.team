@@ -63,6 +63,7 @@ defineEmits<{
     </div>
     <Button
       class="post-header__publish"
+      v-preventReClick
       @click="
         () => {
           $emit('published:post', () => {});

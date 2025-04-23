@@ -128,12 +128,26 @@
                       @change="handleItemSelect"
                   /></TableCell>
                   <TableCell class="font-medium">
-                    <div style="display:flex; justify-content:center; position:relative " > 
-                      <span  > {{ user.name }}</span>
-                     
-                      <span v-if="user.isLeader" style="font-size:0.6rem;position:absolute;bottom:-5%;right:15%">(组长)</span>
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: center;
+                        position: relative;
+                      "
+                    >
+                      <span> {{ user.name }}</span>
+
+                      <span
+                        v-if="user.isLeader"
+                        style="
+                          font-size: 0.6rem;
+                          position: absolute;
+                          bottom: -5%;
+                          right: 15%;
+                        "
+                        >(组长)</span
+                      >
                     </div>
-                   
                   </TableCell>
                   <TableCell>
                     {{
@@ -205,7 +219,6 @@
       </TabsContent>
     </Tabs>
   </main>
-  <img src="../../">
 </template>
 
 <script setup lang="ts">

@@ -17,13 +17,12 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import router from "@/router";
-import type { TeamInfo, TeamUserList } from "@/types/contacts";
+import type { TeamInfo, TeamUserList } from "@/types/Contacts";
 import { Icon } from "@iconify/vue";
 import { ChevronRight } from "lucide-vue-next";
 import { ref } from "vue";
 import Search from "../../components/contacts/Search.vue";
 import { getMembers } from "../../composables/useContacts";
-import { processFiles } from "@/composables/useXlsx";
 import Member from "./member/[member].vue";
 
 const userCount = ref(0);
@@ -61,7 +60,6 @@ function getMembersOfGroup(str: string) {
     info: `${parts[0]},${parts[1]}`,
   };
 }
-
 </script>
 
 <template>
@@ -134,7 +132,6 @@ function getMembersOfGroup(str: string) {
     <!-- 通讯录右边具体内容 -->
     <Member :teamAble="teamAble" :teamUserList="teamUserList"></Member>
   </div>
-  <Confirm />
 </template>
 
 <style lang="scss" scoped>

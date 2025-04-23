@@ -77,7 +77,7 @@ import { skipPersonCenter } from "@/composables/useCommunity";
 import NewsContent from "./article-display/NewsContent.vue";
 import NewsLabel from "./article-display/NewsLabel.vue";
 import { useAlert } from "@/composables/useAlert";
-import router from "@/router";
+
 const { showAlert } = useAlert();
 const loadinglen = ref(0);
 const articleList = ref<ArticleList[]>([]);
@@ -131,7 +131,6 @@ if (!props.isTag) {
         current.value = data.value?.data.current || 0;
         articleList.value = data.value?.data.records || [];
       });
-     
     },
     {
       immediate: true,

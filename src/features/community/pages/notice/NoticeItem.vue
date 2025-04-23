@@ -142,20 +142,6 @@ onMounted(() => {
           >
             {{ props.notice.username }}
           </div>
-          <!-- <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <RouterLink to="/noticeEdit">
-                  <span v-if="userId === props.notice.senderId" class="edit"
-                    ><Icon icon="mage:edit-pen" class="editIcon"
-                  /></span>
-                </RouterLink>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>编辑</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> -->
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
@@ -205,11 +191,6 @@ onMounted(() => {
           <div ref="noticeContentRef" class="notice-content">
             {{ noticeTxt }}
           </div>
-          <!-- <div class="notice-urls">
-              <div v-for="url in props.notice.noticeUrls" :key="url">
-                <img :src="url">
-              </div>
-            </div> -->
         </div>
       </RouterLink>
     </div>

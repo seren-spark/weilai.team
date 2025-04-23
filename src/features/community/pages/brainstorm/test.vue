@@ -1,4 +1,5 @@
 <template>
+  <!-- !!! 该文件用于文件上传测试 不展示在页面中 -->
   <div class="container">
     <div style="display: none">
       <video width="500" height="240" controls id="upvideo"></video>

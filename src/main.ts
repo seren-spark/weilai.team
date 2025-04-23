@@ -21,9 +21,9 @@ app.directive("highlight", function (el) {
     hljs.highlightBlock(block);
   });
 });
-app.directive('preventReClick', dir.preventReClick);
+app.directive("debounce", dir.debounce as any);
+app.directive("preventReClick", dir.preventReClick);
 app.use(pinia);
 app.use(router);
 app.component("CustomAlert", CustomAlert);
 app.mount("#app");
-// createApp(App).use(router).mount("#app");
