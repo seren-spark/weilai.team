@@ -1,9 +1,17 @@
 <script lang="ts" setup>
 import MapDrilling from "./map/index.vue";
+
+const props = defineProps({
+  // 父组件传过来的值
+  areas: {
+    type: Array,
+    default: () => [],
+  },
+});
 </script>
 <template>
   <div class="map-wrapper">
-    <MapDrilling class="mapdriliing"></MapDrilling>
+    <MapDrilling class="mapdriliing" :areas="props.areas"></MapDrilling>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -15,7 +23,6 @@ import MapDrilling from "./map/index.vue";
   display: flex;
   flex-direction: column;
   align-items: center;
-  //   background: no-repeat 2% 5% url('../../assets/images/bg.png');
   background-color: #fff;
   margin-top: 20px;
 

@@ -1,12 +1,27 @@
 <template>
   <div class="rightbar">
-    <div class="details"><HotTag /><ArticleList /></div>
+    <div class="details"><HotTag v-if="!noTagList"/><ArticleList v-if="!noArticleList" /></div>
   </div>
 </template>
 
 <script setup lang="ts" name="Rightbar">
 import ArticleList from "@/components/community/ArticleRank.vue";
 import HotTag from "@/features/community/components/tag/HotTag.vue";
+defineProps({
+  noTagList: {
+    type: Boolean,
+    default: () => {
+      return false;
+    },
+  },
+  noArticleList: {
+    type: Boolean,
+    default: () => {
+      return false;
+    },
+  },
+ 
+});
 </script>
 
 <style scoped lang="scss">

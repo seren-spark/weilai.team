@@ -27,18 +27,18 @@ addTagType.addTag(typeData.value);
     "title": "头脑风暴",
     "thirdNavItems": [
       {
-        "title": "头脑风暴",
+        "title": "热门",
         "path": "/community/brainstorm/detail",
+        "icon": "i-mdi-file-document-multiple-outline"
+      },
+      {
+        "title": "最新",
+        "path": "/community/brainstorm/latest",
         "icon": "i-mdi-file-document-multiple-outline"
       },
       {
         "title": "标签",
         "path": "/community/brainstorm/label/suggest",
-        "icon": "i-mdi-file-document-multiple-outline"
-      },
-      {
-        "title": "文件上传",
-        "path": "/community/brainstorm/test2",
         "icon": "i-mdi-file-document-multiple-outline"
       }
     ]

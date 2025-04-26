@@ -39,7 +39,8 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
       {
         "title": "头脑风暴",
         "icon": "icon-park-outline:thinking-problem",
-        "path": "/community/brainstorm/detail"
+        "path": "/community/brainstorm",
+        "redirect": "/community/brainstorm/detail"
       }
     ]
   }

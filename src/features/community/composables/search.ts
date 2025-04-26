@@ -78,11 +78,12 @@ export function getArticle2(
   const { data, loading } = req(getArticle, {
     loadingKeep: 600,
   });
-  let res = ref<any>();
   return { loading, data };
 }
 export function checkType(type: any) {
-  if (type == 1) {
+  if (type == 0) {
+    return "综合";
+  } else if (type == 1) {
     return "博客";
   } else if (type == 3) {
     return "交流";

@@ -6,4 +6,6 @@
 import User from "../../components/User.vue";
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

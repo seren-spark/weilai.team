@@ -4,8 +4,8 @@
     target="_blank"
     class="news-content"
   >
-    <div class="news-title">{{ item.title }}</div>
-    <div class="news-details">
+    <div class="news-title" v-if="!noTitle">{{ item.title }}</div>
+    <div class="news-details" v-if="!noContent">
       <p>
         {{ item.postAbstract }}
       </p>
@@ -15,6 +15,18 @@
 
 <script setup lang="ts">
 defineProps({
+  noTitle: {
+    type: Boolean,
+    default: () => {
+      return false;
+    },
+  },
+  noContent: {
+    type: Boolean,
+    default: () => {
+      return false;
+    },
+  },
   item: {
     type: Object,
     default: () => {

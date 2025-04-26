@@ -21,8 +21,7 @@ interface ProfileData {
     postT: number;
     javaAll: number;
     htmlAll: number;
-    htmlPer: [];
-    javaPer: [];
+    perByGrade: []
     areas: []
 }
 export default function () {

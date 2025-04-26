@@ -40,7 +40,7 @@ defineProps<{
 </template>
 <style>
 .chart_card {
-  width: 9rem;
+  width: auto;
   height: 6.3rem;
   background-color: rgba(255, 255, 255, 0.844);
 }

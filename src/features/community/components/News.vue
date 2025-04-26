@@ -21,8 +21,11 @@
         </div>
 
         <NewsContent :item="item" />
-
-        <NewsLabel :item="item" :tag-type="tagType" />
+        <NewsLabel
+          :type="item.type"
+          :postTags="item.postTags"
+          :tag-type="tagType"
+        />
         <NewsFooter
           :view-count="item.viewCount"
           :likecount="item.likeCount"
@@ -73,6 +76,9 @@ import NewsFooter from "./article-display/NewsFooter.vue";
 import { skipPersonCenter } from "@/composables/useCommunity";
 import NewsContent from "./article-display/NewsContent.vue";
 import NewsLabel from "./article-display/NewsLabel.vue";
+import { useAlert } from "@/composables/useAlert";
+
+const { showAlert } = useAlert();
 const loadinglen = ref(0);
 const articleList = ref<ArticleList[]>([]);
 const isExsitTag = ref(false);
@@ -108,22 +114,23 @@ if (!props.isTag) {
     () => route.params,
     (newVal) => {
       const title = (newVal as Record<string, string>)?.title;
-      if (title) {
-        const { loading: load, data } = getArticle2(
-          props.type,
-          title,
-          props.page,
-          props.sort,
-        );
-        watch(data, () => {
-          pages.value = data.value?.data.pages || 0;
-          total.value = data.value?.data.total || 0;
-          console.log(data.value);
-          loading.value = load.value;
-          current.value = data.value?.data.current || 0;
-          articleList.value = data.value?.data.records || [];
-        });
-      }
+      const { loading: load, data } = getArticle2(
+        props.type,
+        title,
+        props.page,
+        props.sort,
+      );
+      watch(data, () => {
+        pages.value = data.value?.data.pages || 0;
+        total.value = data.value?.data.total || 0;
+        console.log(data.value);
+        if (data.value?.code !== 2007) {
+          return showAlert(data.value?.message || "未知错误", "error");
+        }
+        loading.value = load.value;
+        current.value = data.value?.data.current || 0;
+        articleList.value = data.value?.data.records || [];
+      });
     },
     {
       immediate: true,
@@ -143,7 +150,6 @@ if (!props.isTag) {
       );
       loading.value = load.value;
       watch(data, () => {
-        console.log(data.value);
         loading.value = load.value;
         articleList.value = data.value?.data.records || [];
       });
@@ -200,8 +206,6 @@ const handleScroll = async () => {
 </script>
 
 <style scoped lang="scss">
-//动态定义头像
-
 #news,
 .news-loading {
   width: 100%;
@@ -244,13 +248,12 @@ const handleScroll = async () => {
 @media screen and (max-width: 768px) {
   #news {
     padding: 0 0.6rem;
-    margin-top: 8rem;
+    // margin-top: 8rem;
     .news-item {
       padding: 5px;
       margin-bottom: 8px;
       .news-writer {
         padding-left: 0.625rem;
-
         .writer-info {
           .name {
             margin-left: 0.2rem;
@@ -270,61 +273,5 @@ const handleScroll = async () => {
   font-size: 0.825rem;
   color: var(--secondary-foreground);
   font-weight: 500;
-}
-@media screen and (min-width: 900px) and (max-width: 1300px) {
-  #news,
-  .news-loading {
-    .news-item {
-      padding: 10px;
-      border-radius: 10px;
-      min-height: 100px;
-
-      background-color: var(--background);
-      margin-bottom: 1.5rem;
-      .news-writer {
-        .name {
-          font-size: 1vw;
-        }
-        .avatar {
-          cursor: pointer;
-        }
-      }
-      .news-content {
-        .news-details {
-          p {
-            max-height: 30px;
-            line-height: 15px;
-            font-size: 0.95vw;
-            display: -webkit-box;
-            -webkit-line-clamp: 2; //行数
-            text-overflow: ellipsis; //省略号
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            white-space: normal;
-            word-break: break-all;
-          }
-        }
-      }
-      .news-label {
-        padding: 5px 35px;
-
-        display: flex;
-        .labels {
-          display: flex;
-
-          color: #909ba6;
-          font-size: 14px;
-          .label-item {
-            display: flex;
-            align-items: center;
-
-            margin: 0 5px;
-            font-size: 0.8vw;
-            cursor: pointer;
-          }
-        }
-      }
-    }
-  }
 }
 </style>

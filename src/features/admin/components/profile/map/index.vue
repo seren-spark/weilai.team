@@ -4,7 +4,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, ref } from "vue";
+import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 // import { EChartsOption, AnimationEasing } from 'echarts';
 
 import * as echarts from "echarts";
@@ -15,6 +15,34 @@ import {
   EXISTING_THIRD_LAYER_REGION,
 } from "./constant";
 import { getGeoJson, getMapData } from "@/api/map";
+
+interface Item {
+  zipcode: number;
+  peopleCount: number;
+}
+
+const props = defineProps({
+  areas: {
+    type: Array as () => Item[],
+    default: () => [],
+  },
+});
+
+let mapData: { adcode: number; value: number }[];
+
+watch(
+  () => props.areas,
+  () => {
+    mapData = props.areas.map((item) => {
+      return {
+        'adcode': item.zipcode,
+        'value': item.peopleCount,
+      };
+    });
+    console.log(mapData);
+    initChart();
+  },
+);
 
 // 定义 ECharts 实例的引用
 const mapChart = ref<echarts.ECharts | null>(null);
@@ -131,7 +159,7 @@ const bindContextmenuChart = () => {
 const getGeoAndMapData = async (type: string, mapName: string) => {
   const [{ data: geoJson }, res] = await Promise.all([
     getGeoJson(type, mapName),
-    getMapData(type),
+    getMapData(type, mapData),
   ]);
   const { data: partData } = res.data;
   return { geoJson, partData };
@@ -179,7 +207,7 @@ const registerRenderMap = (
 // 绘制地图的函数
 const renderMap = (mapName: string, partData: any[], geoJson: any) => {
   const seriesData = getSeriesDataByPart(partData, geoJson);
-//   const visualMapMax = getVisualMapMax(seriesData);
+  //   const visualMapMax = getVisualMapMax(seriesData);
   const option = {
     title: {
       text: mapName,
@@ -331,6 +359,7 @@ const getVisualMapMax = (seriesData: any[]) => {
 
 // 组件挂载后初始化图表
 onMounted(() => {
+  console.log(mapData);
   initChart();
 });
 

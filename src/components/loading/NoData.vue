@@ -3,7 +3,7 @@
   <div class="noDataContainer">
     <div class="noData">
       <img class="noDataImg" src="../../assets/img/noData.png" alt="" />
-      <p class="noDataText">暂无数据</p>
+      <p class="noDataText">No Data</p>
     </div>
   </div>
 </template>
@@ -19,6 +19,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+
     .noDataImg {
       width: 20%;
       height: auto;
@@ -26,10 +27,14 @@
     }
 
     .noDataText {
-      color: #999;
+      //   color: #999;
       padding-top: 15px;
       text-align: center;
       padding-right: 2%;
+      background: linear-gradient(to right, #619bbe, #c9c3e6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
   }
 }

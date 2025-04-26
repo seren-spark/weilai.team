@@ -334,9 +334,9 @@ $ai-height: 30rem;
       overflow: hidden;
       width: 100%;
       .BubbleAvatar {
-        width: 2.5rem;
+        width: 2.2rem;
         box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.1);
-        height: 2.5rem;
+        height: 2.2rem;
         line-height: 2.5rem;
         text-align: center;
         clear: left;
