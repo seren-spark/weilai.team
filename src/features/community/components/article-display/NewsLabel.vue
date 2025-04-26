@@ -1,9 +1,9 @@
 <template>
   <div class="news-label">
-    <div class="type">{{ checkType(item.type) }}</div>
+    <div class="type">{{ checkType(type) }}</div>
     <ul class="labels">
       <RouterLink
-        v-for="tags in item.postTags"
+        v-for="tags in postTags"
         :key="tags"
         class="label-item"
         :to="`/community/${tagType}/label/${tags}`"
@@ -16,9 +16,9 @@
 
 <script setup lang="ts">
 import { checkType } from "../../composables/search";
-import type { ArticleList } from "@/types/community";
 defineProps<{
-  item: ArticleList;
+  postTags: string[];
+  type: Number;
   tagType: string;
 }>();
 </script>

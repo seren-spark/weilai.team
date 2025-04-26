@@ -1,12 +1,12 @@
 <script setup lang="ts" name="">
-import AllSum from "@/features/admin/components/profile/summary/AllSum.vue";
-import SplitEnds from "@/features/admin/components/profile/SplitEnds.vue";
-import RadarChart from "@/features/admin/components/profile/RadarChart.vue";
-import SalaryStatistics from "@/features/admin/components/profile/SalaryStatistics.vue";
+import AllSum from "../../components/profile/summary/AllSum.vue";
+import SplitEnds from "../../components/profile/SplitEnds.vue";
+import RadarChart from "../../components/profile/RadarChart.vue";
+import SalaryStatistics from "../../components/profile/SalaryStatistics.vue";
 // import MapDistribution from "./MapDistribution.vue";
-import chinaMap from '@/features/admin/components/profile/chinaMap.vue';
+import chinaMap from "../../components/profile/chinaMap.vue";
 
-import UseOverview from "@/features/admin/composables/useOverview";
+import UseOverview from "../../composables/useOverview";
 const { profile } = UseOverview();
 </script>
 
@@ -39,12 +39,11 @@ const { profile } = UseOverview();
       <SalaryStatistics
         :java-all="profile?.javaAll"
         :html-all="profile?.htmlAll"
-        :html-per="profile?.htmlPer"
-        :java-per="profile?.javaPer"
+        :per-by-grade="profile?.perByGrade"
       />
     </div>
     <div class="map">
-      <chinaMap />
+      <chinaMap :areas="profile?.areas" />
     </div>
   </div>
 </template>

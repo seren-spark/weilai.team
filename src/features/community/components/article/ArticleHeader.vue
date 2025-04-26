@@ -6,6 +6,7 @@ import { Icon } from "@iconify/vue/dist/iconify.js";
 import TagItem from "../tag/TagItem.vue";
 import ArticleLike from "./ArticleLike.vue";
 import ArticleCollect from "./ArticleCollect.vue";
+import UserAvatar from "@/components/avatar/UserAvatar.vue";
 defineProps<{
   isLoading: boolean;
   avatar: string | undefined;
@@ -35,10 +36,7 @@ defineProps<{
     </div>
 
     <div v-else class="article-header__avatar">
-      <Avatar>
-        <AvatarImage :src="avatar ? avatar : ''"></AvatarImage>
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
+      <UserAvatar :avatar="avatar " custom-class="w-[2.5rem] h-[2.5rem]"/>
       <div class="article-header__info">
         <p class="article-header__info-author">{{ author }}</p>
         <p class="article-header__info-postTime">{{ postTime }}</p>

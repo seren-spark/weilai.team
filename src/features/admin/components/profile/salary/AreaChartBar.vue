@@ -1,24 +1,46 @@
 <script lang="ts" setup>
 import { AreaChart } from "@/components/ui/chart-area";
 import ChartTooltip from "../ChartTooltip.vue";
-import { ref } from "vue";
+import { watch } from "vue";
 
-const data = ref([
-  { name: "17届", frontEnd: 25, backEnd: 27 },
-  { name: "18届", frontEnd: 34, backEnd: 29 },
-  { name: "19届", frontEnd: 30, backEnd: 30 },
-  { name: "20届", frontEnd: 26, backEnd: 28 },
-  { name: "21届", frontEnd: 25, backEnd: 22 },
-  { name: "22届", frontEnd: 22, backEnd: 26 },
-  { name: "23届", frontEnd: 20, backEnd: 23 },
-]);
+interface Item {
+  grade: number;
+  salaryYearPerHtml: number;
+  salaryYearPerJava: number;
+  peopleCountPerHtml: number;
+  peopleCountPerJava: number;
+}
+
+const props = defineProps({
+  perByGrade: {
+    type: Array as () => Item[],
+    default: () => {},
+  },
+});
+
+let data: { name: number; frontEnd: number; backEnd: number }[];
+
+watch(
+  () => props.perByGrade,
+  () => {
+    data = props.perByGrade.map((item) => {
+      return {
+        name: item.grade,
+        frontEnd: item.salaryYearPerHtml,
+        backEnd: item.salaryYearPerJava,
+      };
+    });
+    // console.log(data);
+  },
+  { deep: true },
+);
 
 const colors = ["#447db3", "#5dba9f"];
-
 </script>
 <template>
   <div class="AreaChart">
     <AreaChart
+      v-if="data"
       :data="data"
       :colors="colors"
       index="name"
@@ -28,15 +50,11 @@ const colors = ["#447db3", "#5dba9f"];
       :y-formatter="
         (tick, i) => {
           return typeof tick === 'number'
-            ? `${new Intl.NumberFormat('us').format(tick).toString()}w`
+            ? `${new Intl.NumberFormat('us').format(tick).toString()}`
             : '';
         }
       "
     />
   </div>
 </template>
-<style lang="scss" scoped>
-.AreaChart {
-
-}
-</style>
+<style lang="scss" scoped></style>

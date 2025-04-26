@@ -55,7 +55,6 @@ if ("user" in route.params) {
 } else {
   user.value = "";
 }
-
 const current = ref<number>(1);
 const pages = ref<number>(1);
 const total = ref<number>(0);
