@@ -31,7 +31,7 @@
       padding-top: 15px;
       text-align: center;
       padding-right: 2%;
-      background: linear-gradient(to right, #619bbe, #c9c3e6);
+      background: linear-gradient(to right, #95a9d7, #c9c3e6);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;

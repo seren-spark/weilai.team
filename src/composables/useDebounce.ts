@@ -1,4 +1,4 @@
-import type { Directive } from "vue";
+
 
 export default {
   //自定义节流操作
@@ -30,8 +30,7 @@ export default {
     ) {
       let timer: number | null = null;
       const { value, arg = 0 } = binding;
-      console.log(value);
-      console.log(el.value, "el.value");
+  
 
       el.addEventListener("input", () => {
         if (timer) {
@@ -53,7 +52,7 @@ export default {
       // 若指令的值更新，重新绑定事件处理函数
       let timer: number | null = null;
       let { value, arg = 0 } = binding;
-      console.log(arg);
+  
 
       const existingListener = (e: any) => {
         if (timer) {
