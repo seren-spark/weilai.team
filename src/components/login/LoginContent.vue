@@ -14,14 +14,13 @@ defineProps<{
   account: string | number | undefined;
   password: string | number | undefined;
   errors: Zod.ZodFormattedError<LoginError> | undefined;
+  handleLogin: () => void;
 }>();
 
 defineEmits<{
   (e: "update:loginAccount", value: string | number | undefined): void;
   (e: "update:loginPassword", value: string | number | undefined): void;
 }>();
-// const isAttributeOpen = ref(true);
-// const isTocOpen = ref(true);
 </script>
 <template>
   <div class="grid gap-2">
@@ -34,12 +33,12 @@ defineEmits<{
       <span>{{ errors?.account?._errors[0] }}</span>
     </div>
     <Input
+      id="stuId"
       class="formInput"
       :class="{
         noWrite: errors?.account?._errors,
         'focus-visible:ring-red-300 error-border': errors?.account?._errors,
       }"
-      id="stuId"
       placeholder="请输入学号或邮箱"
       required
       :model-value="account"
@@ -58,17 +57,18 @@ defineEmits<{
       <span>{{ errors?.password?._errors[0] }}</span>
     </div>
     <Input
+      id="password"
       class="formInput"
       :class="{
         noWrite: errors?.password?._errors,
         'focus-visible:ring-red-300 error-border': errors?.password?._errors,
       }"
-      id="password"
       type="password"
       placeholder="请输入密码"
       required
       :model-value="password"
       @update:model-value="(val) => $emit('update:loginPassword', val)"
+      @keyup.enter="handleLogin"
     />
     <div class="forgotPass flex items-center justify-end">
       <ForgotPassword></ForgotPassword>
