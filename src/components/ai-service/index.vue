@@ -68,11 +68,9 @@ onMounted(() => {
   cursor: pointer;
   position: fixed;
   z-index: 9999999;
-  //   background-color: white;
   border-radius: 50%;
   height: 3rem;
   width: 3rem;
-  //   box-shadow: 2px 2px 10px 4px rgba(0, 0, 0, 0.15);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -92,5 +90,11 @@ onMounted(() => {
 }
 .move-left {
   transform: translate3d(0px, -221.681px, 0px) !important;
+}
+
+@media screen and (max-width: 768px) {
+  a {
+    display: none;
+  }
 }
 </style>

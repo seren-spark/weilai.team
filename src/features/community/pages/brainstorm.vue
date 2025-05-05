@@ -28,7 +28,7 @@ addTagType.addTag(typeData.value);
     "thirdNavItems": [
       {
         "title": "热门",
-        "path": "/community/brainstorm/detail",
+        "path": "/community/brainstorm/hot",
         "icon": "i-mdi-file-document-multiple-outline"
       },
       {
