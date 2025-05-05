@@ -315,7 +315,7 @@ function skipRedirect(item: any) {
         <RouterLink
           v-for="(item, index) in COMMUNITY_ROUTER_META.subNavItems"
           :key="index"
-          :to="item.appPath"
+          :to="item.redirect as string"
           active-class="sidebar__sub-link--active"
           class="main-menu-sub-link"
         >
