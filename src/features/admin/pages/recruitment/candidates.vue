@@ -389,11 +389,13 @@ const arrangeInterviewerDialog = ref(false);
       :name="currentArrangeInterviewName"
       :is-open="arrangeInterviewerDialog"
       @close="arrangeInterviewerDialog = false"
+      @refresh="refreshPage"
     />
     <UpdateApplyUserInfo
       :id="currentUpdateApplyUserId"
       :is-open="updateApplyUserInfo"
       @close="updateApplyUserInfo = false"
+      @refresh="refreshPage"
     />
     <UpdateStatus
       :ids="currentTableSelectIds"
