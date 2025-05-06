@@ -1,22 +1,45 @@
 <script lang="ts" setup>
 import { BarChart } from "@/components/ui/chart-bar";
 import ChartTooltip from "../ChartTooltip.vue";
+import { watch } from "vue";
 
+interface Item {
+  grade: number;
+  salaryYearPerHtml: number;
+  salaryYearPerJava: number;
+  peopleCountPerHtml: number;
+  peopleCountPerJava: number;
+}
 
-const data = [
-  { name: "17届", total: 10, predicted: 12 },
-  { name: "18届", total: 15, predicted: 11 },
-  { name: "19届", total: 14, predicted: 10 },
-  { name: "20届", total: 10, predicted: 13 },
-  { name: "21届", total: 6, predicted: 8 },
-  { name: "22届", total: 4, predicted: 4 },
-  { name: "23届", total: 5, predicted: 5 },
-];
+const props = defineProps({
+  perByGrade: {
+    type: Array as () => Item[],
+    default: () => {},
+  },
+});
+
+let data: { name: number; total: number; predicted: number }[];
+
+watch(
+  () => props.perByGrade,
+  () => {
+    data = props.perByGrade.map((item) => {
+      return {
+        name: item.grade,
+        total: item.peopleCountPerHtml,
+        predicted: item.peopleCountPerJava,
+      };
+    });
+    // console.log(data);
+  },
+  { deep: true },
+);
 
 const colors = ["#abdcce", "#9ebcd8"];
 </script>
 <template>
   <BarChart
+    v-if="data"
     :data="data"
     index="name"
     :categories="['total', 'predicted']"

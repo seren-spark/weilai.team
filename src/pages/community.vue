@@ -10,8 +10,8 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
 
 <route lang="json">
 {
-  "name": "community",
   "meta": {
+    "firNav": "community",
     "subNavItems": [
       {
         "title": "综合",
@@ -28,18 +28,20 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
       {
         "title": "公告",
         "icon": "material-symbols:article-outline",
+
         "path": "/community/notice"
       },
       {
         "title": "交流",
         "icon": "lucide-lab:coins-exchange",
         "path": "/community/discussion",
-        "redirect": "/community/discussion/recommend"
+        "redirect": "/community/discussion/hot"
       },
       {
         "title": "头脑风暴",
         "icon": "icon-park-outline:thinking-problem",
-        "path": "/community/brainstorm/detail"
+        "path": "/community/brainstorm",
+        "redirect": "/community/brainstorm/hot"
       }
     ]
   }

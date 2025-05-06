@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useRequest } from "@/composables/useRequest";
 import type { ArticleList, Data, UserData, UserInfo } from "@/types/community";
-import { debounce } from "@community/composables/search";
+
 import { Icon } from "@iconify/vue";
-import { ref, watch } from "vue";
+
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const isVisible = ref(false);
@@ -16,15 +17,16 @@ const searchUserList = ref<UserInfo[]>([]);
 const filterUserList = ref<UserInfo[]>([]);
 const route = useRoute();
 const path = route.path;
-console.log(route);
 
 const pathArr = path.split("/").slice(1);
 // 接受父组件传来的函数
 const props = defineProps({
+  //文章类型
   typeId: {
     type: Number,
     default: 0,
   },
+  //搜索的是否是用户
   isUser: {
     type: Boolean,
     default: false,
@@ -36,23 +38,23 @@ const titleMap = new Map<string, boolean>();
 let body = document.body as HTMLElement;
 body.addEventListener("click", handleClick);
 // 监视输入框的输入
-const debouncedSearchTitle = debounce((newValue) => searchTitle(newValue), 300);
-const debouncedSearchUser = debounce((newValue) => searchUser(newValue), 300);
-watch(searchValue, (newValue) => {
-  if (!props.isUser) {
-    if (newValue) {
-      debouncedSearchTitle(newValue);
-    } else {
-      filterList.value = [];
-    }
-  } else {
-    if (newValue) {
-      debouncedSearchUser(newValue);
-    } else {
-      filterUserList.value = [];
-    }
-  }
-});
+// const debouncedSearchTitle = debounce((newValue) => searchTitle(newValue), 300);
+// const debouncedSearchUser = debounce((newValue) => searchUser(newValue), 300);
+// watch(searchValue, (newValue) => {
+//   if (!props.isUser) {
+//     if (newValue) {
+//       debouncedSearchTitle(newValue);
+//     } else {
+//       filterList.value = [];
+//     }
+//   } else {
+//     if (newValue) {
+//       debouncedSearchUser(newValue);
+//     } else {
+//       filterUserList.value = [];
+//     }
+//   }
+// });
 // 获取搜索列表
 
 async function searchUser(content = "", pageNumber = 1, pageSize = 10) {
@@ -74,12 +76,14 @@ async function searchUser(content = "", pageNumber = 1, pageSize = 10) {
   });
 }
 async function searchTitle(condition = "", type = 0) {
+  console.log("函数被调用");
+
   await executeRequest({
     url: `/post/selectAll?condition=${condition}&type=${props.typeId || type}`,
     method: "get",
   });
   let res = data.value as Data;
-  console.log(res);
+ 
   searchList.value = res.data.records;
   titleMap.clear();
   filterList.value = [];
@@ -103,7 +107,7 @@ function handleClick(e: Event) {
   }
 }
 function skip(e: Event) {
-  if (searchValue.value) {
+  if (searchValue.value != null) {
     router.push(
       `/${pathArr[0]}/${pathArr[1]}/${pathArr[2]}/${searchValue.value}`,
     );
@@ -134,6 +138,7 @@ function skip(e: Event) {
             }
           "
           v-model="searchValue"
+          v-debounce:[typeId]="isUser ? searchUser : searchTitle"
           @focus="isVisible = true"
         />
       </div>

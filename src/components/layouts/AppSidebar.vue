@@ -23,11 +23,12 @@ import { useNoticeStore } from "@/store/UseNoticeStore";
 import { useUserStore } from "@/store/userStore";
 import { Icon } from "@iconify/vue";
 import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-vue-next";
-import { nextTick, ref } from "vue";
+import { ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";
 import SidebarHeader from "../ui/sidebar/SidebarHeader.vue";
+import { COMMUNITY_ROUTER_META } from "@/constants/router";
 
 const { data, executeRequest } = useRequest();
 // 获取个人id用于渲染
@@ -50,39 +51,8 @@ const router = useRouter();
 
 let subNavItems = route.meta.subNavItems as SubItemInterface[] | undefined;
 let currentUrl = ref("");
-//手机端
-const subNavs = [
-  {
-    title: "综合",
-    icon: "material-symbols-light:overview-key-outline",
-    path: "/community/comprehensive",
-    appPath: "/community/comprehensive/hot",
-  },
-  {
-    title: "博客",
-    icon: "material-symbols:article-outline",
-    path: "/community/blog",
-    appPath: "/community/blog/hot",
-  },
-  {
-    title: "公告",
-    icon: "material-symbols:article-outline",
-    path: "/community/notice",
-    appPath: "/community/notice",
-  },
-  {
-    title: "交流",
-    icon: "material-symbols-light:partner-exchange-rounded",
-    path: "/community/discussion",
-    appPath: "/community/dicusstion/hot",
-  },
-  {
-    title: "头脑风暴",
-    icon: "weui:time-outlined",
-    path: "/community/brainstorm",
-    appPath: "/community/brainstorm/hot",
-  },
-];
+
+console.log(router, 6666666666);
 
 const items = [
   {
@@ -343,9 +313,9 @@ function skipRedirect(item: any) {
       ></DropdownMenuTrigger>
       <DropdownMenuContent class="w-6 bg-white">
         <RouterLink
-          v-for="(item, index) in subNavs"
+          v-for="(item, index) in COMMUNITY_ROUTER_META.subNavItems"
           :key="index"
-          :to="item.appPath"
+          :to="item.redirect as string"
           active-class="sidebar__sub-link--active"
           class="main-menu-sub-link"
         >

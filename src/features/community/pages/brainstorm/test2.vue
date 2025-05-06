@@ -1,4 +1,5 @@
 <template>
+  <!--  ！！！该文件用于文件上传测试 不展示在页面中 -->
   <div class="container">
     <div style="display: none">
       <video width="500" height="240" controls id="upvideo"></video>
@@ -58,25 +59,14 @@
 <script lang="ts" setup>
 import {
   handleFileChange,
-  beforeUploadVideo,
-  clearFileHandler,
   handler,
   uploadFileList,
-  getStatusClass,
   transformByte,
   percent,
 } from "@/composables/useUploadFile";
 
 import { watch, reactive } from "vue";
-watch(
-  uploadFileList,
-  (newValue) => {
-    console.log(newValue);
-
-    console.log(555555555555);
-  },
-  { deep: true },
-);
+watch(uploadFileList, (newValue) => {}, { deep: true });
 </script>
 
 <style scoped lang="scss">

@@ -3,9 +3,9 @@
     <div class="content">
       <!-- 放搜索框的位置 -->
       <div id="search">
-        <Search />
+        <Search :typeId="3" />
       </div>
-      <NewsContent :type="1" :sort="1" />
+      <NewsContent :sort="1" :type="4" />
     </div>
     <Rightbar />
   </div>

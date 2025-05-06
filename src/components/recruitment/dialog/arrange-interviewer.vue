@@ -15,11 +15,7 @@
               <FormItem>
                 <FormLabel class="m-3 m-b-2 input-title">申请人</FormLabel>
                 <FormControl>
-                  <Input
-                    v-model="formData.ApplyUser as string"
-                    class="input-item"
-                    placeholder="填写申请人"
-                  />
+                  <Input v-model="formData.ApplyUser as string" class="input-item" placeholder="填写申请人" />
                 </FormControl>
                 <span class="form-message">{{ errors.ApplyUser }}</span>
               </FormItem>
@@ -29,11 +25,7 @@
               <FormItem>
                 <FormLabel class="m-3 input-title">面试地点</FormLabel>
                 <FormControl>
-                  <Input
-                    v-model="formData.place as string"
-                    class="input-item"
-                    placeholder="安排面试地点"
-                  />
+                  <Input v-model="formData.place as string" class="input-item" placeholder="安排面试地点" />
                 </FormControl>
                 <span class="form-message">{{ errors.place }}</span>
               </FormItem>
@@ -45,64 +37,46 @@
                 <Popover>
                   <PopoverTrigger as-child>
                     <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        :class="[
-                          'pl-3 text-left font-normal font-control',
-                          formData.interviewer.length === 0 &&
-                            'text-muted-foreground',
-                        ]"
-                      >
+                      <Button variant="outline" role="combobox" :class="[
+                        'pl-3 text-left font-normal font-control',
+                        formData.interviewer.length === 0 &&
+                        'text-muted-foreground',
+                      ]">
                         {{
                           formData.interviewer.length > 0
                             ? formData.interviewer
-                                .map(
-                                  (interviewer) =>
-                                    choices?.find(
-                                      (choice) => choice?.value === interviewer,
-                                    )?.label || "",
-                                )
-                                .join(" | ")
+                              .map(
+                                (interviewer) =>
+                                  choices?.find(
+                                    (choice) => choice?.value === interviewer,
+                                  )?.label || "",
+                              )
+                              .join(" | ")
                             : "选择面试官"
                         }}
-                        <ChevronsUpDownIcon
-                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                        />
+                        <ChevronsUpDownIcon class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent class="p-0" align="start">
                     <Command>
-                      <CommandInput
-                        v-model="searchName"
-                        class="input-item"
-                        placeholder="搜索面试官"
-                      />
+                      <CommandInput v-model="searchName" class="input-item" placeholder="搜索面试官" />
                       <CommandList>
-                        <CommandEmpty class="font-control" >未找到该面试官</CommandEmpty>
+                        <CommandEmpty class="font-control">未找到该面试官</CommandEmpty>
                         <CommandGroup>
-                          <CommandItem
-                            v-for="choice in choices"
-                            :key="choice.value"
-                            :value="choice.label"
-                            :class="{
-                              'interviewer-selected':
-                                formData.interviewer.includes(choice.value),
-                            }"
-                            @select="
+                          <CommandItem v-for="choice in choices" :key="choice.value" :value="choice.label" :class="{
+                            'interviewer-selected':
+                              formData.interviewer.includes(choice.value),
+                          }" @select="
                               () =>
                                 handleInterviewerChange(choice.value, choice.id)
-                            "
-                          >
-                            <CheckIcon
-                              :class="[
-                                'mr-2 h-4 w-4',
-                                formData.interviewer.includes(choice.value)
-                                  ? 'opacity-100'
-                                  : 'opacity-50',
-                              ]"
-                            />
+                            ">
+                            <CheckIcon :class="[
+                              'mr-2 h-4 w-4',
+                              formData.interviewer.includes(choice.value)
+                                ? 'opacity-100'
+                                : 'opacity-50',
+                            ]" />
                             {{ choice.label }}
                           </CommandItem>
                         </CommandGroup>
@@ -120,23 +94,20 @@
                 <Popover>
                   <PopoverTrigger as-child>
                     <FormControl>
-                      <Button
-                        variant="outline"
-                        :class="[
-                          'pl-3 text-left font-normal font-control',
-                          !formData.date && 'text-muted-foreground',
-                        ]"
-                      >
-                          {{
+                      <Button variant="outline" :class="[
+                        'pl-3 text-left font-normal font-control',
+                        !formData.date && 'text-muted-foreground',
+                      ]">
+                        {{
                           formData.date
                             ? format(
-                                new Date(
-                                  formData.date.year,
-                                  formData.date.month - 1,
-                                  formData.date.day,
-                                ),
-                                "yyyy-MM-dd",
-                              )
+                              new Date(
+                                formData.date.year,
+                                formData.date.month - 1,
+                                formData.date.day,
+                              ),
+                              "yyyy-MM-dd",
+                            )
                             : `选择面试日期`
                         }}
 
@@ -145,12 +116,8 @@
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent class="w-auto p-0" align="start">
-                    <Calendar
-                      v-model="formData.date as any"
-                      :on-date-change="handleDateUpdate"
-                      mode="single"
-                      locale="zh-CN"
-                    />
+                    <Calendar v-model="formData.date as any" :on-date-change="handleDateUpdate" mode="single"
+                      locale="zh-CN" />
                   </PopoverContent>
                 </Popover>
                 <span class="form-message">{{ errors.date }}</span>
@@ -161,11 +128,7 @@
               <FormItem>
                 <FormLabel class="m-3 input-title">开始时间</FormLabel>
                 <FormControl>
-                  <Input
-                    v-model="formData.startTime as string"
-                    class="input-item"
-                    placeholder="填写开始时间"
-                  />
+                  <Input v-model="formData.startTime as string" class="input-item" placeholder="填写开始时间" />
                 </FormControl>
                 <span class="form-message">{{ errors.startTime }}</span>
               </FormItem>
@@ -175,11 +138,7 @@
               <FormItem>
                 <FormLabel class="m-3 input-title">结束时间</FormLabel>
                 <FormControl>
-                  <Input
-                    v-model="formData.endTime as string"
-                    class="input-item"
-                    placeholder="填写结束时间"
-                  />
+                  <Input v-model="formData.endTime as string" class="input-item" placeholder="填写结束时间" />
                 </FormControl>
                 <span class="form-message">{{ errors.endTime }}</span>
               </FormItem>
@@ -227,7 +186,8 @@ import { useRequest } from "vue-request";
 import { useAlert } from "@/composables/useAlert";
 
 const { showAlert } = useAlert();
-
+//导出刷新
+const emit = defineEmits(["close", "refresh"]);
 // 定义类型别名
 type FormDataType = {
   ApplyUser: string;
@@ -261,7 +221,7 @@ const props = defineProps<{
   id: string;
   name: string;
 }>();
-const emit = defineEmits(["close"]);
+
 
 // 定义表单数据结构
 const formData = reactive<FormDataType>({
@@ -288,7 +248,7 @@ const errors = reactive<ErrorType>({
 const resetFormAndErrors = () => {
   Object.keys(formData).forEach((key) => {
     if (key === "date") {
-      (formData as  any )[key] = null;
+      (formData as any)[key] = null;
     } else if (key === "interviewer") {
       (formData as any)[key] = [];
     } else {
@@ -411,9 +371,6 @@ const handleDateUpdate = (value: DateValue | null) => {
 };
 
 const handleSubmit = () => {
-  // 清空错误信息
-  resetFormAndErrors();
-
   // 使用 Zod 进行校验
   const result = formSchema.safeParse(formData);
 
@@ -440,6 +397,10 @@ const handleSubmit = () => {
       if (data.value?.data.code === 200) {
         showAlert("面试安排成功", "pass");
         emit("close");
+        // 清空错误信息
+        resetFormAndErrors();
+        emit("refresh"); // 触发刷新事件
+
       } else {
         showAlert(data?.value?.data.message || "面试安排失败", "error");
       }
@@ -455,16 +416,16 @@ const handleSubmit = () => {
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/recruitment.scss";
 .interviewer-selected {
   background-color: var(--accent);
   border-left: 3px solid var(--accent);
   padding-left: 5px;
   margin-left: -5px;
 }
+
 .btn-style {
-  margin: 0 auto;
   width: 80%;
+  margin: 0 auto;
   padding: 10px;
   border-radius: var(--radius);
   border: solid 1px var(--input);
@@ -488,53 +449,56 @@ const handleSubmit = () => {
   gap: 30px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
 .arrange-interviewer {
   width: 100%;
   background-color: var(--popover);
   height: 100%;
   position: relative;
+  overflow-y: scroll;
 }
+
 form {
   display: flex;
   flex-direction: column;
   gap: 30px;
   width: 100%;
 }
+
 .form-message {
   color: var(--destructive-foreground);
   font-size: 12px;
 }
+
 .input-title {
   font-size: 0.8rem;
 }
+
 .input-item {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
+
   &::placeholder {
     color: #ccc;
     font-size: 0.7rem;
   }
 }
+
 .font-control {
   font-size: 0.7rem;
 }
 
 
 .arrange-submit {
- width: 120px;
- position: absolute;
-  bottom: 20px;
-  left: 20px;
+  position: relative;
   border: 1px solid #ccc;
   font-size: 0.8rem;
   background-color: var(--accent);
 }
+
 .arrange-cancel {
-  width: 120px;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
+  position: relative;
   border: 1px solid #ccc;
   font-size: 0.8rem;
 }

@@ -389,11 +389,13 @@ const arrangeInterviewerDialog = ref(false);
       :name="currentArrangeInterviewName"
       :is-open="arrangeInterviewerDialog"
       @close="arrangeInterviewerDialog = false"
+      @refresh="refreshPage"
     />
     <UpdateApplyUserInfo
       :id="currentUpdateApplyUserId"
       :is-open="updateApplyUserInfo"
       @close="updateApplyUserInfo = false"
+      @refresh="refreshPage"
     />
     <UpdateStatus
       :ids="currentTableSelectIds"
@@ -429,7 +431,7 @@ const arrangeInterviewerDialog = ref(false);
     </div>
     <div class="toggle-handle">
       <ToggleShow
-        :toggle-items="CandidatesConst.toggleItems"
+        :toggle-items="ref(CandidatesConst.toggleItems).value"
         @transfer-toggle-show-status="handleToggleShowStatus"
       />
 
@@ -463,17 +465,17 @@ const arrangeInterviewerDialog = ref(false);
               <PopoverContent class="popover-content" style="z-index: 10;width: 10rem;">
                 <div>
                   <div
-                    v-for="(i, index) in actions"
+                    v-for="(action, index) in actions"
                     :key="index"
                     class="pop-content-item"
-                    @click="i.onclick(currentRow.id, currentRow.name)"
+                    @click="action.onclick(currentRow.id, currentRow.name)"
                   >
                     <Icon
                       :key="index"
-                      :icon="i.icon"
+                      :icon="action.icon"
                       style="display: inline-block; font-size: 18px; cursor: pointer;"
                     />
-                    <span class="pop-content-item-text">{{ i.title }}</span>
+                    <span class="pop-content-item-text">{{ action.title }}</span>
                   </div>
                 </div>
               </PopoverContent>
@@ -508,6 +510,7 @@ const arrangeInterviewerDialog = ref(false);
   z-index: 39;
   .pop-content-item {
     width: 100%;
+    min-width: 200px;
     height: 40px;
     display: flex;
     flex-direction: row;
@@ -521,7 +524,7 @@ const arrangeInterviewerDialog = ref(false);
     }
 
     .pop-content-item-text {
-      font-size: 14px;
+      font-size: .8rem;
       margin-left: 10px;
     }
   }

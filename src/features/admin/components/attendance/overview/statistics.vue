@@ -13,7 +13,7 @@ const props = defineProps<{ data: AttendanceOverview | undefined }>();
 watch(
   () => props.data,
   (newValue) => {
-    console.log(newValue);
+
   },
 );
 
@@ -27,7 +27,7 @@ const rate = computed(() => {
   ) {
     return 0;
   }
-  return (props.data?.userCountCurrent / props.data?.userCountShould) * 100;
+  return parseFloat(((props.data?.userCountCurrent / props.data?.userCountShould) * 100).toFixed(2));
 });
 </script>
 
@@ -43,7 +43,7 @@ const rate = computed(() => {
         &nbsp;
         <span>人</span>
       </CardContent>
-      <CardFooter class="card-footer"> 较昨日 持平 </CardFooter>
+ 
     </Card>
     <!-- 打卡人数 -->
     <Card class="clock-in card">
@@ -55,7 +55,7 @@ const rate = computed(() => {
         &nbsp;
         <span>人</span>
       </CardContent>
-      <CardFooter class="card-footer"> 较昨日 持平 </CardFooter>
+  
     </Card>
     <!-- 出勤率 -->
     <Card class="rate card">
@@ -67,7 +67,7 @@ const rate = computed(() => {
         &nbsp;
         <span>%</span>
       </CardContent>
-      <CardFooter class="card-footer"> 较昨日 持平 </CardFooter>
+  
     </Card>
     <!-- 请假人数 -->
     <Card class="leave card">
@@ -79,7 +79,7 @@ const rate = computed(() => {
         &nbsp;
         <span>人</span>
       </CardContent>
-      <CardFooter class="card-footer"> 较昨日 持平 </CardFooter>
+
     </Card>
     <!-- 迟到人数 -->
     <Card class="late card">
@@ -91,7 +91,7 @@ const rate = computed(() => {
         &nbsp;
         <span>人</span>
       </CardContent>
-      <CardFooter class="card-footer"> 较昨日 持平 </CardFooter>
+
     </Card>
   </div>
 </template>
