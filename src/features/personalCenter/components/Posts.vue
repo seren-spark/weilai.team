@@ -6,7 +6,7 @@
       <div class="postsData">
         <div class="postsNum">
           <p>{{ userPostAllInfo.allPostCount }}</p>
-          <p>文章</p>
+          <p>原创</p>
         </div>
         <div class="likeNum">
           <p>{{ userPostAllInfo.allLikeCount }}</p>
