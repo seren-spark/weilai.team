@@ -225,6 +225,7 @@ onMounted(() => {
   position: relative;
 }
 .noticeItem {
+  overflow: hidden;
   width: 100%;
   background-color: white;
   border-radius: 10px;
@@ -332,6 +333,57 @@ onMounted(() => {
     justify-content: flex-end;
     .arrowsIcon {
       margin: 5px 0 0 3px;
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .noticeItem {
+    width: 100%;
+    height: 126px;
+    padding: 10px 12px 12px 12px;
+
+    .userInfo {
+      .publish-avatar {
+        width: 40px;
+        height: 40px;
+      }
+
+      .nickName {
+        font-size: 14px;
+        margin: 9px;
+      }
+      .publish-time {
+        margin-top: 10px;
+        font-size: 13px;
+      }
+      .editIcon {
+        font-size: 16px;
+        color: var(--secondary-foreground);
+        margin: 0px 9px 0 0;
+        cursor: pointer;
+      }
+      .deleteIcon {
+        font-size: 16px;
+        color: var(--secondary-foreground);
+        margin: 0px 9px 0 0;
+        cursor: pointer;
+      }
+      .alReadIcon {
+        font-size: 17px;
+        color: var(--secondary-foreground);
+        margin: 0px 9px 0 0;
+        cursor: pointer;
+      }
+    }
+    .noticeDetalis {
+      padding: 8px 5px;
+      .notice-title {
+        font-size: 14px;
+        margin: 0px 0 7px 0px;
+      }
+      .notice-content {
+        font-size: 13px;
+      }
     }
   }
 }
