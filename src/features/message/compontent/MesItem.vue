@@ -1,6 +1,82 @@
+<template>
+  <div class="mesItem">
+    <UserAvatar
+      class="avatar"
+      :avatar="props.message.headPortrait || ''"
+      @click="skipPersonCenter(props.message.senderId)"
+    />
+    <div class="mesContent">
+      <div class="details">
+        <div class="name" @click="skipPersonCenter(props.message.senderId)">
+          {{ props.message.username }}
+          <!-- 大屏幕时显示类型提示 -->
+          <span
+            v-if="isLargeScreen && props.message.messageType === 1"
+            class="type"
+            >点赞了你的文章</span
+          >
+          <span
+            v-else-if="isLargeScreen && props.message.messageType === 2"
+            class="type"
+            >收藏了你的文章</span
+          >
+          <span
+            v-else-if="isLargeScreen && props.message.messageType === 3"
+            class="type"
+            >评论了你的文章</span
+          >
+          <span
+            v-else-if="isLargeScreen && props.message.messageType === 4"
+            class="type"
+            >评论了你</span
+          >
+          <span
+            v-else-if="isLargeScreen && props.message.messageType === 5"
+            class="hide"
+          ></span>
+        </div>
+        <div class="time">{{ formattedTime }}</div>
+      </div>
+      <!-- 小屏幕时显示类型提示 -->
+      <div v-if="!isLargeScreen" class="type-mobile">
+        <span v-if="props.message.messageType === 1" class="type"
+          >点赞了你的文章</span
+        >
+        <span v-else-if="props.message.messageType === 2" class="type"
+          >收藏了你的文章</span
+        >
+        <span v-else-if="props.message.messageType === 3" class="type"
+          >评论了你的文章</span
+        >
+        <span v-else-if="props.message.messageType === 4" class="type"
+          >评论了你</span
+        >
+        <span v-else-if="props.message.messageType === 5" class="hide"></span>
+      </div>
+      <div v-if="splitResult.texts != null" class="content">
+        {{ splitResult.texts }}
+      </div>
+      <div v-if="splitResult.imgUrls" class="imgCon">
+        <img :src="splitResult.imgUrls" />
+      </div>
+      <div class="postLink">
+        <a :href="`/community/post/${props.message.postId}`"
+          ># {{ props.message.postTitle }}</a
+        >
+      </div>
+      <Icon
+        icon="fluent:delete-24-regular"
+        class="deleteIcon"
+        @click="deleteMessage()"
+      />
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { Icon } from "@iconify/vue";
-import { computed, defineProps, defineEmits, watch } from "vue";
+import { computed, defineProps, defineEmits } from "vue";
 import { formatPostTime } from "@/utils/formatPostTime";
 import UserAvatar from "@/components/avatar/UserAvatar.vue";
 import type { SSEMessageData } from "../../../types/sseType";
@@ -25,7 +101,7 @@ const deleteMessage = () => {
     })
     .catch(() => {});
 };
-//删除单个信息
+// 删除单个信息
 function deleteOnes(messageId: number) {
   return apiClient.delete(`/message/deleteOneMessage/${messageId}`);
 }
@@ -79,54 +155,22 @@ const splitResult = computed(() => {
     imgUrls,
   };
 });
-</script>
 
-<template>
-  <div class="mesItem">
-    <UserAvatar
-      class="avatar"
-      :avatar="props.message.headPortrait || ''"
-      @click="skipPersonCenter(props.message.senderId)"
-    />
-    <div class="mesContent">
-      <div class="details">
-        <div class="name" @click="skipPersonCenter(props.message.senderId)">
-          {{ props.message.username }}
-          <span v-if="props.message.messageType === 1" class="type"
-            >点赞了你的文章</span
-          >
-          <span v-else-if="props.message.messageType === 2" class="type"
-            >收藏了你的文章</span
-          >
-          <span v-else-if="props.message.messageType === 3" class="type"
-            >评论了你的文章</span
-          >
-          <span v-else-if="props.message.messageType === 4" class="type"
-            >评论了你</span
-          >
-          <span v-else-if="props.message.messageType === 5" class="hide"></span>
-        </div>
-        <div class="time">{{ formattedTime }}</div>
-      </div>
-      <div v-if="splitResult.texts != null" class="content">
-        {{ splitResult.texts }}
-      </div>
-      <div v-if="splitResult.imgUrls" class="imgCon">
-        <img :src="splitResult.imgUrls" />
-      </div>
-      <div class="postLink">
-        <a :href="`/community/post/${props.message.postId}`"
-          ># {{ props.message.postTitle }}</a
-        >
-      </div>
-      <Icon
-        icon="fluent:delete-24-regular"
-        class="deleteIcon"
-        @click="deleteMessage()"
-      />
-    </div>
-  </div>
-</template>
+// 响应式判断屏幕大小
+const isLargeScreen = ref(window.innerWidth > 480);
+
+const handleResize = () => {
+  isLargeScreen.value = window.innerWidth > 480;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
+});
+</script>
 
 <style scoped lang="scss">
 .hide {
@@ -239,6 +283,23 @@ const splitResult = computed(() => {
         object-fit: cover;
         border-radius: 50%;
       }
+    }
+  }
+}
+@media screen and (max-width: 480px) {
+  .mesItem {
+    .mesContent {
+      width: calc(100% - 60px);
+      .details {
+        .name {
+          font-size: 13px;
+        }
+      }
+    }
+    .type-mobile {
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #636b71;
     }
   }
 }
