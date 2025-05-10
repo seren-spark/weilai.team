@@ -2,6 +2,15 @@
 import HorizontalBar from "./salary/HorizontalBar.vue";
 import MultipeBar from "./salary/MultipeBar.vue";
 import AreaChart from "./salary/AreaChartBar.vue";
+import type { PropType } from "vue";
+
+interface Item {
+  grade: number;
+  salaryYearPerHtml: number;
+  salaryYearPerJava: number;
+  peopleCountPerHtml: number;
+  peopleCountPerJava: number;
+}
 
 const props = defineProps({
   javaAll: {
@@ -12,6 +21,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  perByGrade: {
+    type: Array as PropType<Item[]>,
+    default: () => [],
+  },
 });
 </script>
 <template>
@@ -19,8 +32,8 @@ const props = defineProps({
     <div class="statistics-title">历届成员动向</div>
     <div class="statistics-content">
       <HorizontalBar :java-all="props.javaAll" :html-all="props.htmlAll" />
-      <AreaChart />
-      <MultipeBar />
+      <AreaChart :per-by-grade="perByGrade" />
+      <MultipeBar :per-by-grade="perByGrade" />
     </div>
   </div>
 </template>

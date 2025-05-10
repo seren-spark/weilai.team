@@ -125,17 +125,27 @@ watch(pageNo, (newValue) => {
   align-content: center;
   margin-top: 20px;
   font-size: 0.8rem;
+  gap: 1rem;
   span{
     display: block;
-    width: 50px;
-    height: 50px;
+    width: 2rem;
+    height: 2rem;
     text-align: center;
-    line-height: 50px;
+    line-height: 2rem;
     border: 1px solid #ccc;
     border-radius: 50%;
     background-color: skyblue;
     color: white;
   }
+}
+.btn-style {
+  display: block;
+  width: 6rem;
+  height: 2rem;
+  text-align: center;
+  line-height: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 .btn-disabled {
   cursor: not-allowed;

@@ -55,7 +55,6 @@ if ("user" in route.params) {
 } else {
   user.value = "";
 }
-
 const current = ref<number>(1);
 const pages = ref<number>(1);
 const total = ref<number>(0);
@@ -158,27 +157,14 @@ const handleScroll = async () => {
 }
 
 @media screen and (max-width: 768px) {
-  .content {
-    .bg {
-      position: fixed;
-      top: 0;
-      z-index: 0;
-      width: 100%;
-      height: 150px;
-      background-color: #fafafa;
-      &-top {
-        background-image: linear-gradient(#dfe9f3, #ffffff00 100%);
-        height: 150px;
-      }
-    }
-  }
   #news {
-    margin-top: 150px;
+    padding: 0 0.6rem;
+    margin-top: 8rem;
     .news-item {
       padding: 5px;
       margin-bottom: 8px;
       .news-writer {
-        padding-left: 10px;
+        padding-left: 0.625rem;
         .avatar {
           width: 40px;
           height: 40px;

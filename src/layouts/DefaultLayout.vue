@@ -16,9 +16,7 @@ import SidebarTrigger from "@/components/ui/sidebar/SidebarTrigger.vue";
       </TheSidebar>
     </SidebarProvider>
     <div class="default-layout__container">
-      <keep-alive>
-        <RouterView></RouterView>
-      </keep-alive>
+      <RouterView></RouterView>
     </div>
   </div>
 </template>

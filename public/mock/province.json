@@ -2,12 +2,10 @@
     "data": [
         {
             "adcode": 370100,
-            "name": "济南市",
             "value": 2
         },
         {
             "adcode": 370200,
-            "name": "青岛市",
             "value": 1
         }
     ]

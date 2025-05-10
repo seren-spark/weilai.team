@@ -8,8 +8,14 @@
         </span>
       </p>
       <Icon
+        @click="router.push('/community/rank')"
         icon="material-symbols-light:navigate-next"
-        style="font-size: 25px; float: right; font-weight: bold"
+        style="
+          font-size: 25px;
+          float: right;
+          font-weight: bold;
+          cursor: pointer;
+        "
       />
     </div>
     <hr />
@@ -38,7 +44,7 @@
           <Skeleton class="h-[30px] w-full" />
         </li>
       </ul>
-      <div v-else-if="!loading ">
+      <div v-else-if="!loading">
         <NoData />
       </div>
     </div>
@@ -56,11 +62,12 @@ import {
 } from "@/components/ui/tooltip";
 
 import { getArticle2 } from "@/features/community/composables/search";
-import { useTagStore } from "@/store/tagTypeStore";
+
 import type { ArticleList, Data } from "@/types/community";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";
-
+import { useTagStore } from "@/store/tagTypeStore";
+import router from "@/router";
 const tagStore = useTagStore();
 const type = tagStore.tagType.type;
 

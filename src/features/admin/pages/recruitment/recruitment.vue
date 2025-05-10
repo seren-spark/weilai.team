@@ -210,22 +210,21 @@ const quickShowItems = ref([
   </div>
 </template>
 <style lang="scss" scoped>
-@use "@/assets/styles";
 @use "@/assets/styles/recruitment.scss";
 
 .main {
   width: 100%;
   height: auto;
-  background-color: #fff;
+  background-color: var(--background);
   position: relative;
   display: grid;
-  grid-template-columns: 150px calc(100% - 170px);
-  gap: 30px;
-  top: 20px;
-  box-sizing: content-box;
-  margin-bottom: 40px;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  padding: 2rem;
   @media screen and (min-width: 1300px) {
-    grid-template-columns: 200px calc(100% - 220px);
+    grid-template-columns:200px minmax(0, 1fr);
   }
   @media screen and (max-width: 1100px) {
     grid-template-columns: 1fr;
@@ -236,16 +235,24 @@ const quickShowItems = ref([
 .left-side {
   width: 100%;
   height: auto;
-  background-color: #fff;
+  background-color: var(--background);
   position: relative;
-  margin-left: 2em;
-  display: inline-block;
+  display:inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
   margin-top: 30px;
   border: none;
   margin-bottom: 30px;
   @media screen and (max-width: 1100px) {
     display: none;
   }
+  .quick-show {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
   .quick-control {
     width: 100%;
     height: auto;
@@ -281,14 +288,14 @@ const quickShowItems = ref([
 //.endregion
 
 //.region 中间内容区
-.content {
-  width: 100%;
-  background-color: var(--background);
-  position: relative;
-  top: 20px;
-  left: 20px;
-  border: none;
-}
+// .content {
+//   width: 80%;
+//   background-color: var(--background);
+//   position: relative;
+//   top: 20px;
+//   left: 20px;
+//   border: none;
+// }
 .content-container {
   width: 100%;
   height: auto;

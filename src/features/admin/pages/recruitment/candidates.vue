@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import {CandidatesConst} from "@/constants/recruitment-constant";
 import {
   FilterCondition,
   DataRangePicker,
   ToggleShow,
-  // DataTable,
   Pagination,
   AutoLongerInput,
   UpdateStatus,
@@ -127,30 +127,6 @@ const resetCondition = () => {
   }, 500);
 };
 
-//切换框
-const toggleItems = ref([
-  {
-    index: 0,
-    title: "待安排",
-    isActive: true,
-  },
-  {
-    index: 1,
-    title: "待面试",
-    isActive: false,
-  },
-  {
-    index: 2,
-    title: "已录取",
-    isActive: false,
-  },
-  {
-    index: 3,
-    title: "已淘汰",
-    isActive: false,
-  },
-]);
-
 const tableData = ref(<IAllApplyUserVO[]>[]);
 const pageSize = ref(6);
 const pageNo = ref(1);
@@ -166,40 +142,6 @@ const handleToggleShowStatus = (newStatus: number) => {
   status.value = newStatus;
 };
 
-const headers = ref([
-  {
-    title: "姓名",
-    key: "name",
-  },
-  {
-    title: "年级",
-    key: "session",
-  },
-  {
-    title: "性别",
-    key: "gender",
-  },
-  {
-    title: "班级",
-    key: "clazz",
-  },
-  {
-    title: "学号",
-    key: "studentId",
-  },
-  {
-    title: "QQ",
-    key: "QQ",
-  },
-  {
-    title: "邮箱",
-    key: "email",
-  },
-  {
-    title: "状态",
-    key: "state",
-  },
-]);
 //表格操作事件
 
 // 查看简历 \/
@@ -263,7 +205,7 @@ const confirmDeleteCandidate = (id: string) => {
     });
 };
 //为表格传递操作项和图标
-const actionItems = ref([
+const actionItems = [
   {
     title: "查看简历",
     icon: "tabler:eye",
@@ -279,33 +221,19 @@ const actionItems = ref([
     icon: "tabler:calendar-check",
     onclick: arrangeInterview,
   },
-  // {
-  //   title: "淘汰",
-  //   icon: "tabler:cross",
-  //   onclick: eliminateCandidate,
-  // },
   {
     title: "删除候选人",
     icon: "tabler:trash",
     onclick: DeleteCandidate,
   },
-]);
-// const currentTableData=ref({
-//   id:"",
-//   name:""
-// })
-// const getCurrentTableData=(id:string,name:string)=>{
-//   currentTableData.value={
-//     id,
-//     name
-//   }
-// }
+];
+
 const actions = computed(() => {
   if(status.value === 0){
-    return actionItems.value
+    return actionItems;
   }
   else{
-    return actionItems.value.filter((item, index) => index !== 2)
+    return actionItems.filter((item, index) => index !== 2)
   }
 });
 //拿到后端的所有年级数据
@@ -370,7 +298,6 @@ watch(
         }
         if (newData) {
           total.value = newData.data.data.total;
-          //拿到数据后逆序渲染
           tableData.value = newData.data.data.data.map(
             (item: IAllApplyUserDTO) => {
               return {
@@ -397,34 +324,11 @@ watch(
     immediate: true,
   },
 );
-
-const excelHeaders = ref([
-  {
-    title: "姓名",
-    key: "name",
-  },
-  {
-    title: "年级",
-    key: "session",
-  },
-  {
-    title: "班级",
-    key: "clazz",
-  },
-  {
-    title: "性别",
-    key: "gender",
-  },
-  {
-    title: "状态",
-    key: "state",
-  },
-]);
-
+//导出excel表格
 const exportToExcelFunction = <T>(data: Array<T>) => {
   const filteredData = data.map((item: T) => {
     const newItem: Partial<T> = {};
-    excelHeaders.value.forEach((Header) => {
+      CandidatesConst.excelHeaders.forEach((Header) => {
       newItem[Header.key as keyof T] = item[Header.key as keyof T];
     });
     return newItem;
@@ -437,7 +341,7 @@ const exportToExcelFunction = <T>(data: Array<T>) => {
   const worksheet = XLSX.utils.json_to_sheet(filteredData);
 
   // 自定义导出表格的表头，使用组件内定义的 headers 中的 title 字段
-  const customHeaders = excelHeaders.value.map((item) => item.title);
+  const customHeaders = CandidatesConst.excelHeaders.map((item) => item.title);
 
   // 在工作表第一行添加自定义表头
   XLSX.utils.sheet_add_aoa(worksheet, [customHeaders], { origin: "A1" });
@@ -485,11 +389,13 @@ const arrangeInterviewerDialog = ref(false);
       :name="currentArrangeInterviewName"
       :is-open="arrangeInterviewerDialog"
       @close="arrangeInterviewerDialog = false"
+      @refresh="refreshPage"
     />
     <UpdateApplyUserInfo
       :id="currentUpdateApplyUserId"
       :is-open="updateApplyUserInfo"
       @close="updateApplyUserInfo = false"
+      @refresh="refreshPage"
     />
     <UpdateStatus
       :ids="currentTableSelectIds"
@@ -525,7 +431,7 @@ const arrangeInterviewerDialog = ref(false);
     </div>
     <div class="toggle-handle">
       <ToggleShow
-        :toggle-items="toggleItems"
+        :toggle-items="ref(CandidatesConst.toggleItems).value"
         @transfer-toggle-show-status="handleToggleShowStatus"
       />
 
@@ -542,7 +448,7 @@ const arrangeInterviewerDialog = ref(false);
     <div class="data-table">
       <DataTable
         :rows="tableData"
-        :columns="headers"
+        :columns="CandidatesConst.columns"
         :is-show-checkbox=true
         :actions="actions"
         @send-selected-ids="handleTableSelectIds"
@@ -559,17 +465,17 @@ const arrangeInterviewerDialog = ref(false);
               <PopoverContent class="popover-content" style="z-index: 10;width: 10rem;">
                 <div>
                   <div
-                    v-for="(i, index) in actions"
+                    v-for="(action, index) in actions"
                     :key="index"
                     class="pop-content-item"
-                    @click="i.onclick(currentRow.id, currentRow.name)"
+                    @click="action.onclick(currentRow.id, currentRow.name)"
                   >
                     <Icon
                       :key="index"
-                      :icon="i.icon"
+                      :icon="action.icon"
                       style="display: inline-block; font-size: 18px; cursor: pointer;"
                     />
-                    <span class="pop-content-item-text">{{ i.title }}</span>
+                    <span class="pop-content-item-text">{{ action.title }}</span>
                   </div>
                 </div>
               </PopoverContent>
@@ -604,6 +510,7 @@ const arrangeInterviewerDialog = ref(false);
   z-index: 39;
   .pop-content-item {
     width: 100%;
+    min-width: 200px;
     height: 40px;
     display: flex;
     flex-direction: row;
@@ -617,7 +524,7 @@ const arrangeInterviewerDialog = ref(false);
     }
 
     .pop-content-item-text {
-      font-size: 14px;
+      font-size: .8rem;
       margin-left: 10px;
     }
   }

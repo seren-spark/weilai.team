@@ -6,9 +6,15 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useRoute } from "vue-router";
 import { useMessageStore } from "@/store/messageStore";
+import { Icon } from "@iconify/vue";
 const route = useRoute();
 const thirdNavItems = route.meta.thirdNavItems as ThirdItemInterface[];
 const messageStore = useMessageStore();
+
+const props = defineProps<{
+  title?: string;
+}>();
+console.log(props.title);
 
 interface ThirdItemInterface {
   title: string;
@@ -21,7 +27,7 @@ interface ThirdItemInterface {
   <div class="topNav">
     <Breadcrumb class="breadcrumb">
       <div class="top-title">
-        <span>{{ route.meta.title }}</span>
+        <span>{{ title ? title : route.meta.title }}</span>
       </div>
       <BreadcrumbList class="top-ol">
         <BreadcrumbItem
@@ -43,11 +49,22 @@ interface ThirdItemInterface {
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
+    <div class="top-publish-button">
+      <RouterLink to="/post"
+        ><Button class="main-menu-button main-menu-publish"
+          ><Icon
+            icon="prime:pencil"
+            class="main-menu-icon icon-publish" /></Button
+      ></RouterLink>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 $font: #8c9296;
+.top-publish-button {
+  display: none;
+}
 .dot {
   position: absolute;
   top: 22%;
@@ -90,9 +107,9 @@ $font: #8c9296;
       width: 80%;
       height: 60%;
       border: 0.1vw solid #e0f1f6;
-      border-radius: 15px;
+      border-radius: 14rem;
       margin: 0 0.625rem;
-      padding: 0 0.7vw;
+      padding: 0 0.6rem;
       text-align: center;
       color: $font;
       display: flex;
@@ -101,19 +118,17 @@ $font: #8c9296;
         display: inline-block;
         width: max-content;
         box-sizing: border-box;
-        // line-height: 0.9vh;
-        font-size: 0.9vw;
+        font-size: 1rem;
         text-align: center;
       }
     }
     &-item {
       text-align: center;
-      // width: 80%;
       width: max-content;
       height: 100%;
       display: flex;
       align-items: center;
-      margin-left: 10px;
+      margin-left: 0.7rem;
     }
     &-label {
       width: 80%;
@@ -152,18 +167,41 @@ $font: #8c9296;
 }
 
 @media screen and (max-width: 768px) {
+  .top-publish-button {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    z-index: 80;
+    top: 1rem;
+    right: 1rem;
+
+    .main-menu-button {
+      box-shadow: none;
+
+      border-radius: 50%;
+      padding: 0.5rem;
+      background: linear-gradient(#67a5e6, #c0d2e6, #eff1f4);
+    }
+    .main-menu-icon {
+      font-size: 2rem;
+      width: 90%;
+      height: 90%;
+      color: white;
+    }
+  }
   .topNav {
-    padding-top: 8px;
+    padding-top: 0.5rem;
     display: flex;
     box-sizing: border-box;
     background-image: linear-gradient(#dfe9f3, #ffffff00 100%);
-    height: 70px;
+    height: 3.5rem;
     .top-title {
-      display: none;
+      font-size: 1.2rem;
     }
-    .top-item {
-      font-size: 20px;
-    }
+    // .top-item {
+    //   font-size: 20px;
+    // }
   }
 }
 @media screen and (min-width: 900px) and (max-width: 1400px) {

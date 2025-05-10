@@ -166,10 +166,10 @@ withDefaults(
     .news-content {
       padding: 10px 55px;
       .news-title {
-        font-weight: 540;
+        font-weight: bold;
       }
       .news-details {
-        font-size: 14.5px;
+        font-size: 0.9rem;
         color: #a7a7a7;
         p {
           max-height: 40px;

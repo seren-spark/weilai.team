@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { modifyManyUser, TeamUserList } from "@/types/contacts";
+import type { modifyManyUser, TeamUserList } from "@/types/Contacts";
 
 import { useAlert } from "@/composables/useAlert";
 import { reactive, ref, watch } from "vue";
@@ -127,33 +127,7 @@ const matchGroup = () => {
             class="col-span-4"
             :placeholder="groupNums[userInfo.group as keyof typeof groupNums]"
           />
-          <!-- <Select v-model="userInfo.group">
-            <SelectTrigger class="w-[250px]">
-              <SelectValue placeholder="选择组织" class="select-text" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem
-                  :value="item + ''"
-                  v-for="(item, index) in userInfo.allGroup"
-                >
-                  {{
-                    groupNums[(item + "") as keyof typeof groupNums] ||
-                    "选择组织"
-                  }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select> -->
         </div>
-        <!-- <div class="grid grid-cols-6 items-center gap-5">
-          <Label for="username" class="text-right"> 组长 : </Label>
-          <Input
-            id="username"
-            class="col-span-4"
-            v-model="userInfo.ladleName"
-          />
-        </div> -->
       </div>
       <DialogFooter>
         <Button @click="handleConfirm"> 确定 </Button>

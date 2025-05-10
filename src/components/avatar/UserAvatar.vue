@@ -6,8 +6,7 @@ const props = defineProps<{
   isLoading?: boolean | undefined;
   customClass?: string | undefined;
 }>();
-console.log(props.customClass);
-console.log(props.avatar);
+
 </script>
 
 <template>
@@ -21,7 +20,7 @@ console.log(props.avatar);
     </div>
 
     <div v-else :class="'avatar-info ' + customClass ? customClass : ''">
-      <Avatar class="w-full h-full">
+      <Avatar :class="customClass ? customClass : 'w-full h-full'" >
         <AvatarImage
           :src="avatar ? avatar : ''"
           alt="@radix-vue"

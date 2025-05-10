@@ -1,4 +1,5 @@
 <template>
+  <!-- !!! 该文件用于文件上传测试 不展示在页面中 -->
   <div class="container">
     <div style="display: none">
       <video width="500" height="240" controls id="upvideo"></video>
@@ -11,7 +12,6 @@
         <th style="font-size: 10px; color: #909399; width: 250px">文件名</th>
         <th style="font-size: 12px; color: #909399; width: 100px">文件大小</th>
         <th style="font-size: 12px; color: #909399; width: 150px">上传进度</th>
-        <!-- <th style="font-size: 12px; color: #909399; width: 100px">状态</th> -->
       </tr>
     </table>
     <div
@@ -37,7 +37,6 @@
             style="font-size: 14px; color: #909399; width: 250px"
           >
             {{ transformByte(item.size) }}
-            <!-- {{ item.size }} -->
           </div>
           <div class="file-info-item file-progress">
             <span style="font-size: 14px; color: #909399; width: 250px"

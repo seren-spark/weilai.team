@@ -60,13 +60,14 @@ defineProps({
 
 @media screen and (max-width: 768px) {
   .news-footer {
-    padding-top: 5px;
+    padding: var(--mobile-padding);
+    padding-top: 0;
     & > div {
       color: var(--secondary-foreground);
       display: flex;
 
       align-items: center;
-      font-size: 12px;
+      font-size: 0.8rem;
       margin-right: 10px;
     }
     &-icon {

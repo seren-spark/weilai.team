@@ -1,14 +1,13 @@
 <script setup lang="ts" name="">
-import AllSum from "./summary/AllSum.vue";
-import SplitEnds from "./SplitEnds.vue";
-import RadarChart from "./RadarChart.vue";
-import SalaryStatistics from "./SalaryStatistics.vue";
+import AllSum from "../../components/profile/summary/AllSum.vue";
+import SplitEnds from "../../components/profile/SplitEnds.vue";
+import RadarChart from "../../components/profile/RadarChart.vue";
+import SalaryStatistics from "../../components/profile/SalaryStatistics.vue";
 // import MapDistribution from "./MapDistribution.vue";
-import chinaMap from "./chinaMap.vue";
+import chinaMap from "../../components/profile/chinaMap.vue";
 
-import UseOverview from "@/features/admin/composables/useOverview";
+import UseOverview from "../../composables/useOverview";
 const { profile } = UseOverview();
-console.log(profile);
 </script>
 
 <template>
@@ -40,13 +39,11 @@ console.log(profile);
       <SalaryStatistics
         :java-all="profile?.javaAll"
         :html-all="profile?.htmlAll"
-        :html-per="profile?.htmlPer"
-        :java-per="profile?.javaPer"
+        :per-by-grade="profile?.perByGrade"
       />
     </div>
     <div class="map">
-      <!-- <MapDistribution /> -->
-      <chinaMap />
+      <chinaMap :areas="profile?.areas" />
     </div>
   </div>
 </template>
