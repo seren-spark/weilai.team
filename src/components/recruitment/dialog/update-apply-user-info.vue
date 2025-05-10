@@ -182,7 +182,7 @@ const props = defineProps({
     default: "",
   },
 });
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close","refresh"]);
 const close = (event: Event) => {
   // 点击遮罩层关闭
   if (event.target === event.currentTarget) {
@@ -270,6 +270,7 @@ const handleSubmit = async () => {
         console.log(data.value);
         emit("close");
         showAlert("修改成功", "pass");
+        emit("refresh");
       }
     });
 

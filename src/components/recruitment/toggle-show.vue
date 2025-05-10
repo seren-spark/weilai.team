@@ -33,7 +33,7 @@ watch(status, (newValue) => {
 </script>
 
 <template>
-  <Menubar class="toggle-show p-3">
+  <Menubar class="toggle-show">
     <MenubarMenu>
       <MenubarTrigger v-for="item in toggleItems" :key="item.index">
         <Button
@@ -50,7 +50,6 @@ watch(status, (newValue) => {
 </template>
 
 <style lang="scss" scoped>
-$undertone: #647499;
 
 .toggle-show {
   height: 50px;

@@ -6,7 +6,7 @@ import type {
   MemeberData,
   modifyManyUser,
   TeamUser,
-} from "@/types/contacts";
+} from "@/types/Contacts";
 
 useAlert();
 const { executeRequest, loading, data } = useRequest();
@@ -32,6 +32,8 @@ export async function getMembersByGroupAndGrade(
     method: "get",
   });
   const res = data.value as ContactData;
+  console.log(res);
+
   return res.data;
 }
 export async function searchMember(content = "") {
@@ -46,6 +48,8 @@ export async function getMemberInfo(userId: number) {
     method: "get",
   });
   const res = data.value as MemeberData;
+  console.log(res);
+
   return res.data;
 }
 export async function setLeader(leaderInfo: { group: string; userId: number }) {

@@ -20,12 +20,14 @@
   --popover-foreground: hsl(222.2, 47.4%, 11.2%); // 弹出框中的前景色
   --outer: hsla(0, 0%, 0%, 0.5); // 遮罩层的背景色，通常用于弹出框、模态框等
 
-  --border: hsla(
-    210,
-    14%,
-    92%,
-    0.453
-  ); // 通常用于输入框、按钮、卡片等的边框颜色
+  // --border: hsla(
+  //   210,
+  //   14%,
+  //   92%,
+  //   0.453
+  // ); // 通常用于输入框、按钮、卡片等的边框颜色
+  --border: hsla(0, 0%, 0%, 0.1);
+
   --input: hsl(
     214.3,
     31.8%,
@@ -86,7 +88,8 @@
   // --avatar: 3.125rem; //头像宽度
   --avatar: 3.125rem;
   --padding: 0.625rem 3.4rem;
-  --scrollbar-width: 0.9rem;
+  --mobile-padding: 0.5rem 1rem;
+  --scrollbar-width: 2px;
   --vis-text-color: 210, 10%, 23%;
   --vis-tooltip-background-color: none !important;
   --vis-tooltip-border-color: none !important;

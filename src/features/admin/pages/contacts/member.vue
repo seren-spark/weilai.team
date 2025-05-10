@@ -17,7 +17,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import router from "@/router";
-import type { TeamInfo, TeamUserList } from "@/types/contacts";
+import type { TeamInfo, TeamUserList } from "@/types/Contacts";
 import { Icon } from "@iconify/vue";
 import { ChevronRight } from "lucide-vue-next";
 import { ref } from "vue";
@@ -39,8 +39,6 @@ getMembers().then((res) => {
   teamAble.value = res.teamAble;
   teamUserList.value = res.teamUserList;
 });
-
-
 
 function getMembersOfGroup(str: string) {
   let parts = str.split("$");
@@ -134,7 +132,6 @@ function getMembersOfGroup(str: string) {
     <!-- 通讯录右边具体内容 -->
     <Member :teamAble="teamAble" :teamUserList="teamUserList"></Member>
   </div>
-  <Confirm />
 </template>
 
 <style lang="scss" scoped>

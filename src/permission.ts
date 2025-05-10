@@ -22,6 +22,8 @@ router.beforeEach((to: any, from: any, next: any) => {
     router.push("/");
   }
   // 权限判断
+  console.log(to.meta, to.meta.roles, permissions.includes(to.meta.roles));
+
   if (to.path.startsWith("/admin") && !permissions.includes(to.meta.roles)) {
     router.push("/404");
   }

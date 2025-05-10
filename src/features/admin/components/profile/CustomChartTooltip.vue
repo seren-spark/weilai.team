@@ -27,6 +27,10 @@ defineProps<{
 <style lang="scss" scoped>
 .tooltip-item {
     font-size: 14px;
+    padding: 10px;
+    border-radius: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.844);
+    border: 0.5px solid #bbbbbb;
 
     .tooltip-item-value {
         font-size: 14px;

@@ -1,7 +1,7 @@
 <template>
   <Tabs default-value="posts" class="mt-4">
     <TabsList class="grid w-full grid-cols-4">
-      <TabsTrigger value="posts"> 博客 </TabsTrigger>
+      <TabsTrigger value="posts"> 原创 </TabsTrigger>
       <TabsTrigger value="schedule"> 课表 </TabsTrigger>
       <TabsTrigger value="collections"> 收藏 </TabsTrigger>
       <TabsTrigger value="photos"> 生活照片 </TabsTrigger>

@@ -1,30 +1,32 @@
 <script setup lang="ts">
 import { useRequest } from "@/composables/useRequest";
 import type { ArticleList, Data, UserData, UserInfo } from "@/types/community";
-import { debounce } from "@community/composables/search";
+
 import { Icon } from "@iconify/vue";
-import { ref, watch } from "vue";
+
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const isVisible = ref(false);
 const router = useRouter();
 const searchValue = ref();
-const { executeRequest, error, loading, data } = useRequest();
+const { executeRequest, data } = useRequest();
 const searchList = ref<ArticleList[]>([]);
 const filterList = ref<ArticleList[]>([]);
 const searchUserList = ref<UserInfo[]>([]);
 const filterUserList = ref<UserInfo[]>([]);
 const route = useRoute();
 const path = route.path;
-console.log(route);
 
 const pathArr = path.split("/").slice(1);
 // 接受父组件传来的函数
 const props = defineProps({
+  //文章类型
   typeId: {
     type: Number,
     default: 0,
   },
+  //搜索的是否是用户
   isUser: {
     type: Boolean,
     default: false,
@@ -36,28 +38,28 @@ const titleMap = new Map<string, boolean>();
 let body = document.body as HTMLElement;
 body.addEventListener("click", handleClick);
 // 监视输入框的输入
-const debouncedSearchTitle = debounce((newValue) => searchTitle(newValue), 300);
-const debouncedSearchUser = debounce((newValue) => searchUser(newValue), 300);
-watch(searchValue, (newValue) => {
-  if (!props.isUser) {
-    if (newValue) {
-      debouncedSearchTitle(newValue);
-    } else {
-      filterList.value = [];
-    }
-  } else {
-    if (newValue) {
-      debouncedSearchUser(newValue);
-    } else {
-      filterUserList.value = [];
-    }
-  }
-});
+// const debouncedSearchTitle = debounce((newValue) => searchTitle(newValue), 300);
+// const debouncedSearchUser = debounce((newValue) => searchUser(newValue), 300);
+// watch(searchValue, (newValue) => {
+//   if (!props.isUser) {
+//     if (newValue) {
+//       debouncedSearchTitle(newValue);
+//     } else {
+//       filterList.value = [];
+//     }
+//   } else {
+//     if (newValue) {
+//       debouncedSearchUser(newValue);
+//     } else {
+//       filterUserList.value = [];
+//     }
+//   }
+// });
 // 获取搜索列表
 
 async function searchUser(content = "", pageNumber = 1, pageSize = 10) {
   await executeRequest({
-    url: `/user/searchUser?content=${content}&pageNumber=${pageNumber}&pageSize=10 `,
+    url: `/user/searchUser?content=${content}&pageNumber=${pageNumber}&pageSize=${pageSize} `,
     method: "get",
   });
   let res = data.value as UserData;
@@ -74,12 +76,14 @@ async function searchUser(content = "", pageNumber = 1, pageSize = 10) {
   });
 }
 async function searchTitle(condition = "", type = 0) {
+  console.log("函数被调用");
+
   await executeRequest({
     url: `/post/selectAll?condition=${condition}&type=${props.typeId || type}`,
     method: "get",
   });
   let res = data.value as Data;
-  console.log(res);
+ 
   searchList.value = res.data.records;
   titleMap.clear();
   filterList.value = [];
@@ -103,7 +107,7 @@ function handleClick(e: Event) {
   }
 }
 function skip(e: Event) {
-  if (searchValue.value) {
+  if (searchValue.value != null) {
     router.push(
       `/${pathArr[0]}/${pathArr[1]}/${pathArr[2]}/${searchValue.value}`,
     );
@@ -134,13 +138,14 @@ function skip(e: Event) {
             }
           "
           v-model="searchValue"
+          v-debounce:[typeId]="isUser ? searchUser : searchTitle"
           @focus="isVisible = true"
         />
       </div>
 
       <div class="search_list" v-show="searchValue && isVisible && !isUser">
         <div class="search_empty" v-if="!filterList.length">未找到搜索结果</div>
-        <div class="search_item" v-for="item in filterList">
+        <div class="search_item" v-for="item in filterList" :key="item.id">
           <a @click="router.push(`/community/comprehensive/hot/${item.title}`)">
             <span>{{ item.title }}</span>
           </a>
@@ -150,7 +155,11 @@ function skip(e: Event) {
         <div class="search_empty" v-if="!filterUserList.length">
           未找到搜索结果
         </div>
-        <div class="search_item" v-for="item in filterUserList">
+        <div
+          v-for="item in filterUserList"
+          class="search_item"
+          :key="item.userId"
+        >
           <a @click="router.push(`/community/comprehensive/user/${item.name}`)">
             <span>{{ item.name }}</span>
           </a>
@@ -237,8 +246,8 @@ function skip(e: Event) {
     display: flex;
     position: fixed;
     z-index: 5;
-    top: 70px;
-    height: 60px;
+    top: 3.4rem;
+    height: 3.8rem;
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
@@ -257,11 +266,11 @@ function skip(e: Event) {
       list-style: none;
       outline-style: none;
       width: 100%;
-      height: 45px;
+      height: 3rem;
       border: 1px solid #d0d9e4;
       border-radius: 25px;
       padding: 5px 10px;
-      padding-left: 40px;
+      padding-left: 2.5rem;
     }
     .search-icon {
       position: absolute;
@@ -281,7 +290,7 @@ function skip(e: Event) {
       height: 150px;
       text-align: center;
       line-height: 150px;
-      font-size: 15px;
+      font-size: 1rem;
       color: var(--secondary-foreground);
       cursor: default;
     }

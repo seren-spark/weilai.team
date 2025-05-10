@@ -23,11 +23,12 @@ import { useNoticeStore } from "@/store/UseNoticeStore";
 import { useUserStore } from "@/store/userStore";
 import { Icon } from "@iconify/vue";
 import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-vue-next";
-import { nextTick, ref } from "vue";
+import { ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";
 import SidebarHeader from "../ui/sidebar/SidebarHeader.vue";
+import { COMMUNITY_ROUTER_META } from "@/constants/router";
 
 const { data, executeRequest } = useRequest();
 // 获取个人id用于渲染
@@ -50,39 +51,8 @@ const router = useRouter();
 
 let subNavItems = route.meta.subNavItems as SubItemInterface[] | undefined;
 let currentUrl = ref("");
-//手机端
-const subNavs = [
-  {
-    title: "综合",
-    icon: "material-symbols-light:overview-key-outline",
-    path: "/community/comprehensive",
-    appPath: "/community/comprehensive/hot",
-  },
-  {
-    title: "博客",
-    icon: "material-symbols:article-outline",
-    path: "/community/blog",
-    appPath: "/community/blog/hot",
-  },
-  {
-    title: "公告",
-    icon: "material-symbols:article-outline",
-    path: "/community/notice",
-    appPath: "/community/notice",
-  },
-  {
-    title: "交流",
-    icon: "material-symbols-light:partner-exchange-rounded",
-    path: "/community/discussion",
-    appPath: "/community/dicusstion/hot",
-  },
-  {
-    title: "头脑风暴",
-    icon: "weui:time-outlined",
-    path: "/community/brainstorm",
-    appPath: "/community/brainstorm/hot",
-  },
-];
+
+console.log(router, 6666666666);
 
 const items = [
   {
@@ -134,13 +104,7 @@ const getNotReadCount = async () => {
   }
 };
 getNotReadCount();
-// 定义权限
-const permissionsRouter = {
-  team_admin: ["/admin", "profile", "contacts"],
-  community_admin: ["/admin", "community", "contacts", ""],
-  recruit_admin: ["/admin", "recruitment"],
-  admin_plus: ["/admin", "permission"],
-};
+
 // 获取当前用户的权限
 let userPermissons = userStore.permissions;
 // 权限管理
@@ -349,24 +313,25 @@ function skipRedirect(item: any) {
       ></DropdownMenuTrigger>
       <DropdownMenuContent class="w-6 bg-white">
         <RouterLink
-          v-for="(item, index) in subNavs"
+          v-for="(item, index) in COMMUNITY_ROUTER_META.subNavItems"
           :key="index"
-          :to="item.appPath"
+          :to="item.redirect as string"
+          active-class="sidebar__sub-link--active"
           class="main-menu-sub-link"
         >
           {{ item.title }}
         </RouterLink>
       </DropdownMenuContent>
     </DropdownMenu>
+    <RouterLink to="/message/likeMes"
+      ><Button class="main-menu-button"
+        ><Icon icon="ph:bell-simple" class="main-menu-icon" />
+
+        <span v-if="messageStore.hasNewMessage" class="dot"></span></Button
+    ></RouterLink>
     <RouterLink to="/personalCenter/userInfo"
       ><Button class="main-menu-button"
         ><Icon icon="bi:person" class="main-menu-icon" /></Button
-    ></RouterLink>
-    <RouterLink to=""
-      ><Button class="main-menu-button main-menu-publish"
-        ><Icon
-          icon="prime:pencil"
-          class="main-menu-icon icon-publish" /></Button
     ></RouterLink>
   </div>
 </template>
@@ -505,6 +470,15 @@ function skipRedirect(item: any) {
 }
 
 @media screen and (max-width: 768px) {
+  .dot {
+    position: absolute;
+    top: 25%;
+    right: 30%;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: #ff0000;
+  }
   .main-menu {
     padding: 8px 25px;
     display: flex;
@@ -515,6 +489,7 @@ function skipRedirect(item: any) {
     height: 60px;
     box-sizing: border-box;
     background-color: white;
+    z-index: 9999;
     &-button {
       width: 45px;
       height: 45px;
@@ -533,6 +508,7 @@ function skipRedirect(item: any) {
       display: flex;
       box-shadow: none;
       padding: 0 10px;
+      position: relative;
     }
     &-icon {
       font-size: 22px;
@@ -552,6 +528,8 @@ function skipRedirect(item: any) {
     }
 
     &-publish {
+      position: absolute;
+      top: -800%;
       border-radius: 50%;
       padding: 12px;
       background: linear-gradient(#67a5e6, #c0d2e6, #eff1f4);

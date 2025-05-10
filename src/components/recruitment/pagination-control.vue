@@ -32,16 +32,6 @@ const pageCount = computed(() => {
   const size = props.pageSize || 1;
   return Math.ceil(total / size);
 });
-//计算属性
-// const pages = computed(() => {
-//   const startPage = Math.max(1, currentPage.value - 2);
-//   const endPage = Math.min(pageCount.value, currentPage.value + 2);
-//   const pages = [];
-//   for (let number = startPage; number <= endPage; number++) {
-//     pages.push(number);
-//   }
-//   return pages;
-// });
 
 function changePage(page: number) {
   currentPage.value = page;
@@ -78,7 +68,6 @@ function changePage(page: number) {
         </PaginationListItem>
         <PaginationEllipsis v-else :key="item.type" :index="index" />
       </template>
-
       <PaginationNext @click="changePage(page + 1)" />
       <PaginationLast @click="changePage(pageCount)" />
     </PaginationList>
@@ -96,7 +85,7 @@ function changePage(page: number) {
     background-color: var(--background);
 
     [data-selected] {
-      background-color: var(--foreground);
+      background-color: skyblue;
       color: var(--primary);
       border-radius: 4px;
     }

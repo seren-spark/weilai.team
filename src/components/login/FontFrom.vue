@@ -73,10 +73,11 @@ defineEmits<{
           @update:model-value="(val) => $emit('update:fontCode', val)"
         />
         <Button
-          class="fontBtn"
-          @click="handleCode"
           v-if="!loginStore.isRequesting"
+          v-preventReClick
+          class="fontBtn"
           style="font-size: 0.9rem"
+          @click="handleCode"
         >
           获取验证码
         </Button>

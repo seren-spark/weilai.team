@@ -6,7 +6,7 @@
       <div class="postsData">
         <div class="postsNum">
           <p>{{ userPostAllInfo.allPostCount }}</p>
-          <p>文章</p>
+          <p>原创</p>
         </div>
         <div class="likeNum">
           <p>{{ userPostAllInfo.allLikeCount }}</p>
@@ -95,7 +95,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Pagination from "@/components/recruitment/Pagination.vue";
+import Pagination from "@/components/recruitment/pagination-control.vue";
 
 //引入ref
 import { ref, watch } from "vue";

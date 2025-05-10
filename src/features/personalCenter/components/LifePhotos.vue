@@ -6,7 +6,7 @@
 
   <div>
     <div class="images-container">
-      <div v-if="getPhotoListLoading" class="loading">
+      <div v-if="getPhotoListLoading" class="global-loading">
         <GlobalLoading />
       </div>
       <div v-else-if="images.length === 0" class="no-data">

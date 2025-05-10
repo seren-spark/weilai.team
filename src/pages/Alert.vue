@@ -27,19 +27,6 @@ const icon = computed(() => {
       return null;
   }
 });
-
-// const variantClass = computed(() => {
-//   switch (propsData.type) {
-//     case "pass":
-//       return "pass";
-//     case "waring":
-//       return "waring";
-//     case "error":
-//       return "error";
-//     default:
-//       return null;
-//   }
-// });
 </script>
 
 <template>
@@ -59,10 +46,10 @@ const icon = computed(() => {
   position: fixed;
   left: 50%;
   transform: translate(-50%, 50%);
-  width: 500px;
-  font-size: 16px;
+  width: 31.25rem;
+  font-size: 1rem;
   z-index: 9999;
-  height: 50px;
+  height: 3.125rem;
 }
 
 .error {

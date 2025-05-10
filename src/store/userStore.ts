@@ -21,7 +21,6 @@ export const useUserStore = defineStore("user", {
       this.userId = id;
       this.avatar = avatar;
     },
-  
 
     getMyId() {
       return Number(JSON.parse(localStorage.getItem("userId") as string).value);
