@@ -14,7 +14,7 @@ const teacherG = {
 };
 
 const teacherL = {
-  name: "李老师",
+  name: "李士勇",
   position: "讲师，硕士",
   researchDirection:
     "《Java面向对象》课程研究、《JSP程序 设计》、基于.NET的智能网络教学系统开发等",
@@ -178,24 +178,41 @@ onMounted(() => {
   }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 960px) {
   .teacher_con {
     width: 100%;
     height: 100%;
-    padding: 0 0 70px 0;
+    padding: 0 0 50px 0;
     .title {
       margin-bottom: 50px;
-      font-size: 30px;
+      font-size: 25px;
     }
     .teachers {
       width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
+      flex-direction: column;
       .teacher-G {
         margin: 0 0 40px 0;
       }
+    }
+  }
+}
+@media (min-width: 961px) and (max-width: 1024px) {
+  .teacher_con {
+    width: 100%;
+    height: 100%;
+    padding: 0 0 50px 0;
+    .title {
+      margin-bottom: 50px;
+      font-size: 25px;
+    }
+    .teachers {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }

@@ -101,12 +101,13 @@ onMounted(() => {
 .con {
   overflow: hidden;
   position: relative;
+  background-color: #f4f8fb;
 }
 
 .back-to-top {
   position: fixed;
-  right: 10px;
-  bottom: 30px;
+  right: 50px;
+  bottom: 50px;
   width: 60px;
   height: 60px;
   cursor: pointer;
@@ -132,8 +133,6 @@ onMounted(() => {
 .fade-leave-to {
   opacity: 0;
 }
-
-/* 加载占位符 */
 .loading-placeholder {
   height: 300px;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);

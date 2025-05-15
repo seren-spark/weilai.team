@@ -13,9 +13,10 @@
       <div class="title_team" :class="{ 'fade-in': showElements[3] }">
         做一个有影响力的团队
       </div>
+      <!-- <Button class="more">了解更多</Button> -->
       <Button class="more" :class="{ 'fade-in': showElements[4] }"
-        >了解更多</Button
-      >
+        ><i class="animation"></i>了解更多<i class="animation"></i>
+      </Button>
     </div>
   </div>
 </template>
@@ -72,7 +73,7 @@ onMounted(() => {
   }
 
   .enTitle {
-    font-size: 32px;
+    font-size: 34px;
     font-weight: bold;
     margin-bottom: 1rem;
     background: linear-gradient(45deg, #74b0ce, #60d9c9, #868dd2, #aa00ff);
@@ -96,70 +97,69 @@ onMounted(() => {
   }
 
   .title_person {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
     color: white;
     margin-bottom: 1rem;
   }
 
   .title_team {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
     color: white;
     margin-bottom: 5rem;
   }
 
   .more {
-    width: 12.5rem;
-    height: 3rem;
-    font-size: 1.2rem;
-    color: white;
-    font-weight: bold;
-    color: #284dd5;
-    border: 0.16rem solid #284dd5;
-    background-color: transparent;
-    position: relative;
-    z-index: 1;
-    transition: 2s;
-    overflow: hidden;
     pointer-events: auto;
+    animation: color-change 4s linear infinite;
+    height: 40px;
+    outline: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #284dd5;
+    min-width: 180px;
+    border: 0;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    padding: 18px 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    overflow: hidden;
+    cursor: pointer;
   }
 
-  .more::before,
-  .more::after {
-    content: "";
-    position: absolute;
-    top: -1.2rem;
-    z-index: -1;
-    width: 170%;
-    aspect-ratio: 1;
-    border: none;
-    border-radius: 40%;
-    background-color: rgba(0, 0, 255, 0.25);
-    transition: 2s;
+  .more:hover {
+    opacity: 0.95;
   }
 
-  .more::before {
-    left: -60%;
-    transform: translate3d(0, 6em, 0) rotate(-340deg);
+  .more .animation {
+    cursor: pointer;
+    border-radius: 100%;
+    animation: ripple 0.6s linear infinite;
   }
 
-  .more::after {
-    right: -60%;
-    transform: translate3d(0, 6em, 0) rotate(390deg);
-  }
+  @keyframes ripple {
+    0% {
+      box-shadow:
+        0 0 0 0 rgba(255, 255, 255, 0.1),
+        0 0 0 20px rgba(255, 255, 255, 0.1),
+        0 0 0 40px rgba(255, 255, 255, 0.1),
+        0 0 0 60px rgba(255, 255, 255, 0.1);
+    }
 
-  .more:hover,
-  .more:focus {
-    color: white;
-  }
-
-  .more:hover::before,
-  .more:hover::after,
-  .more:focus::before,
-  .more:focus::after {
-    transform: none;
-    background-color: rgba(0, 0, 255, 0.75);
+    100% {
+      box-shadow:
+        0 0 0 20px rgba(255, 255, 255, 0.1),
+        0 0 0 40px rgba(255, 255, 255, 0.1),
+        0 0 0 60px rgba(255, 255, 255, 0.1),
+        0 0 0 80px rgba(255, 255, 255, 0);
+    }
   }
 
   .fade-in {
@@ -375,25 +375,25 @@ onMounted(() => {
     flex-wrap: wrap;
     .title {
       color: white;
-      font-size: 80px;
+      font-size: 65px;
       font-weight: bold;
       margin-bottom: 20px;
     }
     .enTitle {
-      font-size: 50px;
-      margin-bottom: 20px;
+      font-size: 40px;
+      margin-bottom: 10px;
     }
     .title_team {
-      font-size: 35px;
+      font-size: 28px;
       // margin-bottom: 3.1em;
     }
     .title_person {
-      font-size: 35px;
+      font-size: 28px;
     }
     .more {
       width: 210px;
       height: 55px;
-      font-size: 20px;
+      font-size: 17px;
     }
   }
 }

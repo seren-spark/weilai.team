@@ -5,9 +5,23 @@ import { Icon } from "@iconify/vue/dist/iconify.js";
 
 const isScrolled = ref(false);
 const activeLink = ref<string | null>(null);
+const isNavConVisible = ref(true);
+const showMobileMenu = ref(false);
+const newIsScrolled = ref(false);
+
+// 控制body滚动
+const setBodyOverflow = (hidden: boolean) => {
+  document.body.style.overflow = hidden ? "hidden" : "";
+};
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
+  newIsScrolled.value = window.scrollY > 50;
+  if (window.scrollY > 50) {
+    isNavConVisible.value = false;
+  } else {
+    isNavConVisible.value = true;
+  }
 };
 
 const handleLinkClick = (linkName: string) => {
@@ -17,12 +31,18 @@ const handleLinkClick = (linkName: string) => {
   }, 2000);
 };
 
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value;
+  setBodyOverflow(showMobileMenu.value); // 切换菜单时控制body滚动
+};
+
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
 });
 
 onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
+  setBodyOverflow(false); // 组件卸载时恢复滚动
 });
 </script>
 
@@ -56,8 +76,8 @@ onUnmounted(() => {
           :class="{ active: activeLink === 'source' }"
           @click="handleLinkClick('source')"
         >
-          <span class="button__text">小组资源</span>
-          <Icon
+          <span class="button__text">头脑风暴</span>
+          <!-- <Icon
             icon="meteor-icons:chevron-down"
             width="16"
             height="18"
@@ -66,7 +86,7 @@ onUnmounted(() => {
               marginLeft: '4px',
               marginTop: '0px',
             }"
-          />
+          /> -->
           <div class="button__drow1"></div>
           <div class="button__drow2"></div>
         </div>
@@ -84,7 +104,7 @@ onUnmounted(() => {
           :class="{ active: activeLink === 'forum' }"
           @click="handleLinkClick('forum')"
         >
-          <span class="button__text">论坛</span>
+          <span class="button__text">交流</span>
           <div class="button__drow1"></div>
           <div class="button__drow2"></div>
         </div>
@@ -105,16 +125,190 @@ onUnmounted(() => {
       >
     </div>
   </div>
+  <!-- 移动端导航 -->
+  <div
+    v-show="!isNavConVisible"
+    class="newNavCon"
+    :class="{ scrolled: newIsScrolled }"
+  >
+    <div class="newLogo">
+      <img src="/src/assets/img/homePage/logo.png" alt="" />
+    </div>
+    <div class="newBtn" @click="toggleMobileMenu">
+      <Icon
+        icon="meteor-icons:bars-filter"
+        width="35"
+        height="35"
+        :style="{ color: newIsScrolled ? 'black' : 'white' }"
+      />
+    </div>
+  </div>
+
+  <!-- 全屏菜单 -->
+  <div v-if="showMobileMenu" class="mobile-menu-overlay">
+    <div class="mobile-menu-header">
+      <Button class="close-btn" @click="toggleMobileMenu">
+        <Icon class="close" icon="meteor-icons:xmark" width="28" height="28" />
+      </Button>
+    </div>
+    <div class="mobile-menu-content">
+      <nav>
+        <div
+          v-for="link in [
+            'homePage',
+            'blog',
+            'source',
+            'notice',
+            'forum',
+            'about',
+          ]"
+          :key="link"
+          class="mobile-menu-link"
+          :class="{ active: activeLink === link }"
+          @click="handleLinkClick(link)"
+        >
+          <span class="mobile-menu-text">
+            {{
+              link === "homePage"
+                ? "首页"
+                : link === "blog"
+                  ? "博客"
+                  : link === "source"
+                    ? "头脑风暴"
+                    : link === "notice"
+                      ? "公告"
+                      : link === "forum"
+                        ? "交流"
+                        : "关于我们"
+            }}
+          </span>
+        </div>
+      </nav>
+
+      <Button class="mobile-login-btn">登录</Button>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
-.type--A {
-  --line_color: #555555;
-  --back_color: #ffecf6;
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
-.type--B {
-  --line_color: #1b1919;
-  --back_color: #e9ecff;
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  .close {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+.mobile-menu-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.mobile-menu-link {
+  width: 100%;
+  padding: 19px 0;
+  text-align: center;
+  font-size: 19px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    color: #284dd5;
+  }
+
+  &.active {
+    color: #284dd5;
+    font-weight: bold;
+  }
+}
+
+.mobile-login-btn {
+  margin-top: 2rem;
+  padding: 15px 20px;
+  background-color: #284dd5;
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100px;
+  height: 35px;
+
+  &:hover {
+    background-color: darken(#284dd5, 10%);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.newNavCon {
+  width: 100%;
+  height: 70px;
+  position: fixed;
+  z-index: 999;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  &.scrolled {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  .newLogo {
+    width: 5.4rem;
+    height: 4.5rem;
+    margin-left: 1rem;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .newBtn {
+    margin-right: 1rem;
+  }
 }
 .type--C {
   --line_color: #00135c;
@@ -362,7 +556,6 @@ onUnmounted(() => {
   }
 }
 
-/* 调整"小组资源"和"关于我们"的动画位置 */
 .source .button__drow1,
 .about .button__drow1 {
   left: 27px;
@@ -374,66 +567,186 @@ onUnmounted(() => {
 }
 .loginBtn {
   position: relative;
-  z-index: 1;
-  width: 5rem;
-  height: 2.2rem;
-  font-weight: bold;
-  border-radius: 2rem;
-  color: #284dd5;
-  border: 0.16rem solid #284dd5;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  background-color: transparent;
+  padding: 10px 22px;
+  border-radius: 4px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background-color: #284dd5;
+  transition: all 0.2s ease;
+}
 
-  &::before,
-  &::after {
-    content: "";
-    position: absolute;
-    top: -1rem;
-    z-index: -1;
-    width: 170%;
-    aspect-ratio: 1;
-    border: none;
-    border-radius: 40%;
-    background-color: rgba(0, 0, 255, 0.25);
-    transition: 2.5s;
+.loginBtn:active {
+  transform: scale(0.96);
+}
+
+.loginBtn:before,
+.loginBtn:after {
+  position: absolute;
+  content: "";
+  width: 150%;
+  left: 50%;
+  height: 100%;
+  transform: translateX(-50%);
+  z-index: -1000;
+  background-repeat: no-repeat;
+}
+
+.loginBtn:hover:before {
+  top: -70%;
+  background-image: radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, #284dd5 20%, transparent 30%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #284dd5 15%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%);
+  background-size:
+    10% 10%,
+    20% 20%,
+    15% 15%,
+    20% 20%,
+    18% 18%,
+    10% 10%,
+    15% 15%,
+    10% 10%,
+    18% 18%;
+  background-position: 50% 120%;
+  animation: greentopBubbles 0.6s ease;
+}
+
+@keyframes greentopBubbles {
+  0% {
+    background-position:
+      5% 90%,
+      10% 90%,
+      10% 90%,
+      15% 90%,
+      25% 90%,
+      25% 90%,
+      40% 90%,
+      55% 90%,
+      70% 90%;
   }
 
-  &::before {
-    left: -60%;
-    transform: translate3d(0, 6em, 0) rotate(-340deg);
+  50% {
+    background-position:
+      0% 80%,
+      0% 20%,
+      10% 40%,
+      20% 0%,
+      30% 30%,
+      22% 50%,
+      50% 50%,
+      65% 20%,
+      90% 30%;
   }
 
-  &::after {
-    right: -60%;
-    transform: translate3d(0, 6em, 0) rotate(390deg);
+  100% {
+    background-position:
+      0% 70%,
+      0% 10%,
+      10% 30%,
+      20% -10%,
+      30% 20%,
+      22% 40%,
+      50% 40%,
+      65% 10%,
+      90% 20%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
+  }
+}
+
+.loginBtn:hover::after {
+  bottom: -70%;
+  background-image: radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #284dd5 15%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%),
+    radial-gradient(circle, #284dd5 20%, transparent 20%);
+  background-size:
+    15% 15%,
+    20% 20%,
+    18% 18%,
+    20% 20%,
+    15% 15%,
+    20% 20%,
+    18% 18%;
+  background-position: 50% 0%;
+  animation: greenbottomBubbles 0.6s ease;
+}
+
+@keyframes greenbottomBubbles {
+  0% {
+    background-position:
+      10% -10%,
+      30% 10%,
+      55% -10%,
+      70% -10%,
+      85% -10%,
+      70% -10%,
+      70% 0%;
   }
 
-  &:hover,
-  &:focus {
-    color: white;
+  50% {
+    background-position:
+      0% 80%,
+      20% 80%,
+      45% 60%,
+      60% 100%,
+      75% 70%,
+      95% 60%,
+      105% 0%;
+  }
 
-    &::before,
-    &::after {
-      transform: none;
-      background-color: rgba(0, 0, 255, 0.75);
-    }
+  100% {
+    background-position:
+      0% 90%,
+      20% 90%,
+      45% 70%,
+      60% 110%,
+      75% 80%,
+      95% 70%,
+      110% 10%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @media screen and (max-width: 768px) {
   .navCon {
     display: none;
   }
+  .newNavCon {
+    opacity: 1;
+  }
 }
 @media screen and (max-width: 960px) {
   .navCon {
     display: none;
   }
+  .newNavCon {
+    opacity: 1;
+  }
 }
 @media screen and (max-width: 1280px) {
   .navCon {
     &.scrolled {
-      height: 9em;
+      height: 95px;
       background-color: white;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
@@ -444,8 +757,8 @@ onUnmounted(() => {
     }
 
     .logo {
-      width: 8rem;
-      height: 7rem;
+      width: 80px;
+      height: 70px;
       margin-right: 3rem;
       transition: all 0.3s ease;
 
@@ -459,15 +772,58 @@ onUnmounted(() => {
       nav {
         width: 100%;
         .link {
-          font-size: 1.3rem;
+          font-size: 16px;
         }
       }
     }
   }
   .loginBtn {
-    width: 7.2rem;
-    height: 3rem;
-    font-size: 17px;
+    width: 80px;
+    height: 35px;
+    font-size: 16px;
   }
+}
+@media (min-width: 1281px) and (max-width: 1440px) {
+  .navCon {
+    &.scrolled {
+      height: 95px;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+      .link {
+        font-size: 20px;
+        color: black !important;
+      }
+    }
+
+    .logo {
+      width: 80px;
+      height: 70px;
+      margin-right: 3rem;
+      transition: all 0.3s ease;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .navLink {
+      margin-right: 4.3rem;
+      nav {
+        width: 100%;
+        .link {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+  .loginBtn {
+    width: 80px;
+    height: 35px;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1441px) {
 }
 </style>
