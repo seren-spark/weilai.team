@@ -50,14 +50,31 @@
         </div>
         <div class="telinfo">
           <p class="telmy">联系我们:</p>
-          <p class="tel">1090649095@qq.com</p>
+          <p class="tel">3416177992@qq.com</p>
           <p class="telmy">联系我们:</p>
-          <p class="tel">1090649095@qq.com</p>
+          <p class="tel">2767073256@qq.com</p>
         </div>
-        <div class="wetchat">
-          <img src="../../../../../src/assets/img/homePage/weChat.png" alt="" />
-          <div class="popbox">
-            <!-- <img src="/images/123213213.jpg" alt="" /> -->
+        <div class="telIcon">
+          <div class="wetchat">
+            <img
+              src="../../../../../src/assets/img/homePage/weChat.png"
+              alt=""
+            />
+            <div class="popbox">
+              <img
+                src="../../../../../src/assets/img/homePage/wecode.jpg"
+                alt=""
+              />
+            </div>
+          </div>
+          <div class="qq">
+            <img src="../../../../../src/assets/img/homePage/QQ.png" alt="" />
+            <div class="popboxs">
+              <img
+                src="../../../../../src/assets/img/homePage/qrcode.png"
+                alt=""
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -67,26 +84,8 @@
 <script lang="ts" setup></script>
 
 <style lang="scss" scoped>
-@media screen and (max-width: 998px) {
-  .app-footer {
-    .container {
-      height: 100%;
-      margin: auto;
-      display: flex;
-      flex-wrap: nowrap;
-      justify-content: center;
-      .containerleft {
-        display: none !important;
-      }
-      .containerright {
-        width: 100% !important;
-        text-align: center;
-      }
-    }
-  }
-}
 .app-footer {
-  height: 40vh;
+  height: 350px;
   overflow: hidden;
   width: 100%;
   padding: 20px 10px;
@@ -174,7 +173,7 @@
       flex-direction: column;
       .img {
         display: flex;
-        justify-content: center;
+        // justify-content: center;
         width: 100%;
         height: 40%;
         transform: translateX(24px);
@@ -193,19 +192,28 @@
           cursor: pointer;
         }
       }
+      .telIcon {
+        width: 158px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+      }
       .wetchat {
+        position: relative;
         width: 30px;
         height: 30px;
         margin-top: 5px;
+        margin-right: 35px;
         img {
           width: 100%;
           height: 100%;
         }
         .popbox {
-          height: 2rem;
-          width: 2rem;
+          height: 70px;
+          width: 70px;
           position: absolute;
-          top: -2.2rem;
+          top: 10px;
+          right: 40px;
           opacity: 0;
           visibility: hidden;
           transition-duration: 0.3s;
@@ -213,12 +221,718 @@
         &:hover {
           .popbox {
             opacity: 1;
+            transform: translateY(10px);
             visibility: visible;
+            transition-duration: 0.3s;
+          }
+        }
+      }
+      .qq {
+        width: 30px;
+        height: 30px;
+        position: relative;
+        margin-top: 5px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+        .popboxs {
+          height: 70px;
+          width: 70px;
+          position: absolute;
+          top: 10px;
+          left: 40px;
+          opacity: 0;
+          visibility: hidden;
+          transition-duration: 0.3s;
+        }
+        &:hover {
+          .popboxs {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(10px);
             transition-duration: 0.3s;
           }
         }
       }
     }
   }
+}
+
+@media (max-width: 360px) {
+  .app-footer {
+    height: 310px;
+    .container {
+      height: 100%;
+      margin: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      .containerleft {
+        display: none !important;
+      }
+      .containerright {
+        width: 100% !important;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .img {
+          width: 100px;
+          height: 100px;
+          transform: translateX(0px);
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(-10px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            left: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(-10px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 361px) and (max-width: 480px) {
+  .app-footer {
+    height: 310px;
+    .container {
+      height: 100%;
+      margin: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      .containerleft {
+        display: none !important;
+      }
+      .containerright {
+        width: 100% !important;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .img {
+          width: 100px;
+          height: 100px;
+          transform: translateX(0px);
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(-10px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            left: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(-10px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 481px) and (max-width: 640px) {
+  .app-footer {
+    height: 310px;
+    .container {
+      height: 100%;
+      margin: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      .containerleft {
+        display: none !important;
+      }
+      .containerright {
+        width: 100% !important;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .img {
+          width: 100px;
+          height: 100px;
+          transform: translateX(0px);
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(-10px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            left: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(-10px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .app-footer {
+    height: 310px;
+    .container {
+      height: 100%;
+      margin: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      .containerleft {
+        display: none !important;
+      }
+      .containerright {
+        width: 100% !important;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .img {
+          width: 100px;
+          height: 100px;
+          transform: translateX(0px);
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(-10px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            left: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(-10px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 769px) and (max-width: 960px) {
+  .app-footer {
+    height: 310px;
+    .container {
+      height: 100%;
+      margin: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      .containerleft {
+        display: none !important;
+      }
+      .containerright {
+        width: 100% !important;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .img {
+          width: 100px;
+          height: 100px;
+          transform: translateX(0px);
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(-12px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 7px;
+            left: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(-12px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 961px) and (max-width: 1024px) {
+  .app-footer {
+    .container {
+      .containerleft {
+        .containertop {
+          height: 70%;
+          ul {
+            li {
+              font-size: 13px;
+            }
+          }
+        }
+        .containerbottom {
+          width: 110%;
+          font-size: 13px;
+        }
+      }
+      .containerright {
+        .telinfo {
+          .tel {
+            font-size: 14px;
+          }
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 0px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(10px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 0px;
+            left: 35px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(10px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .app-footer {
+    .container {
+      .containerleft {
+        .containertop {
+          height: 70%;
+        }
+        .containerbottom {
+          width: 110%;
+          font-size: 14px;
+        }
+      }
+      .containerright {
+        .telinfo {
+          .tel {
+            font-size: 14px;
+          }
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 0px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(10px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 0px;
+            left: 35px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(10px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media (min-width: 1281px) and (max-width: 1440px) {
+  .app-footer {
+    .container {
+      .containerleft {
+        .containertop {
+          height: 60%;
+          ul {
+            li {
+              font-size: 14px;
+            }
+          }
+        }
+        .containerbottom {
+          width: 110%;
+          font-size: 14px;
+        }
+      }
+      .containerright {
+        .telinfo {
+          .tel {
+            font-size: 14px;
+          }
+        }
+        .wetchat {
+          position: relative;
+          width: 30px;
+          height: 30px;
+          margin-top: 5px;
+          margin-right: 35px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popbox {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 0px;
+            right: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popbox {
+              opacity: 1;
+              transform: translateY(10px);
+              visibility: visible;
+              transition-duration: 0.3s;
+            }
+          }
+        }
+        .qq {
+          width: 30px;
+          height: 30px;
+          position: relative;
+          margin-top: 5px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          .popboxs {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            top: 0px;
+            left: 35px;
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.3s;
+          }
+          &:hover {
+            .popboxs {
+              opacity: 1;
+              visibility: visible;
+              transform: translateY(10px);
+              transition-duration: 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1441px) {
 }
 </style>

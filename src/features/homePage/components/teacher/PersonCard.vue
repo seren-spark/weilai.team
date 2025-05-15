@@ -128,25 +128,27 @@ const props = defineProps({
 
 @media (max-width: 360px) {
   .content {
-    width: 19em;
+    width: 300px;
     .iconGlobal {
-      margin: 20px 0 0 auto;
+      width: 60px;
+      height: 60px;
+      margin: 30px 0 0 auto;
     }
     .person {
       .position {
-        width: 9rem;
+        width: 160px;
         .name {
-          font-size: 1.2rem;
+          font-size: 17px;
           font-weight: 600;
           margin-top: 1rem;
           margin-bottom: 0.3rem;
         }
         .position-title {
           span {
-            font-size: 0.9rem;
+            font-size: 14px;
             font-weight: bold;
           }
-          font-size: 0.85rem;
+          font-size: 13px;
         }
       }
     }
@@ -159,21 +161,22 @@ const props = defineProps({
     }
     .teacher-intro {
       width: 100%;
-      height: 150px;
+      min-height: 180px;
       margin-top: 2rem;
       .sides {
-        font-size: 15px;
+        font-size: 14px;
         span {
           font-weight: bold;
-          font-size: 17px;
+          font-size: 15px;
         }
       }
       .sendWord {
+        min-height: 150px;
         margin-top: 13px;
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1.7;
         span {
-          font-size: 17px;
+          font-size: 15px;
           font-weight: bold;
         }
       }
@@ -183,25 +186,28 @@ const props = defineProps({
 
 @media (min-width: 361px) and (max-width: 480px) {
   .content {
-    width: 20em;
+    width: 24em;
     .iconGlobal {
-      margin: 20px 0 0 auto;
+      width: 70px;
+      height: 70px;
+      margin: 30px 0 0 auto;
     }
     .person {
       .position {
-        width: 9rem;
+        width: 13rem;
+        font-size: 15px;
         .name {
-          font-size: 1.2rem;
+          font-size: 17px;
           font-weight: 600;
           margin-top: 1rem;
           margin-bottom: 0.3rem;
         }
         .position-title {
           span {
-            font-size: 0.9rem;
+            font-size: 14px;
             font-weight: bold;
           }
-          font-size: 0.85rem;
+          font-size: 13px;
         }
       }
     }
@@ -215,20 +221,20 @@ const props = defineProps({
     .teacher-intro {
       width: 100%;
       height: 150px;
-      margin-top: 2rem;
+      margin-top: 15px;
       .sides {
-        font-size: 15px;
+        font-size: 14px;
         span {
           font-weight: bold;
-          font-size: 17px;
+          font-size: 15px;
         }
       }
       .sendWord {
         margin-top: 13px;
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1.7;
         span {
-          font-size: 17px;
+          font-size: 15px;
           font-weight: bold;
         }
       }
@@ -237,37 +243,34 @@ const props = defineProps({
 }
 
 @media (min-width: 481px) and (max-width: 640px) {
-}
-
-@media (min-width: 641px) and (max-width: 768px) {
   .content {
-    width: 34em;
+    width: 30em;
     padding: 30px;
     .iconGlobal {
-      margin: 30px 0 0 auto;
+      margin: 20px 0 0 auto;
     }
     .person {
       min-height: 80px;
       .position {
-        width: 19rem;
+        width: 18rem;
         .name {
-          font-size: 1.8rem;
+          font-size: 20px;
           font-weight: 600;
           margin-top: 1rem;
           margin-bottom: 0.3rem;
         }
         .position-title {
           span {
-            font-size: 1.5rem;
+            font-size: 15px;
             font-weight: bold;
           }
-          font-size: 1.4rem;
+          font-size: 14px;
         }
       }
     }
     .headImg {
-      width: 7rem;
-      height: 7rem;
+      width: 6rem;
+      height: 6rem;
       object-fit: cover;
       margin-right: 1.3rem;
       border-radius: 50%;
@@ -286,7 +289,7 @@ const props = defineProps({
       .sendWord {
         margin-top: 13px;
         font-size: 15px;
-        line-height: 1.7;
+        line-height: 1.8;
         span {
           font-size: 17px;
           font-weight: bold;
@@ -296,9 +299,123 @@ const props = defineProps({
   }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 641px) and (max-width: 768px) {
   .content {
     width: 34em;
+    padding: 30px;
+    .iconGlobal {
+      margin: 20px 0 0 auto;
+    }
+    .person {
+      min-height: 80px;
+      .position {
+        width: 21rem;
+        .name {
+          font-size: 21px;
+          font-weight: 600;
+          margin-top: 1rem;
+          margin-bottom: 0.3rem;
+        }
+        .position-title {
+          span {
+            font-size: 16px;
+            font-weight: bold;
+          }
+          font-size: 15px;
+        }
+      }
+    }
+    .headImg {
+      width: 7rem;
+      height: 7rem;
+      object-fit: cover;
+      margin-right: 1.3rem;
+      border-radius: 50%;
+    }
+    .teacher-intro {
+      width: 100%;
+      height: 150px;
+      margin-top: 2rem;
+      .sides {
+        font-size: 15px;
+        span {
+          font-weight: bold;
+          font-size: 17px;
+        }
+      }
+      .sendWord {
+        margin-top: 13px;
+        font-size: 15px;
+        line-height: 1.8;
+        span {
+          font-size: 17px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 769px) and (max-width: 960px) {
+  .content {
+    width: 450px;
+    padding: 30px;
+    .iconGlobal {
+      margin: 20px 0 0 auto;
+    }
+    .person {
+      min-height: 80px;
+      .position {
+        width: 300px;
+        .name {
+          font-size: 20px;
+          font-weight: 600;
+          margin-top: 1rem;
+          margin-bottom: 0.3rem;
+        }
+        .position-title {
+          span {
+            font-size: 15px;
+            font-weight: bold;
+          }
+          font-size: 14px;
+        }
+      }
+    }
+    .headImg {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      margin-right: 1.3rem;
+      border-radius: 50%;
+    }
+    .teacher-intro {
+      width: 100%;
+      height: 150px;
+      margin-top: 2rem;
+      .sides {
+        font-size: 15px;
+        span {
+          font-weight: bold;
+          font-size: 17px;
+        }
+      }
+      .sendWord {
+        margin-top: 13px;
+        font-size: 15px;
+        line-height: 1.8;
+        span {
+          font-size: 17px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 961px) and (max-width: 1024px) {
+  .content {
+    width: 400px;
     padding: 30px;
     .iconGlobal {
       margin: 30px 0 0 auto;
@@ -308,17 +425,17 @@ const props = defineProps({
       .position {
         width: 19rem;
         .name {
-          font-size: 1.5rem;
+          font-size: 19px;
           font-weight: 600;
           margin-top: 1rem;
           margin-bottom: 0.3rem;
         }
         .position-title {
           span {
-            font-size: 1.2rem;
+            font-size: 14px;
             font-weight: bold;
           }
-          font-size: 1rem;
+          font-size: 13px;
         }
       }
     }
@@ -337,7 +454,7 @@ const props = defineProps({
         font-size: 16px;
         span {
           font-weight: bold;
-          font-size: 18px;
+          font-size: 17px;
         }
       }
       .sendWord {
@@ -345,7 +462,7 @@ const props = defineProps({
         font-size: 16px;
         line-height: 1.7;
         span {
-          font-size: 18px;
+          font-size: 17px;
           font-weight: bold;
         }
       }
@@ -363,19 +480,19 @@ const props = defineProps({
     .person {
       min-height: 85px;
       .position {
-        width: 19rem;
+        width: 21rem;
         .name {
-          font-size: 1.9rem;
+          font-size: 21px;
           font-weight: 600;
           margin-top: 1rem;
           margin-bottom: 0.3rem;
         }
         .position-title {
           span {
-            font-size: 1.5rem;
+            font-size: 16px;
             font-weight: bold;
           }
-          font-size: 1.4rem;
+          font-size: 15px;
         }
       }
     }

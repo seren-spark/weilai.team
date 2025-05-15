@@ -2,12 +2,14 @@
   <div class="main">
     <div class="title">历史回顾</div>
     <Icon
+      v-show="canScrollUp"
       id="up-btn"
       icon="meteor-icons:angles-up"
       class="icon-arrow up-animation"
       @click="slideToPrev"
     />
     <Icon
+      v-show="canScrollDown"
       id="down-btn"
       icon="meteor-icons:angles-down"
       class="icon-arrow down-animation"
@@ -21,7 +23,6 @@
         class="card"
         :style="{ transform: `translateY(${offset * 100}%)` }"
       >
-        <!-- <div class="card-time">{{ card.year }}</div> -->
         <div class="card-title">{{ card.title }}</div>
         <div class="card-passage">
           <br />
@@ -158,6 +159,10 @@ export default {
       return 180 - yearAngles.value[currentYear];
     });
 
+    // 控制箭头显示的计算属性
+    const canScrollUp = computed(() => offset.value < maxOffset);
+    const canScrollDown = computed(() => offset.value > minOffset);
+
     // 生成时钟刻度
     const generateClockScales = () => {
       const scales: ClockScale[] = [];
@@ -178,11 +183,15 @@ export default {
     };
 
     const slideToPrev = () => {
-      offset.value = Math.min(maxOffset, offset.value + 1);
+      if (offset.value < maxOffset) {
+        offset.value = offset.value + 1;
+      }
     };
 
     const slideToNext = () => {
-      offset.value = Math.max(minOffset, offset.value - 1);
+      if (offset.value > minOffset) {
+        offset.value = offset.value - 1;
+      }
     };
 
     onMounted(() => {
@@ -196,6 +205,8 @@ export default {
       currentClockRotation,
       slideToPrev,
       slideToNext,
+      canScrollUp,
+      canScrollDown,
     };
   },
 };
@@ -280,11 +291,11 @@ export default {
 }
 
 #up-btn {
-  top: 10%;
+  top: 13%;
 }
 
 #down-btn {
-  bottom: 10%;
+  bottom: 13%;
 }
 
 #content {
@@ -383,5 +394,202 @@ export default {
   #clock {
     right: -90%;
   }
+}
+
+@media (max-width: 360px) {
+  .main {
+    #clock {
+      display: none;
+    }
+    #content {
+      width: 90%;
+      left: 5%;
+    }
+    .card-title {
+      font-size: 40px;
+      text-align: center;
+    }
+    .card-passage {
+      font-size: 20px;
+      text-align: center;
+    }
+    .icon-arrow {
+      left: 45%;
+    }
+
+    #up-btn {
+      top: 20%;
+    }
+
+    #down-btn {
+      bottom: 20%;
+    }
+  }
+}
+
+@media (min-width: 361px) and (max-width: 480px) {
+  .main {
+    #clock {
+      display: none;
+    }
+    #content {
+      width: 90%;
+      left: 5%;
+    }
+    .card-title {
+      font-size: 40px;
+      text-align: center;
+    }
+    .card-passage {
+      font-size: 20px;
+      text-align: center;
+    }
+    .icon-arrow {
+      left: 45%;
+    }
+
+    #up-btn {
+      top: 20%;
+    }
+
+    #down-btn {
+      bottom: 20%;
+    }
+  }
+}
+
+@media (min-width: 481px) and (max-width: 640px) {
+  .main {
+    #clock {
+      display: none;
+    }
+    #content {
+      width: 90%;
+      left: 5%;
+    }
+    .card-title {
+      font-size: 40px;
+      padding-bottom: 10px;
+      text-align: center;
+    }
+    .card-passage {
+      font-size: 20px;
+      text-align: center;
+    }
+    .icon-arrow {
+      left: 45%;
+    }
+
+    #up-btn {
+      top: 20%;
+    }
+
+    #down-btn {
+      bottom: 20%;
+    }
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .main {
+    #clock {
+      display: none;
+    }
+    #content {
+      width: 90%;
+      left: 5%;
+    }
+    .card-title {
+      font-size: 42px;
+      padding-bottom: 10px;
+      text-align: center;
+    }
+    .card-passage {
+      font-size: 21px;
+      text-align: center;
+    }
+    .icon-arrow {
+      left: 45%;
+    }
+
+    #up-btn {
+      top: 20%;
+    }
+
+    #down-btn {
+      bottom: 20%;
+    }
+  }
+}
+
+@media (min-width: 769px) and (max-width: 960px) {
+  .main {
+    .title {
+      font-size: 28px;
+    }
+    .card-title {
+      font-size: 40px;
+      padding-bottom: 10px;
+    }
+    .card-passage {
+      font-size: 20px;
+    }
+  }
+}
+
+@media (min-width: 961px) and (max-width: 1024px) {
+  .main {
+    #clock {
+      right: -62%;
+    }
+    .title {
+      font-size: 27px;
+    }
+    .card-title {
+      font-size: 45px;
+      padding-bottom: 10px;
+    }
+    .card-passage {
+      font-size: 21px;
+    }
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .main {
+    #clock {
+      right: -47%;
+    }
+    .title {
+      font-size: 27px;
+    }
+    .card-title {
+      font-size: 45px;
+      padding-bottom: 10px;
+    }
+    .card-passage {
+      font-size: 21px;
+    }
+  }
+}
+@media (min-width: 1281px) and (max-width: 1440px) {
+  .main {
+    #clock {
+      right: -37%;
+    }
+    .title {
+      font-size: 27px;
+    }
+    .card-title {
+      font-size: 45px;
+      padding-bottom: 10px;
+    }
+    .card-passage {
+      font-size: 21px;
+    }
+  }
+}
+
+@media (min-width: 1441px) {
 }
 </style>
