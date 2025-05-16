@@ -185,5 +185,6 @@ watch(
   width: 100%;
   background-color: white;
   margin-top: 20px;
+  padding-bottom: 50px;
 }
 </style>

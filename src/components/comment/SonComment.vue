@@ -417,5 +417,51 @@ const handleReply = () => {
   }
 }
 @media screen and (max-width: 768px) {
+  .comment-item {
+    .is-reply {
+      .content-box {
+        .user-info {
+          flex-wrap: wrap;
+        }
+        .nickname {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 360px) {
+  .comment-item {
+    .is-reply {
+      .content-box {
+        .user-info {
+          flex-wrap: wrap;
+        }
+        .nickname {
+          font-size: 14px;
+        }
+        .action-box {
+          .reply-btn {
+            font-size: 12px;
+            .replyIcon {
+              font-size: 12px;
+            }
+          }
+          .delete-btn {
+            font-size: 12px;
+            .deleteIcon {
+              font-size: 15px;
+            }
+          }
+          .like-btn {
+            font-size: 12px;
+            .likeIcon {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 </style>
