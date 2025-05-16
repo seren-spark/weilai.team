@@ -175,7 +175,7 @@ const handleButtonClick = () => {
     <!-- 评论输入框 -->
     <textarea
       v-model="commentTexts"
-      placeholder="请输入你的评论......"
+      placeholder="请输入评论......"
       :maxlength="maxLength"
     ></textarea>
     <div class="image-preview">
@@ -385,6 +385,17 @@ const handleButtonClick = () => {
         font-size: 13px;
         background-color: #5dbee8;
       }
+    }
+  }
+}
+@media screen and (max-width: 445px) {
+  .comment-form {
+    .action-bar {
+      flex-wrap: wrap;
+    }
+    .icon-group {
+      display: flex;
+      margin: 0 auto;
     }
   }
 }
