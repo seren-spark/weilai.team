@@ -125,6 +125,7 @@ const submitComment = async () => {
     commentTexts.value = "";
     photoUrls.value = [];
     imageTags.value = [];
+    finalCommentText.value = "";
   } else {
     showAlert("评论失败", "error");
   }
