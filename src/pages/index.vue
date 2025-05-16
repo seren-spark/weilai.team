@@ -98,6 +98,9 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+* {
+  user-select: none;
+}
 .con {
   overflow: hidden;
   position: relative;

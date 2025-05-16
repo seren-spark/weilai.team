@@ -14,6 +14,9 @@ const newIsScrolled = ref(false);
 const hasToken = ref(false); // 用于判断是否有token
 // 存储头像路径
 const avatarSrc = ref("/src/assets/img/defaultAvatar.png");
+const userInfo = ref({
+  name: "",
+});
 
 // 控制body滚动
 const setBodyOverflow = (hidden: boolean) => {
@@ -61,6 +64,7 @@ onMounted(async () => {
       const res = await apiClient.get(`user/getUserInfoByUserId/${userId}`);
       if (res.data?.headPortrait) {
         avatarSrc.value = res.data.headPortrait;
+        userInfo.value.name = res.data.name;
         console.log(avatarSrc.value);
       }
     } catch (error) {
@@ -77,12 +81,14 @@ onUnmounted(() => {
 
 <template>
   <div class="navCon" :class="{ scrolled: isScrolled }">
-    <div class="logo">
-      <img src="/src/assets/img/homePage/logo.png" alt="" />
-    </div>
+    <a href="/">
+      <div class="logo">
+        <img src="/src/assets/img/homePage/logo.png" alt="" />
+      </div>
+    </a>
     <div class="navLink">
       <nav>
-        <RouterLink to="/">
+        <a href="/">
           <div
             class="homePage link type--C"
             :class="{ active: activeLink === 'homePage' }"
@@ -92,7 +98,7 @@ onUnmounted(() => {
             <div class="button__drow1"></div>
             <div class="button__drow2"></div>
           </div>
-        </RouterLink>
+        </a>
         <RouterLink to="/community/blog/hot">
           <div
             class="blog link type--C"
@@ -150,10 +156,11 @@ onUnmounted(() => {
       </nav>
     </div>
     <div v-if="hasToken">
-      <RouterLink to="/personalCenter/userInfo">
+      <RouterLink to="/personalCenter/userInfo" class="personMessage">
         <div class="personCenter">
           <img :src="avatarSrc || '/public/defaultAvatar.png'" alt="" />
         </div>
+        <div class="personCenterName">{{ userInfo.name }}</div>
       </RouterLink>
     </div>
     <div v-else>
@@ -245,9 +252,17 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
+.personMessage {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  .personCenterName {
+    color: #fff;
+  }
+}
 .mobile-avatar {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   margin: 1rem auto;
   display: block;
@@ -407,9 +422,12 @@ onUnmounted(() => {
   background-color: transparent;
   transition: all 0.3s ease;
   .personCenter {
-    width: 60px;
-    height: 60px;
+    border: 3px solid #ffffff;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
+    margin-right: 15px;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
     img {
       width: 100%;
       height: 100%;
@@ -424,6 +442,9 @@ onUnmounted(() => {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
     .link {
+      color: black !important;
+    }
+    .personCenterName {
       color: black !important;
     }
   }
@@ -443,7 +464,7 @@ onUnmounted(() => {
   .navLink {
     width: 55rem;
     height: 5rem;
-    margin-right: 5rem;
+    margin-right: 3.5rem;
 
     nav {
       width: 45rem;
