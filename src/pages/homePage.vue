@@ -72,10 +72,11 @@ onMounted(() => {
         <div class="loading-placeholder"></div>
       </template>
     </LazyLoad>
-
     <LazyLoad root-margin="0px 0px 200px 0px">
       <template #default>
-        <Develop />
+        <div ref="developRef">
+          <Develop />
+        </div>
       </template>
       <template #fallback>
         <div class="loading-placeholder"></div>
