@@ -503,5 +503,25 @@ defineExpose({ userInfo });
   }
 }
 @media screen and (max-width: 768px) {
+  .comment-item {
+    .content-box {
+      .user-info {
+        .nickname {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+@media (min-width: 769px) and (max-width: 1280px) {
+  .comment-item {
+    .content-box {
+      .user-info {
+        .nickname {
+          font-size: 14px;
+        }
+      }
+    }
+  }
 }
 </style>
