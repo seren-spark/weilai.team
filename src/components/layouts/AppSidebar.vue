@@ -779,9 +779,9 @@ function skipRedirect(item: any) {
     &-provider {
       height: 100vh;
     }
-    &-content {
-      width: 17vw;
-    }
+    // &-content {
+    //   width: 17vw;
+    // }
     &-footer {
       .footer-user {
         height: 5.8rem;

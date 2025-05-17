@@ -74,8 +74,8 @@ import { ref } from "vue";
   }
 }
 @media screen and (min-width: 1800px) {
-  .default-layout__container {
-    max-width: 80% !important;
-  }
+  // .default-layout__container {
+  //   max-width: 80% !important;
+  // }
 }
 </style>
