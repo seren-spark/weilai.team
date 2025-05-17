@@ -31,14 +31,28 @@
   }
 }
 
+// 美化滚动条
 ::-webkit-scrollbar {
-  width: var(--scrollbar-width); /* 设置滚动条宽度 */
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-height);
 }
+
 ::-webkit-scrollbar-track {
-  background-color: #eaeaea;
+  display: none;
+  opacity: 0;
 }
+
 ::-webkit-scrollbar-thumb {
-  background-color: #b5b5b56b;
-  // background-color: rgb(187, 216, 248);
-  border-radius: 1rem;
+  background-clip: padding-box;
+  min-height: 28px;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em;
+  transition: background-color 0.3s;
+  background-color: rgba(144, 147, 153, 0.3);
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(144, 147, 153, 0.5);
 }

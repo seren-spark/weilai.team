@@ -802,4 +802,8 @@ function skipRedirect(item: any) {
     }
   }
 }
+::-webkit-scrollbar {
+  width: 0.2rem;
+  height: 0.2rem;
+}
 </style>
