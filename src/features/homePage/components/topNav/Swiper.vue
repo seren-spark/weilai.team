@@ -85,6 +85,36 @@ const modules = [Autoplay, Navigation, Pagination, A11y];
 </script>
 
 <style lang="scss">
+@media (min-width: 361px) and (max-width: 480px) {
+  .letter-wrapper {
+    top: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 960px) {
+  .swiperbox {
+    .swiper {
+      .custom-prev,
+      .custom-next {
+        .blocks {
+          height: 60px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .swiperbox {
+    .swiper {
+      .custom-prev,
+      .custom-next {
+        .blocks {
+          height: 85px;
+        }
+      }
+    }
+  }
+}
 .swiperbox {
   position: relative;
   height: 100vh;

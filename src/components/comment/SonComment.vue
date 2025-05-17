@@ -183,18 +183,11 @@ const handleReply = () => {
     width: 45px;
     height: 45px;
     margin-right: 10px;
-    border-radius: 50%;
-    padding: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border: 1px solid #e2e2e2;
-    overflow: hidden;
 
     img {
       width: 100%;
       height: 100%;
-      border-radius: 50%;
       object-fit: cover;
     }
   }
@@ -332,17 +325,11 @@ const handleReply = () => {
       width: 40px;
       height: 40px;
       margin-right: 10px;
+      object-fit: cover;
       border-radius: 50%;
-      padding: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #e2e2e2;
-      overflow: hidden;
       img {
         width: 100%;
         height: 100%;
-        border-radius: 50%;
         object-fit: cover;
       }
     }
@@ -417,5 +404,51 @@ const handleReply = () => {
   }
 }
 @media screen and (max-width: 768px) {
+  .comment-item {
+    .is-reply {
+      .content-box {
+        .user-info {
+          flex-wrap: wrap;
+        }
+        .nickname {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 360px) {
+  .comment-item {
+    .is-reply {
+      .content-box {
+        .user-info {
+          flex-wrap: wrap;
+        }
+        .nickname {
+          font-size: 14px;
+        }
+        .action-box {
+          .reply-btn {
+            font-size: 12px;
+            .replyIcon {
+              font-size: 12px;
+            }
+          }
+          .delete-btn {
+            font-size: 12px;
+            .deleteIcon {
+              font-size: 15px;
+            }
+          }
+          .like-btn {
+            font-size: 12px;
+            .likeIcon {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 </style>

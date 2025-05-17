@@ -180,7 +180,7 @@
 
             <!-- 如果 item 不存在，显示添加 Icon（同之前逻辑） -->
             <template v-else>
-              <div class="flex justify-center items-center h-full min-h-[60px]">
+              <div class="flex justify-center items-center h-full min-h-[60px]" >
                 <Icon
                   icon="subway:add"
                   class="opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-gray-400 text-3xl"
@@ -501,6 +501,12 @@ function dayTransformer(day) {
         width: 50px; // 强制设置宽度
       }
     }
+  }
+}
+@media (max-width: 768px) {
+  .mySchedule{
+    width: 100vw;
+    overflow-x: auto;
   }
 }
 </style>

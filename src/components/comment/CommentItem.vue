@@ -276,13 +276,7 @@ defineExpose({ userInfo });
     height: 45px;
     margin-right: 10px;
     border-radius: 50%;
-    padding-top: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border: 1px solid #e2e2e2;
-    overflow: hidden;
-
     img {
       width: 45px;
       height: 45px;
@@ -503,5 +497,25 @@ defineExpose({ userInfo });
   }
 }
 @media screen and (max-width: 768px) {
+  .comment-item {
+    .content-box {
+      .user-info {
+        .nickname {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+@media (min-width: 769px) and (max-width: 1280px) {
+  .comment-item {
+    .content-box {
+      .user-info {
+        .nickname {
+          font-size: 14px;
+        }
+      }
+    }
+  }
 }
 </style>

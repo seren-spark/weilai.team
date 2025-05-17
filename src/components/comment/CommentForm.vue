@@ -125,6 +125,7 @@ const submitComment = async () => {
     commentTexts.value = "";
     photoUrls.value = [];
     imageTags.value = [];
+    finalCommentText.value = "";
   } else {
     showAlert("评论失败", "error");
   }
@@ -175,7 +176,7 @@ const handleButtonClick = () => {
     <!-- 评论输入框 -->
     <textarea
       v-model="commentTexts"
-      placeholder="请输入你的评论......"
+      placeholder="请输入评论......"
       :maxlength="maxLength"
     ></textarea>
     <div class="image-preview">
@@ -193,7 +194,7 @@ const handleButtonClick = () => {
     <!-- 尾部操作区域 -->
     <div class="action-bar">
       <div class="letter">
-        <span class="remaining">还可输入{{ remaining }} 个字符</span>
+        <span class="remaining">还可输入{{ remaining }} 个字</span>
       </div>
       <div class="icon-group">
         <div class="emoji">
@@ -350,6 +351,53 @@ const handleButtonClick = () => {
 @media screen and (max-width: 768px) {
   .emoji {
     display: none;
+  }
+  .comment-form {
+    textarea {
+      font-size: 15px;
+    }
+    .action-bar {
+      .letter {
+        margin-left: 15px;
+      }
+      .submit-btn {
+        width: 60px;
+        font-size: 13px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 480px) {
+  .comment-form {
+    textarea {
+      font-size: 14px;
+    }
+    .action-bar {
+      .imageIcon {
+        font-size: 26px;
+        margin-right: 7px;
+      }
+      .letter {
+        margin-left: 13px;
+        margin-right: 2px;
+      }
+      .submit-btn {
+        width: 55px;
+        font-size: 13px;
+        background-color: #5dbee8;
+      }
+    }
+  }
+}
+@media screen and (max-width: 445px) {
+  .comment-form {
+    .action-bar {
+      flex-wrap: wrap;
+    }
+    .icon-group {
+      display: flex;
+      margin: 0 auto;
+    }
   }
 }
 </style>
