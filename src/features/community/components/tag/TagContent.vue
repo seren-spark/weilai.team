@@ -18,7 +18,7 @@ function getTag() {
 }
 getTag();
 
-watch(props, (newVal) => {
+watch(props, () => {
   getTag();
 });
 </script>
@@ -38,6 +38,7 @@ watch(props, (newVal) => {
 <style scoped lang="scss">
 .tag-container {
   margin-top: 5rem;
+  margin-left: 1rem;
   display: flex;
 
   .all-article {
@@ -96,7 +97,6 @@ watch(props, (newVal) => {
 
 @media screen and (max-width: 768px) {
   .tag-container {
-    
     margin-top: 130px;
 
     .all-article {
