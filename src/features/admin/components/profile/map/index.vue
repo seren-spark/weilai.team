@@ -35,8 +35,8 @@ watch(
   () => {
     mapData = props.areas.map((item) => {
       return {
-        'adcode': item.zipcode,
-        'value': item.peopleCount,
+        adcode: item.zipcode,
+        value: item.peopleCount,
       };
     });
     console.log(mapData);
@@ -340,7 +340,7 @@ const getSeriesDataByPart = (partData: any[], geoJson: GeoJson) => {
   }
 
   data = data.filter((item: { adcode: number }) => item.adcode !== JD_ADCODE); // Check if JD_ADCODE is defined
-
+  console.log(data);
   data.forEach((item: { adcode: number; value: number }) => {
     const currData = partData.find((i) => i.adcode === item.adcode);
     if (currData) {
@@ -352,10 +352,10 @@ const getSeriesDataByPart = (partData: any[], geoJson: GeoJson) => {
 };
 
 // 根据seriesData 动态计算生成 visualMap 的最大值的函数
-const getVisualMapMax = (seriesData: any[]) => {
-  const maxValue = Math.max(...seriesData.map((item) => item.value));
-  return parseInt(maxValue.toString()) + 50;
-};
+// const getVisualMapMax = (seriesData: any[]) => {
+//   const maxValue = Math.max(...seriesData.map((item) => item.value));
+//   return parseInt(maxValue.toString()) + 50;
+// };
 
 // 组件挂载后初始化图表
 onMounted(() => {
