@@ -193,7 +193,6 @@ Textarea {
 .dialog-title {
   display: block;
   font-size: 0.8rem;
-  // font-weight: bold;
   color: var(--text-primary);
   margin-bottom: 10px;
   word-spacing: 3px;

@@ -52,7 +52,7 @@ export const getAllApplyUser = ({
   });
 };
 
-// //获取所有年级
+//获取所有年级
 export const getAllGrade = ({ pageNo, pageSize }: IGetAllGradeDTO) => {
   return axios.get(`${BASE_UEL}recruit/manage/listAllGrade`, {
     params: {

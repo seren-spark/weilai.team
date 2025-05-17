@@ -28,7 +28,7 @@ import Detail from "@admin/components/attendance/overview/detail.vue";
 import apiClient from "@/api/axios";
 import { useRequest } from "vue-request";
 import { ref, watch } from "vue";
-import type { ApiResponseData } from "../../../../types/api-response";
+import type { ApiResponseData } from "@/types/api-response";
 import type { AttendanceOverview } from "@/types/attendance-overview";
 
 const date = ref();

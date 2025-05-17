@@ -14,6 +14,7 @@ axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("token");
     if (token) {
+      // 如果 token 存在，则将其添加到请求头中
       const Token = JSON.parse(token).value;
       config.headers.Authorization = `Bearer ${Token}`;
     }
@@ -35,37 +36,51 @@ axiosInstance.interceptors.response.use(
 );
 
 export function useApiRequest<T>(config: AxiosRequestConfig) {
-  const data = ref<T | null>(null);
-  const error = ref<Error | null>(null);
-  const loading = ref(false);
+  const data = ref<T | null>(null)
+  const error = ref<Error | null>(null)
+  const loading = ref(false)
+
+  let resolveFetch: ((value: T) => void) | null = null
+  let rejectFetch: ((reason: unknown) => void) | null = null
 
   const { run } = useRequest(
     async (dynamicConfig?: Partial<AxiosRequestConfig>) => {
-      loading.value = true;
+      loading.value = true
       try {
         const response = await axiosInstance.request<T>({
           ...config,
           ...dynamicConfig,
-        });
-        data.value = response.data;
+        })
+        data.value = response.data
+        resolveFetch?.(response.data)
       } catch (err) {
-        error.value = err as Error;
+        error.value = err as Error
+        rejectFetch?.(err)
       } finally {
-        loading.value = false;
+        loading.value = false
       }
     },
     {
       manual: true,
     }
-  );
+  )
+
+  const fetchData = (dynamicConfig?: Partial<AxiosRequestConfig>) => {
+    return new Promise<T>((resolve, reject) => {
+      resolveFetch = resolve
+      rejectFetch = reject
+      run(dynamicConfig)
+    })
+  }
 
   return {
     data,
     error,
     loading,
-    fetchData: run,
-  };
+    fetchData,
+  }
 }
+
 
 export const apis = {
   addUserLifePhotos: {
