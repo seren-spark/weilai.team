@@ -37,13 +37,15 @@ const { data, executeRequest } = useRequest();
 const messageStore = useMessageStore();
 const noticeStore = useNoticeStore();
 const userInfo = ref<UserInfo>();
+
 const userStore = useUserStore();
 async function getUserInfo() {
   await executeRequest({
-    url: `/user/getUserInfoByUserId/${userStore.getMyId()}`,
+    url: `/user/getUserInfoByUserId/${userStore.userId}`,
     method: "get",
   });
   userInfo.value = data.value.data as UserInfo;
+ 
 }
 getUserInfo();
 
@@ -122,8 +124,6 @@ function skipRedirect(item: any) {
 
 <template>
   <div class="frame">
-    <!-- <div class="sidebar"> -->
-    <!-- <SidebarProvider id="sidebar-provider" class=" "> -->
     <Sidebar id="sidebar" class="sidebar bg-white bg-white w-[--sidebar-width]">
       <SidebarTrigger
         :class="['sidebar-trigger']"
@@ -135,7 +135,7 @@ function skipRedirect(item: any) {
       ></SidebarHeader>
       <SidebarContent id="sidebar-content">
         <!-- 一级导航 -->
-        <SidebarGroup>
+        <SidebarGroup class="group-data-[collapsible=icon]:hidden">
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem
@@ -148,6 +148,7 @@ function skipRedirect(item: any) {
                     :to="`/${item.url}`"
                     active-class="sidebar__link--active"
                     class="sidebar__link"
+                    :style="open ? '' : 'justify-content : center;'"
                     @click="skipRedirect(item)"
                   >
                     <Icon :icon="`${item.icon}`" />&nbsp;
@@ -285,8 +286,6 @@ function skipRedirect(item: any) {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-    <!-- </SidebarProvider> -->
-    <!-- </div> -->
   </div>
   <div class="main-menu">
     <RouterLink to="/">

@@ -53,13 +53,13 @@ const { data, run } =
   useRequest<ApiResponseData<AttendanceOverview>>(getLeaveInfo);
 
 getLeaveInfo();
-
 </script>
 
 <style scoped lang="scss">
 @use "@admin/styles/container";
 .content {
   padding: 1.8rem 1.5rem;
+  flex-direction: column;
 }
 .statistics {
   margin-top: 10px;

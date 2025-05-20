@@ -135,6 +135,7 @@ function getMembersOfGroup(str: string) {
 </template>
 
 <style lang="scss" scoped>
+@use "@/features/admin/styles/_container.scss";
 $font: #8c9296;
 .custom-class {
   color: var(--primary-foreground);
@@ -175,7 +176,6 @@ td {
   height: 5vh;
 }
 .content {
-  width: 100%;
   top: 0;
   margin-bottom: 50px;
   background-color: white;

@@ -131,7 +131,7 @@ const handleSelectAll = () => {
 import { showConfirm } from "@/composables/useConfirm";
 import { useUserStore } from "@/store/userStore";
 const userStore = useUserStore();
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 const router = useRouter();
 async function submitChangeForm(id: number) {
   console.log("提交", changeAuthorityList.value);
@@ -144,17 +144,19 @@ async function submitChangeForm(id: number) {
     // 如果选择了权限管理员,则自己的权限要取消
     showConfirm({
       title: "提示",
-      content: "只能有一个权限管理员，是否要转移自己的权限？"
+      content: "只能有一个权限管理员，是否要转移自己的权限？",
     }).then(() => {
       executeRequest({
         url: `/userManager/permission/resetUserAuthorities`,
         method: "put",
         requestData: dataToSend,
       });
-      userStore.permissions.slice(userStore.permissions.indexOf("admin_plus"), 1);
-    router.push("/");
+      userStore.permissions.slice(
+        userStore.permissions.indexOf("admin_plus"),
+        1,
+      );
+      router.push("/");
     });
-    
   } else {
     await executeRequest({
       url: `/userManager/permission/resetUserAuthorities`,
@@ -389,6 +391,7 @@ function reset() {
 </template>
 
 <style lang="scss" scoped>
+@use "@/features/admin/styles/container.scss";
 $font: #8c9296;
 
 tr {

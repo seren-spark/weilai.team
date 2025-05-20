@@ -7,7 +7,9 @@ import TheTopNav from "@/components/layouts/AppThirdNav.vue";
   <RouterView></RouterView>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>
 
 <route lang="json">
 {

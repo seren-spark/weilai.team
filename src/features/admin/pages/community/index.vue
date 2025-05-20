@@ -516,7 +516,7 @@ $font: #8c9296;
   display: flex;
   align-items: center;
   span {
-    font-size: 0.9vw;
+    font-size: 0.825rem;
     width: max-content;
     color: var(--secondary-foreground);
     margin-right: 5px;
@@ -532,7 +532,7 @@ $font: #8c9296;
       width: 11rem;
       height: 2rem;
       font-size: 0.825rem;
-      border: 0.125rem solid var(--border);
+      border: 0.1rem solid var(--border);
       border-radius: var(--radius);
       padding: 5px 10px;
       padding-left: 10px;
@@ -636,7 +636,7 @@ $font: #8c9296;
     display: flex;
     align-items: center;
     span {
-      font-size: 0.9vw;
+      font-size: 0.825rem;
       width: max-content;
       color: var(--secondary-foreground);
       margin-right: 5px;
