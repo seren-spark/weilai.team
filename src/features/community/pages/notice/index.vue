@@ -232,7 +232,7 @@ const readAllNotice = async () => {
 
 @media screen and (max-width: 768px) {
   .outCon {
-    margin-top: 100px;
+    margin-top: 70px;
     width: 100%;
   }
   .actionCon {

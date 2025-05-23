@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div id="develop-component" class="main">
     <div class="title">历史回顾</div>
     <Icon
       v-show="canScrollUp"
@@ -53,7 +53,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" scoped>
 import { ref, onMounted, computed } from "vue";
 import { Icon } from "@iconify/vue";
 

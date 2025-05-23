@@ -342,7 +342,7 @@
   </svg>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 #svg-global {
   zoom: 1.2;
   overflow: visible;

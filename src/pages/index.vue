@@ -8,6 +8,7 @@ import HotNews from "@/features/homePage/components/news/HotNews.vue";
 import Develop from "@/features/homePage/components/develop/Develop.vue";
 import Bottom from "@/features/homePage/components/bottom/Bottom.vue";
 import LazyLoad from "@/features/homePage/components/lazyLoad/LazyLoad.vue";
+import cute from "@/features/homePage/components/animation/cute.vue";
 import { ref, onMounted } from "vue";
 
 const showBackToTop = ref(false);
@@ -95,6 +96,7 @@ onMounted(() => {
       </div>
     </transition>
   </div>
+  <cute />
 </template>
 
 <style scoped lang="scss">

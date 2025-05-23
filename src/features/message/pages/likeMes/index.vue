@@ -188,6 +188,7 @@ watch(
 <style scoped lang="scss">
 .con {
   width: 100%;
+  padding-bottom: 60px;
   .mess {
     width: 95%;
   }
@@ -232,6 +233,7 @@ watch(
   .titleOptions {
     width: 100%;
     height: 30px;
+    padding-left: 20px;
     display: flex;
     cursor: pointer;
     .clearAll {
@@ -252,7 +254,7 @@ watch(
 }
 @media screen and (max-width: 768px) {
   .mesCon {
-    margin-top: 70px;
+    margin-top: 40px;
     width: 100%;
     .titleOptions {
       width: 100%;

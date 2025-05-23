@@ -38,6 +38,13 @@ const handleLinkClick = (linkName: string) => {
   setTimeout(() => {
     activeLink.value = null;
   }, 2000);
+  // 判断是否点击的是“关于我们”，如果是则跳转到Develop组件对应的位置
+  if (linkName === "about") {
+    const developComponent = document.getElementById("develop-component");
+    if (developComponent) {
+      developComponent.scrollIntoView({ behavior: "smooth" });
+    }
+  }
 };
 
 const toggleMobileMenu = () => {
@@ -77,6 +84,14 @@ onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
   setBodyOverflow(false); // 组件卸载时恢复滚动
 });
+
+const mobileMenuLinks = ref([
+  { name: "blog", to: "/community/blog/hot" },
+  { name: "source", to: "/community/brainstorm/hot" },
+  { name: "notice", to: "/community/notice" },
+  { name: "forum", to: "/community/discussion/hot" },
+  { name: "about", to: "/about" },
+]);
 </script>
 
 <template>
@@ -202,14 +217,7 @@ onUnmounted(() => {
     <div class="mobile-menu-content">
       <nav>
         <div
-          v-for="(link, index) in [
-            { name: 'homePage', to: '/' },
-            { name: 'blog', to: '/community/blog/hot' },
-            { name: 'source', to: '/community/brainstorm/hot' },
-            { name: 'notice', to: '/community/notice' },
-            { name: 'forum', to: '/community/discussion/hot' },
-            { name: 'about', to: '/about' },
-          ]"
+          v-for="(link, index) in mobileMenuLinks"
           :key="index"
           class="mobile-menu-link"
           :class="{ active: activeLink === link.name }"
@@ -222,17 +230,15 @@ onUnmounted(() => {
         >
           <span class="mobile-menu-text">
             {{
-              link.name === "homePage"
-                ? "首页"
-                : link.name === "blog"
-                  ? "博客"
-                  : link.name === "source"
-                    ? "头脑风暴"
-                    : link.name === "notice"
-                      ? "公告"
-                      : link.name === "forum"
-                        ? "交流"
-                        : "关于我们"
+              link.name === "blog"
+                ? "博客"
+                : link.name === "source"
+                  ? "头脑风暴"
+                  : link.name === "notice"
+                    ? "公告"
+                    : link.name === "forum"
+                      ? "交流"
+                      : "关于我们"
             }}
           </span>
         </div>
@@ -437,7 +443,7 @@ onUnmounted(() => {
   }
 
   &.scrolled {
-    height: 5rem;
+    height: 4.7rem;
     background-color: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
@@ -450,8 +456,8 @@ onUnmounted(() => {
   }
 
   .logo {
-    width: 5.4rem;
-    height: 4.5rem;
+    width: 5rem;
+    height: 4.2rem;
     margin-right: 3rem;
     transition: all 0.3s ease;
 
