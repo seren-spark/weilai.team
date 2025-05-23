@@ -197,7 +197,16 @@ const quickShowItems = ref([
           />
         </div>
         <div class="main-content-show">
-          <NewNoData v-if="messageCard.length === 0" style=" width: 100%;height: 150px;display: flex;align-items: center;justify-content: center;" />
+          <NewNoData
+            v-if="messageCard.length === 0"
+            style="
+              width: 100%;
+              height: 150px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          />
           <MessageCard
             v-for="(item, index) in messageCard"
             :key="index"
@@ -213,7 +222,8 @@ const quickShowItems = ref([
 @use "@/assets/styles/recruitment.scss";
 
 .main {
-  width: 100%;
+  margin-left: 1rem;
+  width: 98%;
   height: auto;
   background-color: var(--background);
   position: relative;
@@ -224,7 +234,7 @@ const quickShowItems = ref([
   overflow-x: auto;
   padding: 2rem;
   @media screen and (min-width: 1300px) {
-    grid-template-columns:200px minmax(0, 1fr);
+    grid-template-columns: 200px minmax(0, 1fr);
   }
   @media screen and (max-width: 1100px) {
     grid-template-columns: 1fr;
@@ -237,7 +247,7 @@ const quickShowItems = ref([
   height: auto;
   background-color: var(--background);
   position: relative;
-  display:inline-flex;
+  display: inline-flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;

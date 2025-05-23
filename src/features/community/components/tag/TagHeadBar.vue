@@ -48,10 +48,10 @@ getAllTagList();
   color: var(--primary-foreground);
 }
 
-.tagHeadNone{
-    background-color: #ffffff;
-    width: 100%;
-    height: 65px;
+.tagHeadNone {
+  background-color: #ffffff;
+  width: 100%;
+  height: 65px;
 }
 
 .tag-head-bar {
@@ -64,7 +64,7 @@ getAllTagList();
   box-shadow: 0 4px 30px 0 rgba(232, 232, 237, 0.5);
   border-radius: 4px;
   padding: 10px;
-  margin-right: 15px;
+  margin: 0 1rem;
   max-height: 65px;
   overflow: hidden;
   z-index: 1;

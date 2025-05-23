@@ -12,19 +12,6 @@ import { ref } from "vue";
 </script>
 
 <template>
-  <!-- <div class="default-layout">
-    <SidebarProvider class="h-full w-[17vw] sidebar-provider">
-      <TheSidebar style="background-color: white" />
-      <main class="flex-1 flex relative">
-        <SidebarTrigger :class="'sidebar-trigger'"></SidebarTrigger>
-        <div class="default-layout__container">
-          <RouterView></RouterView>
-        </div>
-      </main>
-     
-    </SidebarProvider>
-  </div> -->
-
   <SidebarProvider v-model:open="open">
     <TheSidebar :open="open" />
     <main
@@ -74,8 +61,8 @@ import { ref } from "vue";
   }
 }
 @media screen and (min-width: 1800px) {
-  .default-layout__container {
-    max-width: 80% !important;
-  }
+  // .default-layout__container {
+  //   max-width: 80% !important;
+  // }
 }
 </style>
