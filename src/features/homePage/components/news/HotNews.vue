@@ -68,6 +68,12 @@
 import { ref, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
 
+import baligouImg from "../../../../assets/img/homePage/news/baligou.jpg";
+import kanghongImg from "../../../../assets/img/homePage/news/kanghong.png";
+import nianhuiImg from "../../../../assets/img/homePage/news/nianhui.jpg";
+import sportsMeetImg from "../../../../assets/img/homePage/news/sports_meet.jpg";
+import zuotanhuiImg from "../../../../assets/img/homePage/news/zuotanhui.jpeg";
+
 interface CarouselItem {
   image: string;
   name: string;
@@ -79,30 +85,30 @@ const expandedIndex = ref<number | null>(null);
 const carouselVisible = ref(false);
 const items = ref<CarouselItem[]>([
   {
-    image: "/src/assets/img/homePage/news/baligou.jpg",
+    image: baligouImg,
     name: "八里沟游玩",
     description:
       "为了更好凝聚团队和放松身心，未来软件工作室组织前往八里沟游玩。",
   },
   {
-    image: "/src/assets/img/homePage/news/kanghong.png",
+    image: kanghongImg,
     name: "抗洪",
     description:
       "在2023年特大洪水期间，未来软件工作室团队积极帮助学校进行抗洪工作。",
   },
   {
-    image: "/src/assets/img/homePage/news/nianhui.jpg",
+    image: nianhuiImg,
     name: "小组年会",
     description: "2023年小组年会，历届毕业学长学姐回归交流工作经验。",
   },
   {
-    image: "/src/assets/img/homePage/news/sports_meet.JPG",
+    image: sportsMeetImg,
     name: "小组运动会",
     description:
       "为提升小组成员身体健康素质，培养全面发展人才，未来软件工作室组织开展小组运动会。",
   },
   {
-    image: "/src/assets/img/homePage/news/zuotanhui.jpeg",
+    image: zuotanhuiImg,
     name: "座谈会",
     description:
       "2024年暑期留校期间邀请往届学长学姐，交流学习，在计科院前合影留念",
@@ -604,6 +610,9 @@ onMounted(() => {
 @media (min-width: 769px) and (max-width: 960px) {
   .news_con {
     height: 610px;
+    .title {
+      font-size: 25px;
+    }
     .container {
       width: 90%;
       height: 400px;

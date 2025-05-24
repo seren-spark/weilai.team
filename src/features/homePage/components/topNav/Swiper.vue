@@ -117,7 +117,7 @@ const modules = [Autoplay, Navigation, Pagination, A11y];
 }
 .swiperbox {
   position: relative;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   z-index: 5;
 
@@ -220,6 +220,24 @@ const modules = [Autoplay, Navigation, Pagination, A11y];
     }
     .custom-prev:hover .arrow {
       opacity: 1;
+    }
+  }
+}
+@media (min-width: 769px) and (max-width: 960px) {
+  .swiperbox {
+    .swiper {
+      .swiper-pagination {
+        bottom: 40px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1440px) {
+  .swiperbox {
+    .swiper {
+      .swiper-pagination {
+        bottom: 35px;
+      }
     }
   }
 }

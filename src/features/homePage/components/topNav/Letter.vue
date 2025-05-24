@@ -13,10 +13,9 @@
       <div class="title_team" :class="{ 'fade-in': showElements[3] }">
         做一个有影响力的团队
       </div>
-      <!-- <Button class="more">了解更多</Button> -->
       <Button class="more" :class="{ 'fade-in': showElements[4] }"
-        ><i class="animation"></i>了解更多<i class="animation"></i>
-      </Button>
+        >了解更多</Button
+      >
     </div>
   </div>
 </template>
@@ -45,15 +44,14 @@ onMounted(() => {
 <style scoped lang="scss">
 .titleCon {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
+  position: relative;
   z-index: 6;
   top: 0;
   left: 0;
-  margin-top: 15rem;
   pointer-events: none;
 
   [class^="title"],
@@ -111,55 +109,89 @@ onMounted(() => {
   }
 
   .more {
+    position: relative;
+    z-index: 0;
     pointer-events: auto;
-    animation: color-change 4s linear infinite;
+    text-transform: uppercase;
     height: 40px;
-    outline: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #284dd5;
-    min-width: 180px;
-    border: 0;
+    width: 180px;
+    background-color: #284dd5;
+    border: 1px solid rgba(22, 76, 167, 0.6);
     border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
     padding: 18px 20px;
     color: #fff;
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 1.2px;
-    text-transform: uppercase;
     overflow: hidden;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.02, 0.01, 0.47, 1);
   }
 
   .more:hover {
-    opacity: 0.95;
+    animation: rotate624 0.7s ease-in-out both;
   }
 
-  .more .animation {
-    cursor: pointer;
-    border-radius: 100%;
-    animation: ripple 0.6s linear infinite;
-  }
-
-  @keyframes ripple {
+  @keyframes rotate624 {
     0% {
-      box-shadow:
-        0 0 0 0 rgba(255, 255, 255, 0.1),
-        0 0 0 20px rgba(255, 255, 255, 0.1),
-        0 0 0 40px rgba(255, 255, 255, 0.1),
-        0 0 0 60px rgba(255, 255, 255, 0.1);
+      transform: rotate(0deg) translate3d(0, 0, 0);
+    }
+
+    25% {
+      transform: rotate(3deg) translate3d(0, 0, 0);
+    }
+
+    50% {
+      transform: rotate(-3deg) translate3d(0, 0, 0);
+    }
+
+    75% {
+      transform: rotate(1deg) translate3d(0, 0, 0);
     }
 
     100% {
-      box-shadow:
-        0 0 0 20px rgba(255, 255, 255, 0.1),
-        0 0 0 40px rgba(255, 255, 255, 0.1),
-        0 0 0 60px rgba(255, 255, 255, 0.1),
-        0 0 0 80px rgba(255, 255, 255, 0);
+      transform: rotate(0deg) translate3d(0, 0, 0);
     }
+  }
+
+  @keyframes storm1261 {
+    0% {
+      transform: translate3d(0, 0, 0) translateZ(0);
+    }
+
+    25% {
+      transform: translate3d(4px, 0, 0) translateZ(0);
+    }
+
+    50% {
+      transform: translate3d(-3px, 0, 0) translateZ(0);
+    }
+
+    75% {
+      transform: translate3d(2px, 0, 0) translateZ(0);
+    }
+
+    100% {
+      transform: translate3d(0, 0, 0) translateZ(0);
+    }
+  }
+  .more:after {
+    background: #fff;
+    content: "";
+    height: 155px;
+    left: -75px;
+    opacity: 0.4;
+    position: absolute;
+    top: -50px;
+    transform: rotate(35deg);
+    transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
+    width: 50px;
+    z-index: -10;
+  }
+
+  .more:hover:after {
+    left: 120%;
+    transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
   }
 
   .fade-in {
@@ -186,21 +218,25 @@ onMounted(() => {
     flex-wrap: wrap;
     .title {
       color: white;
-      font-size: 35px;
+      font-size: 32px;
       font-weight: bold;
       margin-bottom: 20px;
     }
     .enTitle {
-      font-size: 24px;
+      font-size: 23px;
       margin-bottom: 20px;
     }
     .title_team {
-      margin-bottom: 2em;
+      font-size: 20px;
+      margin-bottom: 35px;
+    }
+    .title_person {
+      font-size: 20px;
     }
     .more {
       width: 160px;
       height: 2.4rem;
-      font-size: 16px;
+      font-size: 14px;
     }
   }
 }
@@ -269,7 +305,7 @@ onMounted(() => {
     }
     .title_team {
       font-size: 23px;
-      // margin-bottom: 3.1em;
+      margin-bottom: 2.1em;
     }
     .title_person {
       font-size: 23px;
@@ -279,10 +315,9 @@ onMounted(() => {
     }
   }
 }
-@media (min-width: 540px) and (max-width: 767px) {
+@media (min-width: 540px) and (max-width: 768px) {
   #titles {
     display: flex;
-    flex-wrap: wrap;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -299,15 +334,15 @@ onMounted(() => {
       color: white;
       font-size: 44px;
       font-weight: bold;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .enTitle {
       font-size: 27px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .title_team {
       font-size: 23px;
-      // margin-bottom: 3.1em;
+      margin-bottom: 2.1em;
     }
     .title_person {
       font-size: 23px;
@@ -317,46 +352,7 @@ onMounted(() => {
     }
   }
 }
-@media screen and (width: 768px) {
-  #titles {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .titleCon {
-    margin-top: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    .title {
-      color: white;
-      font-size: 5rem;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    .enTitle {
-      font-size: 3.2em;
-      margin-bottom: 20px;
-    }
-    .title_team {
-      font-size: 2em;
-      // margin-bottom: 3.1em;
-    }
-    .title_person {
-      font-size: 2em;
-    }
-    .more {
-      width: 15rem;
-      height: 3.8rem;
-      font-size: 17px;
-    }
-  }
-}
+
 @media (min-width: 769px) and (max-width: 960px) {
   #titles {
     display: flex;
@@ -375,25 +371,25 @@ onMounted(() => {
     flex-wrap: wrap;
     .title {
       color: white;
-      font-size: 65px;
+      font-size: 47px;
       font-weight: bold;
-      margin-bottom: 20px;
+      margin-bottom: 5px;
     }
     .enTitle {
-      font-size: 40px;
+      font-size: 32px;
       margin-bottom: 10px;
     }
     .title_team {
-      font-size: 28px;
-      // margin-bottom: 3.1em;
+      font-size: 23px;
+      margin-bottom: 1.4em;
     }
     .title_person {
-      font-size: 28px;
+      font-size: 23px;
     }
     .more {
       width: 210px;
-      height: 55px;
-      font-size: 17px;
+      height: 35px;
+      font-size: 14px;
     }
   }
 }
@@ -407,25 +403,25 @@ onMounted(() => {
     align-items: center;
     flex-wrap: wrap;
     .title {
-      font-size: 4em;
+      font-size: 3.2em;
       margin-bottom: 10px;
     }
     .enTitle {
-      font-size: 3.5em;
-      margin-bottom: 15px;
+      font-size: 2.7em;
+      margin-bottom: 10px;
     }
     .title_team {
-      font-size: 2.4em;
-      margin-bottom: 2.3em;
+      font-size: 1.8em;
+      margin-bottom: 2em;
     }
     .title_person {
-      margin-bottom: 15px;
-      font-size: 2.4em;
+      margin-bottom: 8px;
+      font-size: 1.8em;
     }
     .more {
-      width: 15rem;
-      height: 4rem;
-      font-size: 14px;
+      width: 15rem !important;
+      height: 3rem;
+      font-size: 13px;
     }
   }
 }
@@ -439,25 +435,57 @@ onMounted(() => {
     align-items: center;
     flex-wrap: wrap;
     .title {
-      font-size: 3.9em;
-      margin-bottom: 10px;
+      font-size: 2.7em;
+      margin-bottom: 8px;
     }
     .enTitle {
-      font-size: 3.4em;
-      margin-bottom: 15px;
+      font-size: 2.7em;
+      margin-bottom: 10px;
     }
     .title_team {
-      font-size: 2.3em;
-      margin-bottom: 2.3em;
+      font-size: 1.8em;
+      margin-bottom: 1.5em;
     }
     .title_person {
-      margin-bottom: 15px;
-      font-size: 2.3em;
+      margin-bottom: 10px;
+      font-size: 1.8em;
     }
     .more {
-      width: 15rem;
-      height: 4rem;
-      font-size: 16px;
+      width: 12rem;
+      height: 3rem;
+      font-size: 14px;
+    }
+  }
+}
+@media (min-width: 1286px) and (max-width: 1440px) {
+  .titleCon {
+    margin-top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    .title {
+      font-size: 2.7em;
+      margin-bottom: 8px;
+    }
+    .enTitle {
+      font-size: 2.7em;
+      margin-bottom: 10px;
+    }
+    .title_team {
+      font-size: 1.8em;
+      margin-bottom: 1.5em;
+    }
+    .title_person {
+      margin-bottom: 10px;
+      font-size: 1.8em;
+    }
+    .more {
+      width: 12rem;
+      height: 3rem;
+      font-size: 14px;
     }
   }
 }
