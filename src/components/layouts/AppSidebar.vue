@@ -41,11 +41,10 @@ const userInfo = ref<UserInfo>();
 const userStore = useUserStore();
 async function getUserInfo() {
   await executeRequest({
-    url: `/user/getUserInfoByUserId/${userStore.userId}`,
+    url: `/user/getUserInfoByUserId/${userStore.getMyId()}`,
     method: "get",
   });
   userInfo.value = data.value.data as UserInfo;
- 
 }
 getUserInfo();
 

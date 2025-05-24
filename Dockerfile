@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:latest
 
 # 复制本地构建好的静态文件到 nginx 的默认静态文件目录中
 COPY ./dist /usr/share/nginx/html
