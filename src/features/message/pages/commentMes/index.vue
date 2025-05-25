@@ -192,9 +192,11 @@ watch(
 <style scoped lang="scss">
 .commentCon {
   width: 100%;
+  padding-bottom: 60px;
   .titleOptions {
     width: 100%;
     height: 50px;
+    padding-left: 20px;
     display: flex;
     cursor: pointer;
     .clearAll {
@@ -257,7 +259,7 @@ watch(
 
 @media screen and (max-width: 768px) {
   .commentCon {
-    margin-top: 70px;
+    margin-top: 40px;
     width: 100%;
     .titleOptions {
       width: 100%;

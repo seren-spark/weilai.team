@@ -5,8 +5,6 @@ const isPC = ref(true);
 
 const handleResize = () => {
   const width = window.innerWidth;
-  const height = window.innerHeight;
-  console.log(`窗口宽度: ${width}px, 窗口高度: ${height}px`);
   // 可以在这里添加根据窗口大小变化执行的逻辑
   if (width < 768) {
     isPC.value = false;

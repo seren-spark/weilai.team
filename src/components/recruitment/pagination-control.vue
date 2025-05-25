@@ -85,8 +85,8 @@ function changePage(page: number) {
     background-color: var(--background);
 
     [data-selected] {
-      background-color: skyblue;
-      color: var(--primary);
+      background-color: var(--primary);
+      color: var(--primary-foreground);
       border-radius: 4px;
     }
   }

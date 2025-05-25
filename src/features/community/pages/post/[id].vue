@@ -153,6 +153,7 @@ watch(
 
 <style lang="scss">
 @use "/src/assets/styles/editor/index.scss";
+
 .article-detail {
   background-color: #fff;
   box-sizing: border-box;
@@ -160,6 +161,7 @@ watch(
   &__content {
     margin-top: 2rem;
   }
+  margin-left: 1rem;
 }
 
 .news-footer {
@@ -182,6 +184,7 @@ watch(
   }
 }
 .article-Form {
+  margin-left: 1rem;
   width: 100%;
   background-color: white;
   margin-top: 20px;

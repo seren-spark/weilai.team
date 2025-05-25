@@ -303,7 +303,8 @@ onMounted(() => {
 @use "@/assets/styles/recruitment.scss";
 
 .main {
-  width: 100%;
+  margin-left: 1rem;
+  width: 98%;
   height: auto;
   background-color: var(--background);
   position: relative;
@@ -314,6 +315,7 @@ onMounted(() => {
   overflow-x: auto;
   padding: 2rem;
   @media screen and (min-width: 1300px) {
+    grid-template-columns: 200px minmax(0, 1fr);
     grid-template-columns: 200px minmax(0, 1fr);
   }
   @media screen and (max-width: 1100px) {
@@ -327,6 +329,7 @@ onMounted(() => {
   height: auto;
   background-color: var(--background);
   position: relative;
+  display: inline-flex;
   display: inline-flex;
   flex-direction: column;
   justify-content: flex-start;

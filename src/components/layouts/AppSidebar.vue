@@ -14,7 +14,7 @@ import SidebarMenu from "@/components/ui/sidebar/SidebarMenu.vue";
 import SidebarMenuButton from "@/components/ui/sidebar/SidebarMenuButton.vue";
 import SidebarMenuItem from "@/components/ui/sidebar/SidebarMenuItem.vue";
 import SidebarProvider from "@/components/ui/sidebar/SidebarProvider.vue";
-
+import SidebarTrigger from "@/components/ui/sidebar/SidebarTrigger.vue";
 import type { UserInfo } from "@/components/comment/index.ts";
 import UserLogin from "@/composables/useLoginAll";
 import { useRequest } from "@/composables/useRequest";
@@ -29,12 +29,15 @@ import Button from "../ui/button/Button.vue";
 import SidebarFooter from "../ui/sidebar/SidebarFooter.vue";
 import SidebarHeader from "../ui/sidebar/SidebarHeader.vue";
 import { COMMUNITY_ROUTER_META } from "@/constants/router";
-
+defineProps<{
+  open?: boolean;
+}>();
 const { data, executeRequest } = useRequest();
 // 获取个人id用于渲染
 const messageStore = useMessageStore();
 const noticeStore = useNoticeStore();
 const userInfo = ref<UserInfo>();
+
 const userStore = useUserStore();
 async function getUserInfo() {
   await executeRequest({
@@ -51,8 +54,6 @@ const router = useRouter();
 
 let subNavItems = route.meta.subNavItems as SubItemInterface[] | undefined;
 let currentUrl = ref("");
-
-console.log(router, 6666666666);
 
 const items = [
   {
@@ -122,179 +123,168 @@ function skipRedirect(item: any) {
 
 <template>
   <div class="frame">
-    <div class="sidebar">
-      <SidebarProvider id="sidebar-provider" class=" ">
-        <Sidebar id="sidebar" class="sidebar bg-white bg-white w-[17vw]">
-          <SidebarHeader id="sidebar-header"
-            ><div class="sidebar-logo">
-              <img src="../../../public/logo.png" alt="" /></div
-          ></SidebarHeader>
-          <SidebarContent id="sidebar-content">
-            <!-- 一级导航 -->
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem
-                    v-for="item in items"
-                    :key="item.url"
-                    class="sidebar__item"
-                  >
-                    <SidebarMenuButton class="sidebar__button">
-                      <RouterLink
-                        :to="`/${item.url}`"
-                        active-class="sidebar__link--active"
-                        class="sidebar__link"
-                        @click="skipRedirect(item)"
-                      >
-                        <Icon :icon="`${item.icon}`" />&nbsp;
-                        <span>{{ item.title }}</span>
-                        <span
-                          v-if="
-                            item.title === '社区' && noticeStore.hasUnreadNotice
-                          "
-                          class="noticeDot"
-                        ></span>
-                      </RouterLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            <!-- 二级导航 -->
-            <SidebarGroup v-show="subNavItems?.length" id="sub-nav">
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <template v-for="(item, index) in subNavItems" :key="index">
-                    <SidebarMenuItem
-                      class="sidebar__item"
-                      v-if="permisson(item)"
-                    >
-                      <SidebarMenuButton class="sidebar__button">
-                        <RouterLink
-                          :to="item.path"
-                          active-class="sidebar__sub-link--active"
-                          class="sidebar__sub-link"
-                          @click="
-                            router.push(
-                              item.redirect ? item.redirect : item.path,
-                            )
-                          "
-                        >
-                          <Icon :icon="`${item.icon}`" />&nbsp;
-                          <span>{{ item.title }}</span>
-                          <span
-                            v-if="
-                              item.title === '公告' &&
-                              noticeStore.hasUnreadNotice
-                            "
-                            class="noticeDot"
-                          ></span>
-                        </RouterLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </template>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem class="sidebar__item">
-                    <SidebarMenuButton class="sidebar__button">
-                      <RouterLink
-                        :to="`/personalCenter/userInfo`"
-                        active-class="sidebar__link--active"
-                        class="sidebar__link mb-1"
-                        @click="skipToPersonalCenter"
-                      >
-                        <Icon icon="gravity-ui:person" />&nbsp;
-                        <span>个人资料</span>
-                      </RouterLink>
-                    </SidebarMenuButton>
-                    <SidebarMenuButton class="sidebar__button">
-                      <RouterLink
-                        :to="`/message/likeMes`"
-                        active-class="sidebar__link--active"
-                        class="sidebar__link"
-                      >
-                        <Icon
-                          icon="mage:box-3d-notification"
-                          style="stroke-width: 3"
-                        />&nbsp;
-                        <span>消息</span>
-                        <span
-                          v-if="messageStore.hasNewMessage"
-                          class="dot"
-                        ></span>
-                      </RouterLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter id="sidebar-footer" style="height: 7rem">
+    <Sidebar id="sidebar" class="sidebar bg-white bg-white w-[--sidebar-width]">
+      <SidebarTrigger
+        :class="['sidebar-trigger']"
+        :style="!open ? 'opacity:1 !important' : ''"
+      ></SidebarTrigger>
+      <SidebarHeader id="sidebar-header"
+        ><div class="sidebar-logo">
+          <img src="../../../public/logo.png" alt="" /></div
+      ></SidebarHeader>
+      <SidebarContent id="sidebar-content">
+        <!-- 一级导航 -->
+        <SidebarGroup class="group-data-[collapsible=icon]:hidden">
+          <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <DropdownMenu>
-                  <SidebarMenuButton class="publish-btn">
+              <SidebarMenuItem
+                v-for="item in items"
+                :key="item.url"
+                class="sidebar__item"
+              >
+                <SidebarMenuButton class="sidebar__button">
+                  <RouterLink
+                    :to="`/${item.url}`"
+                    active-class="sidebar__link--active"
+                    class="sidebar__link"
+                    :style="open ? '' : 'justify-content : center;'"
+                    @click="skipRedirect(item)"
+                  >
+                    <Icon :icon="`${item.icon}`" />&nbsp;
+                    <span>{{ item.title }}</span>
+                    <span
+                      v-if="
+                        item.title === '社区' && noticeStore.hasUnreadNotice
+                      "
+                      class="noticeDot"
+                    ></span>
+                  </RouterLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <!-- 二级导航 -->
+        <SidebarGroup v-show="subNavItems?.length" id="sub-nav">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <template v-for="(item, index) in subNavItems" :key="index">
+                <SidebarMenuItem class="sidebar__item" v-if="permisson(item)">
+                  <SidebarMenuButton class="sidebar__button">
                     <RouterLink
-                      to="/post"
-                      class="flex items-center w-full h-full"
+                      :to="item.path"
+                      active-class="sidebar__sub-link--active"
+                      class="sidebar__sub-link"
+                      @click="
+                        router.push(item.redirect ? item.redirect : item.path)
+                      "
                     >
-                      <Icon icon="prime:pencil" width="16px" />
-                      <span class="ml-2">发布</span>
+                      <Icon :icon="`${item.icon}`" />&nbsp;
+                      <span>{{ item.title }}</span>
+                      <span
+                        v-if="
+                          item.title === '公告' && noticeStore.hasUnreadNotice
+                        "
+                        class="noticeDot"
+                      ></span>
                     </RouterLink>
                   </SidebarMenuButton>
-                </DropdownMenu>
+                </SidebarMenuItem>
+              </template>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem class="sidebar__item">
+                <SidebarMenuButton class="sidebar__button">
+                  <RouterLink
+                    :to="`/personalCenter/userInfo`"
+                    active-class="sidebar__link--active"
+                    class="sidebar__link mb-1"
+                    @click="skipToPersonalCenter"
+                  >
+                    <Icon icon="gravity-ui:person" />&nbsp;
+                    <span>个人资料</span>
+                  </RouterLink>
+                </SidebarMenuButton>
+                <SidebarMenuButton class="sidebar__button">
+                  <RouterLink
+                    :to="`/message/likeMes`"
+                    active-class="sidebar__link--active"
+                    class="sidebar__link"
+                  >
+                    <Icon
+                      icon="mage:box-3d-notification"
+                      style="stroke-width: 3"
+                    />&nbsp;
+                    <span>消息</span>
+                    <span v-if="messageStore.hasNewMessage" class="dot"></span>
+                  </RouterLink>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
-            <SidebarMenu class="footer-user">
-              <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger as-child>
-                    <SidebarMenuButton
-                      size="lg"
-                      class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                    >
-                      <div class="avatar">
-                        <Avatar :avatar="userStore.avatar" />
-                      </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter id="sidebar-footer" style="height: 7rem">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <SidebarMenuButton class="publish-btn">
+                <RouterLink to="/post" class="flex items-center w-full h-full">
+                  <Icon icon="prime:pencil" width="16px" />
+                  <span class="ml-2">发布</span>
+                </RouterLink>
+              </SidebarMenuButton>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <SidebarMenu class="footer-user">
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <SidebarMenuButton
+                  size="lg"
+                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <div class="avatar">
+                    <Avatar :avatar="userStore.avatar" />
+                  </div>
 
-                      <div class="grid flex-1 text-left text-sm leading-tight">
-                        <span class="truncate">{{ userInfo?.name }}</span>
-                      </div>
-                      <ChevronsUpDown class="ml-auto size-4" />
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg p-0"
-                    side="bottom"
-                    :side-offset="4"
-                    ><router-link
-                      :to="`/personalCenter/userInfo`"
-                      @click="skipToPersonalCenter"
-                    >
-                      <DropdownMenuItem class="drop-menu-item">
-                        <BadgeCheck />
-                        个人资料
-                      </DropdownMenuItem>
-                    </router-link>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate">{{ userInfo?.name }}</span>
+                  </div>
+                  <ChevronsUpDown class="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg p-0"
+                side="bottom"
+                :side-offset="4"
+                ><router-link
+                  :to="`/personalCenter/userInfo`"
+                  @click="skipToPersonalCenter"
+                >
+                  <DropdownMenuItem class="drop-menu-item">
+                    <BadgeCheck />
+                    个人资料
+                  </DropdownMenuItem>
+                </router-link>
 
-                    <DropdownMenuItem class="drop-menu-item" @click="logout()">
-                      <LogOut />
-                      退出
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-        </Sidebar>
-      </SidebarProvider>
-    </div>
+                <DropdownMenuItem class="drop-menu-item" @click="logout()">
+                  <LogOut />
+                  退出
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   </div>
   <div class="main-menu">
     <RouterLink to="/">
@@ -337,6 +327,20 @@ function skipRedirect(item: any) {
 </template>
 
 <style lang="scss" scoped>
+.sidebar-trigger {
+  position: absolute;
+  z-index: 5;
+  width: 1rem;
+  height: 4rem;
+  background-color: white;
+  border-radius: 2rem;
+  top: 40%;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transition: all 0.3s;
+}
 .dot {
   position: absolute;
   top: 41%;
@@ -365,6 +369,11 @@ function skipRedirect(item: any) {
   border-radius: 50%;
 }
 .frame {
+  &:hover {
+    .sidebar-trigger {
+      opacity: 1;
+    }
+  }
   color: var(--secondary-foreground);
   #sub-nav {
     border-top: 1px solid #e5e7eb;
@@ -596,8 +605,6 @@ function skipRedirect(item: any) {
     }
   }
   .sidebar {
-    width: 17vw;
-
     &__button {
       padding: 0;
       height: 100%;
@@ -654,9 +661,7 @@ function skipRedirect(item: any) {
     &-provider {
       height: 100vh;
     }
-    &-content {
-      width: 17vw;
-    }
+
     &-footer {
       .footer-user {
         li {
@@ -713,8 +718,6 @@ function skipRedirect(item: any) {
     }
   }
   .sidebar {
-    width: 17vw;
-
     &__button {
       padding: 0;
       height: 100%;
@@ -774,9 +777,9 @@ function skipRedirect(item: any) {
     &-provider {
       height: 100vh;
     }
-    &-content {
-      width: 17vw;
-    }
+    // &-content {
+    //   width: 17vw;
+    // }
     &-footer {
       .footer-user {
         height: 5.8rem;
@@ -796,5 +799,9 @@ function skipRedirect(item: any) {
       }
     }
   }
+}
+::-webkit-scrollbar {
+  width: 0.2rem;
+  height: 0.2rem;
 }
 </style>

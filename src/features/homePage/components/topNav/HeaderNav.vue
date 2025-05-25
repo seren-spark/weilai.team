@@ -14,6 +14,9 @@ const newIsScrolled = ref(false);
 const hasToken = ref(false); // 用于判断是否有token
 // 存储头像路径
 const avatarSrc = ref("/src/assets/img/defaultAvatar.png");
+const userInfo = ref({
+  name: "",
+});
 
 // 控制body滚动
 const setBodyOverflow = (hidden: boolean) => {
@@ -35,6 +38,13 @@ const handleLinkClick = (linkName: string) => {
   setTimeout(() => {
     activeLink.value = null;
   }, 2000);
+  // 判断是否点击的是“关于我们”，如果是则跳转到Develop组件对应的位置
+  if (linkName === "about") {
+    const developComponent = document.getElementById("develop-component");
+    if (developComponent) {
+      developComponent.scrollIntoView({ behavior: "smooth" });
+    }
+  }
 };
 
 const toggleMobileMenu = () => {
@@ -61,6 +71,7 @@ onMounted(async () => {
       const res = await apiClient.get(`user/getUserInfoByUserId/${userId}`);
       if (res.data?.headPortrait) {
         avatarSrc.value = res.data.headPortrait;
+        userInfo.value.name = res.data.name;
         console.log(avatarSrc.value);
       }
     } catch (error) {
@@ -73,16 +84,26 @@ onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
   setBodyOverflow(false); // 组件卸载时恢复滚动
 });
+
+const mobileMenuLinks = ref([
+  { name: "blog", to: "/community/blog/hot" },
+  { name: "source", to: "/community/brainstorm/hot" },
+  { name: "notice", to: "/community/notice" },
+  { name: "forum", to: "/community/discussion/hot" },
+  { name: "about", to: "/about" },
+]);
 </script>
 
 <template>
   <div class="navCon" :class="{ scrolled: isScrolled }">
-    <div class="logo">
-      <img src="/src/assets/img/homePage/logo.png" alt="" />
-    </div>
+    <a href="/">
+      <div class="logo">
+        <img src="/src/assets/img/homePage/logo.png" alt="" />
+      </div>
+    </a>
     <div class="navLink">
       <nav>
-        <RouterLink to="/">
+        <a href="/">
           <div
             class="homePage link type--C"
             :class="{ active: activeLink === 'homePage' }"
@@ -92,7 +113,7 @@ onUnmounted(() => {
             <div class="button__drow1"></div>
             <div class="button__drow2"></div>
           </div>
-        </RouterLink>
+        </a>
         <RouterLink to="/community/blog/hot">
           <div
             class="blog link type--C"
@@ -150,10 +171,11 @@ onUnmounted(() => {
       </nav>
     </div>
     <div v-if="hasToken">
-      <RouterLink to="/personalCenter/userInfo">
+      <RouterLink to="/personalCenter/userInfo" class="personMessage">
         <div class="personCenter">
           <img :src="avatarSrc || '/public/defaultAvatar.png'" alt="" />
         </div>
+        <div class="personCenterName">{{ userInfo.name }}</div>
       </RouterLink>
     </div>
     <div v-else>
@@ -195,14 +217,7 @@ onUnmounted(() => {
     <div class="mobile-menu-content">
       <nav>
         <div
-          v-for="(link, index) in [
-            { name: 'homePage', to: '/' },
-            { name: 'blog', to: '/community/blog/hot' },
-            { name: 'source', to: '/community/brainstorm/hot' },
-            { name: 'notice', to: '/community/notice' },
-            { name: 'forum', to: '/community/discussion/hot' },
-            { name: 'about', to: '/about' },
-          ]"
+          v-for="(link, index) in mobileMenuLinks"
           :key="index"
           class="mobile-menu-link"
           :class="{ active: activeLink === link.name }"
@@ -215,17 +230,15 @@ onUnmounted(() => {
         >
           <span class="mobile-menu-text">
             {{
-              link.name === "homePage"
-                ? "首页"
-                : link.name === "blog"
-                  ? "博客"
-                  : link.name === "source"
-                    ? "头脑风暴"
-                    : link.name === "notice"
-                      ? "公告"
-                      : link.name === "forum"
-                        ? "交流"
-                        : "关于我们"
+              link.name === "blog"
+                ? "博客"
+                : link.name === "source"
+                  ? "头脑风暴"
+                  : link.name === "notice"
+                    ? "公告"
+                    : link.name === "forum"
+                      ? "交流"
+                      : "关于我们"
             }}
           </span>
         </div>
@@ -245,9 +258,17 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
+.personMessage {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  .personCenterName {
+    color: #fff;
+  }
+}
 .mobile-avatar {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   margin: 1rem auto;
   display: block;
@@ -407,9 +428,12 @@ onUnmounted(() => {
   background-color: transparent;
   transition: all 0.3s ease;
   .personCenter {
-    width: 60px;
-    height: 60px;
+    border: 3px solid #ffffff;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
+    margin-right: 15px;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
     img {
       width: 100%;
       height: 100%;
@@ -419,18 +443,21 @@ onUnmounted(() => {
   }
 
   &.scrolled {
-    height: 5rem;
+    height: 4.7rem;
     background-color: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
     .link {
       color: black !important;
     }
+    .personCenterName {
+      color: black !important;
+    }
   }
 
   .logo {
-    width: 5.4rem;
-    height: 4.5rem;
+    width: 5rem;
+    height: 4.2rem;
     margin-right: 3rem;
     transition: all 0.3s ease;
 
@@ -443,7 +470,7 @@ onUnmounted(() => {
   .navLink {
     width: 55rem;
     height: 5rem;
-    margin-right: 5rem;
+    margin-right: 3.5rem;
 
     nav {
       width: 45rem;

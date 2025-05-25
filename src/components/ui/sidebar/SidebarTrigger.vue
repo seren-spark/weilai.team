@@ -3,13 +3,14 @@ import type { HTMLAttributes } from "vue";
 import Button from "@/components/ui/button/Button.vue";
 import { cn } from "@/lib/utils";
 import { PanelLeft } from "lucide-vue-next";
+import { ChevronRight, ChevronLeft } from "lucide-vue-next";
 import { useSidebar } from "./utils";
 
 const props = defineProps<{
   class?: HTMLAttributes["class"];
 }>();
 
-const { toggleSidebar } = useSidebar();
+const { toggleSidebar, open } = useSidebar();
 </script>
 
 <template>
@@ -19,8 +20,20 @@ const { toggleSidebar } = useSidebar();
     size="icon"
     :class="cn('h-7 w-7', props.class)"
     @click="toggleSidebar"
+    class="right-[-4%]"
+    v-if="open"
   >
-    <PanelLeft />
-    <span class="sr-only">Toggle Sidebar</span>
+    <ChevronLeft class="text-base" />
+  </Button>
+  <Button
+    data-sidebar="trigger"
+    variant="ghost"
+    size="icon"
+    :class="cn('h-7 w-7', props.class)"
+    @click="toggleSidebar"
+    class="right-[-8%]"
+    v-else
+  >
+    <ChevronRight class="font-weigth-bold" />
   </Button>
 </template>
