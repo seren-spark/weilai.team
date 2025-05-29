@@ -13,7 +13,8 @@ const apiClient: AxiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+import { useAlert } from "@/composables/useAlert";
+const { showAlert } = useAlert();
 // 添加请求拦截器
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -41,6 +42,18 @@ apiClient.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    const currentPath = router.currentRoute.value.path; //  获取当前路径
+    const token = getLocalStorageWithExpire("token");
+    let { message } = error;
+    if (message == "Network Error") {
+      message = "网络错误";
+    } else if (message.includes("timeout")) {
+      message = "系统接口请求超时";
+    } else if (message.includes("Request failed with status code")) {
+      message = "系统接口" + message.substr(message.length - 3) + "异常";
+    }
+
+    showAlert(message, "error");
     return Promise.reject(error);
   },
 );
