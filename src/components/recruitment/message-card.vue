@@ -2,7 +2,6 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ref } from "vue";
-import { interviewStatus } from "@/types/recruitmentType";
 import {
   getResumeById,
   getCommentByInterviewRecordId,
@@ -18,7 +17,7 @@ interface IProp {
   InterviewAddress: string;
   InterviewRound: string;
   InterviewName: string;
-  InterviewStatus: interviewStatus;
+  InterviewStatus: string;
   InterviewId: string;
   InterviewOfficerFirst: {
     name: string;
@@ -47,7 +46,7 @@ const dateTime = ref({
 const InterviewRecordId = ref(props.cardMessage.InterviewId);
 
 const isShowButton = ref(1);
-const theInterviewStatus = props.cardMessage.InterviewStatus.toString();
+const theInterviewStatus = props.cardMessage.InterviewStatus;
 
 if (["待面试", "待反馈"].includes(theInterviewStatus)) {
   isShowButton.value = 2;

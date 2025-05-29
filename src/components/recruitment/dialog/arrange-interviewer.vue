@@ -1,435 +1,265 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <template>
   <Teleport to="body">
-    <div v-if="props.isOpen" class="outer" @click="close($event)"></div>
-    <transition name="fade">
-      <div v-if="isOpen" class="arrange-interviewer-wrapper">
-        <div class="arrange-interviewer">
-          <div class="title text-center">
-            <p>安排面试</p>
-          </div>
+    <div v-if="isOpen" class="outer" @click="emit('close')">
+      <div v-if="isOpen" class="arrange-interviewer-wrapper" @click.stop>
+        <form class="w-2/3 space-y-6 form" @submit="onSubmit">
+          <FormField
+            v-slot="{ componentField }"
+            name="applyUserName"
+            :validate-on-blur="true"
+          >
+            <FormItem>
+              <FormLabel>申请人</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="请输入申请人姓名"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            v-slot="{ componentField }"
+            name="place"
+            :validate-on-blur="true"
+          >
+            <FormItem>
+              <FormLabel>面试地点</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="请输入面试地点"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            v-slot="{ componentField }"
+            name="date"
+            :validate-on-blur="true"
+          >
+            <FormItem>
+              <FormLabel></FormLabel>
+              <FormControl>
+                <DatePicker
+                  :model-value="componentField.modelValue"
+                  @update:model-value="componentField.onChange"
+                  @blur="componentField.onBlur"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            v-slot="{ componentField }"
+            name="startTime"
+            :validate-on-blur="true"
+          >
+            <FormItem>
+              <FormLabel>开始时间</FormLabel>
+              <FormControl>
+                <TimePicker
+                  :model-value="componentField.modelValue"
+                  @update:model-value="componentField.onChange"
+                  @blur="componentField.onBlur"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            v-slot="{ componentField }"
+            name="endTime"
+            :validate-on-blur="true"
+          >
+            <FormItem>
+              <FormLabel>结束时间</FormLabel>
+              <FormControl>
+                <TimePicker
+                  :model-value="componentField.modelValue"
+                  @update:model-value="componentField.onChange"
+                  @blur="componentField.onBlur"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
 
-          <form @submit.prevent="handleSubmit">
-            <!-- 申请人字段 -->
-            <FormField name="ApplyUser" class="ApplyUser">
-              <FormItem>
-                <FormLabel class="m-3 m-b-2 input-title">申请人</FormLabel>
-                <FormControl>
-                  <Input v-model="formData.ApplyUser as string" class="input-item" placeholder="填写申请人" />
-                </FormControl>
-                <span class="form-message">{{ errors.ApplyUser }}</span>
-              </FormItem>
-            </FormField>
-            <!-- 面试地点字段 -->
-            <FormField name="place" class="place">
-              <FormItem>
-                <FormLabel class="m-3 input-title">面试地点</FormLabel>
-                <FormControl>
-                  <Input v-model="formData.place as string" class="input-item" placeholder="安排面试地点" />
-                </FormControl>
-                <span class="form-message">{{ errors.place }}</span>
-              </FormItem>
-            </FormField>
-            <!-- 面试官字段 -->
-            <FormField name="interviewer" class="interviewer">
-              <FormItem class="flex flex-col">
-                <FormLabel class="m-3 input-title">面试官</FormLabel>
-                <Popover>
-                  <PopoverTrigger as-child>
-                    <FormControl>
-                      <Button variant="outline" role="combobox" :class="[
-                        'pl-3 text-left font-normal font-control',
-                        formData.interviewer.length === 0 &&
-                        'text-muted-foreground',
-                      ]">
-                        {{
-                          formData.interviewer.length > 0
-                            ? formData.interviewer
-                              .map(
-                                (interviewer) =>
-                                  choices?.find(
-                                    (choice) => choice?.value === interviewer,
-                                  )?.label || "",
-                              )
-                              .join(" | ")
-                            : "选择面试官"
-                        }}
-                        <ChevronsUpDownIcon class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent class="p-0" align="start">
-                    <Command>
-                      <CommandInput v-model="searchName" class="input-item" placeholder="搜索面试官" />
-                      <CommandList>
-                        <CommandEmpty class="font-control">未找到该面试官</CommandEmpty>
-                        <CommandGroup>
-                          <CommandItem v-for="choice in choices" :key="choice.value" :value="choice.label" :class="{
-                            'interviewer-selected':
-                              formData.interviewer.includes(choice.value),
-                          }" @select="
-                              () =>
-                                handleInterviewerChange(choice.value, choice.id)
-                            ">
-                            <CheckIcon :class="[
-                              'mr-2 h-4 w-4',
-                              formData.interviewer.includes(choice.value)
-                                ? 'opacity-100'
-                                : 'opacity-50',
-                            ]" />
-                            {{ choice.label }}
-                          </CommandItem>
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <span class="form-message">{{ errors.interviewer }}</span>
-              </FormItem>
-            </FormField>
-            <!-- 面试日期字段 -->
-            <FormField name="date" class="date">
-              <FormItem class="flex flex-col">
-                <FormLabel class="m-3 input-title">面试日期 </FormLabel>
-                <Popover>
-                  <PopoverTrigger as-child>
-                    <FormControl>
-                      <Button variant="outline" :class="[
-                        'pl-3 text-left font-normal font-control',
-                        !formData.date && 'text-muted-foreground',
-                      ]">
-                        {{
-                          formData.date
-                            ? format(
-                              new Date(
-                                formData.date.year,
-                                formData.date.month - 1,
-                                formData.date.day,
-                              ),
-                              "yyyy-MM-dd",
-                            )
-                            : `选择面试日期`
-                        }}
+          <FormField
+            v-slot="{ componentField }"
+            name="interviewer"
+            :validate-on-blur="true"
+          >
+            <FormItem>
+              <FormLabel>面试官</FormLabel>
+              <FormControl>
+                <SearchSelect
+                  v-model="componentField.modelValue"
+                  :selected-list="props.interviewers"
+                  empty-message="没有找到面试官"
+                  @update:model-value="componentField.onChange"
+                  @blur="componentField.onBlur"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
 
-
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent class="w-auto p-0" align="start">
-                    <Calendar v-model="formData.date as any" :on-date-change="handleDateUpdate" mode="single"
-                      locale="zh-CN" />
-                  </PopoverContent>
-                </Popover>
-                <span class="form-message">{{ errors.date }}</span>
-              </FormItem>
-            </FormField>
-            <!-- 开始时间字段 -->
-            <FormField name="startTime" class="startTime">
-              <FormItem>
-                <FormLabel class="m-3 input-title">开始时间</FormLabel>
-                <FormControl>
-                  <Input v-model="formData.startTime as string" class="input-item" placeholder="填写开始时间" />
-                </FormControl>
-                <span class="form-message">{{ errors.startTime }}</span>
-              </FormItem>
-            </FormField>
-            <!-- 结束时间字段 -->
-            <FormField name="endTime" class="endTime">
-              <FormItem>
-                <FormLabel class="m-3 input-title">结束时间</FormLabel>
-                <FormControl>
-                  <Input v-model="formData.endTime as string" class="input-item" placeholder="填写结束时间" />
-                </FormControl>
-                <span class="form-message">{{ errors.endTime }}</span>
-              </FormItem>
-            </FormField>
-            <Button class="btn-style arrange-submit" type="submit">保存</Button>
-            <Button class="btn-style arrange-cancel" @click="emit('close')">取消</Button>
-          </form>
-        </div>
+          <Button type="submit" class="arrange-submit btn-style"> 提交 </Button>
+          <Button
+            class="cancel arrange-cancel btn-style"
+            @click="emit('close')"
+          >
+            取消
+          </Button>
+        </form>
       </div>
-    </transition>
+    </div>
   </Teleport>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineEmits, watchEffect, watch, onMounted } from "vue";
+import { Button } from "@/components/ui/button";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { z } from "zod"; // 引入 Zod
-import type { DateValue } from "@internationalized/date";
-import {
-  getAllInterviewer,
-  arrangeInterviewer,
-} from "@/composables/useRecruitmentRequest";
-import { useRequest } from "vue-request";
+import { DatePicker, TimePicker, SearchSelect } from "@/components/common";
+import { watch } from "vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import * as z from "zod";
 import { useAlert } from "@/composables/useAlert";
-
 const { showAlert } = useAlert();
-//导出刷新
-const emit = defineEmits(["close", "refresh"]);
-// 定义类型别名
-type FormDataType = {
-  ApplyUser: string;
-  place: string;
-  interviewer: string[];
-  date: DateValue | null;
-  startTime: string;
-  endTime: string;
-};
-
-type ErrorType = {
-  ApplyUser: string;
-  place: string;
-  interviewer: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-};
-
-type ChoiceType = { label: string; value: string; id: string };
-
-const close = (event: Event) => {
-  // 点击遮罩层关闭
-  if (event.target === event.currentTarget) {
-    emit("close");
-  }
-};
 
 const props = defineProps<{
   isOpen: boolean;
   id: string;
   name: string;
+  interviewers: Array<{ id: string; label: string }>;
 }>();
+const emit = defineEmits<{
+  (e: "close" | "refresh"): void;
+  (
+    e: "submit",
+    value: {
+      userId: string;
+      place: string;
+      startTime: string;
+      endTime: string;
+      firstHr: string | "";
+      secondHr: string | "";
+      thirdHr: string | "";
+    },
+  ): void;
+}>();
+// 自定义校验函数
+const validateTimeRange = (startTime: string, endTime: string) => {
+  const start = new Date(`1970-01-01T${startTime}`);
+  const end = new Date(`1970-01-01T${endTime}`);
+  const diffInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
 
-
-// 定义表单数据结构
-const formData = reactive<FormDataType>({
-  ApplyUser: props.name,
-  place: "",
-  interviewer: [],
-  date: null,
-  startTime: "",
-  endTime: "",
-});
-
-// 定义错误对象
-const errors = reactive<ErrorType>({
-  ApplyUser: "",
-  place: "",
-  interviewer: "",
-  date: "",
-  startTime: "",
-  endTime: "",
-});
-
-// 重置表单和错误信息
-
-const resetFormAndErrors = () => {
-  Object.keys(formData).forEach((key) => {
-    if (key === "date") {
-      (formData as any)[key] = null;
-    } else if (key === "interviewer") {
-      (formData as any)[key] = [];
-    } else {
-      (formData as any)[key] = "";
-    }
-  });
-  Object.keys(errors).forEach((key) => {
-    (errors as any)[key] = "";
-  });
+  return diffInMinutes >= 20 && diffInMinutes <= 60;
 };
-
-// 当 props 改变时清空所有表单项，没有变化时保留数据
-watch(
-  () => props.isOpen,
-  () => {
-    if (!props.isOpen) {
-      resetFormAndErrors();
-    }
-    formData.ApplyUser = props.name;
-  }
+const formSchema = toTypedSchema(
+  z
+    .object({
+      applyUserName: z
+        .string({
+          required_error: "用户名不能为空",
+          invalid_type_error: "用户名必须是字符串",
+        })
+        .min(2, { message: "用户名至少需要2个字符" })
+        .max(50, { message: "用户名最多不能超过50个字符" }),
+      place: z
+        .string({
+          required_error: "面试地点不能为空",
+          invalid_type_error: "面试地点必须是字符串",
+        })
+        .min(2, { message: "面试地点至少需要2个字符" })
+        .max(50, { message: "面试地点最多不能超过50个字符" }),
+      date: z.object({
+        year: z.number().min(2025, { message: "年份必须大于2025" }),
+        month: z.number().min(1, { message: "月份必须大于0" }),
+        day: z.number().min(1, { message: "日期必须大于0" }),
+      }),
+      startTime: z.string({
+        required_error: "开始时间不能为空",
+        invalid_type_error: "开始时间必须是字符串",
+      }),
+      endTime: z
+        .string({
+          required_error: "结束时间不能为空",
+          invalid_type_error: "结束时间必须是字符串",
+        })
+        .min(2, { message: "结束时间至少需要2个字符" })
+        .max(50, { message: "结束时间最多不能超过50个字符" }),
+      interviewer: z
+        .array(
+          z.object({
+            id: z.string().or(z.number().transform(String)),
+            label: z.string(),
+          }),
+        )
+        .min(2, { message: "至少选择2位面试官" })
+        .max(3, { message: "最多选择3位面试官" }),
+    })
+    .refine((data) => validateTimeRange(data.startTime, data.endTime), {
+      message: "结束时间必须在开始时间后至少20分钟,至多1小时",
+      path: ["endTime"],
+    }),
 );
 
-// 定义 Zod 模式
-const formSchema = z
-  .object({
-    ApplyUser: z.string().min(1, "申请人不能为空"),
-    place: z.string().min(1, "面试地点不能为空"),
-    interviewer: z
-      .array(z.string())
-      .min(2, "请选择至少两个面试官")
-      .max(3, "最多选择三个面试官"),
-    date: z
-      .object({
-        year: z.number(),
-        month: z.number(),
-        day: z.number(),
-      })
-      .nullable()
-      .refine((date) => date !== null, "请选择面试日期"),
-    startTime: z
-      .string()
-      .min(1, "开始时间不能为空")
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "开始时间必须是有效的24小时制时间"),
-    endTime: z
-      .string()
-      .min(1, "结束时间不能为空")
-      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "结束时间必须是有效的24小时制时间"),
-  })
-  .superRefine(({ startTime, endTime }, ctx) => {
-    const [startHour, startMinute] = startTime.split(":").map(Number);
-    const [endHour, endMinute] = endTime.split(":").map(Number);
-
-    const startDate = new Date();
-    startDate.setHours(startHour, startMinute, 0, 0);
-
-    const endDate = new Date();
-    endDate.setHours(endHour, endMinute, 0, 0);
-
-    const timeDifference = endDate.getTime() - startDate.getTime();
-
-    if (timeDifference <= 20 * 60 * 1000) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "结束时间必须在开始时间之后且间隔至少20分钟",
-        path: ["endTime"],
-      });
-    }
-  });
-
-const choices = ref<ChoiceType[]>();
-const searchName = ref("");
-
-// 从后端拿到面试官信息
-onMounted(() => {
-  const { data, error } = useRequest(() =>
-    getAllInterviewer({ pageNo: 1, pageSize: 100, name: searchName.value })
-  );
-
-  watchEffect(() => {
-    if (error.value) {
-      console.error("获取面试官信息出错:", error.value);
-      showAlert("获取面试官信息失败，请稍后重试", "error");
-    }
-    if (data.value?.data.code === 200) {
-      choices.value = data.value?.data.data.data.map(
-        (item: { id: string; name: string }) => ({
-          label: item.name,
-          value: item.name,
-          id: item.id,
-        })
-      );
-    }
-  });
+const { handleSubmit, setValues } = useForm({
+  validationSchema: formSchema,
 });
 
-const selectedInterviewersIds = ref<string[]>([]);
-
-// 获取到选择的面试官的 id
-const handleInterviewerChange = (value: string, id: string) => {
-  if (formData.interviewer.includes(value)) {
-    formData.interviewer = formData.interviewer.filter(
-      (interviewer) => interviewer !== value
-    );
-    selectedInterviewersIds.value = selectedInterviewersIds.value.filter(
-      (interviewerId) => interviewerId !== id
-    );
-  } else {
-    if (formData.interviewer.length < 3) {
-      formData.interviewer.push(value);
-      selectedInterviewersIds.value.push(id);
-    } else {
-      showAlert("最多选择三个面试官", "error");
-    }
-  }
-};
-
-// 处理日期更新
-const handleDateUpdate = (value: DateValue | null) => {
-  formData.date = value;
-};
-
-const handleSubmit = () => {
-  // 使用 Zod 进行校验
-  const result = formSchema.safeParse(formData);
-
-  if (result.success) {
-    console.log("表单数据有效:", result.data);
-    // 提交表单数据
-    const { data, error } = useRequest(() =>
-      arrangeInterviewer({
-        userId: props.id,
-        startTime: `${formData.date} ${formData.startTime}`,
-        endTime: `${formData.date} ${formData.endTime}`,
-        place: formData.place,
-        firstHr: selectedInterviewersIds.value[0],
-        secondHr: selectedInterviewersIds.value[1],
-        thirdHr: selectedInterviewersIds.value[2],
-      })
-    );
-
-    watchEffect(() => {
-      if (error.value) {
-        console.error("面试安排出错:", error.value);
-        showAlert("面试安排失败，请稍后重试", "error");
-      }
-      if (data.value?.data.code === 200) {
-        showAlert("面试安排成功", "pass");
-        emit("close");
-        // 清空错误信息
-        resetFormAndErrors();
-        emit("refresh"); // 触发刷新事件
-
-      } else {
-        showAlert(data?.value?.data.message || "面试安排失败", "error");
-      }
-    });
-  } else {
-    console.error("表单数据无效:", result.error);
-    // 处理校验错误，例如显示错误消息
-    result.error.issues.forEach((issue) => {
-      errors[issue.path[0] as keyof ErrorType] = issue.message;
-    });
-  }
-};
+const onSubmit = handleSubmit((values) => {
+  emit("submit", {
+    userId: props.id,
+    place: values.place,
+    startTime: `${values.date.year}-${String(values.date.month).padStart(2, "0")}-${String(values.date.day).padStart(2, "0")} ${values.startTime}`,
+    endTime: `${values.date.year}-${String(values.date.month).padStart(2, "0")}-${String(values.date.day).padStart(2, "0")} ${values.endTime}`,
+    firstHr: values.interviewer[0].id,
+    secondHr: values.interviewer[1].id,
+    thirdHr: values.interviewer[2]?.id || "",
+  });
+  showAlert("Success", "pass");
+  emit("close");
+  emit("refresh");
+});
+watch(props, () => {
+  setValues({
+    applyUserName: props.name,
+  });
+});
 </script>
 
 <style lang="scss" scoped>
+.text-destructive {
+  color: var(--destructive-foreground);
+}
+
 .interviewer-selected {
   background-color: var(--accent);
   border-left: 3px solid var(--accent);
   padding-left: 5px;
   margin-left: -5px;
-}
-
-.btn-style {
-  width: 80%;
-  margin: 0 auto;
-  padding: 10px;
-  border-radius: var(--radius);
-  border: solid 1px var(--input);
-  cursor: pointer;
 }
 
 .arrange-interviewer-wrapper {
@@ -450,45 +280,16 @@ const handleSubmit = () => {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.arrange-interviewer {
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   width: 100%;
   background-color: var(--popover);
   height: 100%;
   position: relative;
   overflow-y: scroll;
 }
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  width: 100%;
-}
-
-.form-message {
-  color: var(--destructive-foreground);
-  font-size: 12px;
-}
-
-.input-title {
-  font-size: 0.8rem;
-}
-
-.input-item {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-
-  &::placeholder {
-    color: #ccc;
-    font-size: 0.7rem;
-  }
-}
-
-.font-control {
-  font-size: 0.7rem;
-}
-
 
 .arrange-submit {
   position: relative;
@@ -501,15 +302,5 @@ form {
   position: relative;
   border: 1px solid #ccc;
   font-size: 0.8rem;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  transform: translateY(-100%);
 }
 </style>

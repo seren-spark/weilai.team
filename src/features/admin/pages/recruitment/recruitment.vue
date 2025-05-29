@@ -8,16 +8,17 @@ import {
   ShortcutOperation,
   NewNoData,
 } from "@/components/recruitment";
-import { useRequest } from "vue-request";
-import {
-  getMyInterviewRecord,
-  getInterviewCount,
-} from "@/composables/useRecruitmentRequest";
 import { interviewStatus, interviewStatusMap } from "@/types/recruitmentType";
 // 引入vue函数
-import { ref, watch } from "vue";
+import { ref, watch, onMounted ,computed} from "vue";
+import { useApiRequest } from "@/utils/httpClient";
+import RecruitmentApi from "@/constants/recruitment-apis";
+import type { ApiResponseData } from "@/types/api-response";
+import { ArrangeInterviewer } from "@/components/recruitment";
+import { useAlert } from "@/composables/useAlert";
 
-// 定义切换组件的基本信息 传给子组件
+// 解构 showAlert 方法
+const { showAlert } = useAlert();
 
 //切换框的数据展示状态参量
 const toggleShowStatus = ref<string>("1");
@@ -43,119 +44,74 @@ const toggleItems = ref([
 ]);
 
 // 卡片信息展示
-const messageCard = ref([]);
-// 确保所有 id 都是字符串
-const normalizeInterviewCard = (card: any) => ({
-  ...card,
-  InterviewOfficerSecond: {
-    ...card.InterviewOfficerSecond,
-    id: card.InterviewOfficerSecond.id || "",
-  },
-  InterviewOfficerThird: {
-    ...card.InterviewOfficerThird,
-    id: card.InterviewOfficerThird.id || "",
-  },
-});
-const refreshPageParams = ref(false);
-watch(
-  [toggleShowStatus, refreshPageParams],
-  ([newStatus]) => {
-    const { data, error, loading } = useRequest(() =>
-      getMyInterviewRecord({ pageNo: 1, pageSize: 100, status: newStatus }),
-    );
-    watch(
-      [data, error, loading],
-      ([newData, newError, loading]) => {
-        console.log(loading);
-        if (newData?.data.data.data) {
-          messageCard.value = newData.data.data.data.map((card: any) => {
-            return {
-              userId: card.userId,
-              startTime: card.startTime,
-              endTime: card.endTime,
-              InterviewAddress: card.place,
-              InterviewRound: card.round,
-              InterviewName: card.name,
-              InterviewStatus:
-                interviewStatusMap[card.interviewStatus as interviewStatus],
-              InterviewId: card.id,
-              InterviewOfficerFirst: {
-                name: card.firstHr?.name,
-                id: card.firstHr?.id || "",
-              },
-              InterviewOfficerThird: {
-                name: card.thirdHr?.name,
-                id: card.thirdHr?.id || "",
-              },
-              InterviewOfficerSecond: {
-                name: card.secondHr?.name,
-                id: card.secondHr?.id || "",
-              },
-            };
-          });
-        }
-        if (newError) {
-          console.log(newError);
-        }
-        // if (loading) {
-        //   console.log(loading);
-        // }
-        return;
+const messageCard = ref<Record<string, any>[]>([]);
+const refreshPage = ref(false);
+const messageCardMap = computed(() => {
+  return messageCard.value.map((card: any) => {
+    return {
+      ApplyUserId: card.userId,
+      startTime: card.startTime,
+      endTime: card.endTime,
+      InterviewAddress: card.place,
+      InterviewRound: card.round,
+      InterviewName: card.name,
+      InterviewStatus: interviewStatusMap[card.interviewStatus as interviewStatus],
+      InterviewId: card.id,
+      InterviewOfficerFirst: {
+        name: card.firstHr?.name,
+        id: card.firstHr?.id || "",
       },
-      { immediate: true },
-    );
-  },
-  {
-    immediate: true,
-  },
-);
-//获取待安排和已录取的人数
-const fetchAllInterviewCount = () => {
-  const {
-    data: countOne,
-    error: errorOne,
-    loading: loadingOne,
-  } = useRequest(() => getInterviewCount({ status: 0 }));
-  watch(
-    [countOne, errorOne, loadingOne],
-    ([newData, newError, loading]) => {
-      console.log(loading);
-      if (newData?.data.data) {
-        quickShowItems.value[0].number = newData.data.data;
-      }
-      if (newError) {
-        console.log(newError);
-      }
-      // if (loading) {
-      //   console.log(loading);
-      // }
-      return;
-    },
-    { immediate: true },
-  );
-  const {
-    data: countTwo,
-    error: errorTwo,
-    loading: loadingTwo,
-  } = useRequest(() => getInterviewCount({ status: 2 }));
-  watch(
-    [countTwo, errorTwo, loadingTwo],
-    ([newData, newError, loading]) => {
-      console.log(loading);
-      if (newData?.data.data) {
-        quickShowItems.value[1].number = newData.data.data;
-      }
-      if (newError) {
-        console.log(newError);
-      }
-      // if (loading) {
-      //   console.log(loading);  }
-      return;
-    },
-    { immediate: true },
-  );
+      InterviewOfficerThird: {
+        name: card.thirdHr?.name,
+        id: card.thirdHr?.id || "",
+      },
+      InterviewOfficerSecond: {
+        name: card.secondHr?.name,
+        id: card.secondHr?.id || "",
+      },
+    };
+  });
+});
+
+const {data:aboutMeData,fetchData:fetchAboutMeData} = useApiRequest<ApiResponseData<Record<string, any>>>({
+  url: RecruitmentApi.getMyInterviewRecord.split(" ")[0],
+  method: RecruitmentApi.getMyInterviewRecord.split(" ")[1],
+});
+const getMyInterviewRecord = async (status: string) => {
+  try {
+    await fetchAboutMeData({
+      params: {
+        pageNo: 1,
+        pageSize: 100,
+        status: status,
+      },
+    });
+    if (aboutMeData.value?.data?.data) {
+      messageCard.value = aboutMeData.value.data.data;
+    } else {
+      messageCard.value = [];
+    }
+  } catch (err) {
+    showAlert("获取面试记录失败", "error");
+    console.error("获取面试记录失败:", err);
+  }
 };
-fetchAllInterviewCount();
+watch(
+  refreshPage,
+  () => {
+    getMyInterviewRecord(toggleShowStatus.value);
+  }
+);
+// 监听切换框的状态变化
+watch(
+  toggleShowStatus,
+  () => {
+    getMyInterviewRecord(toggleShowStatus.value);
+  }
+);
+
+
+//获取待安排和已录取的人数
 const quickShowItems = ref([
   {
     label: "待安排",
@@ -166,24 +122,149 @@ const quickShowItems = ref([
     number: 0,
   },
 ]);
+
+const { data: toBeArrangedCount, fetchData: fetchtoBeArrangedCount } =
+  useApiRequest<ApiResponseData<number>>({
+    url: RecruitmentApi.getCount.split(" ")[0].replace("{status}", "0"),
+    method: RecruitmentApi.getCount.split(" ")[1],
+  });
+const { data: admittedCount, fetchData: fetchAdmittedCount } =
+  useApiRequest<ApiResponseData<number>>({
+    url: RecruitmentApi.getCount.split(" ")[0].replace("{status}", "2"),
+    method: RecruitmentApi.getCount.split(" ")[1],
+  });
+const getCount = async () => {
+  try {
+    await fetchtoBeArrangedCount();
+    await fetchAdmittedCount();
+    if (toBeArrangedCount.value !== null && admittedCount.value !== null) {
+    quickShowItems.value[0].number =
+        toBeArrangedCount.value.data || 0;
+      quickShowItems.value[1].number =
+        admittedCount.value.data || 0;
+    } else {
+      showAlert("获取人数失败", "waring");
+    }
+  } catch (err) {
+     showAlert("获取待安排人数时出错:", "error");
+    console.error("获取待安排人数时出错:", err);
+  }
+};
+
+const { data: nameList, fetchData: getName } = useApiRequest<
+  ApiResponseData<{ id: string; name: string }[]>
+>({
+  url: RecruitmentApi.getName.split(" ")[0],
+  method: RecruitmentApi.getName.split(" ")[1],
+});
+// 获取面试官列表
+const { data: interviewerList, fetchData: getInterviewerList } = useApiRequest<
+  ApiResponseData<any>
+>({
+  url: RecruitmentApi.getAllInterviewer.split(" ")[0],
+  method: RecruitmentApi.getAllInterviewer.split(" ")[1],
+  params: {
+    pageNo: 1,
+    pageSize: 100,
+  },
+});
+// 安排面试
+const arrangeDialogIsOpen = ref<boolean>(false);
+const arrangeId = ref<string>("");
+const arrangeName = ref<string>("");
+const interviewers = ref<{ id: string; label: string }[]>([]);
+const handleSendIdAndName = (id: string, name: string) => {
+  if (!interviewerList.value) {
+    showAlert("获取面试官信息失败", "error");
+    return;
+  }
+  interviewers.value = interviewerList.value.data?.data?.map((item: any) => {
+    return {
+      id: item.id,
+      label: item.name,
+    };
+  }) || [];
+  arrangeDialogIsOpen.value = true;
+  arrangeId.value = id;
+  arrangeName.value = name;
+};
+const refreshData = () => {
+  getName();
+  getCount();
+  getMyInterviewRecord(toggleShowStatus.value);
+};
+
+const {error: arrangeError, fetchData: fetchArrangeData} = useApiRequest<ApiResponseData<any>>({
+  url: RecruitmentApi.arrangeInterviewer.split(" ")[0],
+  method: RecruitmentApi.arrangeInterviewer.split(" ")[1],
+  headers: {
+    "Content-Type": "application/json",
+  }
+});
+const arrangeSubmit = async (data: any) => {
+  const { userId, place, startTime, endTime, firstHr, secondHr, thirdHr } = data;
+
+  await fetchArrangeData(
+    {
+      data: {
+        userId: userId,
+        place: place,
+        startTime: startTime,
+        endTime: endTime,
+        firstHr: firstHr,
+        secondHr: secondHr,
+        thirdHr: thirdHr,
+      },
+    }
+  );
+  if (arrangeError.value) {
+    showAlert("安排失败", "error");
+  } else {
+    showAlert("安排成功", "pass");
+    arrangeDialogIsOpen.value = false;
+    refreshData();
+  }
+
+
+};
+onMounted(() => {
+  getName();
+  getCount();
+  getMyInterviewRecord(toggleShowStatus.value);
+  getInterviewerList();
+});
 </script>
 
 <template>
+    <ArrangeInterviewer
+      :id="arrangeId"
+      :is-open="arrangeDialogIsOpen"
+      :name="arrangeName"
+      :interviewers="interviewers"
+      @close="arrangeDialogIsOpen = false"
+      @refresh="refreshData"
+      @submit="arrangeSubmit"
+    />
   <div class="main">
     <div class="left-side">
       <div
-        v-for="(item, index) in quickShowItems"
-        :key="index"
         class="quick-show"
       >
-        <QuickShowCard :quick-show-item="item"></QuickShowCard>
+       <QuickShowCard :quick-show-item="quickShowItems[0]"/>
+       <QuickShowCard :quick-show-item="quickShowItems[1]"/>
       </div>
 
       <div class="quick-control">
         <p class="quick-control-title">快捷操作</p>
         <div class="quick-control-content">
-          <ShortcutOperation class="quick-control-item" />
-          <ShortcutOperation class="quick-control-item" />
+          <ShortcutOperation
+            v-for="(item, index) in nameList?.data"
+            :id="item?.id"
+            :key="index"
+            class="quick-control-item"
+            :name="item?.name"
+            @send-id-and-name="handleSendIdAndName"
+          />
         </div>
       </div>
     </div>
@@ -198,7 +279,7 @@ const quickShowItems = ref([
         </div>
         <div class="main-content-show">
           <NewNoData
-            v-if="messageCard.length === 0"
+            v-if="messageCardMap.length === 0"
             style="
               width: 100%;
               height: 150px;
@@ -208,10 +289,10 @@ const quickShowItems = ref([
             "
           />
           <MessageCard
-            v-for="(item, index) in messageCard"
+            v-for="(item, index) in messageCardMap"
             :key="index"
-            :card-message="normalizeInterviewCard(item)"
-            @refresh-page="refreshPageParams = !refreshPageParams"
+            :card-message="item"
+            @refresh-page="refreshPage = !refreshPage"
           />
         </div>
       </div>
@@ -235,6 +316,7 @@ const quickShowItems = ref([
   padding: 2rem;
   @media screen and (min-width: 1300px) {
     grid-template-columns: 200px minmax(0, 1fr);
+    grid-template-columns: 200px minmax(0, 1fr);
   }
   @media screen and (max-width: 1100px) {
     grid-template-columns: 1fr;
@@ -247,6 +329,7 @@ const quickShowItems = ref([
   height: auto;
   background-color: var(--background);
   position: relative;
+  display: inline-flex;
   display: inline-flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -272,6 +355,7 @@ const quickShowItems = ref([
     padding: 10px;
     top: 30px;
     margin: 2rem 0;
+    scroll-behavior: smooth;
     .quick-control-title {
       font-size: 16px;
       font-weight: 500;
@@ -279,15 +363,18 @@ const quickShowItems = ref([
       margin-left: 10px;
     }
     .quick-control-content {
+      box-sizing: border-box;
+      padding: 10px;
+      width: 100%;
+      max-height: 240px;
+      overflow-y: auto;
+      overflow-x: hidden;
       position: relative;
       top: 20px;
-      width: 100%;
-      height: auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
       .quick-control-item {
-        width: 100%;
         min-height: 60px;
         margin-bottom: 10px;
       }
@@ -297,15 +384,6 @@ const quickShowItems = ref([
 
 //.endregion
 
-//.region 中间内容区
-// .content {
-//   width: 80%;
-//   background-color: var(--background);
-//   position: relative;
-//   top: 20px;
-//   left: 20px;
-//   border: none;
-// }
 .content-container {
   width: 100%;
   height: auto;

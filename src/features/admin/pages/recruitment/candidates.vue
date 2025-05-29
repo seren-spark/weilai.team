@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import {CandidatesConst} from "@/constants/recruitment-constant";
 import {
@@ -34,6 +35,9 @@ import type {
   IAllApplyUserDTO,
   IGradeData,
 } from "@/types/recruitmentType";
+import { useApiRequest } from "@/utils/httpClient";
+import RecruitmentApi from "@/constants/recruitment-apis";
+import type { ApiResponseData } from "@/types/api-response";
 import { interviewStatusMap } from "@/types/recruitmentType";
 import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
@@ -378,18 +382,78 @@ const refreshPage = () => {
   updateParameter.value = !updateParameter.value;
 };
 
+const {error: arrangeError, fetchData: fetchArrangeData} = useApiRequest<ApiResponseData<any>>({
+  url: RecruitmentApi.arrangeInterviewer.split(" ")[0],
+  method: RecruitmentApi.arrangeInterviewer.split(" ")[1],
+  headers: {
+    "Content-Type": "application/json",
+  }
+});
+const arrangeSubmit = async (data: any) => {
+  const { userId, place, startTime, endTime, firstHr, secondHr, thirdHr } = data;
+
+  await fetchArrangeData(
+    {
+      data: {
+        userId: userId,
+        place: place,
+        startTime: startTime,
+        endTime: endTime,
+        firstHr: firstHr,
+        secondHr: secondHr,
+        thirdHr: thirdHr,
+      },
+    }
+  );
+  if (arrangeError.value) {
+    showAlert("安排失败", "error");
+  } else {
+    showAlert("安排成功", "pass");
+    arrangeInterviewerDialog.value = false;
+    refreshPage();
+  }
+
+
+};
+// 获取面试官列表
+const { data: interviewerList, fetchData: getInterviewerList } = useApiRequest<
+  ApiResponseData<any>
+>({
+  url: RecruitmentApi.getAllInterviewer.split(" ")[0],
+  method: RecruitmentApi.getAllInterviewer.split(" ")[1],
+  params: {
+    pageNo: 1,
+    pageSize: 100,
+  },
+});
+
+const interviewers = ref<{ id: string; label: string }[]>([]);
+
+const getInterviewer = async () => {
+ await getInterviewerList();
+  if (interviewerList.value) {
+    interviewers.value = interviewerList.value.data.data.map((item: any) => ({
+      id: item.id,
+      label: item.name,
+    }));
+  }
+};
+
 const updateApplyUserInfo = ref(false);
 const arrangeInterviewerDialog = ref(false);
+
 </script>
 
 <template>
   <div class="content">
-    <ArrangeInterviewer
-      :id="currentArrangeInterviewId"
+        <ArrangeInterviewer
+     :id="currentArrangeInterviewId"
       :name="currentArrangeInterviewName"
       :is-open="arrangeInterviewerDialog"
+      :interviewers="interviewers"
       @close="arrangeInterviewerDialog = false"
       @refresh="refreshPage"
+      @submit="arrangeSubmit"
     />
     <UpdateApplyUserInfo
       :id="currentUpdateApplyUserId"
@@ -460,6 +524,7 @@ const arrangeInterviewerDialog = ref(false);
                 <Icon
                   icon="tabler:dots"
                   style="display: inline-block; font-size: 1rem; cursor: pointer;"
+                  @click="getInterviewer"
                 />
               </PopoverTrigger>
               <PopoverContent class="popover-content" style="z-index: 10;width: 10rem;">

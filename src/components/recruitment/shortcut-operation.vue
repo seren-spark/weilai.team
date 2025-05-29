@@ -1,10 +1,23 @@
 <script lang="ts" setup>
 import { Card } from "@/components/ui/card";
 import { Icon } from "@iconify/vue";
+const emit=defineEmits(["sendIdAndName"]);
+
+const props = defineProps<{
+  name:string | "";
+  id:string | "";
+}>();
+
+const emitIdAndName = () => {
+  emit("sendIdAndName", props.id, props.name);
+};
 </script>
 
 <template>
-  <Card class="shortcut-operation">
+  <Card
+    class="shortcut-operation"
+    @click="emitIdAndName"
+  >
     <div class="shortcut-operation-icon-front">
       <Icon icon="mdi-light:vector-arrange-below" style="font-size: 18px" />
     </div>
@@ -14,7 +27,7 @@ import { Icon } from "@iconify/vue";
         <span>安排面试</span>
       </div>
       <div class="shortcut-operation-text-content">
-        <span>刘志文</span>
+        <span>{{ props.name }}</span>
       </div>
     </div>
 
@@ -25,16 +38,15 @@ import { Icon } from "@iconify/vue";
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/recruitment.scss";
 .shortcut-operation {
   border: none;
-  width: 100%;
-  height: 100%;
   display: grid;
-  grid-template-columns: 60px 1fr 30px;
+  grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: 1fr;
   gap: 10px;
   cursor: pointer;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 .shortcut-operation-icon-front {
   display: flex;
@@ -48,31 +60,26 @@ import { Icon } from "@iconify/vue";
   margin-top: 10px;
 }
 .shortcut-operation-text {
-  min-width: 70px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
-  width: 100%;
-  height: 100%;
+  align-items: center;
 }
 .shortcut-operation-text-title {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
-  font-size: 16px;
+  font-size: .8rem;
   font-weight: 500;
   color: #333333;
 }
 .shortcut-operation-text-content {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
-  font-size: 0.8em;
+  font-size: .8rem;
   font-weight: 400;
   color: #666666;
 }
@@ -82,10 +89,9 @@ import { Icon } from "@iconify/vue";
   align-items: center;
   width: 100%;
   height: 100%;
-  margin-left: 10px;
   .svg {
-    width: 30px;
-    height: 30px;
+    width: 1.5rem;
+    height: 1.5rem;
     padding: 5px;
     background-color: #e6e6e6;
     border-radius: 5px;
