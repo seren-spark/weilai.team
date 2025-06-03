@@ -372,9 +372,23 @@
 }
 
 @media (min-width: 1025px) and (max-width: 1280px) {
+  .itemShow {
+    height: auto;
+    padding-bottom: 50px;
+    .titles {
+      font-size: 25px;
+    }
+  }
 }
 
 @media (min-width: 1281px) and (max-width: 1440px) {
+  .itemShow {
+    height: auto;
+    padding-bottom: 50px;
+    .titles {
+      font-size: 25px;
+    }
+  }
 }
 
 @media (min-width: 1441px) {

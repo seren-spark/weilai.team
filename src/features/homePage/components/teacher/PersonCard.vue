@@ -74,7 +74,7 @@ const props = defineProps({
     .position {
       width: 13rem;
       .name {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 600;
         margin-top: 1.6rem;
         margin-bottom: 0.2rem;
@@ -83,7 +83,7 @@ const props = defineProps({
         span {
           font-weight: bold;
         }
-        font-size: 0.95rem;
+        font-size: 0.92rem;
       }
     }
   }
@@ -104,19 +104,19 @@ const props = defineProps({
     height: 150px;
     margin-top: 2rem;
     .sides {
-      font-size: 17px;
+      font-size: 16px;
       line-height: 1.7;
       span {
         font-weight: bold;
-        font-size: 18px;
+        font-size: 17px;
       }
     }
     .sendWord {
       margin-top: 10px;
-      font-size: 17px;
+      font-size: 16px;
       line-height: 1.7;
       span {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: bold;
       }
     }

@@ -59,7 +59,9 @@ onMounted(() => {
 <style scoped lang="scss">
 .teacher_con {
   width: 100%;
-  height: 100vh;
+  height: 790px;
+  display: flex;
+  flex-direction: column;
   background-image: url(../../../../assets/img/homePage/image3.png);
   background-repeat: no-repeat;
   background-size: cover;
@@ -71,7 +73,7 @@ onMounted(() => {
     font-size: 1.7em;
     font-weight: bold;
     padding-top: 50px;
-    margin-bottom: 70px;
+    margin-bottom: 56px;
   }
 
   .teachers {
@@ -224,7 +226,7 @@ onMounted(() => {
     padding: 0 0 70px 0;
     .title {
       margin-bottom: 50px;
-      font-size: 30px;
+      font-size: 25px;
     }
   }
 }
