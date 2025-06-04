@@ -71,7 +71,7 @@ import { Icon } from "@iconify/vue";
 import baligouImg from "../../../../assets/img/homePage/news/baligou.jpg";
 import kanghongImg from "../../../../assets/img/homePage/news/kanghong.png";
 import nianhuiImg from "../../../../assets/img/homePage/news/nianhui.jpg";
-import sportsMeetImg from "../../../../assets/img/homePage/news/sports_meet.jpg";
+import sportsMeetImg from "../../../../assets/img/homePage/news/sports.jpg";
 import zuotanhuiImg from "../../../../assets/img/homePage/news/zuotanhui.jpeg";
 
 interface CarouselItem {
