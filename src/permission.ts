@@ -21,14 +21,14 @@ router.beforeEach((to: any, from: any, next: any) => {
 
   const token = getLocalStorageWithExpire("token");
 
-  // 白名单：登录页和首页不需要 token
-  if (to.path === "/login" || to.path === "/") {
+  // 白名单：登录页,首页和报名页不需要 token
+  if (to.path === "/login" || to.path === "/" || to.path === "/application") {
     if (token && to.path === "/login") {
       // 已登录访问登录页，跳转到首页
       return next("/");
     } else {
       // 如果有token且不在登录页
-      return next(); // 放行登录页或首页
+      return next(); // 放行
     }
   }
 
@@ -37,8 +37,6 @@ router.beforeEach((to: any, from: any, next: any) => {
     return next("/login");
   }
   // 权限判断
-  console.log(to.meta, to.meta.roles, permissions.includes(to.meta.roles));
-
   if (to.path.startsWith("/admin") && !permissions.includes(to.meta.roles)) {
     router.push("/404");
   }
