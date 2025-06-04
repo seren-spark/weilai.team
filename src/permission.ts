@@ -12,8 +12,15 @@ setActivePinia(pinia);
 import nprogress from "nprogress";
 import "nprogress/nprogress.css";
 
+// nprogress.configure({
+//   showSpinner: false,
+// });
 nprogress.configure({
-  showSpinner: false,
+  easing: "ease",
+  speed: 800, // 增加速度让进度条走得慢一些
+  showSpinner: true, // 显示spinner让用户知道在加载
+  trickleSpeed: 100, // 减慢自动递增速度
+  minimum: 0.1, // 降低最小值
 });
 
 router.beforeEach((to: any, from: any, next: any) => {
@@ -51,6 +58,12 @@ router.beforeEach((to: any, from: any, next: any) => {
 
   next();
 });
-router.afterEach((to: any, from: any) => {
+//使用afterEach时,由于请求数据量大，服务器等问题，会导致进度条加载完路由还未进入的问题，影响用户体验
+// router.afterEach((to: any, from: any) => {
+//   nprogress.done();
+// });
+router.beforeResolve((to, from, next) => {
+  // 此时组件已经加载完成，地址栏也会更新
   nprogress.done();
+  next();
 });
