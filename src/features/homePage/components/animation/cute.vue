@@ -1,11 +1,13 @@
 <template>
   <div class="content" @mouseenter="stopAnimation" @mouseleave="startAnimation">
-    <img
-      ref="movingImg"
-      src="../../../../assets/img/homePage/logo.png"
-      alt="图片"
-      class="moving-image"
-    />
+    <RouterLink to="/application">
+      <img
+        ref="movingImg"
+        src="../../../../assets/img/homePage/Animation1.gif"
+        alt="图片"
+        class="moving-image"
+      />
+    </RouterLink>
   </div>
 </template>
 
@@ -73,7 +75,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .content {
   position: fixed;
-  bottom: 0;
+  bottom: -15px;
   left: 0;
   width: 100%;
   height: 80px;
@@ -84,8 +86,8 @@ onUnmounted(() => {
     position: absolute;
     bottom: 0px; /* 距离底部间距 */
     left: 0;
-    height: 80px; /* 根据你的图片调整高度 */
-    width: 80px;
+    height: 100px; /* 根据你的图片调整高度 */
+    width: 100px;
     user-select: none; /* 防止拖动 */
     pointer-events: auto; /* 恢复图片本身的鼠标事件 */
     will-change: transform; /* 优化动画性能 */
