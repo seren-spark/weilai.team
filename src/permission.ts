@@ -2,6 +2,8 @@ import router from "@/router";
 import { createPinia, setActivePinia } from "pinia";
 import { useUserStore } from "@/store/userStore";
 import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
+import { useAlert } from "@/composables/useAlert";
+const { showAlert } = useAlert();
 const { setLocalStorageWithExpire, getLocalStorageWithExpire } =
   useLocalStorageWithExpire();
 const pinia = createPinia();
@@ -23,13 +25,19 @@ router.beforeEach((to: any, from: any, next: any) => {
 
   // 白名单：登录页,首页和报名页不需要 token
   if (to.path === "/login" || to.path === "/" || to.path === "/application") {
-    if (token && to.path === "/login") {
-      // 已登录访问登录页，跳转到首页
-      return next("/");
-    } else {
-      // 如果有token且不在登录页
-      return next(); // 放行
+    if (token) {
+      // 已登录时特殊处理
+      if (to.path === "/login") {
+        // 已登录访问登录页，跳转到首页
+        return next("/");
+      } else if (to.path === "/application") {
+        // 已登录访问报名页，跳转首页并提示
+        showAlert("已登录用户不可访问报名页", "error");
+        return next("/");
+      }
     }
+    // 其他白名单情况正常放行
+    return next();
   }
 
   // 未登录且访问其他页面，跳转登录页
