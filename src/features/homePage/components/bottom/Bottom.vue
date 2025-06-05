@@ -33,7 +33,7 @@
         <div class="containerbottom">
           <span>2025 @ weilai.com 版权所有 | </span>
           <span> 增值电信业务经营许可证：豫B2-20160169 | </span>
-          <span>豫ICP备14002653号 | </span>
+          <span>豫ICP备2024075616号 | </span>
           <span>
             <!-- <img src="/images/beian.0c57706.png" height="80%" alt="" /> -->
             豫公网安备 35020302033941号

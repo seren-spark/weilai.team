@@ -147,6 +147,7 @@ onMounted(() => {
   width: 100%;
   height: 800px;
   overflow: hidden;
+  background-image: url(../../../../assets/img/homePage/Animation2.gif);
   background-color: #f4f8fb;
   .carousel-container {
     width: 100%;
