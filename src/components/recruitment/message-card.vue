@@ -143,7 +143,15 @@ const writeInterviewEvaluation = () => {
             {{ cardMessage.InterviewOfficerThird.name }}
           </span>
         </div>
-        <div class="message-show-staus">
+        <div
+          :class="{
+            'message-show-staus': true,
+            'status-pending': cardMessage.InterviewStatus === '待面试',
+            'status-feedback': cardMessage.InterviewStatus === '待反馈',
+            'status-rejected': cardMessage.InterviewStatus === '已淘汰',
+            'status-accepted': cardMessage.InterviewStatus === '已录取',
+          }"
+        >
           <span class="min-width">
             {{ cardMessage.InterviewStatus }}
           </span>
@@ -204,7 +212,7 @@ const writeInterviewEvaluation = () => {
   .message-show-name {
     text-align: center;
     min-width: 70px;
-    border: 1px solid skyblue;
+    border: 1px solid var(--primary-foreground);
     padding: 5px 10px;
     border-radius: 15px;
     margin-right: 10px;
@@ -246,4 +254,21 @@ const writeInterviewEvaluation = () => {
   padding: 5px 10px;
   border-radius: 15px;
 }
+.status-pending {
+  background-color: #ffcdd2;
+  color: #b71c1c;
+}
+.status-feedback {
+  background-color: #fff9c4;
+  color: #f57f17;
+}
+.status-rejected {
+  background-color: #e1bee7;
+  color: #4a148c;
+}
+.status-accepted {
+  background-color: #c8e6c9;
+  color: #1b5e20;
+}
+
 </style>

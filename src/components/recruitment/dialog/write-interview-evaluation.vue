@@ -174,7 +174,7 @@ form {
 
 // 提交按钮样式
 Button[type="submit"] {
-  background-color: skyblue;
+  background-color: var(--primary-foreground);
   color: white;
   padding: 10px 20px;
   border: none;

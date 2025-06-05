@@ -1,4 +1,5 @@
 <template>
+<div class="content">
 <DataTable
   :columns="columns"
   :rows="rows"
@@ -21,7 +22,7 @@
     Next
   </button>
 </div>
-
+</div>
 </template>
 
 <script setup lang='ts'>
@@ -56,7 +57,6 @@ const {
   error: Error,
   fetchData: getMessage,
 } = useApiRequest<ApiResponseData<dataDTO[]>>({
-  // url:"/Attendance/getAttendanceInfoBySingleTime",
 url: "/Attendance/getCheckInfoByTimeSpan",
   method: "GET",
   headers: {
@@ -118,7 +118,9 @@ watch(pageNo, (newValue) => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/styles/recruitment.scss";
 .table-footer {
+  width: 100%;
   display: flex;
   justify-content:flex-end;
   align-items: center;
@@ -134,20 +136,9 @@ watch(pageNo, (newValue) => {
     line-height: 2rem;
     border: 1px solid #ccc;
     border-radius: 50%;
-    background-color: skyblue;
+    background-color: var(--primary-foreground);
     color: white;
   }
 }
-.btn-style {
-  display: block;
-  width: 6rem;
-  height: 2rem;
-  text-align: center;
-  line-height: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-.btn-disabled {
-  cursor: not-allowed;
-}
+
 </style>

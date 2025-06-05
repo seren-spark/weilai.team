@@ -1,12 +1,11 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-// 引入组件
+import NoData from "@/components/loading/NoData.vue";
 import {
   MessageCard,
   ToggleShow,
   QuickShowCard,
   ShortcutOperation,
-  NewNoData,
 } from "@/components/recruitment";
 import { interviewStatus, interviewStatusMap } from "@/types/recruitmentType";
 // 引入vue函数
@@ -278,7 +277,7 @@ onMounted(() => {
           />
         </div>
         <div class="main-content-show">
-          <NewNoData
+          <NoData
             v-if="messageCardMap.length === 0"
             style="
               width: 100%;

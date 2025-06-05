@@ -28,7 +28,7 @@
       <TableRow v-show="rows.length === 0">
 
         <TableCell class="text-center" colspan="100%" style="height: 2rem;">
-          <NewNoData />
+          <NoData />
         </TableCell>
       </TableRow>
 
@@ -67,7 +67,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { defineProps, ref, computed, watch } from "vue";
-import { NewNoData } from "@/components/recruitment";
+import NoData from "@/components/loading/NoData.vue";
 
 // 定义通用的列和行接口
 interface TableColumn {
