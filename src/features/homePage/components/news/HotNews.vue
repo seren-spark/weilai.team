@@ -2,7 +2,7 @@
   <div class="news_con">
     <div class="title">热点新闻</div>
     <div class="carousel-container">
-      <div class="container" :class="{ 'fade-in': carouselVisible }">
+      <div class="containers" :class="{ 'fade-in': carouselVisible }">
         <div class="buttons" :class="{ 'dark-icons': expandedIndex !== null }">
           <Icon id="prev" icon="meteor-icons:chevron-left" @click="prevSlide" />
           <Icon
@@ -71,7 +71,7 @@ import { Icon } from "@iconify/vue";
 import baligouImg from "../../../../assets/img/homePage/news/baligou.jpg";
 import kanghongImg from "../../../../assets/img/homePage/news/kanghong.png";
 import nianhuiImg from "../../../../assets/img/homePage/news/nianhui.jpg";
-import sportsMeetImg from "../../../../assets/img/homePage/news/sports_meet.jpg";
+import sportsMeetImg from "../../../../assets/img/homePage/news/sports.jpg";
 import zuotanhuiImg from "../../../../assets/img/homePage/news/zuotanhui.jpeg";
 
 interface CarouselItem {
@@ -145,12 +145,14 @@ onMounted(() => {
 .news_con {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 800px;
   overflow: hidden;
   background-color: #f4f8fb;
   .carousel-container {
     width: 100%;
     height: 600px;
+    display: flex;
+    justify-content: center;
   }
 
   .title {
@@ -162,9 +164,9 @@ onMounted(() => {
     padding-top: 50px;
   }
 
-  .container {
+  .containers {
     width: 900px;
-    height: 600px;
+    height: 580px;
     background-color: #f5f5f5;
     box-shadow: 0 30px 50px #b7b7b7;
     opacity: 0;
@@ -315,17 +317,23 @@ onMounted(() => {
   .buttons {
     position: absolute;
     bottom: 20px;
-    width: 870px;
+    width: 900px;
     z-index: 222222;
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
 
-    #prev,
-    #next {
+    #prev {
       width: 28px;
       height: 28px;
       margin-right: 30px;
+      cursor: pointer;
+      color: white;
+      transition: color 0.3s ease;
+    }
+    #next {
+      width: 28px;
+      height: 28px;
       cursor: pointer;
       color: white;
       transition: color 0.3s ease;
@@ -343,7 +351,7 @@ onMounted(() => {
 @media (max-width: 360px) {
   .news_con {
     height: 500px;
-    .container {
+    .containers {
       width: 90%;
       height: 300px;
       .item {
@@ -369,6 +377,7 @@ onMounted(() => {
         }
         .des {
           text-align: center;
+          padding: 05px;
         }
         .content {
           top: 30%;
@@ -382,10 +391,10 @@ onMounted(() => {
       }
     }
     .buttons {
-      width: 95%;
+      width: 100%;
       bottom: 8px;
       #prev {
-        margin-right: 40px;
+        margin-right: 30px;
       }
       #prev,
       #next {
@@ -409,7 +418,7 @@ onMounted(() => {
 @media (min-width: 361px) and (max-width: 480px) {
   .news_con {
     height: 510px;
-    .container {
+    .containers {
       width: 90%;
       height: 300px;
       .item {
@@ -449,10 +458,10 @@ onMounted(() => {
       }
     }
     .buttons {
-      width: 95%;
+      width: 100%;
       bottom: 8px;
       #prev {
-        margin-right: 40px;
+        margin-right: 30px;
       }
       #prev,
       #next {
@@ -476,7 +485,7 @@ onMounted(() => {
 @media (min-width: 481px) and (max-width: 640px) {
   .news_con {
     height: 560px;
-    .container {
+    .containers {
       width: 90%;
       height: 350px;
       .item {
@@ -516,10 +525,10 @@ onMounted(() => {
       }
     }
     .buttons {
-      width: 95%;
+      width: 100%;
       bottom: 8px;
       #prev {
-        margin-right: 40px;
+        margin-right: 30px;
       }
       #prev,
       #next {
@@ -543,7 +552,7 @@ onMounted(() => {
 @media (min-width: 641px) and (max-width: 768px) {
   .news_con {
     height: 580px;
-    .container {
+    .containers {
       width: 90%;
       height: 370px;
       .item {
@@ -613,7 +622,7 @@ onMounted(() => {
     .title {
       font-size: 25px;
     }
-    .container {
+    .containers {
       width: 90%;
       height: 400px;
       .item {
@@ -653,7 +662,7 @@ onMounted(() => {
       }
     }
     .buttons {
-      width: 95%;
+      width: 100%;
       bottom: 10px;
       #prev {
         margin-right: 40px;
@@ -681,9 +690,9 @@ onMounted(() => {
   .news_con {
     height: 700px;
     .title {
-      font-size: 26px;
+      font-size: 25px;
     }
-    .container {
+    .containers {
       width: 80%;
       height: 500px;
 
@@ -740,9 +749,9 @@ onMounted(() => {
   .news_con {
     height: 700px;
     .title {
-      font-size: 26px;
+      font-size: 25px;
     }
-    .container {
+    .containers {
       width: 80%;
       height: 500px;
       .item {
@@ -798,9 +807,9 @@ onMounted(() => {
   .news_con {
     height: 800px;
     .title {
-      font-size: 26px;
+      font-size: 25px;
     }
-    .container {
+    .containers {
       width: 80%;
       height: 600px;
       .item {
@@ -860,6 +869,27 @@ onMounted(() => {
     .carousel-container {
       width: 100%;
       height: 600px;
+    }
+    .item {
+      &:nth-child(3) {
+        left: 65.5%;
+      }
+
+      &:nth-child(4) {
+        left: calc(65.5% + 200px);
+      }
+
+      &:nth-child(5) {
+        left: calc(65.5% + 400px);
+        // opacity: 0;
+        pointer-events: none;
+      }
+      .name {
+        font-size: 25px;
+      }
+      .des {
+        font-size: 17px;
+      }
     }
   }
 }

@@ -60,9 +60,9 @@ watch(status, (newValue) => {
   position: relative;
 }
 .active {
-  color: skyblue;
+  color: var(--primary-foreground);
   background-color: white;
-  box-shadow:0 3px 0 skyblue, 0 -1px 0 skyblue;
+  box-shadow:0 3px 0 var(--primary-foreground), 0 -1px 0 var(--primary-foreground);
 }
 .not-active {
   color: black;

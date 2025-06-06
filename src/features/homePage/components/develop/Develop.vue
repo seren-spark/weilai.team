@@ -1,51 +1,53 @@
 <template>
-  <div id="develop-component" class="main">
-    <div class="title">历史回顾</div>
-    <Icon
-      v-show="canScrollUp"
-      id="up-btn"
-      icon="meteor-icons:angles-up"
-      class="icon-arrow up-animation"
-      @click="slideToPrev"
-    />
-    <Icon
-      v-show="canScrollDown"
-      id="down-btn"
-      icon="meteor-icons:angles-down"
-      class="icon-arrow down-animation"
-      @click="slideToNext"
-    />
+  <div class="containers">
+    <div id="develop-component" class="main">
+      <div class="title">历史回顾</div>
+      <Icon
+        v-show="canScrollUp"
+        id="up-btn"
+        icon="meteor-icons:angles-up"
+        class="icon-arrow up-animation"
+        @click="slideToPrev"
+      />
+      <Icon
+        v-show="canScrollDown"
+        id="down-btn"
+        icon="meteor-icons:angles-down"
+        class="icon-arrow down-animation"
+        @click="slideToNext"
+      />
 
-    <div id="content">
-      <div
-        v-for="(card, index) in cards"
-        :key="index"
-        class="card"
-        :style="{ transform: `translateY(${offset * 100}%)` }"
-      >
-        <div class="card-title">{{ card.title }}</div>
-        <div class="card-passage">
-          <br />
-          {{ card.contentChinese }}
-          <br /><br />
-          {{ card.contentEnglish }}
+      <div id="content">
+        <div
+          v-for="(card, index) in cards"
+          :key="index"
+          class="card"
+          :style="{ transform: `translateY(${offset * 100}%)` }"
+        >
+          <div class="card-title">{{ card.title }}</div>
+          <div class="card-passage">
+            <br />
+            {{ card.contentChinese }}
+            <br /><br />
+            {{ card.contentEnglish }}
+          </div>
         </div>
       </div>
-    </div>
 
-    <div id="clock">
-      <div
-        id="clock-table"
-        :style="{ transform: `rotate(${currentClockRotation}deg)` }"
-      >
+      <div id="clock">
         <div
-          v-for="(scale, index) in clockScales"
-          :key="index"
-          class="invisible-table"
-          :style="{ transform: `rotate(${scale.degree}deg)` }"
+          id="clock-table"
+          :style="{ transform: `rotate(${currentClockRotation}deg)` }"
         >
-          <div :class="scale.isThick ? 'clock-thick' : 'clock-scale'">
-            <span v-if="scale.isThick">{{ scale.year }}</span>
+          <div
+            v-for="(scale, index) in clockScales"
+            :key="index"
+            class="invisible-table"
+            :style="{ transform: `rotate(${scale.degree}deg)` }"
+          >
+            <div :class="scale.isThick ? 'clock-thick' : 'clock-scale'">
+              <span v-if="scale.isThick">{{ scale.year }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -212,18 +214,23 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 * {
   margin: 0;
   padding: 0;
 }
-
+.containers {
+  width: 100%;
+  height: 750px;
+  display: flex;
+  justify-content: center;
+  background-color: #66b9bf;
+}
 .main {
-  width: 100vw;
+  width: 100%;
   height: 750px;
   display: flex;
   position: relative;
-  background-color: #66b9bf;
   overflow: hidden;
   .title {
     width: 100%;
@@ -299,7 +306,7 @@ export default {
 }
 
 #content {
-  width: 30%;
+  width: 450px;
   height: 100%;
   position: absolute;
   left: 15%;
@@ -333,7 +340,8 @@ export default {
 }
 
 #clock {
-  height: 130%;
+  width: 1000px;
+  height: 1000px;
   aspect-ratio: 1 / 1;
   position: absolute;
   right: -28%;
@@ -524,15 +532,35 @@ export default {
 
 @media (min-width: 769px) and (max-width: 960px) {
   .main {
+    #clock {
+      display: none;
+    }
+    #content {
+      width: 90%;
+      left: 5%;
+    }
     .title {
-      font-size: 28px;
+      font-size: 25px;
     }
     .card-title {
-      font-size: 40px;
+      font-size: 42px;
       padding-bottom: 10px;
+      text-align: center;
     }
     .card-passage {
-      font-size: 20px;
+      font-size: 21px;
+      text-align: center;
+    }
+    .icon-arrow {
+      left: 49%;
+    }
+
+    #up-btn {
+      top: 20%;
+    }
+
+    #down-btn {
+      bottom: 20%;
     }
   }
 }
@@ -543,7 +571,7 @@ export default {
       right: -62%;
     }
     .title {
-      font-size: 27px;
+      font-size: 25px;
     }
     .card-title {
       font-size: 45px;
@@ -561,7 +589,7 @@ export default {
       right: -47%;
     }
     .title {
-      font-size: 27px;
+      font-size: 25px;
     }
     .card-title {
       font-size: 45px;
@@ -578,7 +606,7 @@ export default {
       right: -37%;
     }
     .title {
-      font-size: 27px;
+      font-size: 25px;
     }
     .card-title {
       font-size: 45px;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { Button } from "@/components/ui/button";
+import UserAvatar from "@/components/avatar/UserAvatar.vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 import { useRouter } from "vue-router";
 import apiClient from "@/api/axios";
@@ -38,7 +39,6 @@ const handleLinkClick = (linkName: string) => {
   setTimeout(() => {
     activeLink.value = null;
   }, 2000);
-  // 判断是否点击的是“关于我们”，如果是则跳转到Develop组件对应的位置
   if (linkName === "about") {
     const developComponent = document.getElementById("develop-component");
     if (developComponent) {
@@ -66,14 +66,17 @@ onMounted(async () => {
     }
   }
   hasToken.value = token !== null;
+
   if (hasToken.value && userId) {
     try {
       const res = await apiClient.get(`user/getUserInfoByUserId/${userId}`);
-      if (res.data?.headPortrait) {
-        avatarSrc.value = res.data.headPortrait;
-        userInfo.value.name = res.data.name;
-        console.log(avatarSrc.value);
-      }
+      console.log("res:", res);
+
+      avatarSrc.value = res.data.headPortrait;
+      userInfo.value.name = res.data.name;
+      console.log(userInfo.value.name);
+
+      console.log(avatarSrc.value);
     } catch (error) {
       console.error("获取用户信息失败：", error);
     }
@@ -173,7 +176,7 @@ const mobileMenuLinks = ref([
     <div v-if="hasToken">
       <RouterLink to="/personalCenter/userInfo" class="personMessage">
         <div class="personCenter">
-          <img :src="avatarSrc || '/public/defaultAvatar.png'" alt="" />
+          <UserAvatar :avatar="avatarSrc" />
         </div>
         <div class="personCenterName">{{ userInfo.name }}</div>
       </RouterLink>
@@ -264,6 +267,7 @@ const mobileMenuLinks = ref([
   flex-direction: row;
   .personCenterName {
     color: #fff;
+    font-size: 15px;
   }
 }
 .mobile-avatar {
@@ -380,8 +384,8 @@ const mobileMenuLinks = ref([
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
   .newLogo {
-    width: 5.4rem;
-    height: 4.5rem;
+    width: 80px;
+    height: 65px;
     margin-left: 1rem;
     img {
       width: 100%;

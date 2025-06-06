@@ -111,7 +111,7 @@ onMounted(() => {
 
 .back-to-top {
   position: fixed;
-  right: 50px;
+  right: 20px;
   bottom: 50px;
   width: 60px;
   height: 60px;

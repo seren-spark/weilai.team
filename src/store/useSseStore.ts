@@ -37,7 +37,8 @@ export const useSseStore = defineStore("sse", () => {
       console.error("当前设备未联网，请检查网络连接后重试");
       return;
     }
-    sseUrl.value = "http://49.232.183.67:8087/message/sse/addClient";
+    // sseUrl.value = "http://49.232.183.67:8087/message/sse/addClient";
+    sseUrl.value = " http://123.57.144.143:8087/message/sse/addClient";
     try {
       reconnectAttempts = 0; // 重置重试次数
       fetchEventSource(sseUrl.value, {

@@ -94,6 +94,7 @@
     height: 90%;
     margin: auto;
     display: flex;
+    justify-content: center;
 
     .containerleft {
       width: 80%;
@@ -169,7 +170,7 @@
     .containerright {
       display: flex;
       padding-inline: 0.3rem;
-      width: 20%;
+      // width: 20%;
       flex-direction: column;
       .img {
         display: flex;
@@ -213,7 +214,7 @@
           width: 70px;
           position: absolute;
           top: 10px;
-          right: 40px;
+          right: 35px;
           opacity: 0;
           visibility: hidden;
           transition-duration: 0.3s;
@@ -241,7 +242,7 @@
           width: 70px;
           position: absolute;
           top: 10px;
-          left: 40px;
+          left: 30px;
           opacity: 0;
           visibility: hidden;
           transition-duration: 0.3s;

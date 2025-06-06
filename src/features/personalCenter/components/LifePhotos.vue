@@ -10,7 +10,7 @@
         <GlobalLoading />
       </div>
       <div v-else-if="images.length === 0" class="no-data">
-        <NewNoData />
+        <NoData />
       </div>
       <img
         v-for="image in images"
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { NewNoData } from "@/components/recruitment";
+import NoData from "@/components/loading/NoData.vue";
 import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { useUserStore } from "@/store/userStore";
 import { useApiRequest, apis } from "@/utils/httpClient";
@@ -211,8 +211,8 @@ onMounted(() => {
     }
   }
   &.selected {
-    border: 3px solid skyblue;
-    box-shadow: 0 0 5px 2px skyblue;
+    border: 3px solid var(--primary-foreground);
+    box-shadow: 0 0 5px 2px var(--primary-foreground);
   }
   &.shake {
     animation: shake 1s infinite ease-in;

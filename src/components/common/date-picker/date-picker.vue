@@ -33,6 +33,7 @@ const value = computed({
   <Popover>
     <PopoverTrigger as-child>
       <Button
+        type="button"
         variant="outline"
         :class="cn(
           'w-[280px] justify-start text-left font-normal',
@@ -44,7 +45,7 @@ const value = computed({
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0">
-      <Calendar v-model="value" initial-focus />
+      <Calendar v-model="value" initial-focus locale="zh-CN" />
     </PopoverContent>
   </Popover>
 </template>
