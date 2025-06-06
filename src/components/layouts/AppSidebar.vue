@@ -364,8 +364,8 @@ function skipRedirect(item: any) {
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
 }
 .frame {
@@ -434,7 +434,7 @@ function skipRedirect(item: any) {
     position: relative;
   }
   &-logo {
-    height: 80px;
+    height: 5rem;
     display: flex;
     align-items: center;
     justify-content: center;

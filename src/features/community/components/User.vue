@@ -97,6 +97,8 @@ function runGetUserList(content = "", pageNumber = 1, pageSize = 10) {
     current.value = res.data.pageInfo.current;
     pages.value = res.data.pageInfo.pages;
     total.value = res.data.pageInfo.total;
+    console.log("当前页数", current.value);
+
     if (res.data.searchUsers.length > 0 && !content) {
       res.data.searchUsers.forEach((record) => {
         userList.value.push(record);
@@ -130,8 +132,10 @@ const handleScroll = async () => {
 
   if (scrollTop + clientHeight > scrollHeight - 100) {
     if (current.value < pages.value) {
+      console.log("加之前", current.value);
+
       current.value++;
-      runGetUserList(searchContent.value, pages.value);
+      runGetUserList(searchContent.value, current.value);
     }
   }
 };

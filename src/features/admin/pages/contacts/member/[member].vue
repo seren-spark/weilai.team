@@ -135,18 +135,18 @@
                         position: relative;
                       "
                     >
-                      <span> {{ user.name }}</span>
-
-                      <span
-                        v-if="user.isLeader"
-                        style="
-                          font-size: 0.6rem;
-                          position: absolute;
-                          bottom: -5%;
-                          right: 15%;
-                        "
-                        >(组长)</span
-                      >
+                      <div>
+                        {{ user.name }}
+                        <span
+                          v-if="user.isLeader"
+                          style="
+                            font-size: 0.6rem;
+                            position: absolute;
+                            white-space: nowrap;
+                          "
+                          >(组长)</span
+                        >
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>

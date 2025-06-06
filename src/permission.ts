@@ -18,7 +18,7 @@ import "nprogress/nprogress.css";
 nprogress.configure({
   easing: "ease",
   speed: 800, // 增加速度让进度条走得慢一些
-  showSpinner: true, // 显示spinner让用户知道在加载
+  showSpinner: false, // 显示spinner让用户知道在加载
   trickleSpeed: 100, // 减慢自动递增速度
   minimum: 0.1, // 降低最小值
 });
