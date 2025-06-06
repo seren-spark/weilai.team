@@ -24,6 +24,7 @@ export const useUserStore = defineStore("user", {
 
     getMyId() {
       return Number(JSON.parse(localStorage.getItem("userId") as string).value);
+      // return JSON.parse(localStorage.getItem("userId") as string);
     },
     reset() {
       this.userId = Number(

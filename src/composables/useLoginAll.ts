@@ -60,8 +60,8 @@ export default function () {
       if (res.code == 1000) {
         if (resData) {
           setLocalStorageWithExpire("token", resData.token, 1000 * 60 * 60);
-          // setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
-          localStorage.setItem("userId", resData.userId);
+          setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
+        //   localStorage.setItem("userId", resData.userId);
           //用户默认有概况权限
           userstore.permissions = ["profile_admin", ...resData.permissions];
           showAlert("登录成功！", "pass");
