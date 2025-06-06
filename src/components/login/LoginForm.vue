@@ -6,6 +6,7 @@ import LoginContent from "./LoginContent.vue";
 import { ref, watch, reactive } from "vue";
 import * as z from "zod";
 import { onMounted, onUnmounted } from "vue";
+import { Icon } from "@iconify/vue";
 
 const loginData = reactive({
   account: "" as string | number | undefined,
@@ -74,6 +75,7 @@ onUnmounted(() => {
       :class="{ clickContent: isVisible }"
     >
       <CardHeader>
+        <a  class="back" href="/"><Icon icon="streamline-ultimate:house-1"></Icon></a>
         <CardTitle class="loginTitle text-2xl"> 登录 </CardTitle>
       </CardHeader>
       <CardContent>
@@ -125,7 +127,15 @@ onUnmounted(() => {
   width: 24rem;
 }
 
+.back {
+  position: absolute;
+  font-size: 1.6rem;
+  top: 2rem;
+  color: rgb(119, 119, 119);
+}
+
 .loginContent {
+  position: relative;
   margin-top: 5.2rem;
   background-color: #ffffff;
   border: none;
