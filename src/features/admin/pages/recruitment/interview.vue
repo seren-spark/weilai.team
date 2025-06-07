@@ -1,5 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
+import NoData from "@/components/loading/NoData.vue";
 import {
   FilterConditionMoreSelect,
   FilterCondition,
@@ -7,7 +8,6 @@ import {
   ToggleShow,
   MessageCard,
   AutoLongerInput,
-  NewNoData,
 } from "@/components/recruitment";
 import { Icon } from "@iconify/vue";
 import { computed, ref, watch } from "vue";
@@ -318,7 +318,7 @@ const resetCondition = () => {
       ></ToggleShow>
     </div>
     <div class="main-content-show">
-      <NewNoData v-if="messageCard.length === 0" style=" width: 100%;height: 150px;display: flex;align-items: center;justify-content: center;" />
+      <NoData v-if="messageCard.length === 0" style=" width: 100%;height: 150px;display: flex;align-items: center;justify-content: center;" />
       <MessageCard
         v-for="(item, index) in messageCard"
         :key="index"

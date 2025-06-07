@@ -66,7 +66,7 @@ watch(isLonger, (newValue) => {
 #longer {
   width: 100%;
   background-color: var(--accent);
-  border: 1px solid rgba(skyblue, 0.5);
+  border: 1px solid rgba(var(--primary-foreground), 0.5);
 }
 .auto-longer-input {
   cursor: pointer;

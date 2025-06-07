@@ -86,7 +86,7 @@ $font: #8c9296;
   display: flex;
   align-content: center;
   flex-wrap: nowrap;
-  height: 50px;
+  height: 3rem;
   .breadcrumb {
     display: flex;
     align-items: center;

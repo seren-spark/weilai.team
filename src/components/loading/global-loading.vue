@@ -29,7 +29,7 @@
 <style scoped lang="scss">
 .container {
   --uib-size: 45px;
-  --uib-color: skyblue;
+  --uib-color: var(--primary-foreground);
   --uib-speed: 1.75s;
   --uib-bg-opacity: 0.1;
   height: 2rem;

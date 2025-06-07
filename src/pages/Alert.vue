@@ -46,7 +46,7 @@ const icon = computed(() => {
   position: fixed;
   left: 50%;
   transform: translate(-50%, 50%);
-  width: 31.25rem;
+  width: 30rem;
   font-size: 1rem;
   z-index: 9999;
   height: 3.125rem;
@@ -100,5 +100,11 @@ const icon = computed(() => {
 .alert-fade-leave {
   transform: translateY(0);
   opacity: 1;
+}
+
+@media screen and (max-width: 1024px) {
+    .allAlert {
+        width: 25rem;
+    }
 }
 </style>
