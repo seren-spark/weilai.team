@@ -8,7 +8,6 @@ import {
   ShortcutOperation,
 } from "@/components/recruitment";
 import { interviewStatus, interviewStatusMap } from "@/types/recruitmentType";
-// 引入vue函数
 import { ref, watch, onMounted ,computed} from "vue";
 import { useApiRequest } from "@/utils/httpClient";
 import RecruitmentApi from "@/constants/recruitment-apis";
@@ -16,10 +15,9 @@ import type { ApiResponseData } from "@/types/api-response";
 import { ArrangeInterviewer } from "@/components/recruitment";
 import { useAlert } from "@/composables/useAlert";
 
-// 解构 showAlert 方法
 const { showAlert } = useAlert();
 
-//切换框的数据展示状态参量
+//切换框的状态参量
 const toggleShowStatus = ref<string>("1");
 const handleToggleShowStatus = (newValue: string) => {
   toggleShowStatus.value = newValue;

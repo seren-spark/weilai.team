@@ -4,11 +4,11 @@ import NoData from "@/components/loading/NoData.vue";
 import {
   FilterConditionMoreSelect,
   FilterCondition,
-  DataRangePicker,
   ToggleShow,
   MessageCard,
   AutoLongerInput,
 } from "@/components/recruitment";
+import { DateRangePicker } from "@/components/common/date-picker";
 import { Icon } from "@iconify/vue";
 import { computed, ref, watch } from "vue";
 import {
@@ -19,6 +19,7 @@ import {
 import { useRequest } from "vue-request";
 import type { IGradeData } from "@/types/recruitmentType";
 import { interviewStatusMap, interviewStatus } from "@/types/recruitmentType";
+import { getLocalTimeZone } from "@internationalized/date";
 //切换框
 const toggleShowStatus = ref("-1");
 const handleToggleShowStatus = (val: string) => {
@@ -130,30 +131,7 @@ const fetchAllGrade = () => {
 };
 fetchAllGrade();
 
-const dateRange = ref(null); // 初始化日期范围
 
-// 获得子组件的日期参数
-const handleDateRangeUpdate = (newDateRange: any) => {
-  dateRange.value = newDateRange;
-  // 在这里可以对日期范围进行处理，例如发送请求或更新其他组件的数据
-  handleDateRange();
-};
-let formattedRange = "";
-let startTime = ref("");
-let endTime = ref("");
-//对dateRange进行处理
-const handleDateRange = () => {
-  // 在这里处理日期范围，例如将日期范围转换为字符串格式
-  if (!dateRange.value) {
-    return;
-  }
-  const startDate = Reflect.get(dateRange.value, "start");
-  const endDate = Reflect.get(dateRange.value, "end");
-  formattedRange = `${startDate}@${endDate}`;
-  const [start, end] = formattedRange.split("@");
-  startTime.value = start;
-  endTime.value = end;
-};
 
 const searchValue = ref("");
 const handleInput = (value: string) => {
@@ -181,7 +159,18 @@ getAllInterviewer({ pageNo: 1, pageSize: 100 }).then((res) => {
     },
   );
 });
-
+function formatDateToYMD(dateObj: any) {
+  if (!dateObj) return undefined;
+  const date = dateObj.toDate ? dateObj.toDate(getLocalTimeZone()) : dateObj;
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+const dateRange = ref({
+  start: undefined,
+  end: undefined,
+});
 const searchGrade = ref<string>();
 const searchRound = ref<string>();
 const InterviewOfficerIds = ref<string[]>([]);
@@ -192,8 +181,8 @@ const getAllInterviewUserParams = computed(() => {
     round: searchRound.value,
     name: searchValue.value,
     ids: [...InterviewOfficerIds.value],
-    startTime: startTime.value,
-    endTime: endTime.value,
+    startTime: formatDateToYMD(dateRange.value.start),
+    endTime: formatDateToYMD(dateRange.value.end),
   };
 });
 
@@ -250,9 +239,10 @@ watch(
     immediate: true,
   },
 );
-
-const isReset = ref(false);
-
+const resetDateRange = () => {
+  dateRange.value.start = undefined;
+  dateRange.value.end = undefined;
+};
 //重置筛选条件
 const resetCondition = () => {
   // 在这里处理重置条件的逻辑，例如清空输入框或其他组件的数据
@@ -264,18 +254,11 @@ const resetCondition = () => {
       item.isSeleted = false;
     },
   );
-  dateRange.value = null;
   searchValue.value = "";
   searchGrade.value = "";
   searchRound.value = "";
   InterviewOfficerIds.value = [];
-  formattedRange = "";
-  isReset.value = true;
-  startTime.value = "";
-  endTime.value = "";
-  setTimeout(() => {
-    isReset.value = false;
-  }, 500);
+  resetDateRange();
 };
 </script>
 
@@ -293,10 +276,9 @@ const resetCondition = () => {
       />
 
       <div class="date-picker">
-        <DataRangePicker
-          :date-range="dateRange"
-          :is-reset="isReset"
-          @update-date-range="handleDateRangeUpdate"
+        <DateRangePicker
+         v-model="dateRange"
+          @reset="resetDateRange"
         />
       </div>
       <div class="reset" @click="resetCondition">
@@ -318,7 +300,16 @@ const resetCondition = () => {
       ></ToggleShow>
     </div>
     <div class="main-content-show">
-      <NoData v-if="messageCard.length === 0" style=" width: 100%;height: 150px;display: flex;align-items: center;justify-content: center;" />
+      <NoData
+        v-if="messageCard.length === 0"
+        style="
+          width: 100%;
+          height: 150px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      />
       <MessageCard
         v-for="(item, index) in messageCard"
         :key="index"

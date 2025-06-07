@@ -3,11 +3,9 @@ import router from "@/router";
 import type {
   IGetAllApplyUserDTO,
   IGetAllGradeDTO,
-  IExportInterviewResultDTO,
   IUpdateApplyUserDTO,
   IUpdateInterviewResultDTO,
   IGetInterviewUserDTO,
-  IArrangeInterviewDTO,
 } from "@/types/recruitmentType";
 
 // 招新模块
@@ -89,68 +87,6 @@ export const deleteApplyUserById = ({ id }: { id: string }) => {
   });
 };
 
-//获取待我反馈、我录取的、我淘汰的 的面试记录
-//状态参数标记 1待我反馈；2我录取；3我淘汰
-export const getMyInterviewRecord = ({
-  pageNo,
-  pageSize,
-  status,
-}: {
-  pageNo: number;
-  pageSize: number;
-  status: string;
-}) => {
-  return axios.get(`${BASE_UEL}recruit/manage/getAboutMe`, {
-    params: {
-      pageNo: pageNo,
-      pageSize: pageSize,
-      status: status,
-    },
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + getToken(),
-    },
-  });
-};
-
-// 获取 待安排/已录取 的人数
-// 状态参数标记 0待安排；2已录取
-export const getInterviewCount = ({ status }: { status: number }) => {
-  return axios.get(`${BASE_UEL}recruit/manage/getCount/${status}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + getToken(),
-    },
-  });
-};
-
-// 导出录取结果excel表
-// 状态参数标记 0代表待安排；1代表待面试；2代表已录取；3代表已淘汰
-export const exportResultExcel = ({
-  startTime,
-  endTime,
-  grade,
-  sex,
-  status,
-}: IExportInterviewResultDTO) => {
-  console.log(startTime, endTime, grade, sex, status);
-  return axios.post(
-    `${BASE_UEL}recruit/manage/resultExport`,
-    {
-      startTime,
-      endTime,
-      grade,
-      sex,
-      status,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken(),
-      },
-    },
-  );
-};
 
 //修改招新报名的人员的信息
 export const updateApplyUserInfo = ({
@@ -284,28 +220,4 @@ export const getAllInterviewUser = ({
       Authorization: "Bearer " + getToken(),
     },
   });
-};
-
-//安排面试
-//状态参数标记
-export const arrangeInterviewer = ({
-  userId,
-  startTime,
-  endTime,
-  place,
-  firstHr,
-  secondHr,
-  thirdHr,
-}: IArrangeInterviewDTO) => {
-  console.log(userId, place,startTime,endTime, firstHr, secondHr, thirdHr);
-  return axios.post(
-    `${BASE_UEL}recruit/interview/scheduleInterviewer`,
-    { userId,startTime,endTime,  place, firstHr, secondHr, thirdHr },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + getToken(),
-      },
-    },
-  );
 };
