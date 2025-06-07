@@ -6,6 +6,15 @@ import VueRouter from "unplugin-vue-router/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  build: {
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
+  },
   plugins: [
     VueRouter({
       routesFolder: [
