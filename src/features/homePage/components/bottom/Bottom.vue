@@ -31,13 +31,13 @@
           </ul>
         </div>
         <div class="containerbottom">
-          <span>2025 @ weilai.com 版权所有 | </span>
+          <span>2025 @ weilai.team 版权所有 | </span>
           <span> 增值电信业务经营许可证：豫B2-20160169 | </span>
-          <span>豫ICP备2024075616号 | </span>
-          <span>
-            <!-- <img src="/images/beian.0c57706.png" height="80%" alt="" /> -->
+          <span>豫ICP备2024075616号-2 </span>
+          <!-- <span>
+           <img src="/images/beian.0c57706.png" height="80%" alt="" /> 
             豫公网安备 35020302033941号
-          </span>
+          </span> -->
         </div>
       </div>
       <div class="containerright">
@@ -142,7 +142,6 @@
       }
       .containerbottom {
         color: white;
-        width: 90%;
         display: flex;
         height: 20%;
         font-size: 16px;

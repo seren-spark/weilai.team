@@ -406,12 +406,50 @@ const handleReply = () => {
 @media screen and (max-width: 768px) {
   .comment-item {
     .is-reply {
+      .avatar {
+        width: 35px;
+        height: 35px;
+      }
       .content-box {
         .user-info {
           flex-wrap: wrap;
+          margin-bottom: 2px;
+          .nickname {
+            font-size: 12px;
+          }
+          .time {
+            font-size: 10px;
+            margin-top: 1px;
+          }
         }
-        .nickname {
-          font-size: 14px;
+        .comment-text {
+          font-size: 13px;
+        }
+        .action-box {
+          .reply-btn {
+            margin-top: 2px;
+            font-size: 12px;
+            .replyIcon {
+              font-size: 11px;
+              margin-top: 3px;
+            }
+          }
+          .like-btn {
+            margin-top: 3px;
+            font-size: 12px;
+            .likeIcon {
+              font-size: 14px;
+              margin-top: 1px;
+            }
+          }
+          .delete-btn {
+            margin-top: 2px;
+            font-size: 12px;
+            .deleteIcon {
+              margin-top: 1px;
+              font-size: 15px;
+            }
+          }
         }
       }
     }

@@ -883,7 +883,7 @@ onMounted(() => {
       &:nth-child(5) {
         left: calc(65.5% + 400px);
         // opacity: 0;
-        pointer-events: none;
+        // pointer-events: none;
       }
       .name {
         font-size: 25px;
