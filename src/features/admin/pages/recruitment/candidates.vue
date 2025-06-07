@@ -3,7 +3,6 @@
 import {CandidatesConst} from "@/constants/recruitment-constant";
 import {
   FilterCondition,
-  DataRangePicker,
   ToggleShow,
   Pagination,
   AutoLongerInput,
@@ -11,7 +10,8 @@ import {
   UpdateApplyUserInfo,
   ArrangeInterviewer,
 } from "@/components/recruitment";
-import { DataTable } from "@/components/common";
+import { DataTable } from "@/components/common/table";
+import { DateRangePicker } from "@/components/common/date-picker";
 import { Icon } from "@iconify/vue";
 import { Button } from "@/components/ui/button";
 import { ref, watch, computed } from "vue";
@@ -42,6 +42,8 @@ import { interviewStatusMap } from "@/types/recruitmentType";
 import { showConfirm } from "@/composables/useConfirm";
 import { useAlert } from "@/composables/useAlert";
 import * as XLSX from "xlsx";
+import { getLocalTimeZone } from "@internationalized/date";
+
 const { showAlert } = useAlert();
 
 const searchValue = ref("");
@@ -87,32 +89,11 @@ const handleFilterConditions = (value: string, title: string) => {
     return;
   }
 };
-
-const dateRange = ref(null); // 初始化日期范围
-
-// 获得子组件的日期参数
-const handleDateRangeUpdate = (newDateRange: never) => {
-  dateRange.value = newDateRange;
-  handleDateRange();
-};
-let formattedRange = "";
-let startTime = ref<string>("");
-let endTime = ref<string>("");
-//对dateRange进行处理
-const handleDateRange = () => {
-  // 将日期范围转换为字符串格式
-  if (!dateRange.value) {
-    return;
-  }
-  const startDate = Reflect.get(dateRange.value, "start");
-  const endDate = Reflect.get(dateRange.value, "end");
-  formattedRange = `${startDate}@${endDate}`;
-  const [start, end] = formattedRange.split("@");
-  startTime.value = start;
-  endTime.value = end;
+const dateRange = ref({ start: undefined, end: undefined });
+const resetDateRange = () => {
+  dateRange.value = { start: undefined, end: undefined };
 };
 
-const isReset = ref(false);
 //重置筛选条件
 const resetCondition = () => {
   // 在这里处理重置条件的逻辑，例如清空输入框或其他组件的数据
@@ -121,14 +102,8 @@ const resetCondition = () => {
   });
   grade.value = "";
   sex.value = "";
-  dateRange.value = null;
-  startTime.value = "";
-  endTime.value = "";
   searchValue.value = "";
-  isReset.value = true;
-  setTimeout(() => {
-    isReset.value = false;
-  }, 500);
+  resetDateRange();
 };
 
 const tableData = ref(<IAllApplyUserVO[]>[]);
@@ -146,9 +121,7 @@ const handleToggleShowStatus = (newStatus: number) => {
   status.value = newStatus;
 };
 
-//表格操作事件
-
-// 查看简历 \/
+// 查看简历
 const viewResume = (id: string) => {
   const { data, error } = useRequest(() => getResumeById({ id }));
   watch([data, error], ([newData, newError]) => {
@@ -271,26 +244,38 @@ fetchAllGrade();
 const grade = ref<string>("");
 const sex = ref<string>("");
 
-watch([grade, sex, startTime, endTime, searchValue, status], () => {
+watch([grade, sex, dateRange, searchValue, status], () => {
   pageNo.value = 1;
 });
 
-const getAllApplyUserRequestParams = computed(() => ({
+function formatDateToYMD(dateObj: any) {
+  if (!dateObj) return undefined;
+  const date = dateObj.toDate ? dateObj.toDate(getLocalTimeZone()) : dateObj;
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+const allApplyUserRequestParams = computed(() => ({
   pageNo: pageNo.value,
   pageSize: pageSize.value,
   status: status.value,
   condition: searchValue.value,
   grade: grade.value,
   sex: sex.value,
-  startTime: startTime.value,
-  endTime: endTime.value,
+  startTime: dateRange.value.start
+    ? formatDateToYMD(dateRange.value.start)
+    : undefined,
+  endTime: dateRange.value.end
+    ? formatDateToYMD(dateRange.value.end)
+    : undefined,
 }));
 
 //设置一个状态变量，用来强制更新
 const updateParameter = ref<boolean>(false);
 
 watch(
-  [getAllApplyUserRequestParams, updateParameter],
+  [allApplyUserRequestParams, updateParameter],
   ([newParams]) => {
     const { data, error } = useRequest(() => getAllApplyUser(newParams));
     watch(
@@ -446,7 +431,7 @@ const arrangeInterviewerDialog = ref(false);
 
 <template>
   <div class="content">
-        <ArrangeInterviewer
+    <ArrangeInterviewer
      :id="currentArrangeInterviewId"
       :name="currentArrangeInterviewName"
       :is-open="arrangeInterviewerDialog"
@@ -474,10 +459,9 @@ const arrangeInterviewerDialog = ref(false);
         @filter_condition="handleFilterConditions"
       ></FilterCondition>
       <div class="date-picker">
-        <DataRangePicker
-          :date-range="dateRange"
-          :is-reset="isReset"
-          @update-date-range="handleDateRangeUpdate"
+        <DateRangePicker
+         v-model="dateRange"
+          @reset="resetDateRange"
         />
       </div>
 

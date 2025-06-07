@@ -9,7 +9,7 @@ import chat from "@/components/ai-service/index.vue";
 <template>
   <Alert
     v-if="alertState"
-    :alertState="alertState"
+    :alert-state="alertState"
     :message="alertState.message"
     :type="alertState.type"
   />

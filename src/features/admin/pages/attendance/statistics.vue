@@ -29,7 +29,7 @@
 import { useApiRequest } from '@/utils/httpClient';
 import type { ApiResponseData } from "@/types/api-response";
 import { onMounted,ref,watch} from "vue";
-import { DataTable } from '@/components/common';
+import { DataTable } from '@/components/common/table';
 import { columns ,CheckTypeMap,CheckType,TimeResultStatus,TimeResultStatusMap }from "./check_in-statistics-consts";
 interface dataDTO {
   name: string;
@@ -106,8 +106,8 @@ watch(pageNo, (newValue) => {
   sevenDaysAgo.setDate(currentDate.getDate() - 7);
   getMessage({ params: {
     group: "全部",
-    from: sevenDaysAgo.toString(),
-    to: currentDate.toString(),
+    from: currentDate.toString(),
+    to: sevenDaysAgo.toString(),
     pageNumber:newValue,
     pageSize:10,
   }

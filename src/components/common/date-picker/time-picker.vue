@@ -221,7 +221,6 @@ onUnmounted(() => {
 }
 .picker-cell.selected {
   background: var(--primary, #409eff);
-  color: #fff;
   font-weight: 600;
 }
 </style>

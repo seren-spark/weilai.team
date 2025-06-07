@@ -83,15 +83,6 @@ export interface IAllGradeDTO {
   data: IGradeData[];
 }
 
-//导出面试结果的excel表格  数据传输对象 发送
-export interface IExportInterviewResultDTO {
-  clazz?: string;
-  startTime?: string;
-  endTime?: string;
-  grade?: string;
-  sex?: string;
-  status: number;
-}
 //修改报名人员信息  数据传输对象 发送
 export interface IUpdateApplyUserDTO {
   clazz: string;
@@ -125,17 +116,6 @@ export interface IGetInterviewUserDTO {
   ids?: string[];
 }
 
-//安排面试官  数据传输对象 发送
-export interface IArrangeInterviewDTO {
-  userId: string;
-  place: string;
-  startTime: string;
-  endTime: string;
-  // 面试官id
-  firstHr: string;
-  secondHr: string;
-  thirdHr: string;
-}
 // 表格头部信息
 export type tableHeadersVO = {
   title: string;
