@@ -185,7 +185,6 @@ watch(
 }
 .article-Form {
   margin-left: 1rem;
-  width: 100%;
   background-color: white;
   margin-top: 20px;
   padding-bottom: 50px;
