@@ -142,13 +142,13 @@ const submitReply = async (commentId: number, userId: number) => {
     commentTxt: finalCommentText.value,
     userId: userId,
   };
-  console.log("提交的请求数据:", replyCommentDTO);
+  //console.log("提交的请求数据:", replyCommentDTO);
   await executeRequest({
     url: `/comment/replyComment`,
     method: "post",
     requestData: replyCommentDTO,
   });
-  console.log(data.value);
+  //console.log(data.value);
 
   if (data.value?.code == 200) {
     showAlert("评论成功", "pass");

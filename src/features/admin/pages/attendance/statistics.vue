@@ -106,8 +106,8 @@ watch(pageNo, (newValue) => {
   sevenDaysAgo.setDate(currentDate.getDate() - 7);
   getMessage({ params: {
     group: "全部",
-    from: currentDate.toString(),
-    to: sevenDaysAgo.toString(),
+    from: sevenDaysAgo.toString(),
+    to: currentDate.toString(),
     pageNumber:newValue,
     pageSize:10,
   }
