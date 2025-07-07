@@ -5,11 +5,7 @@ import { ref } from "vue";
 import axios from "axios";
 
 // 假设以下是你的 API 请求函数
-import {
-  initUpload,
-  checkUpload,
-  mergeUpload,
-} from "@/api/file";
+import { initUpload, checkUpload, mergeUpload } from "@/api/file";
 // 假设这是你的文件后缀类型工具函数
 import { fileSuffixTypeUtil } from "@/utils/fileUtils";
 import type {
@@ -152,6 +148,7 @@ const uploadChunkBase = (chunkList: chunkList[]) => {
           });
       }
       if (successCount >= totalChunks) {
+        uploadFileList[currentFileIndex].status = FileStatus.success;
         resolve(true);
       }
     };
@@ -285,7 +282,16 @@ const handler = async () => {
       checkResult = await checkFileUploadedByMd5(md5);
       console.log("检查是否已上传-->", checkResult);
       if (checkResult.code == 3400) {
-        return showAlert("该文件已存在", "waring");
+        console.log("当前文件索引：" + currentFileIndex);
+        console.log(uploadFileList[currentFileIndex]);
+
+        showAlert(
+          `${uploadFileList[currentFileIndex].name}已存在,将不再上传`,
+          "waring",
+        );
+        currentFileIndex++;
+        handler();
+        return;
       }
       if (checkResult.code == 200) {
         debugger;
