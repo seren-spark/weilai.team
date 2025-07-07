@@ -80,7 +80,7 @@ onMounted(() => {
   sseStore.subscribe("message", (data: SSENoticeData | SSEMessageData) => {
     if ("messageId" in data && data.messageType === messageType) {
       messages.value.unshift(data as SSEMessageData);
-      console.log(data);
+      //console.log(data);
       messageStore.setLikeStatus(true);
     }
   });
