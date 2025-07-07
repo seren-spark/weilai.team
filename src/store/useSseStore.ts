@@ -38,7 +38,7 @@ export const useSseStore = defineStore("sse", () => {
       return;
     }
     // sseUrl.value = "http://49.232.183.67:8087/message/sse/addClient";
-    sseUrl.value = " http://123.57.144.143:8087/message/sse/addClient";
+    sseUrl.value = " http://49.235.191.34:8087/message/sse/addClient";
     try {
       reconnectAttempts = 0; // 重置重试次数
       fetchEventSource(sseUrl.value, {

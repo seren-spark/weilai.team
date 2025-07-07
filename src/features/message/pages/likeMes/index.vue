@@ -95,9 +95,9 @@ const handleLikeEvent = (resetPage: boolean) => {
   if (resetPage) {
     pageNumber.value = 1;
     isOver.value = false;
-    messages.value = []; // 清空当前数据
+    messages.value = [];
   }
-  fetchMessages(resetPage);
+  fetchMessages(resetPage); // 重新获取数据
 };
 
 //渲染消息列表
@@ -192,9 +192,7 @@ watch(
   () => {
     if ((deleteData.value as any).code == 200) {
       showAlert("删除成功", "pass");
-      pageNumber.value = 1;
-      isOver.value = false;
-      fetchMessages();
+      handleLikeEvent(true);
     } else {
       showAlert("删除失败", "error");
     }
