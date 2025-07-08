@@ -1,5 +1,5 @@
 <template>
-  <!--  ！！！该文件用于文件上传测试 不展示在页面中 -->
+  <!--  ！！！该文件用于文件上传测试 不展示在页面中，只是为了展示用法 ,正式-->
   <div class="container">
     <div style="display: none">
       <video width="500" height="240" controls id="upvideo"></video>
@@ -65,8 +65,21 @@ import {
   percent,
 } from "@/composables/useUploadFile";
 
-import { watch, reactive } from "vue";
-watch(uploadFileList, (newValue) => {}, { deep: true });
+
+import { watch, reactive,watchEffect } from "vue";
+// watch(
+//   () =>  uploadFileList.map(file => file.status),
+//   (newValue) => {
+//     console.log("数组内容变化了", newValue);
+//   },
+//   { deep: true },
+// );
+watchEffect(() => {
+  // 只要 uploadFileList[i].status 发生变化，就会触发
+  const statuses = uploadFileList.map((file) => file.status);
+  console.log("文件状态变化:", statuses);
+});
+
 </script>
 
 <style scoped lang="scss">
