@@ -40,8 +40,6 @@ const props = defineProps({
   },
 });
 
-console.log(props);
-
 const chartData = computed(() => [
   { type: "博客", desktop: props.postB },
   { type: "公告", desktop: props.postG },
