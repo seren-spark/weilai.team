@@ -11,33 +11,34 @@
     font-weight: normal;
     font-style: normal;
   }
+  // ... existing code ...
 
   --main-color: #425aef;
-  --main-color-bg: #4259ef0d;
+  --main-color-bg: rgba(66, 89, 239, 0.05); /* 原 #4259ef0d */
   --main-site-background: #f7f9fe;
   --main-card-background: #fff;
   --main-card-second-background: #f7f7f9;
   --main-font-color: #363636;
-  --main-font-second-color: #3c3c43cc;
+  --main-font-second-color: rgba(60, 60, 67, 0.8); /* 原 #3c3c43cc */
   --main-card-border: #e3e8f7;
-  --main-border-shadow: #2c2d300c;
+  --main-border-shadow: rgba(44, 45, 48, 0.05); /* 原 #2c2d300c */
   --main-scrollbar-bar: rgba(60, 60, 67, 0.4);
   --main-mask-background: rgba(255, 255, 255, 0.95);
   --main-mask-Inverse-background: rgba(0, 0, 0, 0.08);
   --main-mask-second-background: rgba(0, 0, 0, 0.45);
   --main-color-opacity: rgba(255, 255, 255, 0.15);
   --main-dark-opacity: rgba(255, 255, 255, 0.15);
-  --main-dark-shadow: #0000006e;
+  --main-dark-shadow: rgba(0, 0, 0, 0.43); /* 原 #0000006e */
   --main-info-color: #50bfff;
-  --main-info-color-gray: #50bfff60;
+  --main-info-color-gray: rgba(80, 191, 255, 0.38); /* 原 #50bfff60 */
   --main-warning-color: #ffa500;
-  --main-warning-color-gray: #f7ba2a60;
+  --main-warning-color-gray: rgba(247, 186, 42, 0.38); /* 原 #f7ba2a60 */
   --main-success-color: #13ce66;
-  --main-success-color-gray: #13ce6660;
+  --main-success-color-gray: rgba(19, 206, 102, 0.38); /* 原 #13ce6660 */
   --main-error-color: #ff3842;
-  --main-error-color-gray: #ff38423b;
+  --main-error-color-gray: rgba(255, 56, 66, 0.23); /* 原 #ff38423b */
   --main-color-blue: #0084ff;
-  --main-color-white: #ffffff40;
+  --main-color-white: rgba(255, 255, 255, 0.25); /* 原 #ffffff40 */
   --main-color-gray: #999;
   --main-color-red: #ff3842;
   --main-font-family: JetBrainsMono;

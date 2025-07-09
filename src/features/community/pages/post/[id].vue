@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CommentList from "@/components/comment/CommentList.vue";
 import { useRequest } from "vue-request";
-import useAppEditor from "@/features/post/composables/useAppEditor";
+import useAppEditor  from "@/features/post/composables/useAppEditor";
 import { EditorContent } from "@tiptap/vue-3";
 import { useRoute } from "vue-router";
 import ArticleHeader from "../../components/article/ArticleHeader.vue";
@@ -144,6 +144,7 @@ watch(
     <EditorContent
       class="article-detail__content"
       :editor="editor"
+      :editable="false"
     ></EditorContent>
   </div>
   <div v-if="uniqueId != 1" class="article-Form">
@@ -153,7 +154,7 @@ watch(
 
 <style lang="scss">
 @use "/src/assets/styles/editor/index.scss";
-
+@use "@/features/post/styles/editor-table.scss";
 .article-detail {
   background-color: #fff;
   box-sizing: border-box;
