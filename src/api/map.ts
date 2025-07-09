@@ -13,9 +13,8 @@ export const getGeoJson = (type: string, name: any) => {
 }
 
 // 获取地图数据
-export const getMapData = (type: string, mapData: { adcode: number; value: number }[]) => {
-    console.log(mapData);
-    console.log(type);
+export const getMapData = (type: string, mapData: { adcode: number, value: number }[]) => {
+    // const data = [{ adcode: 110000, value: 100 }]
     // 获取中国数据
     if (type === 'china') return axios.get('/mock/china.json')
 
