@@ -23,7 +23,10 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { all, createLowlight } from "lowlight";
 import { Markdown } from "tiptap-markdown";
 import { ref, computed, onBeforeUnmount } from "vue";
-
+import {
+  getHierarchicalIndexes,
+  TableOfContents,
+} from "@tiptap/extension-table-of-contents";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Code from "@tiptap/extension-code";
@@ -41,6 +44,7 @@ import Italic from "@tiptap/extension-italic";
 
 //自定义高亮
 import { AppCodeBlock } from "@/components/editor/extensions/app-code-block";
+import { items } from "./tocItems";
 
 // interface UseEditorOptions {
 //   content?: string;
@@ -64,6 +68,8 @@ const CustomTableCell = TableCell.extend({
         default: null,
         parseHTML: (element) => element.getAttribute("data-background-color"),
         renderHTML: (attributes) => {
+          console.log(attributes);
+
           return {
             "data-background-color": attributes.backgroundColor,
             style: `background-color: ${attributes.backgroundColor}`,
@@ -73,6 +79,32 @@ const CustomTableCell = TableCell.extend({
     };
   },
 });
+
+// 用于new Toc
+// const CustomHeading = Heading.extend({
+//   addAttributes() {
+//     return {
+//       // extend the existing attributes …
+//       ...this.parent?.(),
+
+//       // and add a new one …
+//       id: {
+//         default: null,
+//         parseHTML: (element) => element.getAttribute("id"), // 解析已有 id
+//         renderHTML: (attributes) => {
+//           console.log(attributes);
+//           const { HTMLAttributes } = attributes;
+//           console.log(HTMLAttributes);
+
+//           return {
+//             "data-id": attributes.backgroundColor,
+//             id: `heading-${attributes.level}`,
+//           };
+//         },
+//       },
+//     };
+//   },
+// });
 
 // options: UseEditorOptions = {}
 export default function useAppEditor(editable: boolean = true) {
@@ -93,8 +125,9 @@ export default function useAppEditor(editable: boolean = true) {
         lowlight,
       }),
       Heading.configure({
-        levels: [1, 2, 3, 4],
+        levels: [1, 2, 3, 4, 5, 6],
       }),
+      // CustomHeading,
       HorizontalRule,
       Bold,
       //图片支持base64
@@ -121,6 +154,15 @@ export default function useAppEditor(editable: boolean = true) {
       }),
       Link,
 
+      // 用于new Toc
+      TableOfContents.configure({
+        getIndex: getHierarchicalIndexes,
+        onUpdate: (content) => {
+      
+          // 可以在这里处理你的目录数据
+          items.value = content;
+        },
+      }),
       TableRow,
       TableHeader,
       // TableCell,
