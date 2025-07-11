@@ -86,7 +86,6 @@ export default function useAppEditor(editable: boolean = true) {
       Document,
       Paragraph,
       Text,
-      // StarterKit,
       Blockquote,
       Code,
       AppCodeBlock.configure({
