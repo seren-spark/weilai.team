@@ -28,7 +28,7 @@
             :key="message.messageId"
             class="mess"
           >
-            <MesItem :message="message" @like="run()" />
+            <MesItem :message="message" @like="handleLikeEvent" />
           </div>
           <div v-if="loadingMore" class="loading-more">
             <div class="flex items-center space-x-4">
@@ -80,27 +80,44 @@ onMounted(() => {
   sseStore.subscribe("message", (data: SSENoticeData | SSEMessageData) => {
     if ("messageId" in data && data.messageType === messageType) {
       messages.value.unshift(data as SSEMessageData);
-      console.log(data);
+      //console.log(data);
       messageStore.setLikeStatus(true);
     }
   });
-  run();
+  fetchMessages(false);
   window.addEventListener("scroll", handleScroll);
 });
 
 onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
 });
+const handleLikeEvent = (resetPage: boolean) => {
+  if (resetPage) {
+    pageNumber.value = 1;
+    isOver.value = false;
+    messages.value = [];
+  }
+  fetchMessages(resetPage); // 重新获取数据
+};
 
 //渲染消息列表
-const messageList = () => {
+const run = (resetPage = false) => {
+  if (resetPage) {
+    pageNumber.value = 1;
+    isOver.value = false;
+  }
   return apiClient.get(
     `/message/getMessageInfo?messageType=${messageType}&pageSize=${pageSize}&pageNumber=${pageNumber.value}`,
   );
 };
 
-const { data, loading, run } = useRequest(messageList, {
+const {
+  data,
+  loading,
+  run: fetchMessages,
+} = useRequest(run, {
   loadingKeep: 650,
+  manual: true,
 });
 
 watch(
@@ -147,7 +164,7 @@ const handleScroll = async () => {
   if (scrollTop + clientHeight >= scrollHeight - 100) {
     loadingMore.value = true;
     pageNumber.value++;
-    run();
+    fetchMessages();
   }
 };
 
@@ -175,9 +192,7 @@ watch(
   () => {
     if ((deleteData.value as any).code == 200) {
       showAlert("删除成功", "pass");
-      pageNumber.value = 1;
-      isOver.value = false;
-      run();
+      handleLikeEvent(true);
     } else {
       showAlert("删除失败", "error");
     }

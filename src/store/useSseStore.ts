@@ -38,7 +38,7 @@ export const useSseStore = defineStore("sse", () => {
       return;
     }
     // sseUrl.value = "http://49.232.183.67:8087/message/sse/addClient";
-    sseUrl.value = " http://123.57.144.143:8087/message/sse/addClient";
+    sseUrl.value = " http://49.235.191.34:8087/message/sse/addClient";
     try {
       reconnectAttempts = 0; // 重置重试次数
       fetchEventSource(sseUrl.value, {
@@ -47,14 +47,14 @@ export const useSseStore = defineStore("sse", () => {
           Authorization: `Bearer ${getToken()}`,
         },
         onopen: async () => {
-          console.log("SSE连接已打开");
+          // console.log("SSE连接已打开");
           isConnected.value = true;
           notify("open");
           return Promise.resolve();
         },
         onmessage: handleMessage,
         onerror: (error) => {
-          console.error("SSE连接出错", error);
+          //console.error("SSE连接出错", error);
           isConnected.value = false;
           handleReconnect();
           notify("error", error);
@@ -69,14 +69,14 @@ export const useSseStore = defineStore("sse", () => {
 
   // 处理接收到的消息
   const handleMessage = (event: EventSourceMessage) => {
-    console.log("收到SSE消息:", event.data);
+    // console.log("收到SSE消息:", event.data);
     try {
       const data = JSON.parse(event.data);
       if (
         !data.hasOwnProperty("messageId") &&
         !data.hasOwnProperty("noticeId")
       ) {
-        console.error("接收到的SSE消息数据格式不正确，缺少必要字段");
+        // console.error("接收到的SSE消息数据格式不正确，缺少必要字段");
         return;
       }
 
@@ -94,7 +94,7 @@ export const useSseStore = defineStore("sse", () => {
             messageStore.setNotificationStatus(true);
             break;
           default:
-            console.warn(`接收到未知类型的messageType: ${messageType}`);
+            // console.warn(`接收到未知类型的messageType: ${messageType}`);
             break;
         }
       }
@@ -146,7 +146,7 @@ export const useSseStore = defineStore("sse", () => {
   // 处理重连逻辑
   const handleReconnect = () => {
     if (reconnectAttempts >= maxReconnectAttempts) {
-      console.error("最大重试次数已达，停止重试");
+      //console.error("最大重试次数已达，停止重试");
       return;
     }
 
@@ -180,7 +180,7 @@ export const useSseStore = defineStore("sse", () => {
   // 断开连接
   const disconnect = () => {
     isConnected.value = false;
-    console.log("SSE连接已断开");
+    //console.log("SSE连接已断开");
   };
 
   // 初始化时检查用户是否登录

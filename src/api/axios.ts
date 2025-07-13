@@ -8,7 +8,7 @@ const { setLocalStorageWithExpire, getLocalStorageWithExpire } =
   useLocalStorageWithExpire();
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 5000,
+  timeout: 30000, //由于服务器响应时间过慢，因此时间为30S 正常为5~10
   headers: {
     "Content-Type": "application/json",
   },

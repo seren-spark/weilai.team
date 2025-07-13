@@ -114,7 +114,7 @@ watch(
   () => {
     if (data.value?.code === 200) {
       if (props.message.messageType === 1 || props.message.messageType === 2) {
-        emit("like");
+        emit("like", true);
         showAlert("删除成功", "pass");
       } else if (
         props.message.messageType === 3 ||

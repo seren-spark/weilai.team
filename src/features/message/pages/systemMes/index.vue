@@ -63,7 +63,7 @@ onMounted(() => {
   sseStore.subscribe("message", (data: SSENoticeData | SSEMessageData) => {
     if ("messageId" in data && data.messageType === messageType) {
       messages.value.unshift(data as SSEMessageData);
-      console.log(data);
+      //console.log(data);
       messageStore.setNotificationStatus(true);
     }
   });
@@ -86,13 +86,13 @@ watch(
       totalCount.value = data.value?.data.PageInfo.totalCount;
       const allMessages = data.value?.data.AllMessages || [];
       messages.value = allMessages;
-      console.log(allMessages);
+      // console.log(allMessages);
       messageStore.setNotificationStatus(false);
     } else if (data.value?.code == 401) {
       showAlert("请先登录", "waring");
     } else {
       showAlert("获取失败", "error");
-      console.log(data.value);
+      //console.log(data.value);
     }
   },
 );

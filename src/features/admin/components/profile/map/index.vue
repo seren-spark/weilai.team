@@ -30,6 +30,7 @@ const props = defineProps({
 
 let mapData: { adcode: number; value: number }[];
 
+// 监听获取后端map信息
 watch(
   () => props.areas,
   () => {
@@ -39,7 +40,6 @@ watch(
         value: item.peopleCount,
       };
     });
-    console.log(mapData);
     initChart();
   },
 );
@@ -340,9 +340,9 @@ const getSeriesDataByPart = (partData: any[], geoJson: GeoJson) => {
   }
 
   data = data.filter((item: { adcode: number }) => item.adcode !== JD_ADCODE); // Check if JD_ADCODE is defined
-  console.log(data);
+
   data.forEach((item: { adcode: number; value: number }) => {
-    const currData = partData.find((i) => i.adcode === item.adcode);
+    const currData = mapData.find((i) => i.adcode === item.adcode);
     if (currData) {
       item.value = currData.value;
     }
@@ -359,7 +359,6 @@ const getSeriesDataByPart = (partData: any[], geoJson: GeoJson) => {
 
 // 组件挂载后初始化图表
 onMounted(() => {
-  console.log(mapData);
   initChart();
 });
 

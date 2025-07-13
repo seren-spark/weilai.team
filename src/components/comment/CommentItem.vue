@@ -56,7 +56,7 @@ const getSecondComment = async (commentId: number) => {
   });
 
   if (data.value?.data.postCommentAll) {
-    console.log(data.value);
+    //console.log(data.value);
 
     total.value = data.value.data.pageInfo.total;
     sonComments.value = data.value.data.postCommentAll.map((comment: any) => {
@@ -498,10 +498,48 @@ defineExpose({ userInfo });
 }
 @media screen and (max-width: 768px) {
   .comment-item {
+    .avatar {
+      width: 35px;
+      height: 35px;
+    }
     .content-box {
       .user-info {
+        margin-bottom: 2px;
         .nickname {
-          font-size: 14px;
+          font-size: 12px;
+        }
+        .time {
+          font-size: 10px;
+          margin-top: 1px;
+        }
+      }
+      .comment-text {
+        font-size: 13px;
+      }
+      .action-box {
+        .reply-btn {
+          margin-top: 2px;
+          font-size: 12px;
+          .replyIcon {
+            font-size: 11px;
+            margin-top: 3px;
+          }
+        }
+        .like-btn {
+          margin-top: 3px;
+          font-size: 12px;
+          .likeIcon {
+            font-size: 14px;
+            margin-top: 1px;
+          }
+        }
+        .delete-btn {
+          margin-top: 2px;
+          font-size: 12px;
+          .deleteIcon {
+            margin-top: 1px;
+            font-size: 15px;
+          }
         }
       }
     }

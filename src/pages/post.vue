@@ -5,6 +5,7 @@ import AppEditor from "@post/components/AppEditor.vue";
 import PostHeader from "@post/components/header/index.vue";
 import { onBeforeUnmount, reactive, ref, toRaw, watch } from "vue";
 import type { AcceptableInputValue } from "node_modules/radix-vue/dist/TagsInput/TagsInputRoot";
+// import { useAppEditor } from "@/features/post/composables/useAppEditor";
 import useAppEditor from "@/features/post/composables/useAppEditor";
 import * as z from "zod";
 import { toast } from "@/components/ui/toast";
@@ -25,8 +26,9 @@ interface PostErrors {
 interface PostResponse {
   postId: number | string;
 }
-
+//useAppEditor 默认有个参数true 表示可编辑editable（自己设置的）
 const { editor } = useAppEditor();
+
 const postData = reactive({
   title: "" as string | number | undefined,
   tags: [] as AcceptableInputValue[],
@@ -49,6 +51,7 @@ const postSchema = z.object({
     .min(10, { message: "摘要至少需要10个字符" })
     .max(200, { message: "摘要不能超过200个字符" }),
 });
+console.log("post");
 
 const validatePost = () => {
   const parseResult = postSchema.safeParse({
@@ -67,6 +70,8 @@ const validatePost = () => {
 };
 
 const putPost = (data: typeof postData) => {
+  console.log(data);
+
   return apiClient.post("/post/put", data);
 };
 
@@ -111,6 +116,7 @@ onBeforeUnmount(() => {
 
 <template>
   <Toaster />
+
   <div class="post-layout">
     <div class="post-layout__wrapper">
       <PostHeader

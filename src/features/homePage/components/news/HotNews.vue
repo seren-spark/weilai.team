@@ -147,6 +147,7 @@ onMounted(() => {
   width: 100%;
   height: 800px;
   overflow: hidden;
+  background-image: url(../../../../assets/img/homePage/Animation2.gif);
   background-color: #f4f8fb;
   .carousel-container {
     width: 100%;
@@ -882,7 +883,7 @@ onMounted(() => {
       &:nth-child(5) {
         left: calc(65.5% + 400px);
         // opacity: 0;
-        pointer-events: none;
+        // pointer-events: none;
       }
       .name {
         font-size: 25px;
