@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useLogin from "../../composables/useLoginAll";
 import LoginContent from "./LoginContent.vue";
-import { ref, watch, reactive, computed } from "vue";
+import { ref, watch, reactive } from "vue";
 import * as z from "zod";
 import { onMounted, onUnmounted } from "vue";
 import { Icon } from "@iconify/vue";
