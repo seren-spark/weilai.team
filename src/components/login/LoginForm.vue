@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useLogin from "../../composables/useLoginAll";
 import LoginContent from "./LoginContent.vue";
-import { ref, watch, reactive } from "vue";
+import { ref, watch, reactive, computed } from "vue";
 import * as z from "zod";
 import { onMounted, onUnmounted } from "vue";
 import { Icon } from "@iconify/vue";
@@ -24,6 +24,8 @@ const loginSchema = z.object({
 });
 
 const loading = ref(false);
+// const mouseX = ref(0);
+// const mouseY = ref(0);
 
 const validateLogin = () => {
   const loginResult = loginSchema.safeParse({
@@ -59,23 +61,102 @@ const handleClick = () => {
     isVisible.value = true;
   }
 };
+
+// 按钮状态
+// const buttonActive = computed(() => loginData.account && loginData.password);
+
+// // 1. 新增：用ref关联表单容器和按钮，动态获取DOM
+// const formRef = ref<HTMLDivElement | null>(document.querySelector("#loginOut")); // 表单容器（.loginOut）
+// const buttonRef = ref<HTMLButtonElement | null>(null); // 登录按钮
+
+// // 2. 移除硬编码的尺寸，改为动态计算
+// const buttonStyle = computed(() => {
+//   if (buttonActive.value) {
+//     return {
+//       transform: "translate(0px, 0px) rotateX(0deg) rotateY(0deg)",
+//       boxShadow: "0px 0px 0px rgba(0, 0, 0, 0.15)",
+//       pointerEvents: "auto",
+//     };
+//   }
+
+//   // 2.1 获取表单和按钮的真实尺寸（动态适配）
+//   const formDom = formRef.value;
+//   const buttonDom = buttonRef.value;
+//   console.log(formDom, buttonDom);
+//   if (!formDom || !buttonDom) return {};
+
+//   const formRect = formDom.getBoundingClientRect(); // 表单容器尺寸
+//   const buttonRect = buttonDom.getBoundingClientRect(); // 按钮尺寸
+
+//   // 2.2 计算按钮在表单内的中心坐标（相对表单的位置）
+//   const formWidth = formRect.width; // 表单实际宽度（替代硬编码的400）
+//   const formHeight = formRect.height; // 表单实际高度（替代硬编码的40）
+//   // 按钮左上角相对于表单的偏移量（X轴）
+//   const buttonOffsetX = buttonRect.left - formRect.left;
+//   // 按钮中心X坐标 = 偏移量 + 按钮宽度的一半（动态计算，非硬编码）
+//   const bx = buttonOffsetX + buttonRect.width / 2;
+//   // 按钮中心Y坐标（垂直方向，根据实际布局调整）
+//   const by = buttonOffsetX + buttonRect.height / 2;
+//   console.log(bx, by);
+//   // 2.3 计算鼠标在表单内的相对位置（以表单左上角为原点）
+//   const mouseInFormX = mouseX.value; // 修正：已改为表单参考系的X
+//   const mouseInFormY = mouseY.value; // 修正：已改为表单参考系的Y
+
+//   // 2.4 后续计算保持不变（距离、角度、椭圆半径等）
+//   const dist =
+//     Math.sqrt(Math.pow(mouseInFormX - bx, 2) + Math.pow(mouseInFormY - by, 2)) *
+//     2;
+//   const angle = Math.atan2(mouseInFormY - by, mouseInFormX - bx);
+//   const radius = Math.sqrt(
+//     Math.pow(buttonRect.width + 20, 2) * Math.pow(Math.cos(angle), 2) +
+//       Math.pow(buttonRect.height + 20, 2) * Math.pow(Math.sin(angle), 2),
+//   );
+//   const ox = -1 * Math.cos(angle) * Math.max((radius - dist) / 2, 0);
+//   const oy = -1 * Math.sin(angle) * Math.max((radius - dist) / 2, 0);
+//   const rx = oy / 2;
+//   const ry = -ox / 2;
+
+//   return {
+//     transform: `translate(${ox}px, ${oy}px) rotateX(${rx}deg) rotateY(${ry}deg)`,
+//     boxShadow: `0px ${Math.abs(oy)}px ${(Math.abs(oy) / radius) * 40}px rgba(0, 0, 0, 0.15)`,
+//     pointerEvents: "none",
+//   };
+// });
+
+// 鼠标移动监听（注意：若按钮在表单内，建议通过 ref 获取 DOM ，减少 document.getElementById 硬编码）
+// let handleMouseMove: ((event: MouseEvent) => void) | undefined;
 onMounted(() => {
+  //   handleMouseMove = (event: MouseEvent) => {
+  //     const form = document.getElementById("loginButton");
+  //     if (form) {
+  //       const rect = form.getBoundingClientRect();
+  //       mouseX.value = event.clientX - rect.left;
+  //       mouseY.value = event.clientY - rect.top;
+  //     }
+  //   };
+  //   window.addEventListener("mousemove", handleMouseMove);
   document.addEventListener("click", handleClick);
 });
+
 onUnmounted(() => {
+  //   if (handleMouseMove) {
+  //     window.removeEventListener("mousemove", handleMouseMove);
+  //   }
   document.removeEventListener("click", handleClick);
 });
 </script>
 
 <template>
-  <div class="loginOut">
+  <div id="loginOut" class="loginOut">
     <!-- :class="{ 'animate-fadeIn': isVisible }" -->
     <Card
       class="loginContent mx-auto max-w-sm"
       :class="{ clickContent: isVisible }"
     >
       <CardHeader>
-        <a  class="back" href="/"><Icon icon="streamline-ultimate:house-1"></Icon></a>
+        <a class="back" href="/"
+          ><Icon icon="streamline-ultimate:house-1"></Icon
+        ></a>
         <CardTitle class="loginTitle text-2xl"> 登录 </CardTitle>
       </CardHeader>
       <CardContent>
@@ -108,7 +189,14 @@ onUnmounted(() => {
               }
             "
           ></LoginContent>
+          <!-- :class="
+              buttonActive
+                ? 'button-active loginButton w-full'
+                : 'loginButton w-full'
+            "
+            :style="buttonStyle" -->
           <Button
+            id="loginButton"
             v-preventReClick
             type="submit"
             class="loginButton w-full"
@@ -172,6 +260,10 @@ onUnmounted(() => {
     background-color: #e1f2fd;
   }
 
+  .button-active {
+    transition: all 0.1s ease;
+  }
+
   .errorHead {
     display: flex;
     align-items: center;
@@ -180,7 +272,6 @@ onUnmounted(() => {
 
   .noWrite {
     border: 0.08rem solid var(--destructive-foreground);
-    // color: var(--destructive-foreground);
   }
 }
 
@@ -191,22 +282,15 @@ onUnmounted(() => {
   height: 100%;
 }
 
-// .loginContent.animate-fadeIn {
-//     opacity: 1;
-//     height: 100%;
-// }
-
 @keyframes fadeIn {
   0% {
     opacity: 0;
     height: 0%;
-    // transform: scale(0);
   }
 
   100% {
     opacity: 1;
     height: 100%;
-    // transform: scale(1);
   }
 }
 
@@ -221,65 +305,17 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 1400px) {
-  //   .loginOut {
-  //     width: 350px;
-  //   }
-
   .loginContent {
-    // margin-top: 80px;
-
     .loginTitle {
       text-align: center;
-      //   font-size: 30px;
-      //   margin: 5px 0 0px 0;
-    }
-
-    .inputTitle {
-      //   font-size: 14px;
-      //   margin: 3px 0 1px 0;
-    }
-
-    .formInput {
-      //   height: 36px;
-      //   font-size: 12px;
-    }
-
-    .loginButton {
-      //   height: 35px;
-      //   font-size: 14px;
-      //   margin-bottom: 25px;
     }
   }
 }
 
 @media screen and (max-width: 1200px) {
-  //   .loginOut {
-  //     width: 300px;
-  //   }
-
   .loginContent {
-    // margin-top: 70px;
-
     .loginTitle {
       text-align: center;
-      //   font-size: 28px;
-      //   margin: 0;
-    }
-
-    .inputTitle {
-      //   font-size: 12px;
-      //   margin: 0;
-    }
-
-    .formInput {
-      //   height: 28px;
-      //   font-size: 10px;
-    }
-
-    .loginButton {
-      //   height: 28px;
-      //   font-size: 13px;
-      //   margin-bottom: 15px;
     }
   }
 }
@@ -288,46 +324,17 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 500px) {
-  //   .loginOut {
-  //     width: 100%;
-  //     margin: 0;
-  //   }
-
   .loginContent {
     background: none;
-    // margin-top: 90px;
     border: none;
     box-shadow: none;
 
     .loginTitle {
-      // display: none;
-      //   width: 70px;
       text-align: start;
-      //   font-size: 32px;
-      //   margin: 8px 0 5px 0;
-      //   padding: 2px 3px;
-      //   border-bottom: #5abaf9 3px solid;
     }
 
     .inputTitle {
       display: none;
-      //   font-size: 18px;
-      //   margin: 2px 0 5px 0;
-    }
-
-    .formInput {
-      //   height: 60px;
-      //   font-size: 20px;
-      //   border-radius: 40px;
-      //   padding: 0 20px;
-      //   margin: 10px 0;
-    }
-
-    .loginButton {
-      //   height: 50px;
-      //   font-size: 24px;
-      //   border-radius: 25px;
-      //   margin-bottom: 15px;
     }
   }
 }

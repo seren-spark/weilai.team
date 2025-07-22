@@ -56,6 +56,7 @@ getAllTagList();
 
 .tag-head-bar {
   max-width: 100%;
+  min-width: 97%;
   position: absolute;
   top: 3.75rem;
   display: flex;

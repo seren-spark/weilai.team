@@ -39,11 +39,6 @@ watch(tagCloudList, () => {
 
 <template>
   <div class="word-cloud">
-    <!-- <div class="noWord">
-            <Icon icon="svg-spinners:3-dots-fade"></Icon>
-        </div> -->
-    <!-- <LoadingPage v-if="words.length == 0" /> -->
-    <!-- <vue-word-cloud class="cloud" :words=words /> -->
     <vue-word-cloud
       :words="words"
       :color="([, weight]: [string, number]) => getColor(weight)"
