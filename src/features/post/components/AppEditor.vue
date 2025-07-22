@@ -12,6 +12,8 @@ const props = defineProps<{
 watch(
   () => props.editor?.getJSON(),
   () => {
+ 
+
     emits("update:postContent", JSON.stringify(props.editor?.getJSON()));
   },
 );
@@ -31,6 +33,7 @@ const emits = defineEmits<{
 
 <style lang="scss">
 @use "/src/assets/styles/editor/index.scss";
+@use "@/features/post/styles/editor-table.scss";
 
 .app-editor {
   flex: 1 1 70%;

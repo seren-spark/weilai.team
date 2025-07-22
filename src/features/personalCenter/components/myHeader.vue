@@ -185,6 +185,7 @@
                 </FormItem>
               </FormField>
               <FormField
+                v-if="!userStore.permissions.includes('teacher')"
                 v-slot="{ componentField }"
                 name="graduationDestination"
               >
@@ -201,7 +202,11 @@
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="salaryYear">
+              <FormField
+                v-if="!userStore.permissions.includes('teacher')"
+                v-slot="{ componentField }"
+                name="salaryYear"
+              >
                 <FormItem>
                   <FormLabel>毕业薪资（元）</FormLabel>
                   <FormControl class="my-1">
@@ -216,7 +221,7 @@
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="lanQiaoCount">
+              <FormField v-if="!userStore.permissions.includes('teacher')" v-slot="{ componentField }" name="lanQiaoCount">
                 <FormItem>
                   <FormLabel>蓝桥杯获奖次数</FormLabel>
                   <FormControl class="my-1">
@@ -231,7 +236,7 @@
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="copyrightCount">
+              <FormField v-if="!userStore.permissions.includes('teacher')" v-slot="{ componentField }" name="copyrightCount">
                 <FormItem>
                   <FormLabel>软著数量</FormLabel>
                   <FormControl class="my-1">
@@ -247,6 +252,7 @@
               </FormField>
 
               <ChinaRegionSelect
+              v-if="!userStore.permissions.includes('teacher')"
                 ref="regionRef"
                 :province="regionObj.province"
                 :city="regionObj.city"
@@ -291,83 +297,115 @@
         <Icon v-show="isShow" width="20px" icon="quill:chevron-up" />
       </div>
       <div v-show="isShow" class="moreInfo">
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="tabler:number"
-          />&ensp;学号:
-          <span>{{ userInfo.studyId }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="ri:group-line"
-          />&ensp;组别:
-          <span>{{ userInfo.group }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="ic:outline-email"
-          />&ensp;邮箱:
-          <span>{{ userInfo.email }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="icon-park-outline:classroom"
-          />&ensp;班级:
-          <span>{{ userInfo.clazz }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="solar:phone-linear"
-          />&ensp;电话:
-          <span>{{ userInfo.phone }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="ri:qq-line"
-          />&ensp;QQ:
-          <span>{{ userInfo.qq }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="teenyicons:direction-outline"
-          />&ensp;毕业去向:
-          <span>{{ userInfo.graduationDestination }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="f7:money-yen"
-          />&ensp;毕业薪资:
-          <span>{{ formatCurrency(userInfo.salaryYear) }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="tabler:award"
-          />&ensp;蓝桥杯获奖:
-          <span>{{ userInfo.lanQiaoCount }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="ph:map-pin-area-bold"
-          />&ensp;所在地区:
-          <span>{{ userInfo.area }}</span>
-        </p>
-        <p>
-          <Icon
-            style="display: inline-block; font-size: 18px"
-            icon="material-symbols:copyright-outline"
-          />&ensp;软著数量:
-          <span>{{ userInfo.copyrightCount }}</span>
-        </p>
+        <template v-if="!userStore.permissions.includes('teacher')">
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="tabler:number"
+            />&ensp;学号:
+            <span>{{ userInfo.studyId }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="ri:group-line"
+            />&ensp;组别:
+            <span>{{ userInfo.group }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="ic:outline-email"
+            />&ensp;邮箱:
+            <span>{{ userInfo.email }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="icon-park-outline:classroom"
+            />&ensp;班级:
+            <span>{{ userInfo.clazz }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="solar:phone-linear"
+            />&ensp;电话:
+            <span>{{ userInfo.phone }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="ri:qq-line"
+            />&ensp;QQ:
+            <span>{{ userInfo.qq }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="teenyicons:direction-outline"
+            />&ensp;毕业去向:
+            <span>{{ userInfo.graduationDestination }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="f7:money-yen"
+            />&ensp;毕业薪资:
+            <span>{{ formatCurrency(userInfo.salaryYear) }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="tabler:award"
+            />&ensp;蓝桥杯获奖:
+            <span>{{ userInfo.lanQiaoCount }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="ph:map-pin-area-bold"
+            />&ensp;所在地区:
+            <span>{{ userInfo.area }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="material-symbols:copyright-outline"
+            />&ensp;软著数量:
+            <span>{{ userInfo.copyrightCount }}</span>
+          </p>
+        </template>
+        <template v-else>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="ic:outline-email"
+            />&ensp;邮箱:
+            <span>{{ userInfo.email }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="solar:phone-linear"
+            />&ensp;电话:
+            <span>{{ userInfo.phone }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="ri:qq-line"
+            />&ensp;QQ:
+            <span>{{ userInfo.qq }}</span>
+          </p>
+          <p>
+            <Icon
+              style="display: inline-block; font-size: 18px"
+              icon="ph:map-pin-area-bold"
+            />&ensp;所在地区:
+            <span>{{ userInfo.area }}</span>
+          </p>
+        </template>
       </div>
     </div>
 
@@ -436,7 +474,7 @@ const { showAlert } = useAlert();
 
 import ChinaRegionSelect from "./ChinaRegionSelect.vue";
 
-const open=ref(false);
+const open = ref(false);
 
 const imageUrl = ref("");
 const uploadStatus = ref("");
@@ -531,7 +569,6 @@ const formSchema = toTypedSchema(
     lanQiaoCount: z
       .number({
         invalid_type_error: "蓝桥杯获奖次数必须填写数字",
-        required_error: "蓝桥杯获奖次数不能为空",
       })
       .min(0, "蓝桥杯获奖次数不能少于0次")
       .max(100, "次数超过合理范围")
@@ -539,7 +576,6 @@ const formSchema = toTypedSchema(
     copyrightCount: z
       .number({
         invalid_type_error: "软著数量必须填写数字",
-        required_error: "软著数量不能为空",
       })
       .min(0, "软著数量不能少于0个")
       .max(100, "数量超过合理范围")
@@ -547,7 +583,6 @@ const formSchema = toTypedSchema(
     salaryYear: z
       .number({
         invalid_type_error: "毕业薪资必须填写数字",
-        required_error: "毕业薪资不能为空",
       })
       .min(0, "毕业薪资不能少于0元")
       .optional(),
@@ -557,25 +592,6 @@ const formSchema = toTypedSchema(
 // 选中省市区的值
 
 let userInfo = reactive({});
-
-// // 定义UserInfo接口
-// interface UserInfo {
-//   clazz: string;
-//   direction: string;
-//   email: string;
-//   grade: string;
-//   graduationDestination: string;
-//   group: string;
-//   headPortrait: string;
-//   lastLoginTime: string;
-//   lifePhoto: [];
-//   name: string;
-//   phone: string;
-//   qq: string;
-//   sex: string;
-//   studyId: string;
-//   userDestination: string;
-// }
 
 const form = useForm({
   validationSchema: formSchema,

@@ -83,8 +83,10 @@ function authorityTransformer(authority: string) {
     return "权限管理员";
   } else if (authority == "notice_admin") {
     return "公告管理员";
-  } else {
+  } else if (authority == "attendance_admin") {
     return "考勤管理员";
+  }else if (authority == "teacher") {
+    return "教师";
   }
 }
 
@@ -715,6 +717,10 @@ td {
 .attendance_admin {
   color: #6da8ff;
   border-color: #6da8ff;
+}
+.teacher {
+  color: #ff9e17;
+  border-color: #ff9e17;
 }
 @media (max-width: 768px) {
   .content {

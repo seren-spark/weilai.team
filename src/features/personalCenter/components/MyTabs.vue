@@ -1,22 +1,23 @@
 <template>
-  <Tabs default-value="posts" class="mt-4">
-    <TabsList class="grid w-full grid-cols-4">
-      <TabsTrigger value="posts"> 原创 </TabsTrigger>
-      <TabsTrigger value="schedule"> 课表 </TabsTrigger>
-      <TabsTrigger value="collections"> 收藏 </TabsTrigger>
-      <TabsTrigger value="photos"> 生活照片 </TabsTrigger>
+ <Tabs default-value="posts" class="mt-4">
+    <TabsList class="grid w-full " :class="gridColumnsClass">
+      <TabsTrigger value="posts">原创</TabsTrigger>
+      <TabsTrigger v-if="showSchedule" value="schedule">课表</TabsTrigger>
+      <TabsTrigger v-if="showCollections" value="collections">收藏</TabsTrigger>
+      <TabsTrigger value="photos">生活照片</TabsTrigger>
     </TabsList>
+
     <TabsContent value="posts">
-      <Posts></Posts>
+      <Posts />
     </TabsContent>
-    <TabsContent value="schedule">
-      <Schedule></Schedule>
+    <TabsContent v-if="showSchedule" value="schedule">
+      <Schedule />
     </TabsContent>
-    <TabsContent value="collections">
-      <Collections></Collections>
+    <TabsContent v-if="showCollections" value="collections">
+      <Collections />
     </TabsContent>
     <TabsContent value="photos">
-      <LifePhotos></LifePhotos>
+      <LifePhotos />
     </TabsContent>
   </Tabs>
 </template>
@@ -27,5 +28,21 @@ import Posts from "./Posts.vue";
 import Schedule from "./Schedule.vue";
 import Collections from "./Collections.vue";
 import LifePhotos from "./LifePhotos.vue";
+
+import { useUserStore } from "@/store/userStore";
+const userStore = useUserStore();
+
+import { computed } from "vue";
+
+const isTeacher = computed(() => userStore.permissions.includes("teacher"));
+const showSchedule = computed(() => !isTeacher.value && userStore.isSelf);
+const showCollections = computed(() => userStore.isSelf);
+
+const gridColumnsClass = computed(() => {
+  if (!userStore.isSelf) {
+    return isTeacher.value ? 'grid-cols-2' : 'grid-cols-3'
+  }
+  return isTeacher.value ? 'grid-cols-3' : 'grid-cols-4'
+})
 </script>
 <style lang="scss" scoped></style>

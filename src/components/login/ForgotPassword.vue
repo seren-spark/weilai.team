@@ -88,8 +88,7 @@ const handleCode = async () => {
   }
   watch(
     () => loading,
-    () => {
-    },
+    () => {},
   );
   useGetCode(fontData.email);
 };
