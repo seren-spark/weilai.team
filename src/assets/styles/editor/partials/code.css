@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@use "highlight.js/styles/atom-one-dark.css";
 .tiptap .code-block {
   position: relative;
   display: flex;
@@ -10,10 +11,11 @@
   margin: 1rem 0;
   overflow: hidden;
 }
-.tiptap .code-block__copy,
-.tiptap .code-block__lang {
+
+.tiptap .code-block__copy, .tiptap .code-block__lang {
   position: absolute;
 }
+
 .tiptap .code-block__lang {
   width: 100%;
   height: 36px;
@@ -27,6 +29,7 @@
   padding-left: 16px;
   font-size: 14px;
 }
+
 .tiptap .code-block__copy {
   top: 0;
   right: 0;
@@ -43,10 +46,12 @@
   color: var(--main-font-color);
   cursor: pointer;
 }
+
 .tiptap .code-block__copy::after {
   content: "";
   transition: color 0.3s;
 }
+
 .tiptap .code-block__copy::before {
   content: "复制成功";
   position: absolute;
@@ -55,29 +60,27 @@
   white-space: nowrap;
   opacity: 0;
   transform: translateX(5px);
-  transition:
-    color 0.3s,
-    opacity 0.3s,
-    transform 0.3s;
+  transition: color 0.3s, opacity 0.3s, transform 0.3s;
 }
+
 .tiptap .code-block__copy.copied::before {
   opacity: 1;
   transform: translateX(0);
 }
-.tiptap .code-block__copy:hover::before,
-.tiptap .code-block__copy:hover::after {
+
+.tiptap .code-block__copy:hover::before, .tiptap .code-block__copy:hover::after {
   color: var(--main-color);
 }
+
 .tiptap .code-block__line {
   padding: 6px 10px;
   opacity: 0.6;
   text-align: center;
-  -webkit-user-select: none;
-  -moz-user-select: none;
   user-select: none;
   color: var(--main-font-second-color);
   background-color: var(--main-card-second-background);
 }
+
 .tiptap .code-block__line-number {
   display: flex;
   align-items: center;
@@ -85,80 +88,41 @@
   height: 22px;
   font-size: 14px;
 }
+
 .tiptap .code-block__line br {
   display: none;
 }
+
 .tiptap .code-block pre {
   margin: 0;
   padding: 6px 10px;
   width: 100%;
   overflow-y: auto;
-  -webkit-user-select: text;
-  -moz-user-select: text;
   user-select: text;
   border-left: 1px solid var(--main-card-border);
 }
+
 .tiptap .code-block pre code {
   font-family: "Fira Code", var(--main-font-family), monospace;
   font-optical-sizing: auto;
 }
+
 .tiptap .code-block pre code .line {
   display: inline-block;
   height: 22px;
 }
+
 .tiptap .code-block pre code .line span {
   color: var(--shiki-light);
   transition: color 0.3s;
 }
+
 .tiptap .code-block pre code .line.highlighted {
   width: 100%;
   background-color: var(--main-card-border);
   border-radius: 6px;
 }
+
 .tiptap .code-block pre code .line:empty {
   height: 17px;
 }
-.tiptap .hljs-comment,
-.tiptap .hljs-quote {
-  color: #616161;
-}
-.tiptap .hljs-variable,
-.tiptap .hljs-template-variable,
-.tiptap .hljs-attribute,
-.tiptap .hljs-tag,
-.tiptap .hljs-name,
-.tiptap .hljs-regexp,
-.tiptap .hljs-link,
-.tiptap .hljs-name,
-.tiptap .hljs-selector-id,
-.tiptap .hljs-selector-class {
-  color: #f98181;
-}
-.tiptap .hljs-number,
-.tiptap .hljs-meta,
-.tiptap .hljs-built_in,
-.tiptap .hljs-builtin-name,
-.tiptap .hljs-literal,
-.tiptap .hljs-type,
-.tiptap .hljs-params {
-  color: #fbbc88;
-}
-.tiptap .hljs-string,
-.tiptap .hljs-symbol,
-.tiptap .hljs-bullet {
-  color: #b9f18d;
-}
-.tiptap .hljs-title,
-.tiptap .hljs-section {
-  color: #faf594;
-}
-.tiptap .hljs-keyword,
-.tiptap .hljs-selector-tag {
-  color: #70cff8;
-}
-.tiptap .hljs-emphasis {
-  font-style: italic;
-}
-.tiptap .hljs-strong {
-  font-weight: 700;
-} /*# sourceMappingURL=code.css.map */

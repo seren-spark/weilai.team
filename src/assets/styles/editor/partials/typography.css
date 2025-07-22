@@ -4,21 +4,24 @@
   border-bottom: 1px dashed var(--main-color-bg);
   padding-bottom: 1rem;
 }
+
 .tiptap h1 .header-anchor::before {
   display: none;
 }
+
 .tiptap h2 {
   font-size: 1.6rem;
   line-height: 1.6;
   border-bottom: 1px dashed var(--main-color-bg);
   padding-bottom: 0.5rem;
 }
+
 .tiptap h3 {
-  width: -moz-fit-content;
   width: fit-content;
   font-size: 1.2rem;
   z-index: 0;
 }
+
 .tiptap h3::after {
   content: "";
   position: absolute;
@@ -30,6 +33,7 @@
   background-color: var(--main-card-border);
   z-index: -1;
 }
+
 .tiptap h1,
 .tiptap h2,
 .tiptap h3,
@@ -37,15 +41,18 @@
   position: relative;
   cursor: pointer;
 }
+
 .tiptap h1:hover .header-anchor,
 .tiptap h2:hover .header-anchor,
 .tiptap h3:hover .header-anchor,
 .tiptap h4:hover .header-anchor {
   opacity: 1;
 }
+
 .tiptap p {
   font-size: 1rem;
 }
+
 .tiptap p,
 .tiptap ul,
 .tiptap li,
@@ -55,6 +62,7 @@
   letter-spacing: 0.6px;
   line-height: 2;
 }
+
 .tiptap p code,
 .tiptap ul code,
 .tiptap li code,
@@ -70,11 +78,10 @@
   transform: translateY(-2px);
   overflow-x: auto;
   max-width: 100%;
-  transition:
-    color 0.3s,
-    background-color 0.3s;
+  transition: color 0.3s, background-color 0.3s;
   cursor: pointer;
 }
+
 .tiptap p code:hover,
 .tiptap ul code:hover,
 .tiptap li code:hover,
@@ -82,6 +89,7 @@
   color: var(--main-color);
   background-color: var(--main-color-bg);
 }
+
 .tiptap p a,
 .tiptap ul a,
 .tiptap li a,
@@ -90,6 +98,7 @@
   display: inline-flex;
   color: var(--main-color);
 }
+
 .tiptap p a::before,
 .tiptap ul a::before,
 .tiptap li a::before,
@@ -105,6 +114,7 @@
   border-radius: 4px;
   transition: all 0.3s;
 }
+
 .tiptap p a:hover::before,
 .tiptap ul a:hover::before,
 .tiptap li a:hover::before,
@@ -115,9 +125,3 @@
   left: -2px;
   right: -2px;
 }
-.tiptap p strong,
-.tiptap ul strong,
-.tiptap li strong,
-.tiptap td strong {
-  color: var(--main-color);
-} /*# sourceMappingURL=typography.css.map */

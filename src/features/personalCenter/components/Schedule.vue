@@ -142,11 +142,23 @@
           <TableCell
             v-for="(item, itemIndex) in day"
             :key="itemIndex"
-            class="p-2 border-[1px] border-black cursor-pointer relative cell-ctrl group"
+            ref="tableCell"
+            class="p-2 border-[1px] border-black  relative cell-ctrl group"
+            :class="{
+              'cursor-pointer': userStore.isSelf,
+            }"
             @click.stop="handleCellClick(index, itemIndex, item)"
           >
             <template v-if="item">
-              <template v-if="isActive(index, itemIndex)">
+
+              <template v-if="!isActive(index, itemIndex)">
+                <!-- 课程信息正常显示 -->
+                <p>周数：{{ item.weeks }}</p>
+                <p>课程：{{ item.courseName }}</p>
+                <p>地点：{{ item.coursePlace }}</p>
+              </template>
+              <template v-else>
+                <template v-if="userStore.isSelf">
                 <!-- 只显示按钮 -->
                 <div class="flex flex-col gap-2">
                   <Button
@@ -170,22 +182,20 @@
                   </Button>
                 </div>
               </template>
-              <template v-else>
-                <!-- 课程信息正常显示 -->
-                <p>周数：{{ item.weeks }}</p>
-                <p>课程：{{ item.courseName }}</p>
-                <p>地点：{{ item.coursePlace }}</p>
               </template>
+              
             </template>
 
             <!-- 如果 item 不存在，显示添加 Icon（同之前逻辑） -->
             <template v-else>
-              <div class="flex justify-center items-center h-full min-h-[60px]" >
+              <template v-if="userStore.isSelf">
+                <div class="flex justify-center items-center h-full min-h-[60px]">
                 <Icon
                   icon="subway:add"
                   class="opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-gray-400 text-3xl"
                 />
               </div>
+              </template>
             </template>
           </TableCell>
         </TableRow>
@@ -255,6 +265,9 @@ import { onMounted, onBeforeUnmount } from "vue";
 const activeCell = ref(null); // 用于追踪当前激活的单元格：{ rowIndex, colIndex }
 
 function handleCellClick(rowIndex, colIndex, item) {
+if (!userStore.isSelf) {
+  return
+}
   if (!item) {
     initAddForm(rowIndex, colIndex);
   }
@@ -504,7 +517,7 @@ function dayTransformer(day) {
   }
 }
 @media (max-width: 768px) {
-  .mySchedule{
+  .mySchedule {
     width: 100vw;
     overflow-x: auto;
   }
