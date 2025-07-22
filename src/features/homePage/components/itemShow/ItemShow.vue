@@ -9,8 +9,8 @@
       <div class="titles">项目展示</div>
       <div class="items">
         <div class="shell">
-          <img src="../../../../assets/img/homePage/items/prj01.jpg" alt="" />
-          <span>项目1</span>
+          <img src="../../../../assets/img/homePage/items/prj01.png" alt="" />
+          <span>温心网</span>
         </div>
         <div class="shell">
           <img src="../../../../assets/img/homePage/items/prj02.png" alt="" />
@@ -29,8 +29,8 @@
           <span>小说网</span>
         </div>
         <div class="shell">
-          <img src="../../../../assets/img/homePage/items/prj06.png" alt="" />
-          <span>项目6</span>
+          <img src="../../../../assets/img/homePage/items/prj07.png" alt="" />
+          <span>双选系统</span>
         </div>
       </div>
     </div>
