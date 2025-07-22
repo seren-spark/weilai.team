@@ -1,6 +1,6 @@
 <template>
-  <Tabs default-value="posts" class="mt-4">
-    <TabsList class="grid w-full" :class="`grid-cols-${tabCount}`">
+ <Tabs default-value="posts" class="mt-4">
+    <TabsList class="grid w-full " :class="gridColumnsClass">
       <TabsTrigger value="posts">原创</TabsTrigger>
       <TabsTrigger v-if="showSchedule" value="schedule">课表</TabsTrigger>
       <TabsTrigger v-if="showCollections" value="collections">收藏</TabsTrigger>
@@ -38,11 +38,11 @@ const isTeacher = computed(() => userStore.permissions.includes("teacher"));
 const showSchedule = computed(() => !isTeacher.value && userStore.isSelf);
 const showCollections = computed(() => userStore.isSelf);
 
-const tabCount = computed(() => {
+const gridColumnsClass = computed(() => {
   if (!userStore.isSelf) {
-    return isTeacher.value ? 2 : 3;
+    return isTeacher.value ? 'grid-cols-2' : 'grid-cols-3'
   }
-  return isTeacher.value ? 3 : 4;
-});
+  return isTeacher.value ? 'grid-cols-3' : 'grid-cols-4'
+})
 </script>
 <style lang="scss" scoped></style>

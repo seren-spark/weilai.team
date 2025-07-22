@@ -185,6 +185,7 @@
                 </FormItem>
               </FormField>
               <FormField
+                v-if="!userStore.permissions.includes('teacher')"
                 v-slot="{ componentField }"
                 name="graduationDestination"
               >
@@ -201,7 +202,11 @@
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="salaryYear">
+              <FormField
+                v-if="!userStore.permissions.includes('teacher')"
+                v-slot="{ componentField }"
+                name="salaryYear"
+              >
                 <FormItem>
                   <FormLabel>毕业薪资（元）</FormLabel>
                   <FormControl class="my-1">
@@ -216,7 +221,7 @@
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="lanQiaoCount">
+              <FormField v-if="!userStore.permissions.includes('teacher')" v-slot="{ componentField }" name="lanQiaoCount">
                 <FormItem>
                   <FormLabel>蓝桥杯获奖次数</FormLabel>
                   <FormControl class="my-1">
@@ -231,7 +236,7 @@
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="copyrightCount">
+              <FormField v-if="!userStore.permissions.includes('teacher')" v-slot="{ componentField }" name="copyrightCount">
                 <FormItem>
                   <FormLabel>软著数量</FormLabel>
                   <FormControl class="my-1">
@@ -247,6 +252,7 @@
               </FormField>
 
               <ChinaRegionSelect
+              v-if="!userStore.permissions.includes('teacher')"
                 ref="regionRef"
                 :province="regionObj.province"
                 :city="regionObj.city"
@@ -371,7 +377,6 @@
           </p>
         </template>
         <template v-else>
-
           <p>
             <Icon
               style="display: inline-block; font-size: 18px"
@@ -564,7 +569,6 @@ const formSchema = toTypedSchema(
     lanQiaoCount: z
       .number({
         invalid_type_error: "蓝桥杯获奖次数必须填写数字",
-        required_error: "蓝桥杯获奖次数不能为空",
       })
       .min(0, "蓝桥杯获奖次数不能少于0次")
       .max(100, "次数超过合理范围")
@@ -572,7 +576,6 @@ const formSchema = toTypedSchema(
     copyrightCount: z
       .number({
         invalid_type_error: "软著数量必须填写数字",
-        required_error: "软著数量不能为空",
       })
       .min(0, "软著数量不能少于0个")
       .max(100, "数量超过合理范围")
@@ -580,7 +583,6 @@ const formSchema = toTypedSchema(
     salaryYear: z
       .number({
         invalid_type_error: "毕业薪资必须填写数字",
-        required_error: "毕业薪资不能为空",
       })
       .min(0, "毕业薪资不能少于0元")
       .optional(),
@@ -590,25 +592,6 @@ const formSchema = toTypedSchema(
 // 选中省市区的值
 
 let userInfo = reactive({});
-
-// // 定义UserInfo接口
-// interface UserInfo {
-//   clazz: string;
-//   direction: string;
-//   email: string;
-//   grade: string;
-//   graduationDestination: string;
-//   group: string;
-//   headPortrait: string;
-//   lastLoginTime: string;
-//   lifePhoto: [];
-//   name: string;
-//   phone: string;
-//   qq: string;
-//   sex: string;
-//   studyId: string;
-//   userDestination: string;
-// }
 
 const form = useForm({
   validationSchema: formSchema,
