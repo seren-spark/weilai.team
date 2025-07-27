@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Button } from "../ui/button";
+import { ref, watch, reactive, onMounted, onUnmounted } from "vue";
+import * as z from "zod";
+import Button from "./Button.vue";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useLogin from "../../composables/useLoginAll";
 import LoginContent from "./LoginContent.vue";
-import { ref, watch, reactive } from "vue";
-import * as z from "zod";
-import { onMounted, onUnmounted } from "vue";
+import useDanerceHook from "@/composables/useDance";
 import { Icon } from "@iconify/vue";
 
 const loginData = reactive({
@@ -17,6 +17,9 @@ interface LoginError {
   password: string;
 }
 
+const buttonRef = ref<{ style: any; getElement: () => HTMLElement } | null>(null);
+const { setDanceshow, resetPosition } = useDanerceHook(buttonRef);
+
 const filedErrors = ref<z.ZodFormattedError<LoginError> | undefined>();
 const loginSchema = z.object({
   account: z.string().min(1, { message: "请输入账号" }),
@@ -24,8 +27,6 @@ const loginSchema = z.object({
 });
 
 const loading = ref(false);
-// const mouseX = ref(0);
-// const mouseY = ref(0);
 
 const validateLogin = () => {
   const loginResult = loginSchema.safeParse({
@@ -47,7 +48,7 @@ const handleLogin = async () => {
   watch(
     () => loading,
     () => {
-      console.log(loading);
+      //   console.log(loading);
     },
   );
   getLogin(loginData.account, loginData.password);
@@ -62,86 +63,11 @@ const handleClick = () => {
   }
 };
 
-// 按钮状态
-// const buttonActive = computed(() => loginData.account && loginData.password);
-
-// // 1. 新增：用ref关联表单容器和按钮，动态获取DOM
-// const formRef = ref<HTMLDivElement | null>(document.querySelector("#loginOut")); // 表单容器（.loginOut）
-// const buttonRef = ref<HTMLButtonElement | null>(null); // 登录按钮
-
-// // 2. 移除硬编码的尺寸，改为动态计算
-// const buttonStyle = computed(() => {
-//   if (buttonActive.value) {
-//     return {
-//       transform: "translate(0px, 0px) rotateX(0deg) rotateY(0deg)",
-//       boxShadow: "0px 0px 0px rgba(0, 0, 0, 0.15)",
-//       pointerEvents: "auto",
-//     };
-//   }
-
-//   // 2.1 获取表单和按钮的真实尺寸（动态适配）
-//   const formDom = formRef.value;
-//   const buttonDom = buttonRef.value;
-//   console.log(formDom, buttonDom);
-//   if (!formDom || !buttonDom) return {};
-
-//   const formRect = formDom.getBoundingClientRect(); // 表单容器尺寸
-//   const buttonRect = buttonDom.getBoundingClientRect(); // 按钮尺寸
-
-//   // 2.2 计算按钮在表单内的中心坐标（相对表单的位置）
-//   const formWidth = formRect.width; // 表单实际宽度（替代硬编码的400）
-//   const formHeight = formRect.height; // 表单实际高度（替代硬编码的40）
-//   // 按钮左上角相对于表单的偏移量（X轴）
-//   const buttonOffsetX = buttonRect.left - formRect.left;
-//   // 按钮中心X坐标 = 偏移量 + 按钮宽度的一半（动态计算，非硬编码）
-//   const bx = buttonOffsetX + buttonRect.width / 2;
-//   // 按钮中心Y坐标（垂直方向，根据实际布局调整）
-//   const by = buttonOffsetX + buttonRect.height / 2;
-//   console.log(bx, by);
-//   // 2.3 计算鼠标在表单内的相对位置（以表单左上角为原点）
-//   const mouseInFormX = mouseX.value; // 修正：已改为表单参考系的X
-//   const mouseInFormY = mouseY.value; // 修正：已改为表单参考系的Y
-
-//   // 2.4 后续计算保持不变（距离、角度、椭圆半径等）
-//   const dist =
-//     Math.sqrt(Math.pow(mouseInFormX - bx, 2) + Math.pow(mouseInFormY - by, 2)) *
-//     2;
-//   const angle = Math.atan2(mouseInFormY - by, mouseInFormX - bx);
-//   const radius = Math.sqrt(
-//     Math.pow(buttonRect.width + 20, 2) * Math.pow(Math.cos(angle), 2) +
-//       Math.pow(buttonRect.height + 20, 2) * Math.pow(Math.sin(angle), 2),
-//   );
-//   const ox = -1 * Math.cos(angle) * Math.max((radius - dist) / 2, 0);
-//   const oy = -1 * Math.sin(angle) * Math.max((radius - dist) / 2, 0);
-//   const rx = oy / 2;
-//   const ry = -ox / 2;
-
-//   return {
-//     transform: `translate(${ox}px, ${oy}px) rotateX(${rx}deg) rotateY(${ry}deg)`,
-//     boxShadow: `0px ${Math.abs(oy)}px ${(Math.abs(oy) / radius) * 40}px rgba(0, 0, 0, 0.15)`,
-//     pointerEvents: "none",
-//   };
-// });
-
-// 鼠标移动监听（注意：若按钮在表单内，建议通过 ref 获取 DOM ，减少 document.getElementById 硬编码）
-// let handleMouseMove: ((event: MouseEvent) => void) | undefined;
 onMounted(() => {
-  //   handleMouseMove = (event: MouseEvent) => {
-  //     const form = document.getElementById("loginButton");
-  //     if (form) {
-  //       const rect = form.getBoundingClientRect();
-  //       mouseX.value = event.clientX - rect.left;
-  //       mouseY.value = event.clientY - rect.top;
-  //     }
-  //   };
-  //   window.addEventListener("mousemove", handleMouseMove);
   document.addEventListener("click", handleClick);
 });
 
 onUnmounted(() => {
-  //   if (handleMouseMove) {
-  //     window.removeEventListener("mousemove", handleMouseMove);
-  //   }
   document.removeEventListener("click", handleClick);
 });
 </script>
@@ -166,6 +92,8 @@ onUnmounted(() => {
             :account="loginData.account"
             :password="loginData.password"
             :handle-login="handleLogin"
+            :set-danceshow="setDanceshow"
+            :reset-position="resetPosition"
             @update:login-account="
               (val) => {
                 loginData.account = val;
@@ -197,7 +125,9 @@ onUnmounted(() => {
             :style="buttonStyle" -->
           <Button
             id="loginButton"
+            ref="buttonRef"
             v-preventReClick
+            :native-type="'button'"
             type="submit"
             class="loginButton w-full"
             @click="handleLogin"
@@ -258,6 +188,7 @@ onUnmounted(() => {
     box-shadow: none;
     border-radius: 1.2rem;
     background-color: #e1f2fd;
+    transition: all 0.1s ease;
   }
 
   .button-active {

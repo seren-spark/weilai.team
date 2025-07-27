@@ -10,17 +10,26 @@ interface LoginError {
   password: string | number;
 }
 
-defineProps<{
+interface Props {
   account: string | number | undefined;
   password: string | number | undefined;
   errors: Zod.ZodFormattedError<LoginError> | undefined;
   handleLogin: () => void;
-}>();
+  setDanceshow?: (show: boolean) => void; // 新增'
+  resetPosition?: () => void;
+}
+
+const props = defineProps<Props>(); // 修复点：显式声明 props
 
 defineEmits<{
   (e: "update:loginAccount", value: string | number | undefined): void;
   (e: "update:loginPassword", value: string | number | undefined): void;
 }>();
+
+const handleInput = () => {
+  props.setDanceshow?.(false);
+  props.resetPosition?.();
+};
 </script>
 <template>
   <div class="grid gap-2">
@@ -42,6 +51,7 @@ defineEmits<{
       placeholder="请输入学号或邮箱"
       required
       :model-value="account"
+      @input="handleInput"
       @update:model-value="(val) => $emit('update:loginAccount', val)"
     />
   </div>
@@ -67,6 +77,7 @@ defineEmits<{
       placeholder="请输入密码"
       required
       :model-value="password"
+      @input="handleInput"
       @update:model-value="(val) => $emit('update:loginPassword', val)"
       @keyup.enter="handleLogin"
     />
