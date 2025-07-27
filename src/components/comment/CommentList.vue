@@ -5,7 +5,7 @@ import CommentForm from "./CommentForm.vue";
 import apiClient from "@/api/axios";
 import { useRequest } from "vue-request";
 
-const pageSize = ref<number>(10);
+const pageSize = ref<number>(15);
 const pageNumber = ref<number>(1);
 const comments = reactive<any[]>([]);
 const props = defineProps<{
@@ -17,7 +17,7 @@ const getFirstComment = () => {
     `/comment/getCommentOne?postId=${props.postId}&pageSize=${pageSize.value}&pageNumber=${pageNumber.value}`,
   );
 };
-const { data: commentData, loading, run } = useRequest(getFirstComment);
+const { data: commentData, run } = useRequest(getFirstComment);
 watch(
   () => commentData.value,
   (newValue) => {

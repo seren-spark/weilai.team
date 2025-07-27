@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, computed, watchEffect, onMounted, onUnmounted } from "vue";
-import { useRequest } from "@/composables/useRequest";
+import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { Icon } from "@iconify/vue";
-import { marked } from "marked";
-import dompurify from "dompurify";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
 import { useAlert } from "@/composables/useAlert";
@@ -12,57 +9,54 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import apiClient from "@/api/axios";
+import { useRequest } from "vue-request";
 
 const props = defineProps<{
   postId: string | number;
   getFirstComment: () => void;
-  isComment: {
-    type: boolean;
-    default: false;
-  };
+  isComment?: boolean;
   userId: number;
   parentId: number;
   isFormVisible: boolean;
 }>();
 
-const { data, executeRequest } = useRequest();
 const { showAlert } = useAlert();
 const commentTexts = ref<string>("");
-// 用于保存拼接后的文本+图片编码
 const finalCommentText = ref<string>("");
 const maxLength = 1000;
 const remaining = computed(() => maxLength - commentTexts.value.length);
-const renderedContent = ref<string>("");
 const fileInput = ref<HTMLInputElement | null>(null);
 const imageTags = ref<string[]>([]);
 const photoUrls = ref<string[]>([]);
 const emojiVisible = ref<boolean>(false);
 const emit = defineEmits(["reply"]);
-const onSelectEmoji = (emoji: string) => {
+
+const onSelectEmoji = (emoji: { i: string }) => {
   commentTexts.value += emoji.i;
   emojiVisible.value = false;
 };
 
-// 更新内容并限制最大长度
+// 限制评论长度
 watch(commentTexts, (newContent) => {
   if (newContent.length > maxLength) {
     commentTexts.value = newContent.slice(0, maxLength);
   }
 });
-// 渲染的Markdown内容
-watchEffect(async () => {
-  const rawHTML = await marked(commentTexts.value);
-  renderedContent.value = dompurify.sanitize(rawHTML);
-});
-// 图片输入
+
+// 图片上传逻辑
 const uploadImg = () => {
   fileInput.value?.click();
 };
-// 处理文件选择
+
 const handleFileSelect = (event: Event) => {
   const files = (event.target as HTMLInputElement).files;
   if (files && files.length > 0) {
     const file = files[0];
+    if (file.size > 1024 * 1024) {
+      showAlert("图片大小不能超过 1MB", "error");
+      return;
+    }
     if (photoUrls.value.length >= 1) {
       showAlert("只能上传一张图片", "waring");
       return;
@@ -84,14 +78,12 @@ const handleFileSelect = (event: Event) => {
   }
 };
 
-// 删除图片
 const deleteImage = () => {
   photoUrls.value = [];
   imageTags.value = [];
   finalCommentText.value = "";
 };
 
-// 生命周期函数
 onMounted(() => {
   fileInput.value?.addEventListener("change", handleFileSelect);
 });
@@ -101,8 +93,50 @@ onUnmounted(() => {
     fileInput.value.removeEventListener("change", handleFileSelect);
   }
 });
-// 写一级评论
-const submitComment = async () => {
+
+// 封装评论请求逻辑（对齐示例中的 useRequest 用法）
+const createCommentRequest = (requestData: {
+  url: string;
+  method: string;
+  data: any;
+}) => {
+  return apiClient({
+    url: requestData.url,
+    method: requestData.method,
+    data: requestData.data,
+  });
+};
+
+const { data, run: executeRequest } = useRequest(createCommentRequest, {
+  manual: true,
+});
+
+watch(
+  () => data.value,
+  (response) => {
+    if (!response) return;
+
+    if (response.code === 200) {
+      showAlert("评论成功", "pass");
+      // 区分一级评论和多级评论的后续操作
+      if (props.isComment) {
+        props.getFirstComment();
+      } else {
+        emit("reply", props.parentId);
+      }
+      // 清空表单
+      commentTexts.value = "";
+      photoUrls.value = [];
+      imageTags.value = [];
+      finalCommentText.value = "";
+    } else {
+      showAlert("评论失败", "error");
+    }
+  },
+);
+
+// 提交一级评论
+const submitComment = () => {
   finalCommentText.value += commentTexts.value;
   if (!finalCommentText.value.trim()) {
     showAlert("评论内容不能为空", "error");
@@ -110,63 +144,41 @@ const submitComment = async () => {
   }
 
   const requestData = {
-    postId: props.postId,
-    commentTxt: finalCommentText.value,
-  };
-  // 发送请求
-  await executeRequest({
     url: `/comment/writePostComment`,
     method: "post",
-    requestData,
-  });
-  if (data.value?.code == 200) {
-    showAlert("评论成功", "pass");
-    props.getFirstComment();
-    commentTexts.value = "";
-    photoUrls.value = [];
-    imageTags.value = [];
-    finalCommentText.value = "";
-  } else {
-    showAlert("评论失败", "error");
-  }
+    data: {
+      postId: props.postId,
+      commentTxt: finalCommentText.value,
+    },
+  };
+  executeRequest(requestData);
 };
-//多级评论
-const submitReply = async (commentId: number, userId: number) => {
+
+// 提交多级评论
+const submitReply = () => {
   finalCommentText.value += commentTexts.value;
   if (!finalCommentText.value.trim()) {
     showAlert("评论内容不能为空", "error");
     return;
   }
-  const replyCommentDTO = {
-    commentId: commentId,
-    commentTxt: finalCommentText.value,
-    userId: userId,
-  };
-  //console.log("提交的请求数据:", replyCommentDTO);
-  await executeRequest({
+
+  const requestData = {
     url: `/comment/replyComment`,
     method: "post",
-    requestData: replyCommentDTO,
-  });
-  //console.log(data.value);
-
-  if (data.value?.code == 200) {
-    showAlert("评论成功", "pass");
-    commentTexts.value = "";
-    finalCommentText.value = "";
-    photoUrls.value = [];
-    imageTags.value = [];
-    emit("reply", commentId);
-  } else {
-    showAlert("评论失败", "error");
-  }
+    data: {
+      commentId: props.parentId,
+      commentTxt: finalCommentText.value,
+      userId: props.userId,
+    },
+  };
+  executeRequest(requestData);
 };
 
 const handleButtonClick = () => {
   if (props.isComment) {
     submitComment();
   } else {
-    submitReply(props.parentId, props.userId);
+    submitReply();
   }
 };
 </script>
