@@ -13,23 +13,17 @@ export const getGeoJson = (type: string, name: any) => {
 }
 
 // 获取地图数据
-export const getMapData = (type: string, mapData: { adcode: number, value: number }[]) => {
+export const getMapData = (type: string) => {
     // const data = [{ adcode: 110000, value: 100 }]
     // 获取中国数据
-    if (type === 'china') return axios.get('/mock/china.json')
+    if (type === 'china') {
+        return axios.get('/mock/china.json')
+    }
 
     // 获取省、直辖市、自治区的数据（山东省）
     if (type === 'province')
         return axios.get('/mock/province.json')
-    // return {
-    //     data: mapData
-    // }
-
 
     // 获取区、县的数据（济南市）
-
-
     return axios.get('/mock/city.json')
-
-
 }

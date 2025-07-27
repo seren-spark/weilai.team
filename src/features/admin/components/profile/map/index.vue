@@ -5,7 +5,6 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
-// import { EChartsOption, AnimationEasing } from 'echarts';
 
 import * as echarts from "echarts";
 import {
@@ -159,7 +158,7 @@ const bindContextmenuChart = () => {
 const getGeoAndMapData = async (type: string, mapName: string) => {
   const [{ data: geoJson }, res] = await Promise.all([
     getGeoJson(type, mapName),
-    getMapData(type, mapData),
+    getMapData(type),
   ]);
   const { data: partData } = res.data;
   return { geoJson, partData };
@@ -200,6 +199,7 @@ const registerRenderMap = (
   geoJson: any,
   specialAreas: any = {},
 ) => {
+  console.log("Registering geoJson:", geoJson);
   echarts.registerMap(mapName, geoJson, specialAreas);
   renderMap(mapName, partData, geoJson);
 };
@@ -219,10 +219,6 @@ const renderMap = (mapName: string, partData: any[], geoJson: any) => {
     tooltip: {
       trigger: "item",
       formatter: "{b}<br>{c}人",
-      //   formatter: function (params: { name: string; data: { adcode: string } }) {
-      //     // params 是包含数据项的详细信息的对象
-      //     return params.name + "<br>" + params.data.adcode;
-      //   },
       backgroundColor: "#fff",
       textStyle: {
         color: "#999",
@@ -250,9 +246,6 @@ const renderMap = (mapName: string, partData: any[], geoJson: any) => {
         map: mapName, // 同 registerMap 方法的第一个参数一致
         zoom: 1.25, // 当前视角的缩放比例
         zlevel: 1, // 用于 Canvas 分层，不同zlevel值的图形会放置在不同的 Canvas 中
-        // center: [105.5, 33.5],
-        // roam: true,
-        // projection: "mercator",
         scaleLimit: {
           min: 0.8,
           max: 2,
@@ -266,7 +259,6 @@ const renderMap = (mapName: string, partData: any[], geoJson: any) => {
               color: "#123", // 文本颜色
               fontSize: 14,
             },
-            // formatter: '{b}\n{c}', // 文本上显示的值  data:[{name: "地名", value: 数据}],  {b}表示label信息,{c}代表value
           },
           // 高亮状态下的文本样式
           emphasis: {
@@ -339,8 +331,10 @@ const getSeriesDataByPart = (partData: any[], geoJson: GeoJson) => {
     data.push(...attachData);
   }
 
-  data = data.filter((item: { adcode: number }) => item.adcode !== JD_ADCODE); // Check if JD_ADCODE is defined
+  // 添加防御性判断
+  if (!mapData) return data;
 
+  data = data.filter((item: { adcode: number }) => item.adcode !== JD_ADCODE);
   data.forEach((item: { adcode: number; value: number }) => {
     const currData = mapData.find((i) => i.adcode === item.adcode);
     if (currData) {
@@ -350,12 +344,6 @@ const getSeriesDataByPart = (partData: any[], geoJson: GeoJson) => {
 
   return data;
 };
-
-// 根据seriesData 动态计算生成 visualMap 的最大值的函数
-// const getVisualMapMax = (seriesData: any[]) => {
-//   const maxValue = Math.max(...seriesData.map((item) => item.value));
-//   return parseInt(maxValue.toString()) + 50;
-// };
 
 // 组件挂载后初始化图表
 onMounted(() => {
