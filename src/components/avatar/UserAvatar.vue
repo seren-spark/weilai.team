@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { watch } from "vue";
 const props = defineProps<{
   avatar?: string | undefined;
   isLoading?: boolean | undefined;
   customClass?: string | undefined;
 }>();
-
+watch(
+  () => props.avatar,
+  (newValue) => {
+    console.log(newValue);
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
@@ -20,7 +27,7 @@ const props = defineProps<{
     </div>
 
     <div v-else :class="'avatar-info ' + customClass ? customClass : ''">
-      <Avatar :class="customClass ? customClass : 'w-full h-full'" >
+      <Avatar :class="customClass ? customClass : 'w-full h-full'">
         <AvatarImage
           :src="avatar ? avatar : ''"
           alt="@radix-vue"

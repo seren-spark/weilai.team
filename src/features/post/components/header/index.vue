@@ -10,6 +10,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import router from "@/router";
+import type { UserInfo } from "@/components/comment/index.ts";
+import { useRequest } from "@/composables/useRequest";
+const { data, executeRequest } = useRequest();
+import { useUserStore } from "@/store/userStore";
+import { ref } from "vue";
+import Avatar from "@/components/avatar/UserAvatar.vue";
+const userInfo = ref<UserInfo>();
+
+const userStore = useUserStore();
+async function getUserInfo() {
+  await executeRequest({
+    url: `/user/getUserInfoByUserId/${userStore.getMyId()}`,
+    method: "get",
+  });
+  userInfo.value = data.value.data as UserInfo;
+  return userInfo.value;
+}
+getUserInfo();
 
 interface PostErrors {
   postTitle: string;
@@ -24,6 +43,7 @@ const props = defineProps<{
   isPublishing: boolean;
   isTitleTooltip: boolean;
   errors: Zod.ZodFormattedError<PostErrors> | undefined;
+  name: string | undefined;
 }>();
 
 watch(
@@ -41,8 +61,17 @@ defineEmits<{
 
 <template>
   <header class="post-header">
-    <div class="post-header__profile">头像</div>
-    <div class="post-header__message">消息</div>
+    <div class="post-header__profile avatar">
+      <Avatar :avatar="userStore.avatar" />
+    </div>
+    &nbsp;
+    <div
+      class="post-header__message"
+      style="cursor: pointer; color: var(--secondary-foreground)"
+      @click="() => router.back()"
+    >
+      {{ userInfo?.name }}
+    </div>
     <div class="post-header__title">
       <TooltipProvider :disable-hoverable-content="true">
         <Tooltip :open="!!errors?.postTitle">
@@ -60,6 +89,17 @@ defineEmits<{
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+    </div>
+    <div
+      class="post-header__message"
+      style="
+        cursor: pointer;
+        color: var(--secondary-foreground);
+        margin-right: 0.8rem;
+      "
+      @click="() => router.back()"
+    >
+      返回
     </div>
     <Button
       class="post-header__publish"
@@ -127,6 +167,11 @@ defineEmits<{
 
   &__title {
     margin: 0 auto;
+  }
+  .avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
   }
 }
 </style>

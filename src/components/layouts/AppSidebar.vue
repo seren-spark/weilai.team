@@ -45,6 +45,7 @@ async function getUserInfo() {
     method: "get",
   });
   userInfo.value = data.value.data as UserInfo;
+  return userInfo.value;
 }
 getUserInfo();
 

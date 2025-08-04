@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
         "
       ></PostHeader>
       <main class="post-layout__content">
-        <PrimarySidebar></PrimarySidebar>
+        <PrimarySidebar :editor="editor"></PrimarySidebar>
         <AppEditor
           :editor="editor"
           :post-content="postData.postTxt"

@@ -36,7 +36,7 @@ defineProps<{
     </div>
 
     <div v-else class="article-header__avatar">
-      <UserAvatar :avatar="avatar " custom-class="w-[2.5rem] h-[2.5rem]"/>
+      <UserAvatar :avatar="avatar" custom-class="w-[2.5rem] h-[2.5rem]" />
       <div class="article-header__info">
         <p class="article-header__info-author">{{ author }}</p>
         <p class="article-header__info-postTime">{{ postTime }}</p>
@@ -94,7 +94,7 @@ defineProps<{
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-
+  margin-bottom: 1rem;
   &__avatar {
     display: flex;
     align-items: center;
@@ -122,7 +122,8 @@ defineProps<{
   &__title {
     font-size: 1.75rem;
     font-weight: 600;
-    margin: 1rem 0;
+    margin: 0.2rem 0;
+    margin-bottom: 0;
   }
 
   &__tags {
