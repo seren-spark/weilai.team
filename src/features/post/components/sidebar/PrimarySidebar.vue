@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import Collapsible from "@/components/ui/collapsible/Collapsible.vue";
-import CollapsibleContent from "@/components/ui/collapsible/CollapsibleContent.vue";
-import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.vue";
-import { Icon } from "@iconify/vue/dist/iconify.js";
+import Catalog from "./Catalog.vue";
+// import Collapsible from "@/components/ui/collapsible/Collapsible.vue";
+// import CollapsibleContent from "@/components/ui/collapsible/CollapsibleContent.vue";
+// import CollapsibleTrigger from "@/components/ui/collapsible/CollapsibleTrigger.vue";
+// import { Icon } from "@iconify/vue/dist/iconify.js";
 import { ref } from "vue";
-
+import type { Editor } from "@tiptap/vue-3";
+defineProps<{
+  editor: Editor | undefined;
+}>();
 const isOpen = ref(true);
 </script>
 
 <template>
   <aside class="primary-sidebar">
-    <Collapsible v-model:open="isOpen" class="primary-sidebar__group">
+    <!-- 原位置为模板 -->
+    <!-- <Collapsible v-model:open="isOpen" class="primary-sidebar__group">
       <CollapsibleTrigger class="primary-sidebar__header">
         <Icon icon="carbon:template"></Icon>
         <span class="primary-sidebar__header-text">模板</span>
@@ -19,7 +24,8 @@ const isOpen = ref(true);
       <CollapsibleContent class="primary-sidebar__content">
         <div class="">模板1</div>
       </CollapsibleContent>
-    </Collapsible>
+    </Collapsible> -->
+    <Catalog :editor="editor" />
   </aside>
 </template>
 
