@@ -297,7 +297,7 @@ const handleCode = async () => {
   getCode(stuInformData.email);
 };
 
-const currentStep = ref(2);
+const currentStep = ref(1);
 const showAreaPicker = ref(false);
 const showUploadOptions = ref(false);
 const showCamera = ref(false);
