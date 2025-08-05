@@ -145,7 +145,8 @@ const isTocOpen = ref(true);
         />
       </CollapsibleContent>
     </Collapsible>
-    <Collapsible v-model:open="isTocOpen" class="secondary-sidebar__group">
+    <!-- 目录 -->
+    <!-- <Collapsible v-model:open="isTocOpen" class="secondary-sidebar__group">
       <CollapsibleTrigger class="secondary-sidebar__header">
         <Icon icon="lucide:table-of-contents"></Icon>
         <span class="secondary-sidebar__header-text">目录</span>
@@ -157,7 +158,7 @@ const isTocOpen = ref(true);
       <CollapsibleContent class="secondary-sidebar__content">
         <Toc :editor="editor"></Toc>
       </CollapsibleContent>
-    </Collapsible>
+    </Collapsible> -->
   </aside>
 </template>
 
