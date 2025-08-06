@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted, ref, reactive, watch } from "vue";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,10 +17,10 @@ import {
 } from "@/components/ui/select";
 import { Icon } from "@iconify/vue";
 import PlaneAnimation from "./PlaneAnimation.vue";
+import { useAlert } from "@/composables/useAlert";
 
 const useApplicationStore = applicationStore();
 useApplicationStore.isGetCode();
-// const { loading } = useLogin()
 const loading = ref(false);
 const stuInformData = reactive({
   clazz: "计科241" as string,
@@ -31,8 +30,8 @@ const stuInformData = reactive({
   qqNumber: "" as string | number | undefined,
   sex: "男" as string,
   studentId: "" as string | number | undefined,
-  file1: null as unknown as File,
-  file2: null as unknown as File,
+  file1: null as File | null,
+  file2: null as File | null,
 });
 
 interface stuErrors {
@@ -45,34 +44,34 @@ interface stuErrors {
   file2: string;
 }
 
-function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (file) {
-    convertToBinary(file);
-  }
-}
+// function handleFileChange(event: Event) {
+//   const target = event.target as HTMLInputElement;
+//   const file = target.files?.[0];
+//   if (file) {
+//     convertToBinary(file);
+//   }
+// }
 
-function convertToBinary(file: File, fileType: "file1" | "file2") {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const binaryData = e.target?.result;
-    if (binaryData) {
-      const newFile = new File([binaryData], file.name, { type: file.type });
+// function convertToBinary(file: File, fileType: "file1" | "file2") {
+//   const reader = new FileReader();
+//   reader.onload = (e) => {
+//     const binaryData = e.target?.result;
+//     if (binaryData) {
+//       const newFile = new File([binaryData], file.name, { type: file.type });
 
-      if (fileType === "file1") {
-        stuInformData.file1 = newFile;
-        emitUpdataFile1(newFile);
-      } else {
-        stuInformData.file2 = newFile;
-        emitUpdataFile2(newFile);
-      }
-    } else {
-      console.error("Failed to read file as binary data");
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
+//       if (fileType === "file1") {
+//         stuInformData.file1 = newFile;
+//         emitUpdataFile1(newFile);
+//       } else {
+//         stuInformData.file2 = newFile;
+//         emitUpdataFile2(newFile);
+//       }
+//     } else {
+//       console.error("Failed to read file as binary data");
+//     }
+//   };
+//   reader.readAsArrayBuffer(file);
+// }
 
 const appStore = applicationStore();
 
@@ -183,8 +182,10 @@ const valiFirstDate = () => {
 };
 
 // 判空处理提交表单数据函数
+const { showAlert } = useAlert();
 const handleSend = async () => {
   if (!validateStu()) {
+    showAlert("请填写完整信息", "error");
     return;
   }
   watch(
@@ -194,6 +195,8 @@ const handleSend = async () => {
     },
   );
   const formData = new FormData();
+  console.log(stuInformData.file1);
+  console.log(stuInformData.file2);
   formData.append("clazz", stuInformData.clazz);
   formData.append("code", String(stuInformData.code) || "");
   formData.append("email", String(stuInformData.email) || "");
@@ -201,8 +204,12 @@ const handleSend = async () => {
   formData.append("qqNumber", String(stuInformData.qqNumber) || "");
   formData.append("sex", stuInformData.sex);
   formData.append("studentId", String(stuInformData.studentId) || "");
-  formData.append("file1", stuInformData.file1);
-  formData.append("file2", stuInformData.file2);
+  if (stuInformData.file1) {
+    formData.append("file1", stuInformData.file1);
+  }
+  if (stuInformData.file2) {
+    formData.append("file2", stuInformData.file2);
+  }
   sentStuInfo(formData);
 };
 
@@ -217,25 +224,25 @@ const emitUpdataCode = (val: string | number | undefined) => {
   }
 };
 
-const emitUpdataFile1 = (val: File) => {
-  stuInformData.file1 = val;
-  const result = stuSchema.pick({ file1: true }).safeParse({
-    file1: val,
-  });
-  if (filedErrors.value) {
-    filedErrors.value.file1 = result.error?.format().file1;
-  }
-};
+// const emitUpdataFile1 = (val: File) => {
+//   stuInformData.file1 = val;
+//   const result = stuSchema.pick({ file1: true }).safeParse({
+//     file1: val,
+//   });
+//   if (filedErrors.value) {
+//     filedErrors.value.file1 = result.error?.format().file1;
+//   }
+// };
 
-const emitUpdataFile2 = (val: File) => {
-  stuInformData.file2 = val;
-  const result = stuSchema.pick({ file2: true }).safeParse({
-    file2: val,
-  });
-  if (filedErrors.value) {
-    filedErrors.value.file2 = result.error?.format().file2;
-  }
-};
+// const emitUpdataFile2 = (val: File) => {
+//   stuInformData.file2 = val;
+//   const result = stuSchema.pick({ file2: true }).safeParse({
+//     file2: val,
+//   });
+//   if (filedErrors.value) {
+//     filedErrors.value.file2 = result.error?.format().file2;
+//   }
+// };
 
 const emitUpdataEmail = (val: string | number | undefined) => {
   stuInformData.email = val;
@@ -298,7 +305,7 @@ const handleCode = async () => {
 };
 
 const currentStep = ref(1);
-const showAreaPicker = ref(false);
+// const showAreaPicker = ref(false);
 const showUploadOptions = ref(false);
 const showCamera = ref(false);
 const photo = ref(1);
@@ -323,10 +330,10 @@ const prevStep = () => {
   currentStep.value = 1;
 };
 
-const selectArea = (area: string) => {
-  //   formData.value.area = area;
-  showAreaPicker.value = false;
-};
+// const selectArea = (area: string) => {
+//   //   formData.value.area = area;
+//   showAreaPicker.value = false;
+// };
 
 const selectFile = () => {
   showUploadOptions.value = false;
@@ -360,7 +367,6 @@ const handleFile2Select = (event: Event) => {
   const file = target.files?.[0];
   if (file) {
     resumeFile2.value = file;
-
     // 如果是图片文件，生成预览
     if (file.type.startsWith("image/")) {
       stuInformData.file2 = file;
@@ -410,9 +416,11 @@ const capturePhoto = () => {
         });
         if (photo.value === 1) {
           resumeFile1.value = file;
+          stuInformData.file1 = file;
           resumePreview1.value = canvas.toDataURL();
         } else if (photo.value === 2) {
           resumeFile2.value = file;
+          stuInformData.file2 = file;
           resumePreview2.value = canvas.toDataURL();
         }
         closeCamera();
@@ -433,9 +441,11 @@ const removeFile = (key: number) => {
   if (key == 1) {
     resumeFile1.value = undefined;
     resumePreview1.value = "";
+    stuInformData.file1 = null;
   } else if (key == 2) {
     resumeFile2.value = undefined;
     resumePreview2.value = "";
+    stuInformData.file2 = null;
   }
 };
 
@@ -457,9 +467,6 @@ onUnmounted(() => {
 
 <template>
   <div class="recruitment-form">
-    <!-- <div id="plane" :style="planeStyle">
-      <Icon icon="fa-solid:paper-plane" aria-hidden="true"></Icon>
-    </div> -->
     <PlaneAnimation />
     <Card class="mx-auto border-0 bg-0 recruitment-card">
       <div class="applyTitle">
@@ -675,26 +682,6 @@ onUnmounted(() => {
               </Button>
             </div>
           </div>
-          <!-- <div class="grid gap-2">
-            <div class="grid w-full max-w-sm items-center gap-1.5">
-              <Label for="tabular" class="text-base font-bold form-label"
-                >报名表
-              </Label>
-              <div v-if="filedErrors?.file?._errors" class="errorHead">
-                <Icon class="errorIcon" icon="solar:file-broken"></Icon>
-                <span>{{ filedErrors?.file?._errors[0] }}</span>
-              </div>
-              <Input
-                id="picture"
-                type="file"
-                class="text-base py-3 h-12 form-input"
-                :class="{ noWrite: filedErrors?.file?._errors }"
-                accept=".docx"
-                multiple
-                @change="handleFileChange"
-              />
-            </div>
-          </div> -->
           <button class="next-btn" @click.prevent="nextStep">下一页</button>
         </div>
         <div v-if="currentStep === 2" class="applyForm">
@@ -868,7 +855,7 @@ onUnmounted(() => {
       <div class="camera-modal">
         <div class="camera-header">
           <button @click="closeCamera">
-            <Icon icon="material-symbols:close-small"></Icon>
+            <Icon class="camera-header-x" icon="material-symbols:close-small"></Icon>
           </button>
           <h3>拍照上传</h3>
         </div>
@@ -1116,44 +1103,44 @@ onUnmounted(() => {
   background: #f8f9fa;
   border-radius: 8px;
   text-align: left;
-}
 
-.file-icon {
-  font-size: 32px;
-  color: #667eea;
-}
+  .file-icon {
+    font-size: 32px;
+    color: #667eea;
+  }
 
-.file-info {
-  flex: 1;
-}
+  .file-info {
+    flex: 1;
 
-.file-name {
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  // 添加以下样式来实现文本省略
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px; // 可根据需要调整宽度
-}
+    .file-name {
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      // 添加以下样式来实现文本省略
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px; // 可根据需要调整宽度
+    }
 
-.file-size {
-  color: #666;
-  font-size: 14px;
-}
+    .file-size {
+      color: #666;
+      font-size: 14px;
+    }
+  }
 
-.remove-file {
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  font-size: 30px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .remove-file {
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .preview-filename {
@@ -1172,59 +1159,59 @@ onUnmounted(() => {
   justify-content: center;
   z-index: 1000;
   padding: 20px;
-}
 
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  max-width: 400px;
-  width: 100%;
-  max-height: 80vh;
-  overflow: auto;
-}
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: auto;
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-}
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
 
-.modal-header h3 {
-  margin: 0;
-}
+      h3 {
+        margin: 0;
+      }
 
-.modal-header button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #999;
-}
+      button {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+      }
+    }
+  }
 
-.upload-options {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .upload-options {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 
-.upload-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: #f8f9fa;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.2s;
-}
+    .upload-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #f8f9fa;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s;
 
-.upload-option:hover {
-  background: #e9ecef;
+      &:hover {
+        background: #e9ecef;
+      }
+    }
+  }
 }
 
 .camera-modal {
@@ -1233,46 +1220,50 @@ onUnmounted(() => {
   width: 90vw;
   max-width: 500px;
   overflow: hidden;
-}
 
-.camera-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #eee;
-}
+  .camera-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
 
-.camera-container {
-  position: relative;
-  aspect-ratio: 4/3;
-}
+    .camera-header-x{
+        font-size: 24px;
+    }
+  }
 
-.camera-container video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  .camera-container {
+    position: relative;
+    aspect-ratio: 4/3;
 
-.camera-controls {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-}
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
 
-.capture-btn {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #667eea;
-  color: white;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .camera-controls {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+
+    .capture-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #667eea;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 @media (min-width: 768px) {
@@ -1298,39 +1289,4 @@ onUnmounted(() => {
     }
   }
 }
-
-// @keyframes slideIn {
-//   0% {
-//     transform: translateX(0);
-//   }
-
-//   25% {
-//     transform: translateX(-10px);
-//   }
-
-//   50% {
-//     transform: translateX(10px);
-//   }
-
-//   75% {
-//     transform: translateX(-10px);
-//   }
-
-//   100% {
-//     transform: translateX(0);
-//   }
-// }
-
-// /* 背景动画 */
-// @keyframes bgAnimation {
-//   0% {
-//     background-position: 0% 50%;
-//   }
-//   50% {
-//     background-position: 100% 50%;
-//   }
-//   100% {
-//     background-position: 0% 50%;
-//   }
-// }
 </style>
