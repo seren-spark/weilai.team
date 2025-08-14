@@ -174,16 +174,16 @@ watch(
     &__item {
       padding: 0;
       &--level1 {
-        font-size: 1rem;
+        font-size: 1.2rem;
       }
 
       &--level2 {
-        font-size: 1rem;
+        font-size: 1.1rem;
         padding-left: 1.5rem;
       }
 
       &--level3 {
-        font-size: 0.8rem;
+        font-size: 1rem;
         padding-left: 2rem;
       }
 

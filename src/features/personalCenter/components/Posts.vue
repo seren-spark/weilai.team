@@ -57,16 +57,16 @@
               </div>
               <DropdownMenu v-if="userStore.isSelf">
                 <DropdownMenuTrigger class="ellipsis h-4">
-                  <Icon icon="lucide:ellipsis" class="text-2xl"/>
+                  <Icon icon="lucide:ellipsis" class="text-2xl" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent class="bg-white">
                   <DropdownMenuItem class="text-gray-500 cursor-pointer">
-                    <Icon icon="material-symbols:delete-outline"  />
+                    <Icon icon="material-symbols:delete-outline" />
                     <span @click="deletePost(item.postId)"> 删除文章 </span>
                   </DropdownMenuItem>
                   <DropdownMenuItem class="text-gray-500 cursor-pointer">
                     <Icon icon="jam:write" />
-                    <span>修改文章</span>
+                    <span @click="updatePost(item.postId)">修改文章</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -80,7 +80,9 @@
             @update:page="handlePageChange"
           >
           </Pagination>
-          <span class="postsNum">共 {{ userPostAllInfo.allPostCount }} 篇文章</span>
+          <span class="postsNum"
+            >共 {{ userPostAllInfo.allPostCount }} 篇文章</span
+          >
         </div>
       </div>
     </template>
@@ -111,9 +113,21 @@ import NoData from "@/components/loading/NoData.vue";
 import { showConfirm } from "@/composables/useConfirm";
 import TagItem from "@/features/community/components/tag/TagItem.vue";
 import { useAlert } from "@/composables/useAlert";
+import router from "@/router";
 const { showAlert } = useAlert();
 const userStore = useUserStore();
 console.log("pinia///", userStore);
+interface UserPost {
+  postId: number;
+  title: string;
+  tags: string[];
+  putTime: string;
+  postLikeCount: number;
+  collectCount: number;
+  commentCount: number;
+  viewCount: number;
+  postAbstract: string;
+}
 // 获取userId
 let userId = 0;
 if (userStore.isSelf) {
@@ -148,7 +162,7 @@ let currentPage = 1;
 let pageSize = ref(10);
 
 //定义userPost，储存当前页的文章数据
-let userPost = ref([]);
+let userPost = ref<UserPost[]>([]);
 
 //页码切换
 function handlePageChange(newPage: number) {
@@ -177,23 +191,24 @@ async function getPosts() {
 getPosts();
 
 async function deletePost(id: number) {
-  console.log("删除文章id",id);
-  
+  console.log("删除文章id", id);
+
   showConfirm({
     content: "你确定要删除该文章吗",
     description: "一旦删除文章将不存在",
   }).then(() => {
-   executeRequest({ url: `/post/delete/${id}`, method: "put" }).then(() => {
+    executeRequest({ url: `/post/delete/${id}`, method: "put" }).then(() => {
       if (data.value && data.value.code == 2002) {
         showAlert("删除成功", "pass");
         getPosts();
       } else {
         showAlert("删除失败", "error");
-
-        
       }
     });
   });
+}
+function updatePost(id: number) {
+  router.push(`/post?id=${id}`);
 }
 </script>
 <style lang="scss" scoped>
