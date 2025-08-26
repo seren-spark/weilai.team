@@ -111,8 +111,6 @@ function onItemClick(e: Event, id: string) {
       `[data-toc-id="${id}"`,
     ) as Element;
     const pos = props.editor?.view.posAtDOM(element, 0); //获取元素位置
-    console.log(pos, 555555);
-
     const tr = props.editor?.view.state.tr; //用于修改编辑器状态
 
     tr.setSelection(new TextSelection(tr.doc.resolve(pos))); //将光标移到对应位置
@@ -188,13 +186,13 @@ function onItemClick(e: Event, id: string) {
 
 <style lang="scss" scoped>
 .toc {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
   &__list {
     position: relative;
     display: flex;
     flex-direction: column;
-    max-height: calc(70vh - 58px);
     gap: 0.5rem;
-
     --main-color: #425aef;
     --main-color-bg: #4259ef0d;
   }
