@@ -17,7 +17,9 @@ interface LoginError {
   password: string;
 }
 
-const buttonRef = ref<{ style: any; getElement: () => HTMLElement } | null>(null);
+const buttonRef = ref<{ style: any; getElement: () => HTMLElement } | null>(
+  null,
+);
 const { setDanceshow, resetPosition } = useDanerceHook(buttonRef);
 
 const filedErrors = ref<z.ZodFormattedError<LoginError> | undefined>();
@@ -79,10 +81,10 @@ onUnmounted(() => {
       class="loginContent mx-auto max-w-sm"
       :class="{ clickContent: isVisible }"
     >
-      <CardHeader>
-        <a class="back" href="/"
-          ><Icon icon="streamline-ultimate:house-1"></Icon
-        ></a>
+      <CardHeader class="flex items-center">
+        <a class="back" href="/">
+          <Icon icon="streamline-ultimate:house-1"></Icon>
+        </a>
         <CardTitle class="loginTitle text-2xl"> 登录 </CardTitle>
       </CardHeader>
       <CardContent>
@@ -147,6 +149,7 @@ onUnmounted(() => {
 
 .back {
   position: absolute;
+  left: 1.5rem;
   font-size: 1.6rem;
   top: 2rem;
   color: rgb(119, 119, 119);
@@ -160,7 +163,7 @@ onUnmounted(() => {
   border-radius: 1rem;
   opacity: 0;
   height: 0;
-  overflow: hidden;
+  //   overflow: hidden;
   animation: fadeIn 0.5s linear forwards;
   animation-delay: 2.4s;
 

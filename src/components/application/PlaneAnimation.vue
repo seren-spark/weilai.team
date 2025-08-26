@@ -78,7 +78,7 @@ onUnmounted(() => {
 <style scoped>
 #plane {
   color: #79abfe;
-  font-size: 4rem;
+  font-size: 2.5rem;
   /* 绝对定位 */
   position: absolute;
   /* 弹性布局 水平+垂直居中 */

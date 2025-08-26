@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, reactive, watch } from "vue";
+import { ref, reactive, watch } from "vue";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +18,7 @@ import {
 import { Icon } from "@iconify/vue";
 import PlaneAnimation from "./PlaneAnimation.vue";
 import { useAlert } from "@/composables/useAlert";
+import SubmitLoading from "./SubmitLoading.vue";
 
 const useApplicationStore = applicationStore();
 useApplicationStore.isGetCode();
@@ -140,6 +141,13 @@ const stuBasicSchema = stuSchema.pick({
   studentId: true,
 });
 
+const fileOneSchema = stuSchema.pick({
+  file1: true,
+});
+const fileTwoSchema = stuSchema.pick({
+  file2: true,
+});
+
 const validateStu = () => {
   const stuResult = stuSchema.safeParse({
     code: stuInformData.code,
@@ -180,6 +188,24 @@ const valiFirstDate = () => {
   }
   return stuBasic.success;
 };
+const valiSecondDate = () => {
+  const fileOne = fileOneSchema.safeParse({
+    file1: stuInformData.file1,
+  });
+  if (!fileOne.success) {
+    filedErrors.value = fileOne.error.format();
+  }
+  return fileOne.success;
+};
+const valiThirdDate = () => {
+  const fileTwo = fileTwoSchema.safeParse({
+    file2: stuInformData.file2,
+  });
+  if (!fileTwo.success) {
+    filedErrors.value = fileTwo.error.format();
+  }
+  return fileTwo.success;
+};
 
 // 判空处理提交表单数据函数
 const { showAlert } = useAlert();
@@ -195,8 +221,6 @@ const handleSend = async () => {
     },
   );
   const formData = new FormData();
-  console.log(stuInformData.file1);
-  console.log(stuInformData.file2);
   formData.append("clazz", stuInformData.clazz);
   formData.append("code", String(stuInformData.code) || "");
   formData.append("email", String(stuInformData.email) || "");
@@ -210,7 +234,8 @@ const handleSend = async () => {
   if (stuInformData.file2) {
     formData.append("file2", stuInformData.file2);
   }
-  sentStuInfo(formData);
+  isVisible.value = !isVisible.value;
+  sentStuInfo(formData, isVisible);
 };
 
 // Emit更新事件
@@ -224,25 +249,25 @@ const emitUpdataCode = (val: string | number | undefined) => {
   }
 };
 
-// const emitUpdataFile1 = (val: File) => {
-//   stuInformData.file1 = val;
-//   const result = stuSchema.pick({ file1: true }).safeParse({
-//     file1: val,
-//   });
-//   if (filedErrors.value) {
-//     filedErrors.value.file1 = result.error?.format().file1;
-//   }
-// };
+const emitUpdataFile1 = (val: File) => {
+  stuInformData.file1 = val;
+  const result = stuSchema.pick({ file1: true }).safeParse({
+    file1: val,
+  });
+  if (filedErrors.value) {
+    filedErrors.value.file1 = result.error?.format().file1;
+  }
+};
 
-// const emitUpdataFile2 = (val: File) => {
-//   stuInformData.file2 = val;
-//   const result = stuSchema.pick({ file2: true }).safeParse({
-//     file2: val,
-//   });
-//   if (filedErrors.value) {
-//     filedErrors.value.file2 = result.error?.format().file2;
-//   }
-// };
+const emitUpdataFile2 = (val: File) => {
+  stuInformData.file2 = val;
+  const result = stuSchema.pick({ file2: true }).safeParse({
+    file2: val,
+  });
+  if (filedErrors.value) {
+    filedErrors.value.file2 = result.error?.format().file2;
+  }
+};
 
 const emitUpdataEmail = (val: string | number | undefined) => {
   stuInformData.email = val;
@@ -305,9 +330,7 @@ const handleCode = async () => {
 };
 
 const currentStep = ref(1);
-// const showAreaPicker = ref(false);
 const showUploadOptions = ref(false);
-const showCamera = ref(false);
 const photo = ref(1);
 
 const resumeFile1 = ref<File>();
@@ -317,8 +340,8 @@ const resumePreview2 = ref<string>();
 
 const fileInput1 = ref<HTMLInputElement>();
 const fileInput2 = ref<HTMLInputElement>();
-const videoElement = ref<HTMLVideoElement>();
-const canvasElement = ref<HTMLCanvasElement>();
+
+const isVisible = ref(false);
 
 const nextStep = () => {
   if (valiFirstDate()) {
@@ -329,11 +352,6 @@ const nextStep = () => {
 const prevStep = () => {
   currentStep.value = 1;
 };
-
-// const selectArea = (area: string) => {
-//   //   formData.value.area = area;
-//   showAreaPicker.value = false;
-// };
 
 const selectFile = () => {
   showUploadOptions.value = false;
@@ -349,9 +367,10 @@ const handleFile1Select = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (file) {
-    resumeFile1.value = file;
+    emitUpdataFile1(file);
     // 如果是图片文件，生成预览
-    if (file.type.startsWith("image/")) {
+    if (valiSecondDate()) {
+      resumeFile1.value = file;
       stuInformData.file1 = file;
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -362,13 +381,15 @@ const handleFile1Select = (event: Event) => {
   }
 };
 
+// 预览
 const handleFile2Select = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (file) {
-    resumeFile2.value = file;
+    emitUpdataFile2(file);
     // 如果是图片文件，生成预览
-    if (file.type.startsWith("image/")) {
+    if (valiThirdDate()) {
+      resumeFile2.value = file;
       stuInformData.file2 = file;
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -379,64 +400,7 @@ const handleFile2Select = (event: Event) => {
   }
 };
 
-// 打开相机
-const openCamera = async () => {
-  showUploadOptions.value = false;
-  showCamera.value = true;
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-    });
-    if (videoElement.value) {
-      videoElement.value.srcObject = stream;
-    }
-  } catch (error) {
-    console.error("无法访问相机:", error);
-    alert("无法访问相机，请检查权限设置");
-    showCamera.value = false;
-  }
-};
-
-const capturePhoto = () => {
-  if (videoElement.value && canvasElement.value) {
-    const video = videoElement.value;
-    const canvas = canvasElement.value;
-    const context = canvas.getContext("2d");
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    context?.drawImage(video, 0, 0);
-
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const file = new File([blob], `resume_${Date.now()}.jpg`, {
-          type: "image/jpeg",
-        });
-        if (photo.value === 1) {
-          resumeFile1.value = file;
-          stuInformData.file1 = file;
-          resumePreview1.value = canvas.toDataURL();
-        } else if (photo.value === 2) {
-          resumeFile2.value = file;
-          stuInformData.file2 = file;
-          resumePreview2.value = canvas.toDataURL();
-        }
-        closeCamera();
-      }
-    });
-  }
-};
-
-const closeCamera = () => {
-  if (videoElement.value?.srcObject) {
-    const stream = videoElement.value.srcObject as MediaStream;
-    stream.getTracks().forEach((track) => track.stop());
-  }
-  showCamera.value = false;
-};
-
+// 移除文件
 const removeFile = (key: number) => {
   if (key == 1) {
     resumeFile1.value = undefined;
@@ -449,6 +413,7 @@ const removeFile = (key: number) => {
   }
 };
 
+// 格式化文件大小
 const formatFileSize = (bytes: number) => {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
@@ -456,18 +421,11 @@ const formatFileSize = (bytes: number) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 };
-
-onUnmounted(() => {
-  // 确保在组件卸载时正确关闭相机
-  if (showCamera.value) {
-    closeCamera();
-  }
-});
 </script>
 
 <template>
   <div class="recruitment-form">
-    <PlaneAnimation />
+    <PlaneAnimation style="pointer-events: none" />
     <Card class="mx-auto border-0 bg-0 recruitment-card">
       <div class="applyTitle">
         <img src="@/assets/img/小组logo.png" alt="logo" class="applyLogo" />
@@ -597,9 +555,9 @@ onUnmounted(() => {
                   filedErrors?.studentId?._errors,
               }"
               :model-value="stuInformData.studentId"
-              @update:model-value="(val) => emitUpdataStudentId(val)"
               placeholder="学号"
               required
+              @update:model-value="(val) => emitUpdataStudentId(val)"
             />
           </div>
           <div class="section-header">
@@ -622,8 +580,8 @@ onUnmounted(() => {
                   filedErrors?.qqNumber?._errors,
               }"
               :model-value="stuInformData.qqNumber"
-              @update:model-value="(val) => emitUpdataQqNumber(val)"
               placeholder="QQ"
+              @update:model-value="(val) => emitUpdataQqNumber(val)"
             />
           </div>
           <div class="grid gap-2">
@@ -644,8 +602,8 @@ onUnmounted(() => {
               }"
               :model-value="stuInformData.email"
               type="email"
-              @update:model-value="(val) => emitUpdataEmail(val)"
               placeholder="邮箱"
+              @update:model-value="(val) => emitUpdataEmail(val)"
             />
           </div>
           <div class="grid gap-2">
@@ -688,7 +646,7 @@ onUnmounted(() => {
           <div class="section-header">
             <div class="section-title">上传简历</div>
             <div class="section-subtitle">
-              请上传您的个人简历，支持拍照或选择文件
+              请拍照上传您的个人简历（简历模版在小组招新群聊中，请填写并打印）
             </div>
           </div>
           <div class="upload-section">
@@ -705,7 +663,8 @@ onUnmounted(() => {
               </div>
               <div class="upload-placeholder">
                 <Icon icon="material-symbols:upload" class="upload-icon"></Icon>
-                <p>点击上传简历正面</p>
+                <p v-if="resumeFile1 != undefined">点击切换简历正面</p>
+                <p v-else>点击上传简历正面</p>
                 <span>支持图片格式</span>
               </div>
             </div>
@@ -722,7 +681,8 @@ onUnmounted(() => {
               </div>
               <div class="upload-placeholder">
                 <Icon icon="material-symbols:upload" class="upload-icon"></Icon>
-                <p>点击上传简历反面</p>
+                <p v-if="resumeFile2 != undefined">点击切换简历反面</p>
+                <p v-else>点击上传简历反面</p>
                 <span>支持图片格式</span>
               </div>
             </div>
@@ -731,7 +691,7 @@ onUnmounted(() => {
               v-if="resumeFile1 != undefined || resumeFile2 != undefined"
               class="uploaded-files"
             >
-              <h3>已上传文件</h3>
+              <h3 class="section-header">已上传文件</h3>
               <div class="file-list">
                 <div v-if="resumeFile1 != undefined" class="uploaded-file">
                   <Icon
@@ -771,7 +731,7 @@ onUnmounted(() => {
               v-if="resumeFile1 != undefined || resumeFile2 != undefined"
               class="preview-section"
             >
-              <h3>文件预览</h3>
+              <h3 class="section-header">文件预览</h3>
               <div class="preview-grid">
                 <div v-if="resumeFile1 != undefined" class="preview-item">
                   <img
@@ -815,13 +775,9 @@ onUnmounted(() => {
           </button>
         </div>
         <div class="upload-options">
-          <button class="upload-option" @click="openCamera">
-            <Icon icon="material-symbols:add-a-photo-outline"></Icon>
-            拍照上传
-          </button>
           <button class="upload-option" @click="selectFile">
             <Icon icon="material-symbols:file-export-outline"></Icon>
-            选择文件
+            选择图片
           </button>
         </div>
       </div>
@@ -832,8 +788,8 @@ onUnmounted(() => {
       id="picture"
       ref="fileInput1"
       type="file"
-      :class="{ noWrite: filedErrors?.file1?._errors }"
-      accept=".jpg,.jpeg,.png"
+      :model-value="stuInformData.file1"
+      accept="image/png, image/jpeg, image/jpg"
       multiple
       style="display: none"
       @change="handleFile1Select"
@@ -844,32 +800,15 @@ onUnmounted(() => {
       ref="fileInput2"
       type="file"
       :class="{ noWrite: filedErrors?.file2?._errors }"
-      accept=".jpg,.jpeg,.png"
+      :model-value="stuInformData.file2"
+      accept="image/png, image/jpeg, image/jpg"
       multiple
       style="display: none"
       @change="handleFile2Select"
     />
 
-    <!-- 相机弹窗 -->
-    <div v-if="showCamera" class="modal-overlay">
-      <div class="camera-modal">
-        <div class="camera-header">
-          <button @click="closeCamera">
-            <Icon class="camera-header-x" icon="material-symbols:close-small"></Icon>
-          </button>
-          <h3>拍照上传</h3>
-        </div>
-        <div class="camera-container">
-          <video ref="videoElement" autoplay playsinline></video>
-          <canvas ref="canvasElement" style="display: none"></canvas>
-        </div>
-        <div class="camera-controls">
-          <button class="capture-btn" @click="capturePhoto">
-            <Icon icon="material-symbols:photo-camera-outline"></Icon>
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- 报名表提交加载动画 -->
+    <SubmitLoading :is-visible="isVisible" />
   </div>
 </template>
 <style scoped lang="scss">
@@ -907,6 +846,9 @@ onUnmounted(() => {
         margin-left: 40px;
 
         .step {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           text-align: center;
           margin-left: 30px;
           .step-icon {
@@ -1053,8 +995,10 @@ onUnmounted(() => {
   .errorHead {
     display: flex;
     align-items: center;
+    justify-content: center;
     color: var(--destructive-foreground);
     font-size: 16px;
+    margin-bottom: 10px;
 
     .errorIcon {
       margin-right: 4px;
@@ -1145,6 +1089,8 @@ onUnmounted(() => {
 
 .preview-filename {
   font-size: 16px;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .modal-overlay {
@@ -1229,8 +1175,8 @@ onUnmounted(() => {
     background: #f8f9fa;
     border-bottom: 1px solid #eee;
 
-    .camera-header-x{
-        font-size: 24px;
+    .camera-header-x {
+      font-size: 24px;
     }
   }
 
