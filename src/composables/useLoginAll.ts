@@ -63,7 +63,7 @@ export default function () {
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
           //   localStorage.setItem("userId", resData.userId);
           //  清除缓存
-          userstore.reset();
+          userstore.resetStorage();
           //用户默认有概况权限
           userstore.permissions = ["profile_admin", ...resData.permissions];
           showAlert("登录成功！", "pass");
@@ -157,7 +157,7 @@ export default function () {
       const res = data.value as Data;
       if (res.code == 200) {
         showAlert("退出登录成功", "pass");
-        userstore.reset();
+        userstore.resetStorage();
         localStorage.removeItem("token");
         router.push({ path: "/login", query: { redirect: route.path } });
       }
