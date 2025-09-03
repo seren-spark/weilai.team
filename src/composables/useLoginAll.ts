@@ -62,7 +62,8 @@ export default function () {
           setLocalStorageWithExpire("token", resData.token, 1000 * 60 * 60);
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
           //   localStorage.setItem("userId", resData.userId);
-          console.log("用户登录权限", resData.permissions);
+          //  清除缓存
+          userstore.reset();
           //用户默认有概况权限
           userstore.permissions = ["profile_admin", ...resData.permissions];
           showAlert("登录成功！", "pass");
