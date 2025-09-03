@@ -30,29 +30,39 @@ import { useRequest } from "vue-request";
 import { ref, watch } from "vue";
 import type { ApiResponseData } from "@/types/api-response";
 import type { AttendanceOverview } from "@/types/attendance-overview";
-
+import { useLoading } from "@/composables/useLoading";
+const { show, hide } = useLoading();
 const date = ref();
-watch(
-  () => date.value,
-  () => {
-    run();
-  },
-);
 
-const getLeaveInfo = () => {
+const getLeaveInfo = async () => {
   return apiClient({
     url: `/Attendance/getAttendanceInfoBySingleTime`,
     method: "get",
     params: {
       group: "全部",
       time: String(date.value ? new Date(date.value) : new Date()),
+      shift: 0,
     },
   });
 };
-const { data, run } =
+const { data, runAsync } =
   useRequest<ApiResponseData<AttendanceOverview>>(getLeaveInfo);
+watch(
+  () => date.value,
+  async () => {
+    show();
+    try {
+      await runAsync();
+    } finally {
+      hide();
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
-getLeaveInfo();
+// getLeaveInfo();
 </script>
 
 <style scoped lang="scss">

@@ -4,7 +4,14 @@ export interface AttendanceOverview {
   userCountCurrent: number;
   userCountShould: number;
   teamTable: TeamTableItem;
-
+  detail: {
+    userCurrentName: string[];
+    userLeavesName: string[];
+    userLateName: string[];
+    userShouldName: string[];
+    userClockInName: string[];
+    userRateName: string[];
+  };
   lineChart: ChartData;
 }
 export const group = {

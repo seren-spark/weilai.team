@@ -48,6 +48,8 @@ let localModelValue = ref<DateValue | null>(props.modelValue || null);
 watch(
   () => props.modelValue,
   (newValue) => {
+    console.log(newValue,"header newValue");
+    
     localModelValue.value = newValue || null;
   },
 );
