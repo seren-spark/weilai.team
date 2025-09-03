@@ -31,6 +31,7 @@ export const useUserStore = defineStore("user", {
         JSON.parse(localStorage.getItem("userId") as string).value,
       );
       this.isSelf = true;
+      this.permissions = [];
     },
   },
   getters: {
