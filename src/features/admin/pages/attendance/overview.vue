@@ -2,11 +2,15 @@
   <div class="content">
     <!-- 选择日期 -->
     <div class="header">
-      <Header v-model="date"></Header>
+      <Header v-model="date" @update:select-value="updateSelectValue"></Header>
     </div>
     <!-- 考勤统计 -->
 
-    <statistics class="statistics" :data="data?.data"></statistics>
+    <statistics
+      class="statistics"
+      :data="data?.data"
+      :timeText="convertTime(selectValue)"
+    ></statistics>
     <!-- 近日趋势和部门明细 -->
     <div class="foot">
       <div class="recent-trend">
@@ -33,7 +37,7 @@ import type { AttendanceOverview } from "@/types/attendance-overview";
 import { useLoading } from "@/composables/useLoading";
 const { show, hide } = useLoading();
 const date = ref();
-
+const selectValue = ref(0);
 const getLeaveInfo = async () => {
   return apiClient({
     url: `/Attendance/getAttendanceInfoBySingleTime`,
@@ -41,14 +45,14 @@ const getLeaveInfo = async () => {
     params: {
       group: "全部",
       time: String(date.value ? new Date(date.value) : new Date()),
-      shift: 0,
+      shift: Number(selectValue.value),
     },
   });
 };
 const { data, runAsync } =
   useRequest<ApiResponseData<AttendanceOverview>>(getLeaveInfo);
 watch(
-  () => date.value,
+  [selectValue, date],
   async () => {
     show();
     try {
@@ -61,8 +65,19 @@ watch(
     immediate: true,
   },
 );
-
-// getLeaveInfo();
+// 转换时间段
+const convertTime = (value: number) => {
+  return value == 0
+    ? "一天"
+    : value == 1
+      ? "上午"
+      : value == 2
+        ? "下午"
+        : "晚上";
+};
+const updateSelectValue = (value: string) => {
+  selectValue.value = Number(value);
+};
 </script>
 
 <style scoped lang="scss">

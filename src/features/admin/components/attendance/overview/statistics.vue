@@ -17,7 +17,10 @@ import {
 } from "@/components/ui/dialog";
 import Dialog from "@/components/ui/dialog/Dialog.vue";
 
-const props = defineProps<{ data: AttendanceOverview | undefined }>();
+const props = defineProps<{
+  data: AttendanceOverview | undefined;
+  timeText: string;
+}>();
 
 // 出勤率
 const rate = computed(() => {
@@ -125,9 +128,13 @@ const dialogMap = {
         </Card>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent class="attendance-dialog max-w-max">
         <DialogHeader>
-          <DialogTitle>{{ dialogType }}({{ dialogData.length }})</DialogTitle>
+          <DialogTitle
+            >{{ timeText }} · {{ dialogType }}({{
+              dialogData.length
+            }})</DialogTitle
+          >
           <!-- <DialogDescription>
             Make changes to your profile here. Click save when you're done.
           </DialogDescription> -->
@@ -153,7 +160,7 @@ const dialogMap = {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  max-height: 200px;
+  max-height: 300px;
   min-height: 150px;
   .person-item {
     color: var(--secondary-foreground);

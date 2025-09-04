@@ -1,29 +1,56 @@
 <template>
   <div>
     <p class="time">日期</p>
-    <Popover>
-      <PopoverTrigger as-child>
-        <Button
-          variant="outline"
-          :class="
-            cn(
-              'w-[280px] justify-start text-left font-normal',
-              !value && 'text-muted-foreground',
-            )
-          "
-        >
-          <CalendarIcon class="mr-2 h-4 w-4" />
-          {{ value ? df(value.toDate(getLocalTimeZone())) : df(new Date()) }}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent class="w-auto p-0">
-        <Calendar v-model="value" initial-focus locale="zh-CN" />
-      </PopoverContent>
-    </Popover>
+    <div class="flex">
+      <Popover>
+        <PopoverTrigger as-child>
+          <Button
+            variant="outline"
+            :class="
+              cn(
+                'w-[280px] justify-start text-left font-normal',
+                !value && 'text-muted-foreground',
+              )
+            "
+          >
+            <CalendarIcon class="mr-2 h-4 w-4" />
+            {{ value ? df(value.toDate(getLocalTimeZone())) : df(new Date()) }}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent class="w-auto p-0">
+          <Calendar v-model="value" initial-focus locale="zh-CN" />
+        </PopoverContent>
+      </Popover>
+      <Select default-value="0" v-model="selectValue" class="selectContainer">
+        <SelectTrigger class="w-[6rem] h-9 shadow-sm select-trigger">
+          <SelectValue
+            placeholder="选择时间段"
+            style="color: var(--muted-foreground)"
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value="0"> 一天 </SelectItem>
+            <SelectItem value="1"> 上午 </SelectItem>
+            <SelectItem value="2"> 下午 </SelectItem>
+            <SelectItem value="3"> 晚上</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -38,8 +65,9 @@ import { ref, watch } from "vue";
 
 const value = ref<DateValue>();
 // 定义 props 和 emits
-const props = defineProps(["modelValue"]);
-const emits = defineEmits(["update:model-value"]);
+const props = defineProps(["modelValue", ""]);
+const selectValue = ref<string>("0");
+const emits = defineEmits(["update:model-value", "update:select-value"]);
 
 // 使用局部变量存储 modelValue 的值
 let localModelValue = ref<DateValue | null>(props.modelValue || null);
@@ -48,8 +76,6 @@ let localModelValue = ref<DateValue | null>(props.modelValue || null);
 watch(
   () => props.modelValue,
   (newValue) => {
-    console.log(newValue,"header newValue");
-    
     localModelValue.value = newValue || null;
   },
 );
@@ -64,7 +90,11 @@ watch(
 watch(value, (newValue) => {
   emits("update:model-value", newValue);
 });
+watch(selectValue, (newValue) => {
+  console.log("选择了", newValue);
 
+  emits("update:select-value", newValue);
+});
 // 格式化日期函数
 function df(date: Date, format = "yyyy - MM - dd") {
   let year = date.getFullYear();
@@ -87,5 +117,19 @@ function df(date: Date, format = "yyyy - MM - dd") {
   font-size: 0.825rem;
   margin-bottom: 0.5rem;
   color: var(--foreground);
+}
+:deep(option) {
+  color: #64748b;
+}
+:deep(select) {
+  margin: 0 0.5rem;
+}
+.selectContainer {
+  option {
+    color: var(--muted-foreground);
+  }
+}
+.select-trigger {
+  margin: 0 0.5rem !important;
 }
 </style>
