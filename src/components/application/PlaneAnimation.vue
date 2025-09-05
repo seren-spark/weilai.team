@@ -86,5 +86,6 @@ onUnmounted(() => {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  opacity: 0.7;
 }
 </style>
