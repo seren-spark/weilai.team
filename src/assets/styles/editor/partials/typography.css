@@ -37,15 +37,20 @@
 .tiptap h1,
 .tiptap h2,
 .tiptap h3,
-.tiptap h4 {
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
   position: relative;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .tiptap h1:hover .header-anchor,
 .tiptap h2:hover .header-anchor,
 .tiptap h3:hover .header-anchor,
-.tiptap h4:hover .header-anchor {
+.tiptap h4:hover .header-anchor,
+.tiptap h5:hover .header-anchor,
+.tiptap h6:hover .header-anchor {
   opacity: 1;
 }
 

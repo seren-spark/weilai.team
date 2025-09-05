@@ -1,10 +1,15 @@
 <script lang="ts" setup>
 import MapDrilling from "./map/index.vue";
 
+interface Item {
+  peopleCount: number;
+  zipcode: number;
+}
+
 const props = defineProps({
   // 父组件传过来的值
   areas: {
-    type: Array,
+    type: Array as () => Item[],
     default: () => [],
   },
 });

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Button } from "../ui/button";
+import { ref, watch, reactive, onMounted, onUnmounted } from "vue";
+import * as z from "zod";
+import Button from "./Button.vue";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useLogin from "../../composables/useLoginAll";
 import LoginContent from "./LoginContent.vue";
-import { ref, watch, reactive } from "vue";
-import * as z from "zod";
-import { onMounted, onUnmounted } from "vue";
+import useDanerceHook from "@/composables/useDance";
 import { Icon } from "@iconify/vue";
 
 const loginData = reactive({
@@ -16,6 +16,11 @@ interface LoginError {
   account: string;
   password: string;
 }
+
+const buttonRef = ref<{ style: any; getElement: () => HTMLElement } | null>(
+  null,
+);
+const { setDanceshow, resetPosition } = useDanerceHook(buttonRef);
 
 const filedErrors = ref<z.ZodFormattedError<LoginError> | undefined>();
 const loginSchema = z.object({
@@ -45,7 +50,7 @@ const handleLogin = async () => {
   watch(
     () => loading,
     () => {
-      console.log(loading);
+      //   console.log(loading);
     },
   );
   getLogin(loginData.account, loginData.password);
@@ -59,23 +64,27 @@ const handleClick = () => {
     isVisible.value = true;
   }
 };
+
 onMounted(() => {
   document.addEventListener("click", handleClick);
 });
+
 onUnmounted(() => {
   document.removeEventListener("click", handleClick);
 });
 </script>
 
 <template>
-  <div class="loginOut">
+  <div id="loginOut" class="loginOut">
     <!-- :class="{ 'animate-fadeIn': isVisible }" -->
     <Card
       class="loginContent mx-auto max-w-sm"
       :class="{ clickContent: isVisible }"
     >
-      <CardHeader>
-        <a  class="back" href="/"><Icon icon="streamline-ultimate:house-1"></Icon></a>
+      <CardHeader class="flex items-center">
+        <a class="back" href="/">
+          <Icon icon="streamline-ultimate:house-1"></Icon>
+        </a>
         <CardTitle class="loginTitle text-2xl"> 登录 </CardTitle>
       </CardHeader>
       <CardContent>
@@ -85,6 +94,8 @@ onUnmounted(() => {
             :account="loginData.account"
             :password="loginData.password"
             :handle-login="handleLogin"
+            :set-danceshow="setDanceshow"
+            :reset-position="resetPosition"
             @update:login-account="
               (val) => {
                 loginData.account = val;
@@ -108,8 +119,17 @@ onUnmounted(() => {
               }
             "
           ></LoginContent>
+          <!-- :class="
+              buttonActive
+                ? 'button-active loginButton w-full'
+                : 'loginButton w-full'
+            "
+            :style="buttonStyle" -->
           <Button
+            id="loginButton"
+            ref="buttonRef"
             v-preventReClick
+            :native-type="'button'"
             type="submit"
             class="loginButton w-full"
             @click="handleLogin"
@@ -129,6 +149,7 @@ onUnmounted(() => {
 
 .back {
   position: absolute;
+  left: 1.5rem;
   font-size: 1.6rem;
   top: 2rem;
   color: rgb(119, 119, 119);
@@ -142,7 +163,7 @@ onUnmounted(() => {
   border-radius: 1rem;
   opacity: 0;
   height: 0;
-  overflow: hidden;
+  //   overflow: hidden;
   animation: fadeIn 0.5s linear forwards;
   animation-delay: 2.4s;
 
@@ -170,6 +191,11 @@ onUnmounted(() => {
     box-shadow: none;
     border-radius: 1.2rem;
     background-color: #e1f2fd;
+    transition: all 0.1s ease;
+  }
+
+  .button-active {
+    transition: all 0.1s ease;
   }
 
   .errorHead {
@@ -180,7 +206,6 @@ onUnmounted(() => {
 
   .noWrite {
     border: 0.08rem solid var(--destructive-foreground);
-    // color: var(--destructive-foreground);
   }
 }
 
@@ -191,22 +216,15 @@ onUnmounted(() => {
   height: 100%;
 }
 
-// .loginContent.animate-fadeIn {
-//     opacity: 1;
-//     height: 100%;
-// }
-
 @keyframes fadeIn {
   0% {
     opacity: 0;
     height: 0%;
-    // transform: scale(0);
   }
 
   100% {
     opacity: 1;
     height: 100%;
-    // transform: scale(1);
   }
 }
 
@@ -221,65 +239,17 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 1400px) {
-  //   .loginOut {
-  //     width: 350px;
-  //   }
-
   .loginContent {
-    // margin-top: 80px;
-
     .loginTitle {
       text-align: center;
-      //   font-size: 30px;
-      //   margin: 5px 0 0px 0;
-    }
-
-    .inputTitle {
-      //   font-size: 14px;
-      //   margin: 3px 0 1px 0;
-    }
-
-    .formInput {
-      //   height: 36px;
-      //   font-size: 12px;
-    }
-
-    .loginButton {
-      //   height: 35px;
-      //   font-size: 14px;
-      //   margin-bottom: 25px;
     }
   }
 }
 
 @media screen and (max-width: 1200px) {
-  //   .loginOut {
-  //     width: 300px;
-  //   }
-
   .loginContent {
-    // margin-top: 70px;
-
     .loginTitle {
       text-align: center;
-      //   font-size: 28px;
-      //   margin: 0;
-    }
-
-    .inputTitle {
-      //   font-size: 12px;
-      //   margin: 0;
-    }
-
-    .formInput {
-      //   height: 28px;
-      //   font-size: 10px;
-    }
-
-    .loginButton {
-      //   height: 28px;
-      //   font-size: 13px;
-      //   margin-bottom: 15px;
     }
   }
 }
@@ -288,46 +258,17 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 500px) {
-  //   .loginOut {
-  //     width: 100%;
-  //     margin: 0;
-  //   }
-
   .loginContent {
     background: none;
-    // margin-top: 90px;
     border: none;
     box-shadow: none;
 
     .loginTitle {
-      // display: none;
-      //   width: 70px;
       text-align: start;
-      //   font-size: 32px;
-      //   margin: 8px 0 5px 0;
-      //   padding: 2px 3px;
-      //   border-bottom: #5abaf9 3px solid;
     }
 
     .inputTitle {
       display: none;
-      //   font-size: 18px;
-      //   margin: 2px 0 5px 0;
-    }
-
-    .formInput {
-      //   height: 60px;
-      //   font-size: 20px;
-      //   border-radius: 40px;
-      //   padding: 0 20px;
-      //   margin: 10px 0;
-    }
-
-    .loginButton {
-      //   height: 50px;
-      //   font-size: 24px;
-      //   border-radius: 25px;
-      //   margin-bottom: 15px;
     }
   }
 }

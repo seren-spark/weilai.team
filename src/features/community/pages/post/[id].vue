@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CommentList from "@/components/comment/CommentList.vue";
 import { useRequest } from "vue-request";
-import useAppEditor  from "@/features/post/composables/useAppEditor";
+import useAppEditor from "@/features/post/composables/useAppEditor";
 import { EditorContent } from "@tiptap/vue-3";
 import { useRoute } from "vue-router";
 import ArticleHeader from "../../components/article/ArticleHeader.vue";
@@ -13,6 +13,8 @@ import { likeData, likeRun } from "../../composables/Like";
 import { collectRun, collectData } from "../../composables/Collect";
 import { useAlert } from "@/composables/useAlert";
 import router from "@/router";
+// 目录
+import Toc from "@/features/post/components/sidebar/Toc.vue";
 
 export interface PostDetailResponse {
   userId: number;
@@ -141,6 +143,9 @@ watch(
       :handle-collect="handleCollect"
       :unique-id="uniqueId"
     ></ArticleHeader>
+    <template v-if="editor">
+      <Toc :editor="editor" />
+    </template>
     <EditorContent
       class="article-detail__content"
       :editor="editor"
@@ -159,10 +164,48 @@ watch(
   background-color: #fff;
   box-sizing: border-box;
   padding: 1rem 3rem;
+
   &__content {
     margin-top: 2rem;
   }
   margin-left: 1rem;
+
+  .toc {
+    &__item {
+      padding: 0;
+      &--level1 {
+        font-size: 1.2rem;
+      }
+
+      &--level2 {
+        font-size: 1.1rem;
+        padding-left: 1.5rem;
+      }
+
+      &--level3 {
+        font-size: 1rem;
+        padding-left: 2rem;
+      }
+
+      &--level4 {
+        font-size: 0.75rem;
+        padding-left: 2.45rem;
+      }
+      &--level5 {
+        font-size: 0.7rem;
+        padding-left: 3rem;
+      }
+      &--level6 {
+        font-size: 0.6rem;
+        padding-left: 3.5rem;
+      }
+
+      &--active {
+        color: var(--main-color);
+        background-color: var(--main-color-bg);
+      }
+    }
+  }
 }
 
 .news-footer {

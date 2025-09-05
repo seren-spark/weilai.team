@@ -14,6 +14,7 @@ import { useRequest } from "vue-request";
 import apiClient from "@/api/axios";
 import type { ApiResponseData } from "@/types/api-response";
 import router from "@/router";
+import { useRoute } from "vue-router";
 
 interface PostErrors {
   title: string;
@@ -26,12 +27,33 @@ interface PostErrors {
 interface PostResponse {
   postId: number | string;
 }
+interface PostDetailResponse {
+  postId: number;
+  title: string;
+  postTxt: string;
+  postTags: string[];
+  type: string | number;
+  postAbstract: string;
+}
 //useAppEditor 默认有个参数true 表示可编辑editable（自己设置的）
 const { editor } = useAppEditor();
+const route = useRoute();
+const postId = ref<number | null>(
+  route.query.id ? Number(route.query.id) : null,
+);
+const isEditMode = ref(!!postId.value);
 
 const postData = reactive({
   title: "" as string | number | undefined,
   tags: [] as AcceptableInputValue[],
+  type: "",
+  postAbstract: "" as string | number | undefined,
+  postTxt: undefined as string | undefined,
+});
+let updatePostData = reactive({
+  id: postId.value,
+  title: "" as string | number | undefined,
+  postTags: [] as AcceptableInputValue[],
   type: "",
   postAbstract: "" as string | number | undefined,
   postTxt: undefined as string | undefined,
@@ -70,18 +92,66 @@ const validatePost = () => {
 };
 
 const putPost = (data: typeof postData) => {
-  console.log(data);
-
   return apiClient.post("/post/put", data);
 };
+// 更新文章
+const updatePost = () => {
+  console.log(postData);
 
+  const data = {
+    id: postId.value,
+    title: postData.title,
+    postTags: [...postData.tags],
+    type: Number(postData.type),
+    postAbstract: postData.postAbstract,
+    postTxt: postData.postTxt,
+  };
+  console.log(data);
+
+  if (!postId.value) return;
+  return apiClient.put(`/post/updatePost/${postId.value}`, data);
+};
+// 根据是否为编辑模式选择不同的API
+const submitPost = postId.value ? updatePost : putPost;
 const { run, loading, data } = useRequest<ApiResponseData<PostResponse>>(
-  putPost,
+  submitPost,
   {
     manual: true,
   },
 );
 
+// 获取文章详情用于编辑
+const getPostDetail = (id: number) => {
+  return apiClient.get(`/post/selectOne/${id}`);
+};
+const { data: postDetailData } = useRequest<
+  ApiResponseData<PostDetailResponse>
+>(() => (postId.value ? getPostDetail(postId.value!) : null), {
+  refreshDeps: [postId.value],
+});
+
+// 当获取到文章详情时，填充表单
+watch(postDetailData, (newVal) => {
+  console.log(postDetailData, "postDetailData");
+
+  if (newVal?.data) {
+    const data = newVal.data;
+    postData.title = data.title;
+    postData.tags = data.postTags;
+    postData.type = String(data.type);
+    postData.postAbstract = data.postAbstract;
+    postData.postTxt = data.postTxt;
+
+    // 设置编辑器内容
+    if (data.postTxt && editor.value) {
+      try {
+        editor.value.commands.setContent(JSON.parse(data.postTxt));
+      } catch (e) {
+        console.error("解析文章内容失败", e);
+      }
+    }
+  }
+});
 const handlePost = async () => {
   if (!validatePost()) {
     return;
@@ -91,6 +161,8 @@ const handlePost = async () => {
 };
 
 watch(data, (newValue) => {
+  console.log(newValue);
+
   if (newValue?.code == 2000) {
     toast({
       title: "发布成功",
@@ -101,11 +173,21 @@ watch(data, (newValue) => {
     if (newValue.data) {
       setTimeout(() => {
         router.push({
-          name: "/community/post/[id]",
-          params: { id: newValue?.data.postId },
+          path: `/community/post/${newValue?.data.postId}`,
         });
-      });
+      }, 1000);
     }
+  } else if (newValue?.code == 2006) {
+    toast({
+      title: "修改成功",
+      description: "您的文章已成功修改",
+      duration: 1000,
+    });
+    setTimeout(() => {
+      router.push({
+        path: `/community/post/${postId.value}`,
+      });
+    }, 1000);
   }
 });
 
@@ -139,7 +221,7 @@ onBeforeUnmount(() => {
         "
       ></PostHeader>
       <main class="post-layout__content">
-        <PrimarySidebar></PrimarySidebar>
+        <PrimarySidebar :editor="editor"></PrimarySidebar>
         <AppEditor
           :editor="editor"
           :post-content="postData.postTxt"
@@ -230,5 +312,10 @@ onBeforeUnmount(() => {
     overflow: auto;
     box-sizing: border-box;
   }
+  
 }
+.toc {
+    overflow-y: auto;
+    max-height: 300px;
+  }
 </style>
