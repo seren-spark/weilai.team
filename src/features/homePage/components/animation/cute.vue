@@ -1,13 +1,18 @@
 <template>
   <div class="content" @mouseenter="stopAnimation" @mouseleave="startAnimation">
-    <RouterLink to="/application">
-      <img
-        ref="movingImg"
-        src="../../../../assets/img/homePage/Animation1.gif"
-        alt="图片"
-        class="moving-image"
-      />
-    </RouterLink>
+    <div class="moving-container">
+      <RouterLink to="/application">
+        <img
+          ref="movingImg"
+          src="../../../../assets/img/homePage/Animation1.gif"
+          alt="图片"
+          class="moving-image"
+        />
+      </RouterLink>
+      <div v-show="isEnterShow" class="text">
+        <img src="../../../../assets/img/homePage/enter.png" alt="报名" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -16,34 +21,45 @@ import { ref, onMounted, onUnmounted } from "vue";
 
 const movingImg = ref<HTMLImageElement | null>(null);
 const animationFrame = ref<number | null>(null);
-const direction = ref<number>(1); // 1:向右, -1:向左
+const direction = ref<number>(1);
 const position = ref<number>(0);
-const speed = 0.6; // 移动速度(像素/帧)
+const speed = 0.6;
+const isEnterShow = ref<boolean>(true);
+const showTimer = ref<NodeJS.Timeout | null>(null);
+const showDuration = 2000;
+const hideDuration = 2000;
 
 const animate = () => {
   if (!movingImg.value) return;
 
-  // 更新位置
   position.value += speed * direction.value;
 
-  // 获取窗口和图片尺寸
   const windowWidth = window.innerWidth;
   const imgWidth = movingImg.value.clientWidth;
 
-  // 边界检测
   if (position.value <= 0) {
     position.value = 0;
-    direction.value = 1; // 向右转
+    direction.value = 1;
   } else if (position.value >= windowWidth - imgWidth) {
     position.value = windowWidth - imgWidth;
-    direction.value = -1; // 向左转
+    direction.value = -1;
   }
 
-  // 应用新位置
-  movingImg.value.style.transform = `translateX(${position.value}px)`;
+  const container = movingImg.value.parentElement?.parentElement;
+  if (container) {
+    container.style.transform = `translateX(${position.value}px)`;
+  }
 
-  // 继续动画
   animationFrame.value = requestAnimationFrame(animate);
+};
+
+const toggleEnterShow = () => {
+  isEnterShow.value = !isEnterShow.value;
+  clearTimeout(showTimer.value!);
+  showTimer.value = setTimeout(
+    toggleEnterShow,
+    isEnterShow.value ? showDuration : hideDuration,
+  );
 };
 
 const startAnimation = () => {
@@ -60,14 +76,19 @@ const stopAnimation = () => {
 };
 
 onMounted(() => {
-  // 等待图片加载完成后再开始动画
   if (movingImg.value) {
     movingImg.value.onload = startAnimation;
   }
+  showTimer.value = setTimeout(toggleEnterShow, showDuration);
+  window.addEventListener("resize", () => {
+    stopAnimation();
+    startAnimation();
+  });
 });
 
 onUnmounted(() => {
   stopAnimation();
+  if (showTimer.value) clearTimeout(showTimer.value);
   window.removeEventListener("resize", startAnimation);
 });
 </script>
@@ -80,17 +101,38 @@ onUnmounted(() => {
   width: 100%;
   height: 80px;
   z-index: 1000;
-  pointer-events: none; /* 允许鼠标穿透到下方元素 */
+  pointer-events: none;
+
+  .moving-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+  }
 
   .moving-image {
-    position: absolute;
-    bottom: 0px; /* 距离底部间距 */
-    left: 0;
-    height: 100px; /* 根据你的图片调整高度 */
+    position: relative;
+    height: 100px;
     width: 100px;
-    user-select: none; /* 防止拖动 */
-    pointer-events: auto; /* 恢复图片本身的鼠标事件 */
-    will-change: transform; /* 优化动画性能 */
+    user-select: none;
+    pointer-events: auto;
+    will-change: transform;
+  }
+
+  .text {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    pointer-events: auto;
+    z-index: 1001;
+    transition: opacity 0.3s ease;
+
+    img {
+      width: 100px;
+      height: 50px;
+      object-fit: cover;
+      user-select: none;
+    }
   }
 }
 </style>
