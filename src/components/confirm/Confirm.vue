@@ -18,7 +18,6 @@ const props = defineProps<{
   content?: string | undefined;
   description?: string | undefined;
   confirmText?: string | undefined;
-
   cancelText?: string | undefined;
   onConfirm: Function;
   onCancel: Function;
@@ -34,11 +33,11 @@ const dialogVisible = ref(true);
         <AlertDialogTitle>{{ title ? title : "提示" }}</AlertDialogTitle>
         <AlertDialogDescription class="info flex">
           <Icon icon="pajamas:status-alert" />
-          <span id="content">{{
-            content ? content : "你确定执行该操作吗？"
-          }}</span>
-          <span id="description">
-            {{ description ? `(${description})` : "" }}</span
+          <span id="content"
+            >{{ content ? content : "你确定执行该操作吗？" }}
+            <span id="description">
+              {{ description ? `(${description})` : "" }}</span
+            ></span
           >
         </AlertDialogDescription>
       </AlertDialogHeader>
