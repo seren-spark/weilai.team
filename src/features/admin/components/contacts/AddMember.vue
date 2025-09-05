@@ -17,7 +17,8 @@ import { useRequest } from "vue-request";
 import { z } from "zod";
 import { addMember } from "../../composables/useContacts";
 import type { ApiResponseData } from "@/types/api-response";
-import type { TeamUserList } from "@/types/contacts";
+import type { TeamUserList } from "@/types/Contacts";
+
 // 定义input样式
 
 const { showAlert } = useAlert();
@@ -26,12 +27,12 @@ const props = defineProps<{
   grade: string;
   updateData: (grade: string, group: string) => void;
 }>();
-const group = ref(props.group);
-const grade = ref(props.grade);
+// const group = ref(props.group);
+// const grade = ref(props.grade);
 const userInfo = ref<addUser>({
   clazz: "",
-  grade: grade.value,
-  group: group.value,
+  grade: "",
+  group: "",
   name: "",
   studyId: "",
   qq: "",
@@ -39,6 +40,15 @@ const userInfo = ref<addUser>({
   sex: "男",
   email: "",
 });
+watch(
+  () => [props.grade, props.group],
+  (newVal: string[]) => {
+    userInfo.value.grade = newVal[0];
+    userInfo.value.group = newVal[1];
+  },
+  { immediate: true },
+);
+
 interface addUser {
   clazz: string;
   grade: string;
@@ -57,7 +67,7 @@ const errors = ref<z.ZodFormattedError<addUser> | undefined>(); //存储错误�
 const handleDialogOpen = (newValue: boolean) => {
   dialogVisible.value = newValue;
   if (newValue == false) {
-    // errors.value = {};
+    errors.value = undefined;
   }
 };
 const { data, run } = useRequest(addMember, { manual: true });
@@ -76,6 +86,8 @@ const formSchema = z.object({
 });
 
 const handleConfirm = () => {
+  console.log(userInfo.value);
+
   // 这里可以添加其他逻辑，比如保存输入框中的数据等操作
   const parseResult = formSchema.safeParse(userInfo.value);
   console.log(parseResult.error);
@@ -87,7 +99,7 @@ const handleConfirm = () => {
   } else {
     let addInfoObj = { ...userInfo.value };
     console.log(addInfoObj);
-    run(addInfoObj);
+    run(userInfo.value);
     // 关闭对话框
     console.log(111);
 
@@ -105,7 +117,7 @@ watch(
       if (response.code === 200) {
         showAlert("添加成功", "pass");
         dialogVisible.value = false;
-        props.updateData(grade.value, group.value);
+        props.updateData(userInfo.value.grade, userInfo.value.group);
       } else {
         showAlert(response.message, "error");
         dialogVisible.value = true;

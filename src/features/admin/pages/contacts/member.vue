@@ -28,18 +28,17 @@ import Member from "./member/[member].vue";
 const userCount = ref(0);
 const teamUserList = ref<TeamUserList[]>([]);
 const teamAble = ref<TeamInfo[]>([]);
-// const isVisible = ref(false);
-// interface Item {
-//   name: string;
-//   description: string;
+// function updatePersonNum() {
+//   RunGetMember();
 // }
-
-getMembers().then((res) => {
-  userCount.value = res.userCount;
-  teamAble.value = res.teamAble;
-  teamUserList.value = res.teamUserList;
-});
-
+async function RunGetMember() {
+  await getMembers().then((res) => {
+    userCount.value = res.userCount;
+    teamAble.value = res.teamAble;
+    teamUserList.value = res.teamUserList;
+  });
+}
+RunGetMember();
 function getMembersOfGroup(str: string) {
   let parts = str.split("$");
   const chineseNums = {
@@ -111,7 +110,7 @@ function getMembersOfGroup(str: string) {
                                   `/admin/contacts/member/${item.grade + ',' + getMembersOfGroup(subItem).info} `,
                                 )
                               "
-                              active-class="custom-class"
+                              exact-active-class="custom-class"
                             >
                               <span>{{
                                 getMembersOfGroup(subItem).title
@@ -130,7 +129,11 @@ function getMembersOfGroup(str: string) {
       </SidebarProvider>
     </div>
     <!-- 通讯录右边具体内容 -->
-    <Member :teamAble="teamAble" :teamUserList="teamUserList"></Member>
+    <Member
+      :teamAble="teamAble"
+      :teamUserList="teamUserList"
+      @updatePersonNum="RunGetMember"
+    ></Member>
   </div>
 </template>
 

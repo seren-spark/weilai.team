@@ -270,9 +270,7 @@ import { MoreHorizontal } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useRequest } from "vue-request";
 import { useRoute } from "vue-router";
-import { Input } from "@/components/ui/input";
-import { setActivePinia } from "pinia";
-import apiClient from "@/api/axios";
+
 //引入批量导入方法
 import { processFiles } from "@/composables/useXlsx";
 const { showAlert } = useAlert();
@@ -300,9 +298,9 @@ const chineseNums = {
   "9": "九",
 };
 const userList = ref<TeamUserList[]>([]);
-
 const grade = ref("");
 const group = ref("");
+const emit = defineEmits(["updatePersonNum"]);
 if (route.params && "member" in route.params) {
   grade.value = member.value.split(",")[0] || route.params.member.split(",")[0];
   group.value = member.value.split(",")[1] || route.params.member.split(",")[1];
@@ -312,7 +310,6 @@ if (route.params && "member" in route.params) {
 }
 getMembersByGroupAndGrade(grade.value, group.value).then((res) => {
   userList.value = res.teamUserList;
-
   if (userList.value[0].isLeader) {
     haveLeader.value = true;
   }
@@ -322,16 +319,23 @@ function updateData(grade: string, group: string) {
   getMembersByGroupAndGrade(grade, group).then((res) => {
     userList.value = res.teamUserList;
   });
+  emit("updatePersonNum");
 }
-watch(route, (newVal) => {
-  member.value = (route.params as any).member as string;
-  grade.value = member.value.split(",")[0];
-  group.value = member.value.split(",")[1];
+watch(
+  route,
+  (newVal) => {
+    member.value = (route.params as any).member as string;
+    grade.value = member.value.split(",")[0];
+    group.value = member.value.split(",")[1];
 
-  getMembersByGroupAndGrade(grade.value, group.value).then((res) => {
-    tableData.value = userList.value = res.teamUserList;
-  });
-});
+    getMembersByGroupAndGrade(grade.value, group.value).then((res) => {
+      tableData.value = userList.value = res.teamUserList;
+    });
+  },
+  {
+    deep: true,
+  },
+);
 function sendOldData(oldData: TeamUserList, index: number) {
   // 将旧数据赋值给editRowData 并传递给子组件（弹窗）以进行修改
   editRowData.value = oldData;
@@ -382,6 +386,8 @@ function deleteMembers() {
     })
       .then(() => {
         run(selectIds.value);
+        // 清空选择的 ID 列表
+        selectIds.value = [];
       })
       .catch(() => {});
   } else {
@@ -392,12 +398,17 @@ function deleteMembers() {
 // 删除一个
 function deleteOne(id: number) {
   selectIds.value.push(id);
+  console.log(userList.value);
+
   showConfirm({
     content: "你确定要删除该成员吗",
     description: "一旦删除组织中将不存在该用户",
   })
     .then(() => {
       run(selectIds.value);
+      userList.value = userList.value.filter((item) => item.id !== id);
+      // 清空选择的 ID 列表
+      selectIds.value = [];
     })
     .catch(() => {});
 }
