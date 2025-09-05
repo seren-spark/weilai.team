@@ -67,6 +67,18 @@ const errors = ref<z.ZodFormattedError<addUser> | undefined>(); //存储错误�
 const handleDialogOpen = (newValue: boolean) => {
   dialogVisible.value = newValue;
   if (newValue == false) {
+    // 关闭对话框时清空数据
+    userInfo.value = {
+      clazz: "",
+      grade: "", // 保留从props传入的grade
+      group: "", // 保留从props传入的group
+      name: "",
+      studyId: "",
+      qq: "",
+      phone: "",
+      sex: "男",
+      email: "",
+    };
     errors.value = undefined;
   }
 };
@@ -86,24 +98,13 @@ const formSchema = z.object({
 });
 
 const handleConfirm = () => {
-  console.log(userInfo.value);
-
   // 这里可以添加其他逻辑，比如保存输入框中的数据等操作
   const parseResult = formSchema.safeParse(userInfo.value);
-  console.log(parseResult.error);
-
   if (!parseResult.success) {
     errors.value = parseResult.error.format();
-
     return;
   } else {
-    let addInfoObj = { ...userInfo.value };
-    console.log(addInfoObj);
     run(userInfo.value);
-    // 关闭对话框
-    console.log(111);
-
-    // dialogVisible.value = false;
     if (dialogRef.value) {
       dialogRef.value.$emit("update:open", false); // 触发 'update:open' 事件通知 Dialog 组件更新状态
     }
@@ -121,7 +122,6 @@ watch(
       } else {
         showAlert(response.message, "error");
         dialogVisible.value = true;
-        console.log(222);
       }
     }
   },
