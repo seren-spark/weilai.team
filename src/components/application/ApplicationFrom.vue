@@ -19,6 +19,7 @@ import { Icon } from "@iconify/vue";
 import PlaneAnimation from "./PlaneAnimation.vue";
 import { useAlert } from "@/composables/useAlert";
 import SubmitLoading from "./SubmitLoading.vue";
+import WaringDialog from "./WaringDialog.vue";
 
 const useApplicationStore = applicationStore();
 useApplicationStore.isGetCode();
@@ -426,6 +427,7 @@ const formatFileSize = (bytes: number) => {
 <template>
   <div class="recruitment-form">
     <PlaneAnimation style="pointer-events: none" />
+    <WaringDialog />
     <Card class="mx-auto border-0 bg-0 recruitment-card">
       <div class="applyTitle">
         <img src="@/assets/img/小组logo.png" alt="logo" class="applyLogo" />
