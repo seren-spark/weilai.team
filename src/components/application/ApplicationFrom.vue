@@ -430,8 +430,10 @@ const formatFileSize = (bytes: number) => {
     <WaringDialog />
     <Card class="mx-auto border-0 bg-0 recruitment-card">
       <div class="applyTitle">
-        <img src="@/assets/img/小组logo.png" alt="logo" class="applyLogo" />
-        <div class="applyTitleText">投递简历</div>
+        <div class="applyTitleBox">
+          <img src="@/assets/img/小组logo.png" alt="logo" class="applyLogo" />
+          <div class="applyTitleText">投递简历</div>
+        </div>
         <div class="step-indicator">
           <div class="step">
             <div class="step-icon">
@@ -830,29 +832,37 @@ const formatFileSize = (bytes: number) => {
       align-items: center;
       justify-content: space-between;
       //   margin-bottom: 30px;
-      padding: 40px 15px;
+      padding: 2.5rem 1rem;
 
-      .applyLogo {
-        width: 6.6rem;
-        padding-bottom: 0.5rem;
-      }
-      .applyTitleText {
-        line-height: 4rem;
-        font-size: 1.8rem;
-        font-weight: 800;
-        font-family: "华文楷体";
+      .applyTitleBox {
+        display: flex;
+
+        .applyLogo {
+          width: 6.6rem;
+          padding-bottom: 0.5rem;
+        }
+        .applyTitleText {
+          line-height: 4rem;
+          font-size: 1.8rem;
+          font-weight: 800;
+          font-family: "华文楷体";
+          white-space: nowrap;
+        }
       }
 
       .step-indicator {
         display: flex;
-        margin-left: 40px;
+        margin-left: 1rem;
+        margin-right: 1rem;
 
         .step {
           display: flex;
           flex-direction: column;
           align-items: center;
           text-align: center;
-          margin-left: 30px;
+          margin-left: 2rem;
+          white-space: nowrap;
+
           .step-icon {
             width: 50px;
             height: 50px;
@@ -1005,6 +1015,15 @@ const formatFileSize = (bytes: number) => {
     .errorIcon {
       margin-right: 4px;
       font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .recruitment-form {
+    .recruitment-card {
+      .applyTitle {
+      }
     }
   }
 }
