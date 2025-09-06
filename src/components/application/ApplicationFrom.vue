@@ -87,7 +87,7 @@ const stuSchema = z.object({
   file1: z
     .literal(null)
     .refine(() => false, {
-      message: "请选择文件", // 如果没有选择文件，返回这个提示
+      message: "请选择简历图片", // 如果没有选择文件，返回这个提示
     })
     .or(
       z.instanceof(File).refine(
@@ -109,14 +109,12 @@ const stuSchema = z.object({
   file2: z
     .literal(null)
     .refine(() => false, {
-      message: "请选择文件", // 如果没有选择文件，返回这个提示
+      message: "请选择简历图片",
     })
     .or(
       z.instanceof(File).refine(
         (file) => {
-          // 获取文件的 MIME 类型
           const mimeType = file.type;
-          // 允许的图片文件类型
           return (
             mimeType === "image/png" ||
             mimeType === "image/jpeg" ||
@@ -316,6 +314,7 @@ const emitUpdataClazz = (val: string) => {
 const { runGetClass, classListData, getCode, sentStuInfo } = useApplication();
 runGetClass();
 
+// 获取验证码时判断是否填写了邮箱
 const handleCode = async () => {
   if (!validateCode()) {
     return;
@@ -344,12 +343,14 @@ const fileInput2 = ref<HTMLInputElement>();
 
 const isVisible = ref(false);
 
+// 下一页
 const nextStep = () => {
   if (valiFirstDate()) {
     currentStep.value = 2;
   }
 };
 
+// 上一页
 const prevStep = () => {
   currentStep.value = 1;
 };
@@ -427,7 +428,7 @@ const formatFileSize = (bytes: number) => {
 <template>
   <div class="recruitment-form">
     <PlaneAnimation style="pointer-events: none" />
-    <WaringDialog />
+    <!-- <WaringDialog /> -->
     <Card class="mx-auto border-0 bg-0 recruitment-card">
       <div class="applyTitle">
         <div class="applyTitleBox">
@@ -446,7 +447,6 @@ const formatFileSize = (bytes: number) => {
                 class="correctIcon"
                 icon="material-symbols:check"
               ></Icon>
-              <!-- <CheckIcon /> -->
             </div>
             <span class="step-label">基础信息</span>
           </div>
@@ -876,7 +876,7 @@ const formatFileSize = (bytes: number) => {
             color: #fff;
 
             .correctIcon {
-              color: rgb(63, 208, 0);
+              color: #20be89;
               font-size: 40px;
             }
           }
@@ -1007,7 +1007,7 @@ const formatFileSize = (bytes: number) => {
   .errorHead {
     display: flex;
     align-items: center;
-    justify-content: center;
+    // justify-content: center;
     color: var(--destructive-foreground);
     font-size: 16px;
     margin-bottom: 10px;
@@ -1015,15 +1015,6 @@ const formatFileSize = (bytes: number) => {
     .errorIcon {
       margin-right: 4px;
       font-size: 16px;
-    }
-  }
-}
-
-@media (max-width: 420px) {
-  .recruitment-form {
-    .recruitment-card {
-      .applyTitle {
-      }
     }
   }
 }

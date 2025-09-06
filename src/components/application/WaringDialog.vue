@@ -3,7 +3,6 @@
     <AlertDialogContent class="sm:max-w-[425px]">
       <AlertDialogHeader>
         <AlertDialogTitle class="flex items-center gap-2 text-[#918e8e]">
-          <!-- <Download class="h-5 w-5 text-blue-600" /> -->
           <Icon
             icon="material-symbols:brightness-alert-outline"
             class="text-[#918e8e]"
@@ -23,15 +22,6 @@
               </li>
             </ol>
           </div>
-          <!-- <div class="flex items-center justify-center">
-            <button
-              @click="handleDownload"
-              class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              <Download class="h-4 w-4" />
-              下载模板文件
-            </button>
-          </div> -->
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>

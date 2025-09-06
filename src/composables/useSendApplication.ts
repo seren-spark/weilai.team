@@ -7,67 +7,72 @@ import { applicationStore } from "@/store/applicationStore";
 const useApplicationStore = applicationStore();
 
 interface ClassList {
-    data: string[];
+  data: string[];
 }
 
 interface Data {
-    code: number;
-    message: string;
+  code: number;
+  message: string;
 }
 
 interface EmailResponse {
-    code: number;
-    message?: string;
+  code: number;
+  message?: string;
 }
 export default function () {
-    const { showAlert } = useAlert();
-    const classListData = ref<string[]>([]);
+  const { showAlert } = useAlert();
+  const classListData = ref<string[]>([]);
 
-    // 获取班级列表
-    function runGetClass() {
-        const getClass = () => apiClient.get("/recruit/user/listAllClass");
-        const { data } = useRequest(getClass);
-        watch(data, () => {
-            const res = data.value as ClassList;
-            classListData.value = res.data;
-        });
-    }
+  // 获取班级列表
+  function runGetClass() {
+    const getClass = () => apiClient.get("/recruit/user/listAllClass");
+    const { data } = useRequest(getClass);
+    watch(data, () => {
+      const res = data.value as ClassList;
+      classListData.value = res.data;
+    });
+  }
 
-    // 获取验证码
-    function getCode(email: string | number | undefined) {
-        const getCodeAx = () =>
-            apiClient.get(`/recruit/user/sendEmailCode/${email}`);
-        const { data } = useRequest(getCodeAx);
-        useApplicationStore.startCountdown();
-        watch(data, () => {
-            const res = data.value as EmailResponse;
-            if (res.code == 1007) {
-                showAlert("验证码发送成功", "pass");
-            } else if (res.code == 1005) {
-                showAlert("验证码未过期", "waring");
-            }
-        });
-    }
+  // 获取验证码
+  function getCode(email: string | number | undefined) {
+    const getCodeAx = () =>
+      apiClient.get(`/recruit/user/sendEmailCode/${email}`);
+    const { data } = useRequest(getCodeAx);
+    useApplicationStore.startCountdown();
+    watch(data, () => {
+      const res = data.value as EmailResponse;
+      if (res.code == 1007) {
+        showAlert("验证码发送成功", "pass");
+      } else if (res.code == 1005) {
+        showAlert("验证码未过期", "waring");
+      } else {
+        showAlert("验证码发送失败,请联系招新群管理员", "error");
+      }
+    });
+  }
 
-    // 提交报名表
-    function sentStuInfo(stuInform: FormData, isVisibleRef: Ref<boolean>) {
-        const sentStuInfoAx = () =>
-            apiClient.post("/recruit/user/register", stuInform, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-        const { data } = useRequest(sentStuInfoAx);
-        watch(data, () => {
-            const res = data.value as Data;
-            if (res.code == 200) {
-                showAlert("报名成功，请及时关注邮箱等待面试通知！", "pass");
-            } else if (res.code == 1008) {
-                isVisibleRef.value = false; // 出错时关闭加载动画
-                showAlert("验证码错误", "error");
-            } else if (res.code == 3102) {
-                isVisibleRef.value = false; // 出错时关闭加载动画
-                showAlert("该账户已报过名，请勿重复报名", "waring");
-            }
-        });
-    }
-    return { runGetClass, classListData, getCode, sentStuInfo };
+  // 提交报名表
+  function sentStuInfo(stuInform: FormData, isVisibleRef: Ref<boolean>) {
+    const sentStuInfoAx = () =>
+      apiClient.post("/recruit/user/register", stuInform, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    const { data } = useRequest(sentStuInfoAx);
+    watch(data, () => {
+      const res = data.value as Data;
+      if (res.code == 200) {
+        showAlert("报名成功，请及时关注邮箱等待面试通知！", "pass");
+      } else if (res.code == 1008) {
+        isVisibleRef.value = false; // 出错时关闭加载动画
+        showAlert("验证码错误", "error");
+      } else if (res.code == 3102) {
+        isVisibleRef.value = false; // 出错时关闭加载动画
+        showAlert("该账户已报过名，请勿重复报名", "waring");
+      } else {
+        isVisibleRef.value = false; // 出错时关闭加载动画
+        showAlert("报名失败，请联系招新群管理员", "error");
+      }
+    });
+  }
+  return { runGetClass, classListData, getCode, sentStuInfo };
 }
