@@ -183,6 +183,7 @@ watch(
     if (!newVal) {
       currentStatus.value = 0;
       showSuccess.value = false;
+      document.body.style.overflow = "";
       if (timer) {
         clearInterval(timer);
       }
@@ -194,6 +195,7 @@ watch(
         currentStatus.value++;
       } else {
         showSuccess.value = true;
+        document.body.style.overflow = "hidden";
         setTimeout(() => {
           props.onComplete?.();
           emit("complete");

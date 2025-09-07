@@ -68,6 +68,8 @@ export default function () {
       } else if (res.code == 3102) {
         isVisibleRef.value = false; // 出错时关闭加载动画
         showAlert("该账户已报过名，请勿重复报名", "waring");
+      } else if (res.code == 3105) {
+        showAlert("QQ号不合法，请填写正确的手机号", "waring");
       } else {
         isVisibleRef.value = false; // 出错时关闭加载动画
         showAlert("报名失败，请联系招新群管理员", "error");

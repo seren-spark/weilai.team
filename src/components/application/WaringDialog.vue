@@ -17,7 +17,15 @@
               </li>
               <li>
                 如果未打印并填写简历，请先打印
-                <span class="text-blue-400">未来软件工作室招新群</span>
+                <!-- <span class="text-blue-400">未来软件工作室招新群</span> -->
+                <Popover>
+                  <PopoverTrigger class="text-blue-400">
+                    2025未来软件工作室招新群
+                  </PopoverTrigger>
+                  <PopoverContent class="w-50px h-50px">
+                    <img src="/public/group.png" alt="" class="w-50px h-50px" />
+                  </PopoverContent>
+                </Popover>
                 中的简历模版填写后再来提交哦~
               </li>
             </ol>
@@ -47,6 +55,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Icon } from "@iconify/vue";
 
 interface Emits {
@@ -67,31 +80,8 @@ const handleConfirm = () => {
   emit("confirm");
 };
 
-const handleDownload = () => {
-  // 创建下载链接
-  const link = document.createElement("a");
-  link.href = props.fileUrl;
-  link.download = props.fileName;
-  link.style.display = "none";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  emit("download");
-};
-
 // 页面进入时自动显示弹窗
 onMounted(() => {
   isOpen.value = true;
 });
-
-// 暴露方法供父组件调用
-// defineExpose({
-//   show: () => {
-//     isOpen.value = true
-//   },
-//   hide: () => {
-//     isOpen.value = false
-//   }
-// })
 </script>

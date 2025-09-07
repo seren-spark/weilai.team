@@ -346,12 +346,14 @@ const isVisible = ref(false);
 // 下一页
 const nextStep = () => {
   if (valiFirstDate()) {
+    window.scrollTo(0, 0);
     currentStep.value = 2;
   }
 };
 
 // 上一页
 const prevStep = () => {
+  window.scrollTo(0, 0);
   currentStep.value = 1;
 };
 
@@ -373,6 +375,7 @@ const handleFile1Select = (event: Event) => {
     // 如果是图片文件，生成预览
     if (valiSecondDate()) {
       resumeFile1.value = file;
+      console.log(resumeFile1);
       stuInformData.file1 = file;
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -428,7 +431,7 @@ const formatFileSize = (bytes: number) => {
 <template>
   <div class="recruitment-form">
     <PlaneAnimation style="pointer-events: none" />
-    <!-- <WaringDialog /> -->
+    <WaringDialog />
     <Card class="mx-auto border-0 bg-0 recruitment-card">
       <div class="applyTitle">
         <div class="applyTitleBox">
@@ -639,7 +642,11 @@ const formatFileSize = (bytes: number) => {
               >
                 获取验证码
               </button>
-              <Button v-if="appStore.isRequesting" disabled>
+              <Button
+                class="form-btn getCode"
+                v-if="appStore.isRequesting"
+                disabled
+              >
                 {{ useApplicationStore.countdown }}s后重新发送
               </Button>
             </div>
@@ -665,11 +672,18 @@ const formatFileSize = (bytes: number) => {
                 <Icon class="errorIcon" icon="solar:file-broken"></Icon>
                 <span>{{ filedErrors?.file1?._errors[0] }}</span>
               </div>
-              <div class="upload-placeholder">
+              <div v-if="resumeFile1 == undefined" class="upload-placeholder">
                 <Icon icon="material-symbols:upload" class="upload-icon"></Icon>
                 <p v-if="resumeFile1 != undefined">点击切换简历正面</p>
                 <p v-else>点击上传简历正面</p>
                 <span>支持图片格式</span>
+              </div>
+              <div v-if="resumeFile1 != undefined">
+                <img
+                  :src="resumePreview1"
+                  :alt="`文件预览`"
+                  class="resume-preview"
+                />
               </div>
             </div>
             <div
@@ -683,11 +697,18 @@ const formatFileSize = (bytes: number) => {
                 <Icon class="errorIcon" icon="solar:file-broken"></Icon>
                 <span>{{ filedErrors?.file2?._errors[0] }}</span>
               </div>
-              <div class="upload-placeholder">
+              <div v-if="resumeFile2 == undefined" class="upload-placeholder">
                 <Icon icon="material-symbols:upload" class="upload-icon"></Icon>
                 <p v-if="resumeFile2 != undefined">点击切换简历反面</p>
                 <p v-else>点击上传简历反面</p>
                 <span>支持图片格式</span>
+              </div>
+              <div v-if="resumeFile2 != undefined">
+                <img
+                  :src="resumePreview2"
+                  :alt="`文件预览`"
+                  class="resume-preview"
+                />
               </div>
             </div>
             <!-- 已上传文件列表 -->
@@ -731,7 +752,7 @@ const formatFileSize = (bytes: number) => {
             </div>
 
             <!-- 文件预览区域 -->
-            <div
+            <!-- <div
               v-if="resumeFile1 != undefined || resumeFile2 != undefined"
               class="preview-section"
             >
@@ -754,7 +775,7 @@ const formatFileSize = (bytes: number) => {
                   <p class="preview-filename">简历反面</p>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
 
           <div class="form-actions">
@@ -819,12 +840,12 @@ const formatFileSize = (bytes: number) => {
 .recruitment-form {
   .recruitment-card {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3874ca, #818cf8);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
       sans-serif;
 
     .applyTitle {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #3874ca, #818cf8);
       color: white;
       //   padding: 20px;
       position: relative;
@@ -957,7 +978,8 @@ const formatFileSize = (bytes: number) => {
     .next-btn {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      //   background: linear-gradient(135deg, #3874ca, #81bdf8);
+      background-color: #347cf2;
       color: white;
       border: none;
       border-radius: 8px;
@@ -969,7 +991,8 @@ const formatFileSize = (bytes: number) => {
     }
 
     .getCode {
-      background: linear-gradient(135deg, #667eea 0%, #5734b8 100%);
+      //   background: linear-gradient(135deg, #3874ca, #818cf8);
+      background-color: #347cf2;
       color: #fff;
     }
 
@@ -980,7 +1003,8 @@ const formatFileSize = (bytes: number) => {
       .upload-area {
         border: 2px dashed #ddd;
         border-radius: 12px;
-        padding: 40px 20px;
+        margin: 10px 0;
+
         text-align: center;
         cursor: pointer;
         transition: border-color 0.3s;
@@ -990,6 +1014,7 @@ const formatFileSize = (bytes: number) => {
           display: flex;
           flex-direction: column;
           align-items: center;
+          margin: 40px 20px;
 
           .upload-icon {
             font-size: 20px;
@@ -1040,7 +1065,8 @@ const formatFileSize = (bytes: number) => {
     margin: 0;
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: #347cf2;
     color: white;
     border: none;
     border-radius: 8px;
