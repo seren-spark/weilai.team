@@ -9,7 +9,7 @@ import type {
 } from "@/types/recruitmentType";
 
 // 招新模块
-const BASE_UEL = `http:${import.meta.env.VITE_API_BASE_URL}/`;
+const BASE_UEL = `${import.meta.env.VITE_API_BASE_URL}/`;
 const getToken = (): string => {
   const token = localStorage.getItem("token");
   if (!token) {

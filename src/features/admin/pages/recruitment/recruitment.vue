@@ -247,8 +247,8 @@ onMounted(() => {
       <div
         class="quick-show"
       >
-       <QuickShowCard :quick-show-item="quickShowItems[0]"/>
-       <QuickShowCard :quick-show-item="quickShowItems[1]"/>
+       <QuickShowCard :quick-show-item="quickShowItems[0]" @click="$router.push('/admin/recruitment/candidates')"/>
+       <QuickShowCard :quick-show-item="quickShowItems[1]" @click="$router.push('/admin/recruitment/candidates')"/>
       </div>
 
       <div class="quick-control">
