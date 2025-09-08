@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";
+import {useAlert} from "@/composables/useAlert";
+const {showAlert} = useAlert();
 
 type filterItem = {
   title: string;
@@ -38,7 +40,7 @@ const handleCheckboxChange = (item: {
   if (selectedItems.value.length >= 3 && item.isSeleted) {
     // 如果已经选择了三个项，并且当前项被选中，则取消选中
     item.isSeleted = false;
-    console.log("最多只能选择3个");
+   showAlert("最多只能选择三个面试官", "error");
   } else {
     // 更新 selectedItems 和 selectedIds
     if (item.isSeleted) {
@@ -77,7 +79,7 @@ watch(
           {{ filterMoreSeletedItem.title }}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent class="w-56 bg-white">
+      <DropdownMenuContent class="w-56 bg-white max-h-60 overflow-y-auto">
         <DropdownMenuLabel>{{ filterMoreSeletedItem.label }}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem

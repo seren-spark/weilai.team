@@ -1,6 +1,6 @@
 // 候选人页
 const CandidatesConst = {
-  toggleItems: [
+  toggleItems:[
     {
       index: 0,
       title: "待安排",

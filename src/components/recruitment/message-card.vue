@@ -7,7 +7,7 @@ import {
   getCommentByInterviewRecordId,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
-import { watch } from "vue";
+import { watch,computed } from "vue";
 import { InterviewEvaluationShow, WriteInterviewEvaluation } from "./dialog";
 
 interface IProp {
@@ -44,16 +44,14 @@ const dateTime = ref({
 });
 
 const InterviewRecordId = ref(props.cardMessage.InterviewId);
-
-const isShowButton = ref(1);
-const theInterviewStatus = props.cardMessage.InterviewStatus;
-
-if (["待面试", "待反馈"].includes(theInterviewStatus)) {
-  isShowButton.value = 2;
-} else if (["已淘汰", "已录取"].includes(theInterviewStatus)) {
-  isShowButton.value = 3;
-}
-
+const isShowButton = computed(() => {
+  if (["待面试", "待反馈"].includes(props.cardMessage.InterviewStatus)) {
+    return 2;
+  } else if (["已淘汰", "已录取"].includes(props.cardMessage.InterviewStatus)) {
+    return 3;
+  }
+  return 1;
+});
 // 查看简历 \/
 const viewResume = (id: string) => {
   const { data, error } = useRequest(() => getResumeById({ id }));

@@ -174,8 +174,10 @@ const dateRange = ref({
 const searchGrade = ref<string>();
 const searchRound = ref<string>();
 const InterviewOfficerIds = ref<string[]>([]);
+const forceRefreshPage = ref<boolean>(false);
 const getAllInterviewUserParams = computed(() => {
   return {
+    forceRefreshPage: forceRefreshPage.value,
     status: toggleShowStatus.value,
     grade: searchGrade.value,
     round: searchRound.value,
@@ -260,6 +262,9 @@ const resetCondition = () => {
   InterviewOfficerIds.value = [];
   resetDateRange();
 };
+const handleRefreshPage = () => {
+    forceRefreshPage.value = !forceRefreshPage.value;
+}
 </script>
 
 <template>
@@ -314,6 +319,7 @@ const resetCondition = () => {
         v-for="(item, index) in messageCard"
         :key="index"
         :card-message="normalizeInterviewCard(item)"
+        :refresh-page="handleRefreshPage"
       />
     </div>
   </div>

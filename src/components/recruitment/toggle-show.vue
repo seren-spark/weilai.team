@@ -25,7 +25,6 @@ function toggleActive(index: number, event: Event) {
   activeButton.value = event.currentTarget as HTMLElement;
 }
 
-
 watch(status, (newValue) => {
   // 发送事件
   emit("transferToggleShowStatus", newValue);
@@ -35,11 +34,11 @@ watch(status, (newValue) => {
 <template>
   <Menubar class="toggle-show">
     <MenubarMenu>
-      <MenubarTrigger v-for="item in toggleItems" :key="item.index">
+      <MenubarTrigger v-for="item in toggleItems" :key="item.title">
         <Button
         style="transition: box-shadow 0.5s ease;"
           :class="item.isActive ? 'active' : 'not-active'"
-          @click="(event) => toggleActive(item.index, event)"
+          @click="(event:any) => toggleActive(item.index, event)"
         >
           {{ item.title }}
         </Button>

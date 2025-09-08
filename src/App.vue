@@ -58,3 +58,8 @@ printLog();
   <RouterView></RouterView>
   <chat></chat>
 </template>
+<style  scoped>
+*{
+  user-select: none;
+}
+</style>

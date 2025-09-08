@@ -55,6 +55,28 @@ const handleInput = (value: string) => {
   }
   searchValue.value = value;
 };
+const toggleItems = ref([
+    {
+      index: 0,
+      title: "待安排",
+      isActive: true,
+    },
+    {
+      index: 1,
+      title: "待面试",
+      isActive: false,
+    },
+    {
+      index: 2,
+      title: "已录取",
+      isActive: false,
+    },
+    {
+      index: 3,
+      title: "已淘汰",
+      isActive: false,
+    },
+  ]);
 
 //下拉过滤框
 const candidates_itemsObjArr = ref([
@@ -112,12 +134,15 @@ const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);
 
+
+
 //从分页组件拿到页码信息并更新
 const changePage = (newPage: number) => {
   pageNo.value = newPage;
 };
 //筛选状态
 const handleToggleShowStatus = (newStatus: number) => {
+  // console.log(newStatus);
   status.value = newStatus;
 };
 
@@ -479,7 +504,7 @@ const arrangeInterviewerDialog = ref(false);
     </div>
     <div class="toggle-handle">
       <ToggleShow
-        :toggle-items="ref(CandidatesConst.toggleItems).value"
+        :toggle-items="toggleItems"
         @transfer-toggle-show-status="handleToggleShowStatus"
       />
 
