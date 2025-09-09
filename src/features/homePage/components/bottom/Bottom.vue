@@ -56,22 +56,22 @@
         </div>
         <div class="telIcon">
           <div class="wetchat">
-            <img
-              src="../../../../../src/assets/img/homePage/weChat.png"
-              alt=""
-            />
+            <img src="../../../../../src/assets/img/homePage/QQ.png" alt="" />
             <div class="popbox">
               <img
-                src="../../../../../src/assets/img/homePage/wecode.jpg"
+                src="../../../../../src/assets/img/homePage/qrcode.png"
                 alt=""
               />
             </div>
           </div>
           <div class="qq">
-            <img src="../../../../../src/assets/img/homePage/QQ.png" alt="" />
+            <img
+              src="../../../../../src/assets/img/homePage/weChat.png"
+              alt=""
+            />
             <div class="popboxs">
               <img
-                src="../../../../../src/assets/img/homePage/qrcode.png"
+                src="../../../../../src/assets/img/homePage/wecode.jpg"
                 alt=""
               />
             </div>

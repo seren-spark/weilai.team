@@ -13,9 +13,11 @@
       <div class="title_team" :class="{ 'fade-in': showElements[3] }">
         做一个有影响力的团队
       </div>
-      <Button class="more" :class="{ 'fade-in': showElements[4] }"
-        >了解更多</Button
-      >
+      <RouterLink to="/aboutUs">
+        <Button class="more" :class="{ 'fade-in': showElements[4] }"
+          >了解更多</Button
+        >
+      </RouterLink>
     </div>
   </div>
 </template>

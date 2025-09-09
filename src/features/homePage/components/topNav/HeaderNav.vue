@@ -1,107 +1,11 @@
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
-import { Button } from "@/components/ui/button";
-import UserAvatar from "@/components/avatar/UserAvatar.vue";
-import { Icon } from "@iconify/vue/dist/iconify.js";
-import { useRouter } from "vue-router";
-import apiClient from "@/api/axios";
-
-const router = useRouter();
-const isScrolled = ref(false);
-const activeLink = ref<string | null>(null);
-const isNavConVisible = ref(true);
-const showMobileMenu = ref(false);
-const newIsScrolled = ref(false);
-const hasToken = ref(false); // 用于判断是否有token
-// 存储头像路径
-const avatarSrc = ref("/src/assets/img/defaultAvatar.png");
-const userInfo = ref({
-  name: "",
-});
-
-// 控制body滚动
-const setBodyOverflow = (hidden: boolean) => {
-  document.body.style.overflow = hidden ? "hidden" : "";
-};
-
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 50;
-  newIsScrolled.value = window.scrollY > 50;
-  if (window.scrollY > 50) {
-    isNavConVisible.value = false;
-  } else {
-    isNavConVisible.value = true;
-  }
-};
-
-const handleLinkClick = (linkName: string) => {
-  activeLink.value = linkName;
-  setTimeout(() => {
-    activeLink.value = null;
-  }, 2000);
-  if (linkName === "about") {
-    const developComponent = document.getElementById("develop-component");
-    if (developComponent) {
-      developComponent.scrollIntoView({ behavior: "smooth" });
-    }
-  }
-};
-
-const toggleMobileMenu = () => {
-  showMobileMenu.value = !showMobileMenu.value;
-  setBodyOverflow(showMobileMenu.value);
-};
-
-onMounted(async () => {
-  window.addEventListener("scroll", handleScroll);
-  const token = localStorage.getItem("token");
-  const userIdStr = localStorage.getItem("userId");
-  let userId;
-  if (userIdStr) {
-    try {
-      const userIdObj = JSON.parse(userIdStr);
-      userId = userIdObj.value;
-    } catch (error) {
-      console.error("解析userId时出错", error);
-    }
-  }
-  hasToken.value = token !== null;
-
-  if (hasToken.value && userId) {
-    try {
-      const res = await apiClient.get(`user/getUserInfoByUserId/${userId}`);
-      console.log("res:", res);
-
-      avatarSrc.value = res.data.headPortrait;
-      userInfo.value.name = res.data.name;
-      console.log(userInfo.value.name);
-
-      console.log(avatarSrc.value);
-    } catch (error) {
-      console.error("获取用户信息失败：", error);
-    }
-  }
-});
-
-onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll);
-  setBodyOverflow(false); // 组件卸载时恢复滚动
-});
-
-const mobileMenuLinks = ref([
-  { name: "blog", to: "/community/blog/hot" },
-  { name: "source", to: "/community/brainstorm/hot" },
-  { name: "notice", to: "/community/notice" },
-  { name: "forum", to: "/community/discussion/hot" },
-  { name: "about", to: "/about" },
-]);
-</script>
-
 <template>
-  <div class="navCon" :class="{ scrolled: isScrolled }">
+  <div
+    class="navCon"
+    :class="{ scrolled: isScrolled, 'about-page': isAboutPage }"
+  >
     <a href="/">
       <div class="logo">
-        <img src="/src/assets/img/homePage/logo.png" alt="" />
+        <img src="/src/assets/img/homePage/logo.png" alt="网站logo" />
       </div>
     </a>
     <div class="navLink">
@@ -109,7 +13,7 @@ const mobileMenuLinks = ref([
         <a href="/">
           <div
             class="homePage link type--C"
-            :class="{ active: activeLink === 'homePage' }"
+            :class="{ active: currentActiveLink === 'homePage' }"
             @click="handleLinkClick('homePage')"
           >
             <span class="button__text">首页</span>
@@ -120,7 +24,7 @@ const mobileMenuLinks = ref([
         <RouterLink to="/community/blog/hot">
           <div
             class="blog link type--C"
-            :class="{ active: activeLink === 'blog' }"
+            :class="{ active: currentActiveLink === 'blog' }"
             @click="handleLinkClick('blog')"
           >
             <span class="button__text">博客</span>
@@ -131,7 +35,7 @@ const mobileMenuLinks = ref([
         <RouterLink to="/community/brainstorm/hot">
           <div
             class="source link type--C"
-            :class="{ active: activeLink === 'source' }"
+            :class="{ active: currentActiveLink === 'source' }"
             @click="handleLinkClick('source')"
           >
             <span class="button__text">头脑风暴</span>
@@ -139,11 +43,10 @@ const mobileMenuLinks = ref([
             <div class="button__drow2"></div>
           </div>
         </RouterLink>
-
         <RouterLink to="/community/notice">
           <div
             class="notice link type--C"
-            :class="{ active: activeLink === 'notice' }"
+            :class="{ active: currentActiveLink === 'notice' }"
             @click="handleLinkClick('notice')"
           >
             <span class="button__text">公告</span>
@@ -154,7 +57,7 @@ const mobileMenuLinks = ref([
         <RouterLink to="/community/discussion/hot">
           <div
             class="forum link type--C"
-            :class="{ active: activeLink === 'forum' }"
+            :class="{ active: currentActiveLink === 'forum' }"
             @click="handleLinkClick('forum')"
           >
             <span class="button__text">交流</span>
@@ -162,15 +65,17 @@ const mobileMenuLinks = ref([
             <div class="button__drow2"></div>
           </div>
         </RouterLink>
-        <div
-          class="about link type--C"
-          :class="{ active: activeLink === 'about' }"
-          @click="handleLinkClick('about')"
-        >
-          <span class="button__text">关于我们</span>
-          <div class="button__drow1"></div>
-          <div class="button__drow2"></div>
-        </div>
+        <RouterLink to="/aboutUs">
+          <div
+            class="about link type--C"
+            :class="{ active: currentActiveLink === 'about' }"
+            @click="handleLinkClick('about')"
+          >
+            <span class="button__text">关于我们</span>
+            <div class="button__drow1"></div>
+            <div class="button__drow2"></div>
+          </div>
+        </RouterLink>
       </nav>
     </div>
     <div v-if="hasToken">
@@ -193,19 +98,19 @@ const mobileMenuLinks = ref([
   </div>
   <!-- 移动端导航 -->
   <div
-    v-show="!isNavConVisible"
+    v-show="!isNavConVisible || isAboutPage"
     class="newNavCon"
-    :class="{ scrolled: newIsScrolled }"
+    :class="{ scrolled: newIsScrolled || isAboutPage }"
   >
     <div class="newLogo">
-      <img src="/src/assets/img/homePage/logo.png" alt="" />
+      <img src="/src/assets/img/homePage/logo.png" alt="网站logo" />
     </div>
     <div class="newBtn" @click="toggleMobileMenu">
       <Icon
         icon="meteor-icons:bars-filter"
         width="35"
         height="35"
-        :style="{ color: newIsScrolled ? 'black' : 'white' }"
+        :style="{ color: newIsScrolled || isAboutPage ? 'black' : 'white' }"
       />
     </div>
   </div>
@@ -223,7 +128,7 @@ const mobileMenuLinks = ref([
           v-for="(link, index) in mobileMenuLinks"
           :key="index"
           class="mobile-menu-link"
-          :class="{ active: activeLink === link.name }"
+          :class="{ active: currentActiveLink === link.name }"
           @click="
             () => {
               handleLinkClick(link.name);
@@ -233,15 +138,17 @@ const mobileMenuLinks = ref([
         >
           <span class="mobile-menu-text">
             {{
-              link.name === "blog"
-                ? "博客"
-                : link.name === "source"
-                  ? "头脑风暴"
-                  : link.name === "notice"
-                    ? "公告"
-                    : link.name === "forum"
-                      ? "交流"
-                      : "关于我们"
+              link.name === "homePage"
+                ? "首页"
+                : link.name === "blog"
+                  ? "博客"
+                  : link.name === "source"
+                    ? "头脑风暴"
+                    : link.name === "notice"
+                      ? "公告"
+                      : link.name === "forum"
+                        ? "交流"
+                        : "关于我们"
             }}
           </span>
         </div>
@@ -253,12 +160,131 @@ const mobileMenuLinks = ref([
       </div>
       <div v-else>
         <RouterLink to="/personalCenter/userInfo">
-          <img :src="avatarSrc" alt="" class="mobile-avatar" />
+          <UserAvatar :avatar="avatarSrc" class="mobile-avatar" />
         </RouterLink>
       </div>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, defineProps } from "vue";
+import { Button } from "@/components/ui/button";
+import UserAvatar from "@/components/avatar/UserAvatar.vue";
+import { Icon } from "@iconify/vue/dist/iconify.js";
+import { useRouter } from "vue-router";
+import apiClient from "@/api/axios";
+import { RouterLink } from "vue-router";
+
+const props = defineProps<{
+  activeLink?: string | null;
+  isAboutPage?: boolean;
+}>();
+
+const router = useRouter();
+const isScrolled = ref(false);
+const currentActiveLink = ref<string | null>(props.activeLink || null);
+const isNavConVisible = ref(true);
+const showMobileMenu = ref(false);
+const newIsScrolled = ref(false);
+const hasToken = ref(false);
+const avatarSrc = ref("/src/assets/img/defaultAvatar.png");
+const userInfo = ref({
+  name: "",
+});
+
+const setBodyOverflow = (hidden: boolean) => {
+  document.body.style.overflow = hidden ? "hidden" : "";
+};
+
+const handleScroll = () => {
+  if (props.isAboutPage) {
+    isScrolled.value = true;
+    newIsScrolled.value = true;
+    isNavConVisible.value = false;
+    return;
+  }
+
+  const scrollY = window.scrollY;
+  isScrolled.value = scrollY > 50;
+  newIsScrolled.value = scrollY > 50;
+  isNavConVisible.value = scrollY <= 50;
+
+  if (!props.activeLink) {
+    currentActiveLink.value = null;
+  }
+};
+
+const handleLinkClick = (linkName: string) => {
+  currentActiveLink.value = linkName;
+  if (!props.activeLink) {
+    setTimeout(() => {
+      currentActiveLink.value = null;
+    }, 2000);
+  }
+  if (linkName === "about") {
+    const developComponent = document.getElementById("develop-component");
+    if (developComponent) {
+      developComponent.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+};
+
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value;
+  setBodyOverflow(showMobileMenu.value);
+};
+
+onMounted(async () => {
+  window.addEventListener("scroll", handleScroll);
+
+  // 初始化时根据页面类型设置导航样式
+  if (props.isAboutPage) {
+    isScrolled.value = true;
+    newIsScrolled.value = true;
+    isNavConVisible.value = false;
+  } else {
+    handleScroll();
+  }
+
+  const token = localStorage.getItem("token");
+  const userIdStr = localStorage.getItem("userId");
+  let userId;
+  if (userIdStr) {
+    try {
+      const userIdObj = JSON.parse(userIdStr);
+      userId = userIdObj.value;
+    } catch (error) {
+      console.error("解析userId时出错", error);
+    }
+  }
+  hasToken.value = token !== null;
+
+  if (hasToken.value && userId) {
+    try {
+      const res = await apiClient.get(`user/getUserInfoByUserId/${userId}`);
+      avatarSrc.value = res.data.headPortrait;
+      userInfo.value.name = res.data.name;
+    } catch (error) {
+      console.error("获取用户信息失败：", error);
+    }
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+  setBodyOverflow(false);
+});
+
+const mobileMenuLinks = ref([
+  { name: "homePage", to: "/" },
+  { name: "blog", to: "/community/blog/hot" },
+  { name: "source", to: "/community/brainstorm/hot" },
+  { name: "notice", to: "/community/notice" },
+  { name: "forum", to: "/community/discussion/hot" },
+  { name: "about", to: "/aboutUs" },
+]);
+</script>
 
 <style scoped lang="scss">
 .personMessage {
@@ -446,7 +472,8 @@ const mobileMenuLinks = ref([
     }
   }
 
-  &.scrolled {
+  &.scrolled,
+  &.about-page {
     height: 4.7rem;
     background-color: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
