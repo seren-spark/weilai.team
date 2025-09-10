@@ -129,7 +129,7 @@ const resetCondition = () => {
 };
 
 const tableData = ref(<IAllApplyUserVO[]>[]);
-const pageSize = ref(6);
+const pageSize = ref(8);
 const pageNo = ref(1);
 const total = ref(0);
 const status = ref(0);

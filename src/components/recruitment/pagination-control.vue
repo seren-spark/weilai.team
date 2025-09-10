@@ -46,6 +46,7 @@ function changePage(page: number) {
     :sibling-count="1"
     show-edges
     :default-page="1"
+    :items-per-page="pageSize"
   >
     <PaginationList v-slot="{ items }" class="flex items-center gap-1">
       <PaginationFirst @click="changePage(1)" />
