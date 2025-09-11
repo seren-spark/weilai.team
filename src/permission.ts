@@ -31,7 +31,12 @@ router.beforeEach((to: any, from: any, next: any) => {
   const token = getLocalStorageWithExpire("token");
 
   // 白名单：登录页,首页和报名页不需要 token
-  if (to.path === "/login" || to.path === "/" || to.path === "/application") {
+  if (
+    to.path === "/login" ||
+    to.path === "/" ||
+    to.path === "/application" ||
+    to.path === "/aboutUs"
+  ) {
     if (token) {
       // 已登录时特殊处理
       if (to.path === "/login") {
