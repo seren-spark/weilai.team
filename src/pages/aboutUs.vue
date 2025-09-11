@@ -2,7 +2,11 @@
   <div class="aboutUs">
     <HeaderNav :active-link="activeLink" :is-about-page="true" />
     <Environment />
-    <Method />
+    <div class="aboutUs-container">
+      <Method />
+      <AboutVideo />
+    </div>
+    <Bottom />
   </div>
 </template>
 
@@ -10,6 +14,8 @@
 import HeaderNav from "@/features/homePage/components/topNav/HeaderNav.vue";
 import Environment from "@/features/aboutUs/components/environment-wall/Environment.vue";
 import Method from "@/features/aboutUs/components/methods/Method.vue";
+import AboutVideo from "@/features/aboutUs/components/aboutVideo/AboutVideo.vue";
+import Bottom from "@/features/homePage/components/bottom/Bottom.vue";
 import { ref } from "vue";
 
 const activeLink = ref<string>("about");
@@ -18,11 +24,13 @@ const activeLink = ref<string>("about");
 <style scoped lang="scss">
 .aboutUs {
   width: 100%;
-  min-height: 100vh;
-  background-color: #eaebfa;
   .content {
     width: 100%;
-    height: 100vh;
+  }
+  .aboutUs-container {
+    background-image: url(/public/post_background.png);
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }
 </style>

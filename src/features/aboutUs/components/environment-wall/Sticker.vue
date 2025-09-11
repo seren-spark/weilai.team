@@ -1,42 +1,51 @@
 <template>
   <div class="sticker-wall">
-    <!-- 贴纸容器 -->
-    <div ref="stickerContainer" class="sticker-container">
-      <!-- 循环渲染贴纸 -->
-      <div
-        v-for="(sticker, index) in stickers"
-        :key="sticker.id"
-        class="sticker"
-        :style="{
-          width: `${sticker.size.width}px`,
-          height: `${sticker.size.height}px`,
-          left: `${sticker.position.x}px`,
-          top: `${sticker.position.y}px`,
-          transform: `rotate(${sticker.rotation}deg)`,
-          borderRadius:
-            sticker.shape === 'rounded'
-              ? '8px'
-              : sticker.shape === 'circle'
-                ? '50%'
-                : '2px',
-          zIndex: sticker.zIndex,
-          boxShadow: `0 ${sticker.shadow.size}px ${sticker.shadow.blur}px rgba(0,0,0,${sticker.shadow.opacity})`,
-          '--rotation': `${sticker.rotation}deg`,
-        }"
-        @mouseenter="bringToFront(index)"
-        @mouseleave="restoreZIndex(index)"
-        @click="openPreview(sticker.imageUrl)"
-      >
-        <img
-          :src="sticker.imageUrl"
-          :alt="`Sticker ${sticker.id}`"
-          class="sticker-image"
-        />
+    <!-- 贴纸容器包装器 - 提供滚动区域 -->
+    <div class="sticker-container-wrapper">
+      <!-- 贴纸容器 -->
+      <div ref="stickerContainer" class="sticker-container">
+        <!-- 循环渲染贴纸 -->
+        <div
+          v-for="(sticker, index) in stickers"
+          :key="sticker.id"
+          class="sticker"
+          :class="`shape-${sticker.shape}`"
+          :style="{
+            width: `${sticker.size.width}px`,
+            height: `${sticker.size.height}px`,
+            left: `${sticker.position.x}px`,
+            top: `${sticker.position.y}px`,
+            transform: `rotate(${sticker.rotation}deg)`,
+            borderRadius:
+              sticker.shape === 'rounded'
+                ? '8px'
+                : sticker.shape === 'circle'
+                  ? '50%'
+                  : '2px',
+            zIndex: sticker.zIndex,
+            boxShadow: `0 ${sticker.shadow.size}px ${sticker.shadow.blur}px rgba(0,0,0,${sticker.shadow.opacity})`,
+            '--rotation': `${sticker.rotation}deg`,
+          }"
+          @mouseenter="bringToFront(index)"
+          @mouseleave="restoreZIndex(index)"
+          @click="openPreview(sticker.imageUrl)"
+        >
+          <img
+            :src="sticker.imageUrl"
+            :alt="`Sticker ${sticker.id}`"
+            class="sticker-image"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- 下一组按钮 -->
-    <button class="next-btn" aria-label="查看下一组贴纸" @click="showNextGroup">
+    <!-- 下一组按钮 - 仅在非移动端显示 -->
+    <button
+      class="next-btn"
+      aria-label="查看下一组贴纸"
+      @click="showNextGroup"
+      v-if="!isMobile"
+    >
       <Icon
         icon="mingcute:refresh-2-fill"
         width="24"
@@ -74,13 +83,22 @@
 import { ref, onMounted, onUpdated, onUnmounted } from "vue";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 
-//贴纸形状类型
+// 贴纸形状类型
 interface Sticker {
   id: number;
   size: { width: number; height: number };
   position: { x: number; y: number };
   rotation: number;
-  shape: "square" | "rounded" | "circle" | "rectangle";
+  shape:
+    | "square"
+    | "rounded"
+    | "circle"
+    | "rectangle"
+    | "triangle"
+    | "pentagon"
+    | "hexagon"
+    | "diamond"
+    | "star";
   imageUrl: string;
   zIndex: number;
   originalZIndex: number;
@@ -100,6 +118,10 @@ const props = defineProps({
   // 长方形宽高比范围配置
   minRectRatio: { type: Number, default: 1.2 },
   maxRectRatio: { type: Number, default: 2.0 },
+  // 容器高度 - 可通过外部设置
+  containerHeight: { type: Number, default: 900 },
+  // 容器缩放倍数（相对于视口）
+  containerScale: { type: Number, default: 2.5 },
 });
 
 import image1 from "@/assets/img/prize/image1.jpg";
@@ -170,10 +192,12 @@ const CUSTOM_IMAGE_LIST = [
   image31,
   image32,
 ];
+
 // 状态管理
 const stickers = ref<Sticker[]>([]);
 const stickerContainer = ref<HTMLDivElement | null>(null);
 const currentStartIndex = ref(0);
+const isMobile = ref(false);
 let nextId = 1;
 let containerRect: DOMRect;
 let currentTargetCount = props.baseCount;
@@ -182,6 +206,11 @@ let currentTargetCount = props.baseCount;
 const previewImageUrl = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const loadError = ref<boolean>(false);
+
+// 判断是否为移动设备
+const checkIsMobile = () => {
+  return window.innerWidth < 768;
+};
 
 // 生成整数随机数
 const getRandomNumber = (min: number, max: number): number => {
@@ -193,14 +222,18 @@ const getRandomFloat = (min: number, max: number): number => {
   return Math.random() * (max - min) + min;
 };
 
-// 根据视口大小调整展示数量
-const adjustCountByViewport = () => {
+// 根据设备类型调整展示数量
+const adjustCountByDevice = () => {
   if (!window) return props.baseCount;
 
+  // 移动端展示所有图片
+  if (isMobile.value) {
+    return CUSTOM_IMAGE_LIST.length;
+  }
+
+  // 桌面端根据视口大小调整
   const width = window.innerWidth;
-  if (width < 640) {
-    return Math.max(4, Math.floor(props.baseCount * 0.6));
-  } else if (width < 1024) {
+  if (width < 1024) {
     return Math.max(6, Math.floor(props.baseCount * 0.8));
   } else {
     return props.baseCount;
@@ -209,6 +242,12 @@ const adjustCountByViewport = () => {
 
 // 获取当前组图片
 const getCurrentGroupImages = (): string[] => {
+  // 移动端返回所有图片
+  if (isMobile.value) {
+    return [...CUSTOM_IMAGE_LIST];
+  }
+
+  // 桌面端按组返回
   const count = currentTargetCount;
   const result: string[] = [];
   let remaining = count;
@@ -254,36 +293,60 @@ const isTooClose = (
   );
 };
 
-// 生成贴纸尺寸
+// 生成贴纸尺寸 - 为不同形状调整尺寸比例
 const generateStickerSize = (
   shape: Sticker["shape"],
 ): { width: number; height: number } => {
-  if (shape === "square" || shape === "circle") {
-    const size = getRandomNumber(props.minSize, props.maxSize);
-    return { width: size, height: size };
-  }
+  // 基础尺寸 - 移动端使用较小尺寸
+  const baseSize = isMobile.value
+    ? getRandomNumber(80, 140)
+    : getRandomNumber(props.minSize, props.maxSize);
 
-  // 长方形
-  const ratio = getRandomFloat(props.minRectRatio, props.maxRectRatio);
-  // 随机决定宽>高 或 高>宽
-  const isWidthLonger = Math.random() > 0.5;
+  // 不同形状有不同的宽高比例
+  switch (shape) {
+    case "square":
+    case "circle":
+    case "rounded":
+      return { width: baseSize, height: baseSize };
 
-  if (isWidthLonger) {
-    // 宽 = 随机值，高 = 宽 / 比例
-    const width = getRandomNumber(
-      Math.max(props.minSize, Math.ceil(props.minSize * ratio)),
-      props.maxSize,
-    );
-    const height = Math.max(props.minSize, Math.floor(width / ratio));
-    return { width, height };
-  } else {
-    // 高 = 随机值，宽 = 高 / 比例（确保宽不小于minSize）
-    const height = getRandomNumber(
-      Math.max(props.minSize, Math.ceil(props.minSize * ratio)),
-      props.maxSize,
-    );
-    const width = Math.max(props.minSize, Math.floor(height / ratio));
-    return { width, height };
+    case "rectangle":
+      const rectRatio = getRandomFloat(props.minRectRatio, props.maxRectRatio);
+      const isWidthLonger = Math.random() > 0.5;
+      if (isWidthLonger) {
+        const width = getRandomNumber(
+          Math.max(props.minSize, Math.ceil(props.minSize * rectRatio)),
+          props.maxSize,
+        );
+        const height = Math.max(props.minSize, Math.floor(width / rectRatio));
+        return { width, height };
+      } else {
+        const height = getRandomNumber(
+          Math.max(props.minSize, Math.ceil(props.minSize * rectRatio)),
+          props.maxSize,
+        );
+        const width = Math.max(props.minSize, Math.floor(height / rectRatio));
+        return { width, height };
+      }
+
+    case "triangle":
+      // 三角形高度约为宽度的0.866（等边三角形）
+      return { width: baseSize, height: Math.floor(baseSize * 0.866) };
+
+    case "pentagon":
+    case "hexagon":
+      // 多边形高度略小于宽度
+      return { width: baseSize, height: Math.floor(baseSize * 0.9) };
+
+    case "diamond":
+      // 菱形高度略大于宽度
+      return { width: baseSize, height: Math.floor(baseSize * 1.1) };
+
+    case "star":
+      // 星形高度与宽度大致相同
+      return { width: baseSize, height: baseSize };
+
+    default:
+      return { width: baseSize, height: baseSize };
   }
 };
 
@@ -301,8 +364,35 @@ const generateNonOverlappingSticker = (
       "rounded",
       "circle",
       "rectangle",
+      "triangle",
+      "pentagon",
+      "hexagon",
+      "diamond",
+      "star",
     ];
-    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    // 稍微增加一些常见形状的概率
+    const shapeProbabilities = [
+      0.15,
+      0.15,
+      0.15,
+      0.15, // 基本形状
+      0.1,
+      0.1,
+      0.1,
+      0.08,
+      0.07, // 特殊形状
+    ];
+
+    // 根据概率选择形状
+    let shapeIndex = 0;
+    let random = Math.random();
+    while (random > 0) {
+      random -= shapeProbabilities[shapeIndex];
+      if (random <= 0 || shapeIndex >= shapes.length - 1) break;
+      shapeIndex++;
+    }
+    const shape = shapes[shapeIndex];
+
     // 根据形状生成对应尺寸
     const { width, height } = generateStickerSize(shape);
 
@@ -367,11 +457,14 @@ const generateCurrentGroupStickers = () => {
   const groupImages = getCurrentGroupImages();
   const newStickers: Sticker[] = [];
   let totalAttempts = 0;
-  const maxTotalAttempts = currentTargetCount * 4;
+  // 移动端增加最大尝试次数，因为要展示更多图片
+  const maxTotalAttempts = isMobile.value
+    ? groupImages.length * 8
+    : currentTargetCount * 4;
 
   for (const imageUrl of groupImages) {
     if (
-      newStickers.length >= currentTargetCount ||
+      newStickers.length >= groupImages.length ||
       totalAttempts >= maxTotalAttempts
     ) {
       break;
@@ -387,8 +480,10 @@ const generateCurrentGroupStickers = () => {
   return newStickers;
 };
 
-// 展示下一组贴纸
+// 展示下一组贴纸 - 仅在桌面端有效
 const showNextGroup = () => {
+  if (isMobile.value) return;
+
   stickers.value.forEach((sticker) => {
     sticker.zIndex = -1;
   });
@@ -444,28 +539,54 @@ const retryLoad = () => {
   }
 };
 
+// 调整容器大小以适应设备类型
+const adjustContainerSize = () => {
+  if (stickerContainer.value) {
+    // 容器高度固定为props传入的值
+    const containerHeight = props.containerHeight;
+
+    if (isMobile.value) {
+      // 移动端：宽度为视口的N倍，高度固定，允许全方向滚动
+      const containerWidth = window.innerWidth * props.containerScale;
+      stickerContainer.value.style.width = `${containerWidth}px`;
+      stickerContainer.value.style.height = `${containerHeight}px`;
+      stickerContainer.value.style.overflow = "visible";
+    } else {
+      // 桌面端：宽度100%，高度固定
+      stickerContainer.value.style.width = "100%";
+      stickerContainer.value.style.height = `${containerHeight}px`;
+      stickerContainer.value.style.overflow = "hidden";
+    }
+
+    containerRect = stickerContainer.value.getBoundingClientRect();
+  }
+};
+
 // 窗口 resize 时重新调整
 const handleResize = () => {
-  if (stickerContainer.value) {
-    containerRect = stickerContainer.value.getBoundingClientRect();
-    const newCount = adjustCountByViewport();
-    if (newCount !== currentTargetCount) {
-      currentTargetCount = newCount;
-      const currentIndex = currentStartIndex.value - currentTargetCount;
-      currentStartIndex.value =
-        currentIndex < 0
-          ? CUSTOM_IMAGE_LIST.length + currentIndex
-          : currentIndex;
-      stickers.value = generateCurrentGroupStickers();
+  const wasMobile = isMobile.value;
+  isMobile.value = checkIsMobile();
+
+  // 如果设备类型发生变化
+  if (stickerContainer.value && wasMobile !== isMobile.value) {
+    adjustContainerSize();
+    currentTargetCount = adjustCountByDevice();
+    // 重置起始索引，确保移动端显示所有图片
+    if (isMobile.value) {
+      currentStartIndex.value = 0;
+    } else {
+      currentStartIndex.value = 0;
     }
+    stickers.value = generateCurrentGroupStickers();
   }
 };
 
 // 初始化
 onMounted(() => {
+  isMobile.value = checkIsMobile();
   if (stickerContainer.value) {
-    containerRect = stickerContainer.value.getBoundingClientRect();
-    currentTargetCount = adjustCountByViewport();
+    adjustContainerSize();
+    currentTargetCount = adjustCountByDevice();
     stickers.value = generateCurrentGroupStickers();
   }
   window.addEventListener("resize", handleResize);
@@ -488,20 +609,30 @@ onUnmounted(() => {
   position: relative;
   padding: 0;
   margin: 0;
-  min-height: 100vh;
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+// 容器包装器
+.sticker-container-wrapper {
+  width: 100%;
+  overflow: hidden;
+  height: v-bind('props.containerHeight + "px"');
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .sticker-container {
   position: relative;
-  width: 100vw;
-  height: 900px;
   background-image: url(../../../../assets/img/bgStudy.png);
   background-size: cover;
-  //   background-color: #f5f5f5;
-  //   background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-  //     linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  //   background-size: 20px 20px;
+  background-position: center;
   overflow: hidden;
 }
 
@@ -523,6 +654,38 @@ onUnmounted(() => {
     transform: rotate(var(--rotation)) scale(1.03);
     z-index: 100 !important;
   }
+
+  // 裁剪不同形状
+  &.shape-triangle {
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+
+  &.shape-pentagon {
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  }
+
+  &.shape-hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  &.shape-diamond {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  &.shape-star {
+    clip-path: polygon(
+      50% 0%,
+      61% 35%,
+      98% 35%,
+      68% 57%,
+      79% 91%,
+      50% 70%,
+      21% 91%,
+      32% 57%,
+      2% 35%,
+      39% 35%
+    );
+  }
 }
 
 .sticker-image {
@@ -531,6 +694,13 @@ onUnmounted(() => {
   object-fit: cover;
   display: block;
   transition: all 0.3s ease;
+  .shape-triangle &,
+  .shape-pentagon &,
+  .shape-hexagon &,
+  .shape-diamond &,
+  .shape-star & {
+    transform: scale(1.2);
+  }
 }
 
 .next-btn {
@@ -549,7 +719,7 @@ onUnmounted(() => {
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
-  z-index: 1000;
+  z-index: 100;
 
   &:hover {
     background-color: #359e75;
@@ -688,6 +858,12 @@ onUnmounted(() => {
     right: 0;
     width: 30px;
     height: 30px;
+  }
+
+  .preview-image {
+    max-width: 95%;
+    width: auto;
+    max-height: 70vh;
   }
 }
 </style>
