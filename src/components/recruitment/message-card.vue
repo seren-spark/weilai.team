@@ -235,7 +235,7 @@ const writeInterviewEvaluation = () => {
   font-size: 0.9rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
   width: 100px;
   height: 100%;
@@ -250,10 +250,10 @@ const writeInterviewEvaluation = () => {
 }
 .message-show-staus {
   text-align: center;
-  width: 5;
+  font-size: 0.825rem;
   // border: 1px solid #ffcdd2;
-  padding: 5px 10px;
-  border-radius: 15px;
+  padding: 0.2rem 0.8rem;
+  border-radius: 0.5rem;
 }
 .status-pending {
   // background-color: #fff1f0;
