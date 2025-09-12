@@ -81,17 +81,11 @@ watch(isLonger, (newValue) => {
   background-color: var(--background);
   border: 1px solid var(--border);
   transition: all 0.5s ease-in-out;
+  overflow: hidden;
   &:hover,
   &:focus-within,
   &:valid {
     @extend #longer;
-  }
-  &:hover {
-    .input {
-      display: block;
-      width: 100% !important;
-      height: 100% !important;
-    }
   }
 }
 .svg-icon {
@@ -101,13 +95,13 @@ watch(isLonger, (newValue) => {
   fill: var(--ring);
 }
 .input {
-  width: 0%;
-  height: 0%;
+  width: 100%;
+  height: 100%;
 
   border: none;
   // display: none;
   outline: none;
-  // padding-left: 0.5rem;
+  padding-left: 0.5rem;
   font-size: 1rem;
   color: var(--secondary-foreground);
   &::placeholder {
@@ -120,10 +114,6 @@ watch(isLonger, (newValue) => {
   &:focus,
   &:valid {
     color: var(--secondary-foreground);
-  }
-  &:focus {
-    display: block;
-    padding-left: 0.5rem;
   }
 }
 </style>
