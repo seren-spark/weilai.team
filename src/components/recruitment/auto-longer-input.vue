@@ -44,8 +44,8 @@ watch(isLonger, (newValue) => {
         xmlns="http://www.w3.org/2000/svg"
         data-name="Isolation Mode"
         viewBox="0 0 24 24"
-        width="22"
-        height="22"
+        width="16"
+        height="16"
       >
         <path
           d="M18.9,16.776A10.539,10.539,0,1,0,16.776,18.9l5.1,5.1L24,21.88ZM10.5,18A7.5,7.5,0,1,1,18,10.5,7.507,7.507,0,0,1,10.5,18Z"
@@ -74,7 +74,7 @@ watch(isLonger, (newValue) => {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  width: 45px;
+  width: 36px;
   height: 100%;
   border-radius: 10px;
   padding: 0 10px;
@@ -86,29 +86,44 @@ watch(isLonger, (newValue) => {
   &:valid {
     @extend #longer;
   }
+  &:hover {
+    .input {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
 }
 .svg-icon {
-  width: 20px;
-  height: 20px;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.5rem;
   fill: var(--ring);
 }
 .input {
-  width: 100%;
-  height: 100%;
+  width: 0%;
+  height: 0%;
+
   border: none;
+  // display: none;
   outline: none;
-  padding-left: 0.5rem;
+  // padding-left: 0.5rem;
   font-size: 1rem;
   color: var(--secondary-foreground);
   &::placeholder {
     color: var(--secondary-foreground);
     opacity: 0.7;
     transition: all 0.5s ease-in-out;
-    font-size: 0.8em;
+    font-size: 1em;
   }
+
   &:focus,
   &:valid {
     color: var(--secondary-foreground);
+  }
+  &:focus {
+    display: block;
+    padding-left: 0.5rem;
   }
 }
 </style>
