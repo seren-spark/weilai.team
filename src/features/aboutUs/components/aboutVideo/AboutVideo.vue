@@ -13,7 +13,7 @@
           <div class="video-wrapper">
             <video class="group-video" autoplay loop muted playsinline controls>
               <source
-                src="../../../../assets/video/video.mp4"
+                src="https://api.weilai.team:9000/wlgzs-official-website/static/video.mp4"
                 type="video/mp4"
               />
               您的浏览器不支持视频播放

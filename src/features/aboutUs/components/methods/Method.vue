@@ -211,6 +211,9 @@ import * as THREE from "three";
 import blog1Img from "../../../../assets/img/methods/blog1.png";
 import blog2Img from "../../../../assets/img/methods/blog2.png";
 import blog3Img from "../../../../assets/img/methods/blog3.png";
+import course1 from "../../../../assets/img/methods/course1.png";
+import course2 from "../../../../assets/img/methods/course2.png";
+import course3 from "../../../../assets/img/methods/course3.jpg";
 
 // 引入博客图片列表
 const blogImages = [blog1Img, blog2Img, blog3Img];
@@ -402,41 +405,31 @@ let autoRotate = ref(true);
 // 讲课图片列表
 const lectureSlides = ref([
   {
-    url: "https://picsum.photos/id/26/800/400",
-    alt: "讲师在会议室进行技术分享",
-    caption: "团队技术分享会",
+    url: course1,
+    alt: "在会议室进行项目会议",
+    caption: "团队项目会议",
   },
   {
-    url: "https://picsum.photos/id/42/800/400",
-    alt: "讲师使用投影仪进行教学",
-    caption: "投影教学演示",
-  },
-  {
-    url: "https://picsum.photos/id/366/800/400",
-    alt: "讲师在白板上讲解概念",
+    url: course2,
+    alt: "在白板上讲解概念",
     caption: "白板概念讲解",
   },
   {
-    url: "https://picsum.photos/id/180/800/400",
+    url: course3,
     alt: "小组讨论式教学",
     caption: "互动讨论教学",
   },
-  {
-    url: "https://picsum.photos/id/20/800/400",
-    alt: "在线教学场景",
-    caption: "远程在线授课",
-  },
 ]);
 
-// 获取卡片样式 - 根据索引计算位置、旋转和透明度
+// 获取卡片样式
 const getCardStyle = (index: number) => {
   const activeIndex = activeCardIndex.value;
   const diff = index - activeIndex;
 
-  // 计算卡片的Z轴位置（层次感）
+  // 计算卡片的Z轴位置
   const zPosition = diff === 0 ? 0 : diff > 0 ? -diff * 150 : diff * 150;
 
-  // 计算卡片的X轴偏移（形成扇形）
+  // 计算卡片的X轴偏移
   const xOffset = diff * 80;
 
   // 计算卡片的旋转角度
@@ -464,20 +457,16 @@ const getCardStyle = (index: number) => {
   };
 };
 
-// 卡片点击处理
 const handleCardClick = (index: number) => {
   if (index !== activeCardIndex.value) {
     isTransitioning.value = true;
     activeCardIndex.value = index;
-
-    // 重置过渡状态
     setTimeout(() => {
       isTransitioning.value = false;
     }, 600);
   }
 };
 
-// 导航点点击
 const handleNavClick = (index: number) => {
   handleCardClick(index);
 };
@@ -504,7 +493,7 @@ const nextCard = () => {
   }, 600);
 };
 
-// 鼠标移动处理 - 实现3D视角跟随
+// 鼠标移动处理
 const handleMouseMove = (e: MouseEvent) => {
   if (!lectureRef.value) return;
 
@@ -521,7 +510,6 @@ const handleMouseMove = (e: MouseEvent) => {
   rotationY.value = Math.max(-5, Math.min(5, (mouseX / centerX) * 5));
 };
 
-// 触摸移动处理
 const handleTouchMove = (e: TouchEvent) => {
   if (!lectureRef.value) return;
 
@@ -542,7 +530,6 @@ const resetRotation = () => {
   rotationY.value = 0;
 };
 
-// 自动旋转控制
 const toggleAutoRotate = () => {
   autoRotate.value = !autoRotate.value;
 
@@ -709,13 +696,10 @@ const startBrainstormAnimation = () => {
   setInterval(setNewBubbleTargets, 6000);
 };
 
-// 切换模式
 const switchMode = (idx: number) => {
-  // 切换模式时重置博客卡片状态
   resetBlogCards();
   currentMode.value = idx;
 
-  // 切换到讲课模式时启动自动播放
   if (idx === 2) {
     nextTick(() => {
       if (autoRotate.value) {
