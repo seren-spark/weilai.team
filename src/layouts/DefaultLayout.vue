@@ -21,7 +21,7 @@ import { ref } from "vue";
           'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow',
         )
       "
-      style="background-color: #fafafa"
+      style="background-color: #f8f8f9;"
     >
       <div class="default-layout__container">
         <RouterView></RouterView>

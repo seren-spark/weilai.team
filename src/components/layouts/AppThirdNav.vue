@@ -81,8 +81,10 @@ $font: #8c9296;
   margin-right: 5px;
   box-sizing: border-box;
   width: 100%;
-  background-color: #fafafa;
-  border-bottom: 2px solid #eff1f1;
+  background-color: #fff;
+  
+  // border-bottom: 2px solid #eff1f1;
+  box-shadow:0px 1px 6px #ececec; 
   display: flex;
   align-content: center;
   flex-wrap: nowrap;

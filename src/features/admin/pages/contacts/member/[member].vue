@@ -621,10 +621,12 @@ td {
 
         padding: 0.1vh 0.05vw;
         font-size: 0.9rem;
-        border: 1.5px solid var(--border);
+        border: 1px solid var(--border);
+
         border-radius: var(--radius);
         &:hover {
           color: var(--primary-foreground);
+          border:none;
           background-color: var(--primary);
         }
       }

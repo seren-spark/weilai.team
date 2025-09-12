@@ -320,7 +320,8 @@ function skipRedirect(item: any) {
 
         <span v-if="messageStore.hasNewMessage" class="dot"></span></Button
     ></RouterLink>
-    <RouterLink to="/personalCenter/userInfo"
+    <RouterLink     :to="`/personalCenter/userInfo`"
+                  @click="skipToPersonalCenter"
       ><Button class="main-menu-button"
         ><Icon icon="bi:person" class="main-menu-icon" /></Button
     ></RouterLink>

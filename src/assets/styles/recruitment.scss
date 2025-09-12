@@ -4,13 +4,15 @@ $undertone: #647499; //浅灰 设置为非强调色 常设置为字体颜色
   border: none;
 }
 
-
 //按钮样式
 .btn-style {
   width: 6rem;
   height: 2.5rem;
   cursor: pointer;
-  border: var(--border) 1px solid;
+  // border: var(--border) 1px solid;
+  box-shadow: none;
+  font-size: 0.9rem;
+
   &:hover,
   &:active {
     color: var(--primary-foreground);
@@ -43,8 +45,8 @@ $undertone: #647499; //浅灰 设置为非强调色 常设置为字体颜色
 
 //招新管理  主体样式抽离
 .content {
-  width:100% ;
-  padding: .5rem;
+  // width: 100%;
+  padding: 0.5rem;
   background-color: var(--background);
   position: relative;
   overflow: hidden;
@@ -88,14 +90,11 @@ $undertone: #647499; //浅灰 设置为非强调色 常设置为字体颜色
   cursor: pointer;
 }
 .search-input {
-  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  width: 200px;
+  width: 12.5rem;
   height: 40px;
-  position: absolute;
-  right: 40px;
   @media screen and (max-width: 1300px) {
     display: none;
   }
@@ -105,7 +104,7 @@ $undertone: #647499; //浅灰 设置为非强调色 常设置为字体颜色
   height: 60px;
   position: relative;
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
   .toggle-button {
@@ -150,4 +149,3 @@ $undertone: #647499; //浅灰 设置为非强调色 常设置为字体颜色
   gap: 20px;
   @extend .long-dashed-border;
 }
-

@@ -97,17 +97,18 @@ watch(isLonger, (newValue) => {
   height: 100%;
   border: none;
   outline: none;
-  font-size: 14px;
-  color: var(--primary--foreground);
+  padding-left: 0.5rem;
+  font-size: 1rem;
+  color: var(--secondary-foreground);
   &::placeholder {
-    color: var(--primary--foreground);
+    color: var(--secondary-foreground);
     opacity: 0.7;
     transition: all 0.5s ease-in-out;
     font-size: 0.8em;
   }
   &:focus,
   &:valid {
-    color: var(--primary--foreground);
+    color: var(--secondary-foreground);
   }
 }
 </style>

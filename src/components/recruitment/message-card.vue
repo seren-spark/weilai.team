@@ -7,7 +7,7 @@ import {
   getCommentByInterviewRecordId,
 } from "@/composables/useRecruitmentRequest";
 import { useRequest } from "vue-request";
-import { watch,computed } from "vue";
+import { watch, computed } from "vue";
 import { InterviewEvaluationShow, WriteInterviewEvaluation } from "./dialog";
 
 interface IProp {
@@ -187,7 +187,7 @@ const writeInterviewEvaluation = () => {
   height: 150px;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: flex-start;
   position: relative;
   cursor: pointer;
@@ -202,18 +202,20 @@ const writeInterviewEvaluation = () => {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-  min-width: 360px;
+  min-width: 22.5rem;
   height: 80px;
-  margin-bottom: 10px;
+  margin-bottom: 0.6rem;
   gap: 20px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   .message-show-name {
     text-align: center;
     min-width: 70px;
-    border: 1px solid var(--primary-foreground);
+    border: 0.06rem solid var(--primary-foreground);
     padding: 5px 10px;
     border-radius: 15px;
     margin-right: 10px;
+    // background-color: #f2f2f2;
+    // color: #929292;
   }
   .message-show-interviewInturn {
     min-width: 70px;
@@ -227,12 +229,13 @@ const writeInterviewEvaluation = () => {
   width: 100%;
   height: 40px;
   gap: 20px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 .message-show-button {
+  font-size: 0.9rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   width: 100px;
   height: 100%;
@@ -247,26 +250,38 @@ const writeInterviewEvaluation = () => {
 }
 .message-show-staus {
   text-align: center;
-  width: 80px;
-  border: 1px solid #ffcdd2;
+  width: 5;
+  // border: 1px solid #ffcdd2;
   padding: 5px 10px;
   border-radius: 15px;
 }
 .status-pending {
-  background-color: #ffcdd2;
-  color: #b71c1c;
+  // background-color: #fff1f0;
+  // color: #cf1322;
+  border: 0.05rem solid #a6d4ff;
+  background-color: #f0f5ff;
+  // background-color: var(--primary);
+  // color: #266cde;
+  color: var(--primary-foreground);
 }
 .status-feedback {
-  background-color: #fff9c4;
-  color: #f57f17;
+  border: 0.05rem solid #ffd593;
+  background-color: #fff7e6;
+  color: #d77519;
 }
 .status-rejected {
-  background-color: #e1bee7;
-  color: #4a148c;
+  // background-color: #e1bee7;
+  // color: #4a148c;
+  // background-color: #f2f2f2;
+  // color: #929292;
+  border: 0.05rem solid #ffc9c7;
+  background-color: #fff1f0;
+  color: #cf1322;
 }
 .status-accepted {
-  background-color: #c8e6c9;
-  color: #1b5e20;
+  // background-color: #c8e6c9;
+  border: 0.05rem solid #bfed9b;
+  background-color: #f6ffed;
+  color: #58ae39;
 }
-
 </style>
