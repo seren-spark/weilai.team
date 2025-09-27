@@ -2,7 +2,7 @@
   <chat v-if="chatOpen" @closeChat="openChild(false)" />
   <a href="javascript:void(0)" @click="openChild(true)">
     <div :class="`rocket  ${isShow ? '' : 'topactive'}`">
-      <img src="@/assets/img/ai.png" alt="" />
+      <img src="@/assets/img/ai.webp" alt="" />
     </div>
   </a>
 </template>

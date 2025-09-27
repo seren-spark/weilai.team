@@ -10,14 +10,14 @@
         />
       </RouterLink>
       <div v-show="isEnterShow" class="text">
-        <img src="../../../../assets/img/homePage/enter.png" alt="报名" />
+        <img src="../../../../assets/img/homePage/enter.webp" alt="报名" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 
 const movingImg = ref<HTMLImageElement | null>(null);
 const animationFrame = ref<number | null>(null);
@@ -29,19 +29,26 @@ const showTimer = ref<NodeJS.Timeout | null>(null);
 const showDuration = 2000;
 const hideDuration = 2000;
 
+// --------------性能优化------------
+// 缓存窗口宽度和图片宽度
+const windowWidth = ref(window.innerWidth);
+const imgWidth = ref(0);
+
+// 计算动画的边界值（避免每次都读取 DOM)
+const maxPosition = computed(() => windowWidth.value - imgWidth.value);
 const animate = () => {
   if (!movingImg.value) return;
 
   position.value += speed * direction.value;
 
-  const windowWidth = window.innerWidth;
-  const imgWidth = movingImg.value.clientWidth;
+  // const windowWidth = window.innerWidth;
+  // const imgWidth = movingImg.value.clientWidth;
 
   if (position.value <= 0) {
     position.value = 0;
     direction.value = 1;
-  } else if (position.value >= windowWidth - imgWidth) {
-    position.value = windowWidth - imgWidth;
+  } else if (position.value >= maxPosition.value) {
+    position.value = maxPosition.value;
     direction.value = -1;
   }
 
@@ -52,7 +59,13 @@ const animate = () => {
 
   animationFrame.value = requestAnimationFrame(animate);
 };
-
+// 窗口 resize 时，更新缓存的 windowWidth
+const handleResize = () => {
+  windowWidth.value = window.innerWidth;
+  // 重置动画状态（可选，根据需求决定是否重新计算位置）
+  stopAnimation();
+  startAnimation();
+};
 const toggleEnterShow = () => {
   isEnterShow.value = !isEnterShow.value;
   clearTimeout(showTimer.value!);
@@ -77,19 +90,26 @@ const stopAnimation = () => {
 
 onMounted(() => {
   if (movingImg.value) {
-    movingImg.value.onload = startAnimation;
+    // movingImg.value.onload = startAnimation;
+    // 图片加载完成后，缓存 imgWidth
+    movingImg.value.onload = () => {
+      imgWidth.value = movingImg.value!.clientWidth;
+      startAnimation();
+    };
   }
   showTimer.value = setTimeout(toggleEnterShow, showDuration);
-  window.addEventListener("resize", () => {
-    stopAnimation();
-    startAnimation();
-  });
+  // window.addEventListener("resize", () => {
+  //   stopAnimation();
+  //   startAnimation();
+  // });
+  window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
-  stopAnimation();
-  if (showTimer.value) clearTimeout(showTimer.value);
-  window.removeEventListener("resize", startAnimation);
+  // stopAnimation();
+  // if (showTimer.value) clearTimeout(showTimer.value);
+  // window.removeEventListener("resize", startAnimation);
+  window.removeEventListener("resize", handleResize);
 });
 </script>
 

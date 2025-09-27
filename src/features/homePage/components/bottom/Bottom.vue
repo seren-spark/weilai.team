@@ -56,7 +56,7 @@
         </div>
         <div class="telIcon">
           <div class="wetchat">
-            <img src="../../../../../src/assets/img/homePage/QQ.png" alt="" />
+            <img src="../../../../../src/assets/img/homePage/QQ.webp" alt="" />
             <div class="popbox">
               <img
                 src="../../../../../src/assets/img/homePage/qrcode.png"

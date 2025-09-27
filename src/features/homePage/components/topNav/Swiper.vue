@@ -45,20 +45,27 @@
           <div class="blocks"></div>
         </div>
       </div>
+      <!-- 关键图片:立即加载 -->
       <swiper-slide>
         <img
-          src="../../../../assets/img/homePage/bg4.png"
-          alt=""
+          src="../../../../assets/img/homePage/bg4.webp"
+          alt="首页背景图"
           width="100%"
           height="100%"
+          fetchpriority="high"
+          loading="eager"
+          decoding="sync"
         />
       </swiper-slide>
+      <!-- 非关键图片:懒加载 -->
       <swiper-slide>
         <img
-          src="../../../../assets/img/homePage/bg1.png"
+          src="../../../../assets/img/homePage/bg1.webp"
           alt=""
           width="100%"
           height="100%"
+          loading="lazy"
+          decoding="async"
         />
       </swiper-slide>
       <swiper-slide>
@@ -67,6 +74,7 @@
           alt=""
           width="100%"
           height="100%"
+          loading="lazy"
         />
       </swiper-slide>
     </swiper>

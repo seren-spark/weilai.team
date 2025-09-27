@@ -5,7 +5,7 @@
   >
     <a href="/">
       <div class="logo">
-        <img src="/src/assets/img/homePage/logo.png" alt="网站logo" />
+        <img src="/src/assets/img/homePage/logo.webp" alt="网站logo" />
       </div>
     </a>
     <div class="navLink">

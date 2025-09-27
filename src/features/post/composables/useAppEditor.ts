@@ -1,16 +1,10 @@
 import { useEditor } from "@tiptap/vue-3";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Bold from "@tiptap/extension-bold";
-import AppTableExtension from "@post/extensions/app-table";
-import { Editor } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
 import TextStyle from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
-import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
-import Superscript from "@tiptap/extension-superscript";
-import Subscript from "@tiptap/extension-subscript";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Table from "@tiptap/extension-table";
@@ -19,10 +13,9 @@ import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { all, createLowlight } from "lowlight";
 import { Markdown } from "tiptap-markdown";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import {
   getHierarchicalIndexes,
   TableOfContents,
@@ -157,7 +150,6 @@ export default function useAppEditor(editable: boolean = true) {
       TableOfContents.configure({
         getIndex: getHierarchicalIndexes,
         onUpdate: (content) => {
-      
           // 可以在这里处理你的目录数据
           items.value = content;
         },

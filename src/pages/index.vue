@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import HeaderNav from "@/features/homePage/components/topNav/HeaderNav.vue";
 import Swiper from "@/features/homePage/components/topNav/Swiper.vue";
-import MidIntro from "@/features/homePage/components/des/Mid-intro.vue";
-import Teacher from "@/features/homePage/components/teacher/Teacher.vue";
+
 import ItemShow from "@/features/homePage/components/itemShow/ItemShow.vue";
 import HotNews from "@/features/homePage/components/news/HotNews.vue";
 import Develop from "@/features/homePage/components/develop/Develop.vue";
 import Bottom from "@/features/homePage/components/bottom/Bottom.vue";
 import LazyLoad from "@/features/homePage/components/lazyLoad/LazyLoad.vue";
 import cute from "@/features/homePage/components/animation/cute.vue";
-import { ref, onMounted } from "vue";
-
+import { ref, onMounted, defineAsyncComponent } from "vue";
+const MidIntro = defineAsyncComponent({
+  loader: () => import("@/features/homePage/components/des/Mid-intro.vue"),
+  delay: 200,
+  timeout: 3000,
+});
+const Teacher = defineAsyncComponent({
+  loader: () => import("@/features/homePage/components/teacher/Teacher.vue"),
+  delay: 200,
+  timeout: 3000,
+});
 const showBackToTop = ref(false);
 
 // 滚动监听
@@ -38,14 +46,16 @@ onMounted(() => {
     <Swiper />
 
     <!-- 懒加载组件 -->
-    <LazyLoad root-margin="0px 0px 200px 0px">
+    <Suspense>
       <template #default>
-        <MidIntro />
+        <LazyLoad root-margin="0px 0px 200px 0px">
+          <MidIntro />
+        </LazyLoad>
       </template>
       <template #fallback>
         <div class="loading-placeholder"></div>
       </template>
-    </LazyLoad>
+    </Suspense>
 
     <LazyLoad root-margin="0px 0px 200px 0px">
       <template #default>

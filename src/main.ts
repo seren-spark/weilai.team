@@ -5,7 +5,7 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
 import App from "./App.vue";
-import hljs from "highlight.js";
+import hljs from "highlight.js/lib/core";
 import "highlight.js/styles/atom-one-dark.css";
 import router from "./router";
 import dir from "./composables/useDebounce";
