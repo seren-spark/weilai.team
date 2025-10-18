@@ -410,7 +410,7 @@
     </div>
 
     <div
-      v-if="userInfo.lastLoginTime && userStore.isSelf"
+      v-if="userInfo.lastLoginTime"
       class="lastLoginTime"
     >
       <p>
