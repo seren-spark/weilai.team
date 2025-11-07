@@ -1,0 +1,44 @@
+{
+  "id": "session_1760771120988_lnnz0kf7v",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "新乡天气"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_ef9b5a0fb7f24fe5bf97cb",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"新乡市\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_ef9b5a0fb7f24fe5bf97cb",
+      "content": "新乡市今天是雾霾，温度12°C。"
+    },
+    {
+      "role": "assistant",
+      "content": "新乡市今天是雾霾天气，气温为12°C。请注意防护，尽量减少外出，保持室内空气流通。"
+    }
+  ],
+  "summary": "",
+  "stats": {
+    "totalTokens": 63,
+    "messageCount": 4,
+    "compressionCount": 0,
+    "createdAt": "2025-10-18T07:05:20.989Z",
+    "lastActive": "2025-10-18T07:05:24.358Z"
+  }
+}

@@ -187,7 +187,7 @@ const handleScroll = async () => {
   if (scrollTop + clientHeight > scrollHeight - 100) {
     if (current.value < pages.value) {
       current.value++;
-      //数据为加载完，继续赋值
+      //数据未加载完，继续赋值
       getArticle(props.type, props.condition, current.value).then((res) => {
         loading.value = true;
         if (res.records.length > 0) {

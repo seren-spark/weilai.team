@@ -1,0 +1,44 @@
+{
+  "id": "session_1760771246485_4be1q09w1",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "新乡天气"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_1a02a166906648f2b59651",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"新乡\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_1a02a166906648f2b59651",
+      "content": "新乡今天是雨天，温度26°C。"
+    },
+    {
+      "role": "assistant",
+      "content": "新乡今天是雨天，气温为26°C。记得带伞哦！"
+    }
+  ],
+  "summary": "",
+  "stats": {
+    "totalTokens": 50,
+    "messageCount": 4,
+    "compressionCount": 0,
+    "createdAt": "2025-10-18T07:07:26.486Z",
+    "lastActive": "2025-10-18T07:07:30.183Z"
+  }
+}

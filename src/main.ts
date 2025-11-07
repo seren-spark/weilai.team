@@ -9,6 +9,7 @@ import hljs from "highlight.js/lib/core";
 import "highlight.js/styles/atom-one-dark.css";
 import router from "./router";
 import dir from "./composables/useDebounce";
+import "./api/mock-service";
 // 引入路由鉴权
 import "./permission";
 const pinia = createPinia();

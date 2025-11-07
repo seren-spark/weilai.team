@@ -10,6 +10,7 @@ import type { ApiResponseData } from "@/types/api-response";
 import { watch } from "vue";
 
 import { useUserStore } from "@/store/userStore";
+import { smartApiClient } from "@/api/core/smart-api-client";
 
 const userstore = useUserStore();
 const sseStore = useSseStore();
@@ -62,6 +63,8 @@ export default function () {
           setLocalStorageWithExpire("token", resData.token, 1000 * 60 * 60);
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
           //   localStorage.setItem("userId", resData.userId);
+          // 设置智能API token
+          smartApiClient.setTeamToken("team-2023", resData.token);
           //  清除缓存
           userstore.resetStorage();
           //用户默认有概况权限

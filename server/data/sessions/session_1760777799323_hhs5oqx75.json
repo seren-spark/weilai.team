@@ -1,0 +1,106 @@
+{
+  "id": "session_1760777799323_hhs5oqx75",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "你是"
+    },
+    {
+      "role": "assistant",
+      "content": "我是Qwen，是阿里云研发的超大规模语言模型。我可以帮助你回答问题、提供信息、进行创作等。请问有什么我可以帮你的吗？"
+    },
+    {
+      "role": "user",
+      "content": "新乡天气"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_72316499d11645d2aad10d",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"新乡市\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_72316499d11645d2aad10d",
+      "content": "新乡市今天是多云，温度29°C。"
+    },
+    {
+      "role": "assistant",
+      "content": "新乡市今天是多云，温度为29°C。"
+    },
+    {
+      "role": "user",
+      "content": "上海天气"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_4382063938b94ae9afb3ee",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"上海市\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_4382063938b94ae9afb3ee",
+      "content": "上海市今天是雾霾，温度11°C。"
+    },
+    {
+      "role": "assistant",
+      "content": "上海市今天是雾霾，温度为11°C。请注意防护，尽量减少外出，保持室内空气流通。"
+    },
+    {
+      "role": "user",
+      "content": "北京天气"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_daed20014eab46f8933dbb",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"北京市\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_daed20014eab46f8933dbb",
+      "content": "北京市今天是阴天，温度29°C。"
+    },
+    {
+      "role": "assistant",
+      "content": "北京市今天是阴天，温度为29°C。"
+    }
+  ],
+  "summary": "",
+  "stats": {
+    "totalTokens": 187,
+    "messageCount": 14,
+    "compressionCount": 0,
+    "createdAt": "2025-10-18T08:56:39.327Z",
+    "lastActive": "2025-10-18T08:57:29.931Z"
+  }
+}
