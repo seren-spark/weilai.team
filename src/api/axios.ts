@@ -41,8 +41,6 @@ apiClient.interceptors.response.use(
     return response.data;
   },
   (error) => {
-    const currentPath = router.currentRoute.value.path; //  获取当前路径
-    const token = getLocalStorageWithExpire("token");
     let { message } = error;
     if (message == "Network Error") {
       message = "网络错误";

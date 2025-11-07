@@ -1,7 +1,7 @@
 import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
 // import { useRequest } from "@/composables/useRequest";
 import { useRequest } from "vue-request";
-import apiClient from "@/api/axios";
+import apiClient from "@/api/axios-with-adapter";
 import { useLoginStore } from "@/store/useLoginStore";
 import { useRouter, useRoute } from "vue-router";
 import { useAlert } from "./useAlert";
@@ -10,7 +10,7 @@ import type { ApiResponseData } from "@/types/api-response";
 import { watch } from "vue";
 
 import { useUserStore } from "@/store/userStore";
-import { smartApiClient } from "@/api/core/smart-api-client";
+// import { smartApiClient } from "@/api/core/smart-api-client";
 
 const userstore = useUserStore();
 const sseStore = useSseStore();
@@ -64,7 +64,7 @@ export default function () {
           setLocalStorageWithExpire("userId", resData.userId, 1000 * 60 * 60);
           //   localStorage.setItem("userId", resData.userId);
           // 设置智能API token
-          smartApiClient.setTeamToken("team-2023", resData.token);
+          // smartApiClient.setTeamToken("team-2023", resData.token);
           //  清除缓存
           userstore.resetStorage();
           //用户默认有概况权限
