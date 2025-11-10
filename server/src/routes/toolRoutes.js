@@ -1,6 +1,14 @@
+/*
+ * @Author: serendipity 2843306836@qq.com
+ * @Date: 2025-10-17 19:25:42
+ * @LastEditors: serendipity 2843306836@qq.com
+ * @LastEditTime: 2025-11-10 15:03:14
+ * @FilePath: \weilai.team\server\src\routes\toolRoutes.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import express from "express";
 import {
-  chatWithTools,
+  // chatWithTools,
   streamChatWithTools,
 } from "../services/functionCallService.js";
 
@@ -10,47 +18,47 @@ const router = express.Router();
  * POST /api/tool-call
  * 支持工具调用的聊天接口
  */
-router.post("/", async (req, res) => {
-  try {
-    const {
-      message,
-      model = "qwen-plus",
-      sessionId = null,
-      systemPrompt = null,
-    } = req.body;
+// router.post("/", async (req, res) => {
+//   try {
+//     const {
+//       message,
+//       model = "qwen-plus",
+//       sessionId = null,
+//       systemPrompt = null,
+//     } = req.body;
 
-    if (!message) {
-      return res.status(400).json({
-        success: false,
-        error: "message 参数不能为空",
-      });
-    }
+//     if (!message) {
+//       return res.status(400).json({
+//         success: false,
+//         error: "message 参数不能为空",
+//       });
+//     }
 
-    console.log(
-      `🤖 收到工具调用请求 [会话: ${sessionId || "新建"}]: ${message}`,
-    );
+//     console.log(
+//       `🤖 收到工具调用请求 [会话: ${sessionId || "新建"}]: ${message}`,
+//     );
 
-    const result = await chatWithTools(message, model, sessionId, systemPrompt);
+//     const result = await chatWithTools(message, model, sessionId, systemPrompt);
 
-    console.log(`✅ 工具调用完成，最终回复: ${result.finalResponse}`);
+//     console.log(`✅ 工具调用完成，最终回复: ${result.finalResponse}`);
 
-    res.json({
-      success: true,
-      response: result.finalResponse,
-      sessionId: result.sessionId,
-      needToolCall: result.needToolCall,
-      toolCallLogs: result.toolCallLogs || [],
-      stats: result.stats, // 返回会话统计信息
-      model,
-    });
-  } catch (error) {
-    console.error("❌ 工具调用错误:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message || "服务器内部错误",
-    });
-  }
-});
+//     res.json({
+//       success: true,
+//       response: result.finalResponse,
+//       sessionId: result.sessionId,
+//       needToolCall: result.needToolCall,
+//       toolCallLogs: result.toolCallLogs || [],
+//       stats: result.stats, // 返回会话统计信息
+//       model,
+//     });
+//   } catch (error) {
+//     console.error("❌ 工具调用错误:", error);
+//     res.status(500).json({
+//       success: false,
+//       error: error.message || "服务器内部错误",
+//     });
+//   }
+// });
 /**
  * POST /api/tool-call/stream
  * 流式：工具调用 + 自然语言结果，SSE 推送
@@ -60,7 +68,7 @@ router.post("/", async (req, res) => {
  *  - { type: "done" }
  */
 router.post("/stream", async (req, res) => {
-  console.log(req.body, "req.body");
+  console.log("工具调佣");
 
   try {
     const {
@@ -69,6 +77,7 @@ router.post("/stream", async (req, res) => {
       sessionId = null,
       systemPrompt = null,
     } = req.body;
+    const token = req.headers.authorization;
 
     if (!message) {
       return res.status(400).json({ error: "message 参数不能为空" });
@@ -127,6 +136,7 @@ router.post("/stream", async (req, res) => {
         );
         res.end();
       },
+      token,
       sessionId,
       systemPrompt,
     });

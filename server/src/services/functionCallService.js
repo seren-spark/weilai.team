@@ -22,129 +22,129 @@ const ensureSession = async (sessionId, systemPrompt) => {
   return contextManager.createSession(sessionId, systemPrompt);
 };
 
-/**
- * 带上下文管理的工具调用
- * @param {string} userMessage - 用户消息
- * @param {string} model - 模型名称
- * @param {string} sessionId - 会话 ID（用于多轮对话）
- * @param {string} systemPrompt - 系统提示词
- */
-export const chatWithTools = async (
-  userMessage,
-  model = "qwen-plus",
-  sessionId = null,
-  systemPrompt = null
-) => {
-  // 如果没有 sessionId,生成一个新的
-  if (!sessionId) {
-    sessionId = `session_${Date.now()}_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-  }
+// /**
+//  * 带上下文管理的工具调用
+//  * @param {string} userMessage - 用户消息
+//  * @param {string} model - 模型名称
+//  * @param {string} sessionId - 会话 ID（用于多轮对话）
+//  * @param {string} systemPrompt - 系统提示词
+//  */
+// export const chatWithTools = async (
+//   userMessage,
+//   model = "qwen-plus",
+//   sessionId = null,
+//   systemPrompt = null
+// ) => {
+//   // 如果没有 sessionId,生成一个新的
+//   if (!sessionId) {
+//     sessionId = `session_${Date.now()}_${Math.random()
+//       .toString(36)
+//       .substr(2, 9)}`;
+//   }
 
-  // 获取或创建/恢复会话
-  let session = await ensureSession(sessionId, systemPrompt);
+//   // 获取或创建/恢复会话
+//   let session = await ensureSession(sessionId, systemPrompt);
 
-  // 添加用户消息到上下文
-  await contextManager.addMessage(sessionId, {
-    role: "user",
-    content: userMessage,
-  });
+//   // 添加用户消息到上下文
+//   await contextManager.addMessage(sessionId, {
+//     role: "user",
+//     content: userMessage,
+//   });
 
-  // 获取完整上下文
-  const messages = contextManager.getContextMessages(sessionId);
-  let response = await openai.chat.completions.create({
-    model,
-    messages,
-    tools,
-  });
-  let assistantMessage = response.choices[0].message;
+//   // 获取完整上下文
+//   const messages = contextManager.getContextMessages(sessionId);
+//   let response = await openai.chat.completions.create({
+//     model,
+//     messages,
+//     tools,
+//   });
+//   let assistantMessage = response.choices[0].message;
 
-  // 确保 AI 回复不是null
-  if (!assistantMessage.content) {
-    assistantMessage.content = "";
-  }
+//   // 确保 AI 回复不是null
+//   if (!assistantMessage.content) {
+//     assistantMessage.content = "";
+//   }
 
-  // 添加助手消息到上下文
-  await contextManager.addMessage(sessionId, assistantMessage);
+//   // 添加助手消息到上下文
+//   await contextManager.addMessage(sessionId, assistantMessage);
 
-  if (!assistantMessage.tool_calls) {
-    console.log(`无需调用工具，直接回复：${assistantMessage.content}`);
+//   if (!assistantMessage.tool_calls) {
+//     console.log(`无需调用工具，直接回复：${assistantMessage.content}`);
 
-    // 保存会话到文件
-    await sessionStore.saveSession(
-      sessionId,
-      contextManager.getSession(sessionId)
-    );
+//     // 保存会话到文件
+//     await sessionStore.saveSession(
+//       sessionId,
+//       contextManager.getSession(sessionId)
+//     );
 
-    return {
-      needToolCall: false,
-      finalResponse: assistantMessage.content,
-      sessionId,
-      messages: contextManager.getContextMessages(sessionId),
-      stats: contextManager.getSessionStats(sessionId),
-    };
-  }
-  // 工具调用循环
-  const toolCallLogs = [];
-  while (assistantMessage.tool_calls) {
-    const toolCall = assistantMessage.tool_calls[0];
-    const toolCallId = toolCall.id;
-    const funcName = toolCall.function.name;
-    const funcArgs = JSON.parse(toolCall.function.arguments);
-    console.log(`🔧 正在调用工具 [${funcName}]，参数:`, funcArgs);
-    const toolResult = await executeTool(funcName, funcArgs);
+//     return {
+//       needToolCall: false,
+//       finalResponse: assistantMessage.content,
+//       sessionId,
+//       messages: contextManager.getContextMessages(sessionId),
+//       stats: contextManager.getSessionStats(sessionId),
+//     };
+//   }
+//   // 工具调用循环
+//   const toolCallLogs = [];
+//   while (assistantMessage.tool_calls) {
+//     const toolCall = assistantMessage.tool_calls[0];
+//     const toolCallId = toolCall.id;
+//     const funcName = toolCall.function.name;
+//     const funcArgs = JSON.parse(toolCall.function.arguments);
+//     console.log(`🔧 正在调用工具 [${funcName}]，参数:`, funcArgs);
+//     const toolResult = await executeTool(funcName, funcArgs);
 
-    toolCallLogs.push({
-      tool: funcName,
-      args: funcArgs,
-      result: toolResult,
-    });
+//     toolCallLogs.push({
+//       tool: funcName,
+//       args: funcArgs,
+//       result: toolResult,
+//     });
 
-    // 构造工具返回消息
-    const toolMessage = {
-      role: "tool",
-      tool_call_id: toolCallId,
-      content: toolResult,
-    };
-    console.log(`工具返回：${toolMessage.content}`);
+//     // 构造工具返回消息
+//     const toolMessage = {
+//       role: "tool",
+//       tool_call_id: toolCallId,
+//       content: toolResult,
+//     };
+//     console.log(`工具返回：${toolMessage.content}`);
 
-    // 添加工具返回到上下文
-    await contextManager.addMessage(sessionId, toolMessage);
+//     // 添加工具返回到上下文
+//     await contextManager.addMessage(sessionId, toolMessage);
 
-    // 再次调用模型获取自然语言总结
-    const updatedMessages = contextManager.getContextMessages(sessionId);
-    response = await openai.chat.completions.create({
-      model,
-      messages: updatedMessages,
-      tools,
-    });
-    assistantMessage = response.choices[0].message;
-    if (!assistantMessage.content) {
-      assistantMessage.content = "";
-    }
+//     // 再次调用模型获取自然语言总结
+//     const updatedMessages = contextManager.getContextMessages(sessionId);
+//     response = await openai.chat.completions.create({
+//       model,
+//       messages: updatedMessages,
+//       tools,
+//     });
+//     assistantMessage = response.choices[0].message;
+//     if (!assistantMessage.content) {
+//       assistantMessage.content = "";
+//     }
 
-    // 添加助手回复到上下文
-    await contextManager.addMessage(sessionId, assistantMessage);
-  }
+//     // 添加助手回复到上下文
+//     await contextManager.addMessage(sessionId, assistantMessage);
+//   }
 
-  console.log(`助手最终回复：${assistantMessage.content}`);
+//   console.log(`助手最终回复：${assistantMessage.content}`);
 
-  // 保存会话到文件
-  await sessionStore.saveSession(
-    sessionId,
-    contextManager.getSession(sessionId)
-  );
+//   // 保存会话到文件
+//   await sessionStore.saveSession(
+//     sessionId,
+//     contextManager.getSession(sessionId)
+//   );
 
-  return {
-    needToolCall: true,
-    finalResponse: assistantMessage.content,
-    sessionId,
-    toolCallLogs,
-    messages: contextManager.getContextMessages(sessionId),
-    stats: contextManager.getSessionStats(sessionId),
-  };
-};
+//   return {
+//     needToolCall: true,
+//     finalResponse: assistantMessage.content,
+//     sessionId,
+//     toolCallLogs,
+//     messages: contextManager.getContextMessages(sessionId),
+//     stats: contextManager.getSessionStats(sessionId),
+//   };
+// };
 
 /**
  * 流式工具调用（支持多工具并行）
@@ -163,6 +163,7 @@ export const streamChatWithTools = async (
     onToolCall,
     onDone,
     onError,
+    token=null,
     sessionId = null,
     systemPrompt = null,
   } = {}
@@ -310,7 +311,7 @@ export const streamChatWithTools = async (
             }
           })();
 
-          const result = await executeTool(funcName, funcArgs);
+          const result = await executeTool(funcName, funcArgs,token);
           const resultStr =
             typeof result === "string" ? result : JSON.stringify(result);
 

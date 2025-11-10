@@ -1,0 +1,71 @@
+{
+  "id": "session_1762677723141_oqxj3apns",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "王科林"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_f756501db5414a2eac9f7e",
+          "type": "function",
+          "function": {
+            "name": "search_users",
+            "arguments": "{\"keyword\": \"王科林\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_f756501db5414a2eac9f7e",
+      "content": "找到 10 位成员：\n\n1. 王科林 (1)\n     简介dz.cn\n   \n\n2. 邱程举 (2)\n     简介。。。。。。\n   \n\n3. 杜昱徵 (3)\n     简介暂无个性签名\n   \n\n4. 王寒露 (4)\n     简介暂无个性签名\n   \n\n5. 米晴 (5)\n     简介庆幸吧，庆幸我们还活着\n   \n\n6. 肖晴 (6)\n     简介暂无个性签名\n   \n\n7. 侯博然 (7)\n     简介暂无个性签名\n   \n\n8. 余茹祥 (8)\n     简介暂无个性签名\n   \n\n9. 刘志文 (9)\n     简介弱小，但依然有梦想的人！\n   \n\n10. 李彩 (10)\n     简介暂无个性签名\n   "
+    },
+    {
+      "role": "assistant",
+      "content": "找到了成员王科林：\n\n**王科林**\n- 学号：1\n- 简介：dz.cn\n\n如果还需要了解其他信息，请告诉我。"
+    },
+    {
+      "role": "user",
+      "content": "刘志文"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_b856aafd4a8449228e6132",
+          "type": "function",
+          "function": {
+            "name": "search_users",
+            "arguments": "{\"keyword\": \"刘志文\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_b856aafd4a8449228e6132",
+      "content": "找到 10 位成员：\n\n1. 王科林 (1)\n     简介dz.cn\n   \n\n2. 邱程举 (2)\n     简介。。。。。。\n   \n\n3. 杜昱徵 (3)\n     简介暂无个性签名\n   \n\n4. 王寒露 (4)\n     简介暂无个性签名\n   \n\n5. 米晴 (5)\n     简介庆幸吧，庆幸我们还活着\n   \n\n6. 肖晴 (6)\n     简介暂无个性签名\n   \n\n7. 侯博然 (7)\n     简介暂无个性签名\n   \n\n8. 余茹祥 (8)\n     简介暂无个性签名\n   \n\n9. 刘志文 (9)\n     简介弱小，但依然有梦想的人！\n   \n\n10. 李彩 (10)\n     简介暂无个性签名\n   "
+    },
+    {
+      "role": "assistant",
+      "content": "找到了成员刘志文：\n\n**刘志文**\n- 学号：9\n- 简介：弱小，但依然有梦想的人！\n\n如果还需要了解其他信息，请告诉我。"
+    }
+  ],
+  "summary": "",
+  "stats": {
+    "totalTokens": 467,
+    "messageCount": 8,
+    "compressionCount": 0,
+    "createdAt": "2025-11-09T08:42:03.145Z",
+    "lastActive": "2025-11-09T08:42:24.623Z"
+  }
+}

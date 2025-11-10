@@ -6,23 +6,54 @@
       "content": "You are a helpful assistant."
     },
     {
-      "role": "user",
-      "content": "你是"
-    },
-    {
-      "role": "assistant",
-      "content": "我是Qwen，是阿里云研发的超大规模语言模型。我可以帮助你回答问题、提供信息、进行创作等。请问有什么我可以帮你的吗？"
+      "role": "system",
+      "content": "【对话历史摘要】\n- 用户询问多个城市的天气情况，意图获取实时气象信息以安排出行或了解环境状况。\n- 新乡：今天多云，气温29°C。\n- 上海：今天雾霾，气温11°C，已提醒注意防护、减少外出。\n- 北京：今天阴天，气温29°C。\n- 助手通过调用工具获取数据，依次回应用户查询，提供简洁准确的天气信息及必要建议。\n\n以上是之前的对话摘要，请基于此继续对话。"
     },
     {
       "role": "user",
-      "content": "新乡天气"
+      "content": "开封天气"
     },
     {
       "role": "assistant",
       "content": null,
       "tool_calls": [
         {
-          "id": "call_72316499d11645d2aad10d",
+          "id": "call_414d878fc19f4d01a12bb9",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"开封市\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_414d878fc19f4d01a12bb9",
+      "content": "开封市今天是多云，温度26°C。"
+    },
+    {
+      "role": "assistant",
+      "content": "开封市今天是多云，温度为26°C。"
+    },
+    {
+      "role": "user",
+      "content": "开封和新乡的天气"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_657312f3c916428b993375",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"开封市\"}"
+          }
+        },
+        {
+          "id": "call_d503220cb46d4a2cb9f3c4",
           "type": "function",
           "function": {
             "name": "get_current_weather",
@@ -33,74 +64,25 @@
     },
     {
       "role": "tool",
-      "tool_call_id": "call_72316499d11645d2aad10d",
-      "content": "新乡市今天是多云，温度29°C。"
-    },
-    {
-      "role": "assistant",
-      "content": "新乡市今天是多云，温度为29°C。"
-    },
-    {
-      "role": "user",
-      "content": "上海天气"
-    },
-    {
-      "role": "assistant",
-      "content": null,
-      "tool_calls": [
-        {
-          "id": "call_4382063938b94ae9afb3ee",
-          "type": "function",
-          "function": {
-            "name": "get_current_weather",
-            "arguments": "{\"location\": \"上海市\"}"
-          }
-        }
-      ]
+      "tool_call_id": "call_657312f3c916428b993375",
+      "content": "开封市今天是小雨，温度21°C。"
     },
     {
       "role": "tool",
-      "tool_call_id": "call_4382063938b94ae9afb3ee",
-      "content": "上海市今天是雾霾，温度11°C。"
+      "tool_call_id": "call_d503220cb46d4a2cb9f3c4",
+      "content": "新乡市今天是多云，温度21°C。"
     },
     {
       "role": "assistant",
-      "content": "上海市今天是雾霾，温度为11°C。请注意防护，尽量减少外出，保持室内空气流通。"
-    },
-    {
-      "role": "user",
-      "content": "北京天气"
-    },
-    {
-      "role": "assistant",
-      "content": null,
-      "tool_calls": [
-        {
-          "id": "call_daed20014eab46f8933dbb",
-          "type": "function",
-          "function": {
-            "name": "get_current_weather",
-            "arguments": "{\"location\": \"北京市\"}"
-          }
-        }
-      ]
-    },
-    {
-      "role": "tool",
-      "tool_call_id": "call_daed20014eab46f8933dbb",
-      "content": "北京市今天是阴天，温度29°C。"
-    },
-    {
-      "role": "assistant",
-      "content": "北京市今天是阴天，温度为29°C。"
+      "content": "- 开封市今天是小雨，温度为21°C，建议出门携带雨具。\n- 新乡市今天是多云，温度也为21°C，适宜外出活动。"
     }
   ],
-  "summary": "",
+  "summary": "- 用户询问多个城市的天气情况，意图获取实时气象信息以安排出行或了解环境状况。\n- 新乡：今天多云，气温29°C。\n- 上海：今天雾霾，气温11°C，已提醒注意防护、减少外出。\n- 北京：今天阴天，气温29°C。\n- 助手通过调用工具获取数据，依次回应用户查询，提供简洁准确的天气信息及必要建议。",
   "stats": {
-    "totalTokens": 187,
-    "messageCount": 14,
-    "compressionCount": 0,
+    "totalTokens": 239,
+    "messageCount": 23,
+    "compressionCount": 1,
     "createdAt": "2025-10-18T08:56:39.327Z",
-    "lastActive": "2025-10-18T08:57:29.931Z"
+    "lastActive": "2025-11-07T13:55:01.113Z"
   }
 }

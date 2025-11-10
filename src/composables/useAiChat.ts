@@ -2,6 +2,7 @@ import { ref } from "vue";
 import apiClient from "@/api/axios";
 import axios from "axios";
 import { useChatStorage } from "@/composables/useChatStorage";
+import { useLocalStorageWithExpire } from "./useLocalStorage";
 
 // 🔧 Polyfill: 在不支持的浏览器中自动加载
 if (typeof ReadableStream === "undefined") {
@@ -347,6 +348,7 @@ export function useAiChat() {
   /**
    * 🚀 Fetch Streaming 方案（现代浏览器）
    */
+  const { getLocalStorageWithExpire } = useLocalStorageWithExpire();
   const sendWithFetchStreaming = async (
     content: string,
     onChunk: (chunk: string) => void,
@@ -405,12 +407,20 @@ export function useAiChat() {
       if (currentSessionId.value) {
         requestData.sessionId = currentSessionId.value;
       }
+      const token = getLocalStorageWithExpire<string>("token");
+        
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  
+  // 如果有 token，添加 Authorization header（和 apiClient 一致）
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
       // ✅ 调用后端 SSE 流式接口
       const response = await fetch("http://localhost:5005/tool_call/stream", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers, 
         body: JSON.stringify(requestData),
       });
       console.log(response);
