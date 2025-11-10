@@ -13,12 +13,23 @@ if (typeof ReadableStream === "undefined") {
     console.log("✅ ReadableStream Polyfill 已加载");
   });
 }
+//  添加反思类型
+export interface ReflectionData {
+  dimension: string; // 维度
+  reflection: string; // 反思
+  error?: boolean; // 是否出错
+}
 
 export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   time: string;
+  metadata?: {
+    reflectionUsed: boolean;
+    initialAnswer: string; // 原始回答
+    reflections: ReflectionData[]; // 反思数据
+  };
 }
 
 export interface ChatHistory {
@@ -408,19 +419,19 @@ export function useAiChat() {
         requestData.sessionId = currentSessionId.value;
       }
       const token = getLocalStorageWithExpire<string>("token");
-        
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  };
-  
-  // 如果有 token，添加 Authorization header（和 apiClient 一致）
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      // 如果有 token，添加 Authorization header（和 apiClient 一致）
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
       // ✅ 调用后端 SSE 流式接口
       const response = await fetch("http://localhost:5005/tool_call/stream", {
         method: "POST",
-        headers, 
+        headers,
         body: JSON.stringify(requestData),
       });
       console.log(response);

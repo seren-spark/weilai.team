@@ -2,6 +2,7 @@ import express from "express";
 import chatRoutes from "./chatRoutes.js";
 import toolRoutes from "./toolRoutes.js";
 import sessionRoutes from "./sessionRoutes.js";
+import reflectionRoutes from "./reflectionRoutes.js";
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.get("/health", (req, res) => {
 router.use("/chat", chatRoutes);
 router.use("/tool_call", toolRoutes);
 router.use("/sessions", sessionRoutes);
+router.use("/reflection", reflectionRoutes);
 
 export default router;

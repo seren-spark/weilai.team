@@ -8,12 +8,13 @@ import { sessionStore } from "./sessionStore.js";
  */
 
 /**
- * 生成初始回答
+ * 生成初始回答（流式）
  */
 const generateInitialAnswer = async (
   userMessage,
   model,
   conversationHistory,
+  onToken = null, // 流式输出回调
 ) => {
   const messages = [
     ...conversationHistory,
@@ -23,28 +24,41 @@ const generateInitialAnswer = async (
     },
   ];
 
-  const response = await openai.chat.completions.create({
+  const stream = await openai.chat.completions.create({
     model,
     messages,
     temperature: 0.7,
+    stream: true, // 启用流式
   });
 
-  return response.choices[0].message.content;
+  let fullResponse = "";
+  
+  for await (const chunk of stream) {
+    const delta = chunk.choices[0]?.delta?.content || "";
+    if (delta) {
+      fullResponse += delta;
+      if (onToken) {
+        onToken(delta); // 实时推送每个 token
+      }
+    }
+  }
+
+  return fullResponse;
 };
 
 /**
- * 并行生成多个反思维度
+ * 多维度反思（并行执行 + 流式推送）
  */
 const generateReflectionDimensions = async (
   initialAnswer,
   userMessage,
   model,
+  onReflectionUpdate = null, // 新增：每个维度完成时的回调
 ) => {
-  // 定义多个反思维度
   const dimensions = [
     {
       name: "准确性检查",
-      prompt: `请检查以下回答的准确性和事实正确性：\n\n问题：${userMessage}\n\n回答：${initialAnswer}\n\n请指出可能的错误或不准确之处。如果回答准确，请说明为什么准确。`,
+      prompt: `请检查以下回答的准确性：\n\n问题：${userMessage}\n\n回答：${initialAnswer}\n\n请指出任何事实错误或不准确的地方。如果准确，请说明理由。`,
     },
     {
       name: "完整性评估",
@@ -56,10 +70,10 @@ const generateReflectionDimensions = async (
     },
   ];
 
-  // 并行执行所有反思维度（性能优化）
-  const reflectionPromises = dimensions.map(async (dimension) => {
+  // 并行执行所有反思维度，使用流式输出
+  const reflectionPromises = dimensions.map(async (dimension, index) => {
     try {
-      const response = await openai.chat.completions.create({
+      const stream = await openai.chat.completions.create({
         model,
         messages: [
           {
@@ -74,21 +88,63 @@ const generateReflectionDimensions = async (
         ],
         temperature: 0.3,
         max_tokens: 500,
+        stream: true, // 启用流式
       });
 
-      return {
+      let fullReflection = "";
+      
+      // 流式接收反思内容
+      for await (const chunk of stream) {
+        const delta = chunk.choices[0]?.delta?.content || "";
+        if (delta) {
+          fullReflection += delta;
+          
+          // 🔥 实时推送反思内容（流式）
+          if (onReflectionUpdate) {
+            onReflectionUpdate(
+              {
+                dimension: dimension.name,
+                reflection: fullReflection, // 累积的内容
+                timestamp: new Date().toISOString(),
+                index,
+                streaming: true, // 标记为流式中
+              },
+              index,
+              dimensions.length
+            );
+          }
+        }
+      }
+
+      const reflection = {
         dimension: dimension.name,
-        reflection: response.choices[0].message.content,
+        reflection: fullReflection,
         timestamp: new Date().toISOString(),
+        index,
+        streaming: false, // 标记为完成
       };
+
+      // 🔥 最终推送：维度完成
+      if (onReflectionUpdate) {
+        onReflectionUpdate(reflection, index, dimensions.length);
+      }
+
+      return reflection;
     } catch (error) {
       // 错误处理：单个维度失败不影响其他维度
-      return {
+      const reflection = {
         dimension: dimension.name,
         reflection: `反思失败: ${error.message}`,
         error: true,
         timestamp: new Date().toISOString(),
+        index,
       };
+
+      if (onReflectionUpdate) {
+        onReflectionUpdate(reflection, index, dimensions.length);
+      }
+
+      return reflection;
     }
   });
 
@@ -96,19 +152,20 @@ const generateReflectionDimensions = async (
 };
 
 /**
- * 基于反思结果生成改进回答
+ * 基于反思结果生成改进回答（流式）
  */
 const generateImprovedAnswer = async (
   initialAnswer,
   reflections,
   userMessage,
   model,
+  onToken = null, // 流式输出回调
 ) => {
   const reflectionSummary = reflections
     .map((r) => `【${r.dimension}】\n${r.reflection}`)
     .join("\n\n");
 
-  const response = await openai.chat.completions.create({
+  const stream = await openai.chat.completions.create({
     model,
     messages: [
       {
@@ -122,9 +179,22 @@ const generateImprovedAnswer = async (
       },
     ],
     temperature: 0.7,
+    stream: true, // 启用流式
   });
 
-  return response.choices[0].message.content;
+  let fullResponse = "";
+  
+  for await (const chunk of stream) {
+    const delta = chunk.choices[0]?.delta?.content || "";
+    if (delta) {
+      fullResponse += delta;
+      if (onToken) {
+        onToken(delta); // 实时推送每个 token
+      }
+    }
+  }
+
+  return fullResponse;
 };
 
 /**
@@ -177,49 +247,63 @@ export const streamReflectionChat = async (
     const conversationHistory =
       contextManager.getContextMessages(currentSessionId);
 
-    // ========== 步骤1: 生成初始回答 ==========
+    // ========== 步骤1: 生成初始回答（流式） ==========
     onStatus?.("thinking", { message: "正在生成初始回答..." });
 
-    const initialAnswer = await generateInitialAnswer(
+    let initialAnswer = "";
+    await generateInitialAnswer(
       userMessage,
       model,
       conversationHistory,
+      (delta) => {
+        initialAnswer += delta;
+        // 🔥 实时推送初始回答的每个 token
+        onStatus?.("initial_answer_streaming", { 
+          answer: initialAnswer,
+          delta 
+        });
+      }
     );
 
     onStatus?.("initial_answer", { answer: initialAnswer });
 
-    // ========== 步骤2: 并行反思（多维度） ==========
+    // ========== 步骤2: 并行反思（多维度 + 流式推送） ==========
     onStatus?.("reflecting", { message: "正在进行多维度反思..." });
 
     const reflections = await generateReflectionDimensions(
       initialAnswer,
       userMessage,
       model,
+      // 🔥 每个反思维度完成时的回调
+      (reflection, index, total) => {
+        onStatus?.("reflection_item", {
+          reflection,
+          index,
+          total,
+          message: `完成 ${index + 1}/${total} 个维度：${reflection.dimension}`,
+        });
+      },
     );
 
     onStatus?.("reflections", { reflections });
 
-    // ========== 步骤3: 生成改进回答 ==========
+    // ========== 步骤3: 生成改进回答（流式） ==========
     onStatus?.("improving", { message: "正在基于反思生成改进回答..." });
 
-    const improvedAnswer = await generateImprovedAnswer(
+    let improvedAnswer = "";
+    await generateImprovedAnswer(
       initialAnswer,
       reflections,
       userMessage,
       model,
+      (delta) => {
+        improvedAnswer += delta;
+        // 🔥 实时推送改进回答的每个 token
+        onToken?.(delta);
+      }
     );
 
     onStatus?.("improved_answer", { answer: improvedAnswer });
-
-    // ========== 步骤4: 流式输出最终回答 ==========
-    onStatus?.("streaming", { message: "正在输出最终回答..." });
-
-    // 模拟流式输出（逐字输出）
-    for (let i = 0; i < improvedAnswer.length; i++) {
-      onToken?.(improvedAnswer[i]);
-      // 添加小延迟以模拟真实流式效果
-      await new Promise((resolve) => setTimeout(resolve, 20));
-    }
 
     // 添加助手回复到历史
     await contextManager.addMessage(currentSessionId, {

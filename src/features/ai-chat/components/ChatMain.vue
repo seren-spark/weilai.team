@@ -7,6 +7,10 @@
       :messages="messages"
       :is-loading="isLoading"
       :user-initial="userInitial"
+      :reflection-status="reflectionStatus"
+      :reflection-message="reflectionMessage"
+      :current-reflections="currentReflections"
+      :initial-answer-content="initialAnswerContent"
     />
 
     <ChatInput
@@ -23,7 +27,7 @@ import { ref } from "vue";
 import ChatHeader from "./ChatHeader.vue";
 import MessageList from "./MessageList.vue";
 import ChatInput from "./ChatInput.vue";
-import type { Message } from "@/composables/useAiChat";
+import type { Message, ReflectionData } from "@/composables/useAiChat";
 
 defineProps<{
   greeting: string;
@@ -31,6 +35,10 @@ defineProps<{
   isLoading: boolean;
   userInitial: string;
   disabled: boolean;
+  reflectionStatus?: string;
+  reflectionMessage?: string;
+  currentReflections?: ReflectionData[];
+  initialAnswerContent?: string;
 }>();
 
 defineEmits<{
