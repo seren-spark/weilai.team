@@ -138,7 +138,7 @@ POST /api/tool_call
 - `message` - 用户消息（必填）
 - `sessionId` - 会话 ID（可选，用于多轮对话）
 - `systemPrompt` - 系统提示词（可选）
-- `model` - 模型名称（默认 qwen-plus）
+- `model` - 模型名称（默认 qwen3-max）
 
 **响应：**
 

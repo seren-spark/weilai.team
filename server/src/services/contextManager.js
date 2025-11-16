@@ -7,13 +7,14 @@
  * 4. 会话摘要生成
  */
 
+import { encoding_for_model } from "tiktoken";
 import openai from "../config/openai.js";
 
 export class ContextManager {
   constructor(options = {}) {
-    this.maxTokens = options.maxTokens || 4000; // 最大 token 数
-    this.maxMessages = options.maxMessages || 20; // 最多保留消息数
-    this.keepRecentCount = options.keepRecentCount || 6; // 压缩时保留的最近消息数
+    this.maxTokens = options.maxTokens || 100; // 最大 token 数  4000
+    this.maxMessages = options.maxMessages || 10; // 最多保留消息数 20
+    this.keepRecentCount = options.keepRecentCount || 3; // 压缩时保留的最近消息数 6
     this.conversations = new Map(); // sessionId -> { messages, summary, stats }
   }
 
@@ -72,15 +73,20 @@ export class ContextManager {
     session.stats.lastActive = new Date().toISOString();
 
     // 计算 token
+    console.log(`格式化后的消息: ${this.formatMessage(message)}`);
     const tokens = this.estimateTokens(this.formatMessage(message));
     session.stats.totalTokens += tokens;
 
     console.log(
-      `💬 [${sessionId}] 添加消息 (${tokens} tokens) - 总计: ${session.stats.totalTokens}/${this.maxTokens}`
+      `💬 [${sessionId}] 添加消息 (${tokens} tokens) - 总计: ${session.stats.totalTokens}/${this.maxTokens}`,
     );
 
     // 检查是否需要压缩
+    console.log(`检查是否需要压缩...`, this.needsCompression(session));
+
     if (this.needsCompression(session)) {
+      console.log("需要压缩");
+
       await this.compressContext(sessionId);
     }
 
@@ -115,49 +121,83 @@ export class ContextManager {
 
     console.log(`🗜️  [${sessionId}] 开始压缩上下文...`);
     const startTime = Date.now();
-
-    // 1. 分离系统消息、旧消息、最近消息
-    const systemMessages = session.messages.filter((m) => m.role === "system");
-    const nonSystemMessages = session.messages.filter(
-      (m) => m.role !== "system"
-    );
-
-    // 如果消息太少，不需要压缩
-    if (nonSystemMessages.length <= this.keepRecentCount) {
-      console.log(`ℹ️  [${sessionId}] 消息数量不足，跳过压缩`);
-      return;
-    }
-
-    // 2. 保留最近的消息
-    const recentMessages = nonSystemMessages.slice(-this.keepRecentCount);
-    const oldMessages = nonSystemMessages.slice(0, -this.keepRecentCount);
-
-    // 3. 为旧消息生成摘要
-    const newSummary = await this.summarizeMessages(
-      oldMessages,
-      session.summary
-    );
-
-    // 4. 重构消息列表
-    const summaryMessage = {
-      role: "system",
-      content: `【对话历史摘要】\n${newSummary}\n\n以上是之前的对话摘要，请基于此继续对话。`,
+    // 1. 定义一个函数来判断一条消息是否是系统摘要消息
+    const isSummaryMessage = (msg) => {
+      return (
+        msg.role === "system" && msg.content.startsWith("【对话历史摘要】")
+      );
     };
 
-    session.messages = [...systemMessages, summaryMessage, ...recentMessages];
-    session.summary = newSummary;
-    session.stats.compressionCount++;
-
-    // 5. 重新计算 token
-    session.stats.totalTokens = session.messages.reduce(
-      (sum, msg) => sum + this.estimateTokens(this.formatMessage(msg)),
-      0
+    // 2. 分离出：旧摘要、非摘要系统消息、所有普通消息
+    const oldSummaryMessage = session.messages.find(isSummaryMessage);
+    const nonSummarySystemMessages = session.messages.filter(
+      (m) => m.role === "system" && !isSummaryMessage(m),
+    );
+    const allRegularMessages = session.messages.filter(
+      (m) => m.role !== "system",
     );
 
-    const duration = Date.now() - startTime;
-    console.log(
-      `✅ [${sessionId}] 压缩完成 (${duration}ms): ${oldMessages.length} 条消息 -> 1 条摘要 | 当前 tokens: ${session.stats.totalTokens}`
+    // 如果普通消息太少，不需要压缩
+    if (
+      allRegularMessages.length <= this.keepRecentCount &&
+      session.stats.totalTokens < this.maxTokens
+    ) {
+      console.log(
+        `ℹ️  [${sessionId}] 普通消息数量不足 (${allRegularMessages.length} <= ${this.keepRecentCount})，跳过压缩`,
+      );
+      return;
+    }
+    // 3. 准备需要被总结的内容和需要保留的内容
+    const recentMessages = allRegularMessages.slice(-this.keepRecentCount);
+    const oldMessagesToSummarize = allRegularMessages.slice(
+      0,
+      -this.keepRecentCount,
     );
+    const previousSummary = oldSummaryMessage
+      ? oldSummaryMessage.content
+          .replace("【对话历史摘要】", "")
+          .replace("以上是之前的对话摘要，请基于此继续对话。", "")
+          .trim()
+      : "";
+
+    try {
+      // 3. 为旧消息生成摘要
+      const newSummary = await this.summarizeMessages(
+        oldMessagesToSummarize,
+        previousSummary, // <-- 这是解决重复问题的核心
+      );
+
+      // 5. 重构消息列表
+      const summaryMessage = {
+        role: "system",
+        content: `【对话历史摘要】\n${newSummary}\n\n以上是之前的对话摘要，请基于此继续对话。`,
+      };
+
+      // 新的消息列表 = 非摘要系统消息 + 最新的综合摘要 + 最近的普通消息
+      session.messages = [
+        ...nonSummarySystemMessages,
+        summaryMessage,
+        ...recentMessages,
+      ];
+
+      // 更新会话的 summary 字段
+      session.summary = newSummary;
+      session.stats.compressionCount++;
+
+      // 5. 重新计算 token
+      session.stats.totalTokens = session.messages.reduce(
+        (sum, msg) => sum + this.estimateTokens(this.formatMessage(msg)),
+        0,
+      );
+
+      const duration = Date.now() - startTime;
+      console.log(
+        `✅ [${sessionId}] 压缩完成 (${duration}ms): ${oldMessagesToSummarize.length} 条消息 -> 1 条摘要 | 当前 tokens: ${session.stats.totalTokens}`,
+      );
+    } catch (error) {
+      console.error(`❌ [${sessionId}] 压缩上下文时出错:`, error);
+      // 可以在这里添加错误处理逻辑，例如回滚操作或通知用户
+    }
   }
 
   /**
@@ -180,7 +220,7 @@ export class ContextManager {
 
     try {
       const response = await openai.chat.completions.create({
-        model: "qwen-plus",
+        model: "qwen3-max",
         messages: [
           {
             role: "system",
@@ -218,6 +258,26 @@ export class ContextManager {
   estimateTokens(text) {
     if (!text) return 0;
 
+    try {
+      // 🎯 面试亮点1: 使用 tiktoken 精确计算
+      const encoding = encoding_for_model("gpt-3.5-turbo");
+      const tokens = encoding.encode(text).length;
+
+      // 🎯 面试亮点2: 释放内存，防止内存泄漏
+      encoding.free();
+
+      return tokens;
+    } catch (error) {
+      // 🎯 面试亮点3: 优雅的降级机制
+      console.warn("⚠️ tiktoken 计算失败，使用估算算法:", error.message);
+      return this.estimateTokensFallback(text);
+    }
+  }
+
+  /**
+   * 降级的 token 估算算法（面试亮点：系统健壮性）
+   */
+  estimateTokensFallback(text) {
     const chineseChars = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
     const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
     const otherChars = text.length - chineseChars;
@@ -225,7 +285,7 @@ export class ContextManager {
     return Math.ceil(
       chineseChars / 1.5 + // 中文
         englishWords * 1.3 + // 英文单词
-        (otherChars - englishWords * 5) * 0.5 // 其他字符
+        (otherChars - englishWords * 5) * 0.5, // 其他字符
     );
   }
 
@@ -233,15 +293,27 @@ export class ContextManager {
    * 格式化消息内容（用于 token 计算）
    */
   formatMessage(message) {
+    let content = "";
+
     if (message.role === "tool") {
-      return `tool: ${message.content}`;
-    }
-    if (message.tool_calls) {
-      return `assistant: ${message.content || ""} [calls ${
+      content = `tool: ${message.content}`;
+    } else if (message.tool_calls) {
+      content = `assistant: ${message.content || ""} [calls ${
         message.tool_calls.length
       } tools]`;
+    } else {
+      content = `${message.role}: ${message.content || ""}`;
     }
-    return `${message.role}: ${message.content || ""}`;
+
+    // 🎯 关键修复：计算 metadata 中的反思数据 token
+    if (message.metadata && message.metadata.reflections) {
+      const reflectionText = message.metadata.reflections
+        .map((r) => r.reflection)
+        .join(" ");
+      content += ` [metadata: ${reflectionText.substring(0, 500)}...]`;
+    }
+
+    return content;
   }
 
   /**
@@ -310,12 +382,15 @@ export class ContextManager {
 
 // 创建全局实例
 export const contextManager = new ContextManager({
-  maxTokens: 4000,
-  maxMessages: 20,
-  keepRecentCount: 6,
+  maxTokens: 1000,
+  maxMessages: 10,
+  keepRecentCount: 2,
 });
 
 // 定期清理过期会话（每小时执行一次）
-setInterval(() => {
-  contextManager.cleanupExpiredSessions(24);
-}, 60 * 60 * 1000);
+setInterval(
+  () => {
+    contextManager.cleanupExpiredSessions(24);
+  },
+  60 * 60 * 1000,
+);

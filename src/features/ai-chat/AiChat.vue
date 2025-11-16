@@ -5,6 +5,7 @@
       :features="features"
       :chat-history="chatHistory"
       :current-chat-id="currentChatId"
+      :trigger-reflection="triggerReflection"
     />
 
     <ChatMain
@@ -18,8 +19,10 @@
       :reflection-message="reflectionMessage"
       :current-reflections="currentReflections"
       :initial-answer-content="initialAnswerContent"
+      :is-reflection-running="isReflectionRunning"
       @send="handleSendMessage"
       @voice="toggleVoice"
+      @abort-reflection="abortReflection"
     />
   </div>
 </template>
@@ -42,6 +45,7 @@ import {
 import ChatSidebar from "./components/ChatSidebar.vue";
 import ChatMain from "./components/ChatMain.vue";
 import type { Feature } from "./components/FeatureList.vue";
+import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
 
 // 使用AI聊天composable
 const {
@@ -74,6 +78,10 @@ const reflectionMessage = ref<string>(""); // 反思状态消息
 const currentReflections = ref<ReflectionData[]>([]); // 当前反思结果
 const initialAnswerContent = ref<string>(""); // 初始回答内容（流式显示）
 
+// 🎯 中断功能状态
+const isReflectionRunning = ref(false); // 反思是否正在运行
+const abortController = ref<AbortController | null>(null); // 中断控制器
+
 // 用户信息
 const userInitial = computed(() => "侯".charAt(0));
 const greeting = computed(() => "晚上好，侯博然");
@@ -86,7 +94,23 @@ const features = ref<Feature[]>([
   { id: "image", label: "图像生成", icon: "mdi:image" },
   { id: "more", label: "更多", icon: "mdi:dots-horizontal" },
 ]);
+const triggerReflection = (value: boolean) => {
+  useReflection.value = value;
+};
 
+// 🎯 中断反思功能
+const abortReflection = () => {
+  if (abortController.value && isReflectionRunning.value) {
+    console.log("🛑 用户主动中断反思");
+    abortController.value.abort();
+    isReflectionRunning.value = false;
+    // 🎯 中断后完全清除状态显示
+    reflectionStatus.value = "";
+    reflectionMessage.value = "";
+    currentReflections.value = [];
+    initialAnswerContent.value = "";
+  }
+};
 // 切换语音
 const toggleVoice = () => {
   console.log("Toggle voice input");
@@ -116,20 +140,35 @@ const handleReflectionMessage = async (message: string) => {
     isBusy.value = true;
     isLoading.value = true;
 
+    // 🎯 创建新的 AbortController
+    abortController.value = new AbortController();
+    isReflectionRunning.value = true;
+
+    const { getLocalStorageWithExpire } = useLocalStorageWithExpire();
+    const token = getLocalStorageWithExpire<string>("token");
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // 如果有 token，添加 Authorization header（和 apiClient 一致）
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
     // 步骤2：流式接收反思响应
     const response = await fetch("http://localhost:5005/reflection/stream", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
         message,
-        model: "qwen-plus",
+        model: "qwen3-max",
         sessionId: currentSessionId.value || null,
       }),
+      signal: abortController.value.signal, // 🎯 添加中断信号
     });
-
+    // 创建响应流读取器
     const reader = response.body?.getReader();
+    // 创建文本解码器
     const decoder = new TextDecoder();
 
     if (!reader) throw new Error("无法读取响应流");
@@ -138,7 +177,7 @@ const handleReflectionMessage = async (message: string) => {
     let reflectionMetadata: any = null;
 
     while (true) {
-      const { done, value } = await reader.read();
+      const { done, value } = await reader.read(); //是Uint8Array类型的,必须通过TextDecoder转换
       if (done) break;
 
       const chunk = decoder.decode(value);
@@ -150,7 +189,7 @@ const handleReflectionMessage = async (message: string) => {
             const data = JSON.parse(line.slice(6));
 
             console.log("📨 收到事件:", data.type, data.status || "");
-            
+            // 处理不同类型的事件
             switch (data.type) {
               case "status":
                 reflectionStatus.value = data.status;
@@ -172,17 +211,17 @@ const handleReflectionMessage = async (message: string) => {
                 // 🔥 流式接收单个反思维度
                 if (data.status === "reflection_item") {
                   const { reflection, index, total } = data.data;
-                  
+
                   // 动态更新反思数组
                   if (!currentReflections.value[index]) {
                     currentReflections.value[index] = reflection;
                   } else {
                     currentReflections.value[index] = reflection;
                   }
-                  
+
                   // 触发响应式更新
                   currentReflections.value = [...currentReflections.value];
-                  
+
                   // 更新状态消息
                   reflectionMessage.value = `完成 ${index + 1}/${total} 个维度：${reflection.dimension}`;
                 }
@@ -206,7 +245,7 @@ const handleReflectionMessage = async (message: string) => {
 
               case "done":
                 console.log("✅ 收到 done 事件，开始清理状态");
-                
+
                 // 添加反思元数据
                 if (data.result.reflectionUsed && reflectionMetadata) {
                   aiMessage.metadata = {
@@ -229,6 +268,8 @@ const handleReflectionMessage = async (message: string) => {
                 console.log("🧹 清除反思状态...");
                 isLoading.value = false;
                 isBusy.value = false;
+                isReflectionRunning.value = false; // 🎯 重置运行状态
+                abortController.value = null; // 🎯 清除中断控制器
                 reflectionStatus.value = "";
                 reflectionMessage.value = "";
                 currentReflections.value = [];
@@ -243,9 +284,33 @@ const handleReflectionMessage = async (message: string) => {
                 console.error("反思错误:", data.message);
                 isLoading.value = false;
                 isBusy.value = false;
+                isReflectionRunning.value = false; // 🎯 重置运行状态
+                abortController.value = null; // 🎯 清除中断控制器
                 reflectionStatus.value = "";
                 reflectionMessage.value = "";
                 currentReflections.value = [];
+                break;
+
+              // 🎯 新增：处理中断状态
+              case "status":
+                if (data.status === "aborted") {
+                  console.log("🛑 反思已被中断");
+                  isLoading.value = false;
+                  isBusy.value = false;
+                  isReflectionRunning.value = false;
+                  abortController.value = null;
+                  // 🎯 中断后完全清除状态显示
+                  reflectionStatus.value = "";
+                  reflectionMessage.value = "";
+                  currentReflections.value = [];
+                  initialAnswerContent.value = "";
+
+                  // 更新AI消息显示中断状态
+                  const lastMessage = messages.value[messages.value.length - 1];
+                  if (lastMessage && lastMessage.role === "assistant") {
+                    lastMessage.content = "反思流程已被中断";
+                  }
+                }
                 break;
             }
           } catch (e) {
@@ -254,10 +319,33 @@ const handleReflectionMessage = async (message: string) => {
         }
       }
     }
-  } catch (error) {
+  } catch (error: any) {
+    // 🎯 专门处理中断错误
+    if (error.name === "AbortError") {
+      console.log("🛑 请求被中断");
+      isLoading.value = false;
+      isBusy.value = false;
+      isReflectionRunning.value = false;
+      abortController.value = null;
+      // 🎯 中断后完全清除状态显示
+      reflectionStatus.value = "";
+      reflectionMessage.value = "";
+      currentReflections.value = [];
+      initialAnswerContent.value = "";
+
+      // 更新最后一条消息
+      const lastMessage = messages.value[messages.value.length - 1];
+      if (lastMessage && lastMessage.role === "assistant") {
+        lastMessage.content = "反思流程已被中断";
+      }
+      return;
+    }
+
     console.error("反思消息失败:", error);
     isLoading.value = false;
     isBusy.value = false;
+    isReflectionRunning.value = false; // 🎯 重置运行状态
+    abortController.value = null; // 🎯 清除中断控制器
     reflectionStatus.value = "";
     reflectionMessage.value = "";
     currentReflections.value = [];

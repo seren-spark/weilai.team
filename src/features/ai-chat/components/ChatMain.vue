@@ -16,8 +16,10 @@
     <ChatInput
       v-model="inputMessage"
       :disabled="disabled"
+      :is-reflection-running="isReflectionRunning"
       @send="$emit('send', $event)"
       @voice="$emit('voice')"
+      @abort-reflection="$emit('abortReflection')"
     />
   </div>
 </template>
@@ -39,11 +41,13 @@ defineProps<{
   reflectionMessage?: string;
   currentReflections?: ReflectionData[];
   initialAnswerContent?: string;
+  isReflectionRunning?: boolean; // 🎯 新增：反思是否正在运行
 }>();
 
 defineEmits<{
   send: [message: string];
   voice: [];
+  abortReflection: []; // 🎯 新增：中断反思事件
 }>();
 
 const inputMessage = ref("");

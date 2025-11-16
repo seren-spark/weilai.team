@@ -22,7 +22,17 @@
         >
           <Icon icon="mdi:microphone" />
         </button>
+        <!-- 🎯 根据反思状态显示不同按钮 -->
         <button
+          v-if="isReflectionRunning"
+          class="input-btn abort-btn"
+          @click="$emit('abortReflection')"
+          title="中断反思"
+        >
+          <Icon icon="mdi:stop-circle" />
+        </button>
+        <button
+          v-else
           class="input-btn send-btn"
           @click="handleSend"
           :disabled="!inputValue.trim()"
@@ -41,12 +51,14 @@ import { Icon } from "@iconify/vue";
 const props = defineProps<{
   modelValue: string;
   disabled: boolean;
+  isReflectionRunning?: boolean; // 🎯 新增：反思是否正在运行
 }>();
 
 const emit = defineEmits<{
   "update:modelValue": [value: string];
   send: [message: string];
   voice: [];
+  abortReflection: []; // 🎯 新增：中断反思事件
 }>();
 
 const inputValue = ref(props.modelValue);
@@ -138,6 +150,16 @@ const handleSend = (e: Event) => {
             &:hover {
               background: none;
             }
+          }
+        }
+
+        // 🎯 中断按钮样式
+        &.abort-btn {
+          color: #ff4d4f;
+
+          &:hover {
+            background: rgba(255, 77, 79, 0.1);
+            color: #ff4d4f;
           }
         }
       }

@@ -563,52 +563,52 @@ export function useAiChat() {
   /**
    * 创建新对话
    */
-  const createNewChat = async (
-    title: string = "新对话",
-  ): Promise<string | null> => {
-    try {
-      const response = await apiClient.request({
-        url: "/ai/chat/create",
-        method: "post",
-        data: { title },
-      });
+  // const createNewChat = async (
+  //   title: string = "新对话",
+  // ): Promise<string | null> => {
+  //   try {
+  //     const response = await apiClient.request({
+  //       url: "/ai/chat/create",
+  //       method: "post",
+  //       data: { title },
+  //     });
 
-      if (response.success && response.data) {
-        const chatId = response.data.chatId || response.data.id;
+  //     if (response.success && response.data) {
+  //       const chatId = response.data.chatId || response.data.id;
 
-        const newChat: ChatHistory = {
-          id: chatId,
-          title: title,
-          lastMessage: "",
-          updatedAt: new Date().toISOString(),
-        };
+  //       const newChat: ChatHistory = {
+  //         id: chatId,
+  //         title: title,
+  //         lastMessage: "",
+  //         updatedAt: new Date().toISOString(),
+  //       };
 
-        chatHistory.value.unshift(newChat);
-        currentChatId.value = chatId;
-        // 重置 sessionId
-        currentSessionId.value = "";
-        return chatId;
-      }
+  //       chatHistory.value.unshift(newChat);
+  //       currentChatId.value = chatId;
+  //       // 重置 sessionId
+  //       currentSessionId.value = "";
+  //       return chatId;
+  //     }
 
-      return null;
-    } catch (error) {
-      console.error("创建对话失败:", error);
-      // 本地创建
-      const chatId = `chat-${Date.now()}`;
-      const newChat: ChatHistory = {
-        id: chatId,
-        title: title,
-        lastMessage: "",
-        updatedAt: new Date().toISOString(),
-      };
-
-      chatHistory.value.unshift(newChat);
-      currentChatId.value = chatId;
-      // 重置 sessionId
-      currentSessionId.value = "";
-      return chatId;
-    }
-  };
+  //     return null;
+  //   } catch (error) {
+  //     console.error("创建对话失败:", error);
+  //     // 本地创建
+  //     const chatId = `chat-${Date.now()}`;
+  //     const newChat: ChatHistory = {
+  //       id: chatId,
+  //       title: title,
+  //       lastMessage: "",
+  //       updatedAt: new Date().toISOString(),
+  //     };
+  //     // 在历史记录开头添加新聊天
+  //     chatHistory.value.unshift(newChat);
+  //     currentChatId.value = chatId;
+  //     // 重置 sessionId
+  //     currentSessionId.value = "";
+  //     return chatId;
+  //   }
+  // };
 
   /**
    * 加载聊天历史
@@ -830,7 +830,7 @@ export function useAiChat() {
     currentSessionId, // 导出 sessionId 供外部使用
     sendMessage,
     sendMessageStream, // ✅ 导出流式方法
-    createNewChat,
+    // createNewChat,
     loadChatHistory,
     loadChatMessages,
     deleteChat,

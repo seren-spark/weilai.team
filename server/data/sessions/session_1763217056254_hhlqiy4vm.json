@@ -1,0 +1,33 @@
+{
+  "id": "session_1763217056254_hhlqiy4vm",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "11"
+    },
+    {
+      "role": "assistant",
+      "content": "你好！有什么我可以帮你的吗？"
+    },
+    {
+      "role": "user",
+      "content": "2"
+    },
+    {
+      "role": "assistant",
+      "content": "你好！你输入了“2”，但我不太清楚你的意思。你能提供更多上下文或提出一个问题吗？我会尽力帮助你。"
+    }
+  ],
+  "summary": "",
+  "stats": {
+    "totalTokens": 86,
+    "messageCount": 4,
+    "compressionCount": 0,
+    "createdAt": "2025-11-15T14:30:56.255Z",
+    "lastActive": "2025-11-15T14:31:42.083Z"
+  }
+}

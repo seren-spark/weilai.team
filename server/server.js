@@ -10,7 +10,7 @@ app.get("/api/models", (req, res) => {
   res.json({
     success: true,
     models: [
-      { id: "qwen-plus", name: "通义千问 Plus", description: "通用对话模型" },
+      { id: "qwen3-max", name: "通义千问 Plus", description: "通用对话模型" },
       { id: "qwen-turbo", name: "通义千问 Turbo", description: "快速响应模型" },
       { id: "qwen-max", name: "通义千问 Max", description: "高级对话模型" },
     ],

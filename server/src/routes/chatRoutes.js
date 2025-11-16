@@ -17,7 +17,7 @@ const router = express.Router();
  */
 // router.post("/", async (req, res) => {
 //   try {
-//     const { message, systemPrompt, model = "qwen-plus" } = req.body;
+//     const { message, systemPrompt, model = "qwen3-max" } = req.body;
 
 //     if (!message) {
 //       return res.status(400).json({
@@ -48,7 +48,7 @@ const router = express.Router();
  */
 router.post("/stream", async (req, res) => {
   try {
-    const { message, systemPrompt, model = "qwen-plus" } = req.body;
+    const { message, systemPrompt, model = "qwen3-max" } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "message 参数不能为空" });

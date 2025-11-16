@@ -43,7 +43,7 @@ const getCurrentWeather = (args) => {
 // 封装模型响应函数
 const getResponse = async (messages) => {
   const response = await openai.chat.completions.create({
-    model: "qwen-plus",
+    model: "qwen3-max",
     messages: messages,
     tools: tools,
   });
@@ -79,7 +79,7 @@ const main = async () => {
   },
   created: 1760445048,
   system_fingerprint: null,
-  model: 'qwen-plus',
+  model: 'qwen3-max',
   id: 'chatcmpl-578b1524-c666-41ca-89c7-e8200ff02507'
 }  
    */
@@ -119,7 +119,6 @@ const main = async () => {
       messages.push(assistantOutput);
     }
     console.log(`助手最终回复：${assistantOutput.content}`);
-
   }
 };
 

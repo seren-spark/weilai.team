@@ -21,7 +21,7 @@ async function example1_singleTurn() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message: "北京今天天气怎么样？",
-      model: "qwen-plus",
+      model: "qwen3-max",
     }),
   });
 
@@ -44,7 +44,7 @@ async function example2_multiTurn() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message: "我叫张三，今年25岁",
-      model: "qwen-plus",
+      model: "qwen3-max",
     }),
   });
   let result = await response.json();
@@ -60,7 +60,7 @@ async function example2_multiTurn() {
     body: JSON.stringify({
       message: "我多大了？",
       sessionId, // 传入会话ID
-      model: "qwen-plus",
+      model: "qwen3-max",
     }),
   });
   result = await response.json();
@@ -75,7 +75,7 @@ async function example2_multiTurn() {
     body: JSON.stringify({
       message: "我的名字是什么？",
       sessionId,
-      model: "qwen-plus",
+      model: "qwen3-max",
     }),
   });
   result = await response.json();
@@ -134,13 +134,13 @@ async function example4_compression(sessionId) {
       body: JSON.stringify({
         message: msg,
         sessionId,
-        model: "qwen-plus",
+        model: "qwen3-max",
       }),
     });
     const result = await response.json();
     console.log(`🤖 回复: ${result.response.substring(0, 80)}...`);
     console.log(
-      `📊 Token: ${result.stats.totalTokens}/${result.stats.utilizationRate}`
+      `📊 Token: ${result.stats.totalTokens}/${result.stats.utilizationRate}`,
     );
 
     if (result.stats.compressionCount > 0) {
@@ -168,14 +168,14 @@ async function example6_export(sessionId) {
 
   // 导出为 JSON
   let response = await fetch(
-    `${API_BASE}/sessions/${sessionId}/export?format=json`
+    `${API_BASE}/sessions/${sessionId}/export?format=json`,
   );
   let result = await response.json();
   console.log("JSON 导出成功，消息数:", result.data.messages.length);
 
   // 导出为 Markdown
   response = await fetch(
-    `${API_BASE}/sessions/${sessionId}/export?format=markdown`
+    `${API_BASE}/sessions/${sessionId}/export?format=markdown`,
   );
   const markdown = await response.text();
   console.log("Markdown 导出 (前200字符):");
@@ -208,7 +208,7 @@ async function example8_customSystemPrompt() {
       message: "你好，介绍一下自己",
       systemPrompt:
         "你是一个专业的前端工程师，擅长 Vue 和 React。请用专业的口吻回答问题。",
-      model: "qwen-plus",
+      model: "qwen3-max",
     }),
   });
 

@@ -1,7 +1,6 @@
-import openai from "../config/openai.js";
-import { tools, executeTool } from "../tools/index.js";
 import { contextManager } from "./contextManager.js";
 import { sessionStore } from "./sessionStore.js";
+import { streamChatWithTools as streamChatWithToolsCore } from "./streamToolCallService.js";
 
 // 确保获取到会话：优先从内存，其次尝试从磁盘恢复，最后创建
 const ensureSession = async (sessionId, systemPrompt) => {
@@ -31,7 +30,7 @@ const ensureSession = async (sessionId, systemPrompt) => {
 //  */
 // export const chatWithTools = async (
 //   userMessage,
-//   model = "qwen-plus",
+//   model = "qwen3-max",
 //   sessionId = null,
 //   systemPrompt = null
 // ) => {
@@ -141,208 +140,79 @@ const ensureSession = async (sessionId, systemPrompt) => {
 //     finalResponse: assistantMessage.content,
 //     sessionId,
 //     toolCallLogs,
-//     messages: contextManager.getContextMessages(sessionId),
-//     stats: contextManager.getSessionStats(sessionId),
-//   };
-// };
-
 /**
- * 流式工具调用（支持多工具并行）
+ * 流式工具调用（重构版本，使用通用服务）
  * @param {string} userMessage - 用户消息
  * @param {string} model - 模型名称
  * @param {function} onToken - 文本增量回调 (delta: string) => void
  * @param {function} onToolCall - 工具调用回调 (toolName, args, result) => void
  * @param {function} onDone - 完成回调 () => void
  * @param {function} onError - 错误回调 (error) => void
+ * @param {string} token - token
+ * @param {string} sessionId - 会话 ID
+ * @param {string} systemPrompt - 系统提示词
  */
 export const streamChatWithTools = async (
   userMessage,
-  model = "qwen-plus",
+  model = "qwen3-max",
   {
     onToken,
     onToolCall,
     onDone,
     onError,
-    token=null,
+    token = null,
     sessionId = null,
     systemPrompt = null,
-  } = {}
+  } = {},
 ) => {
-  // ========= 上下文管理：准备会话 =========
-  let currentSessionId =
-    sessionId ||
-    `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-  let session = await ensureSession(currentSessionId, systemPrompt);
-
-  // 添加用户消息到上下文
-  await contextManager.addMessage(currentSessionId, {
-    role: "user",
-    content: userMessage,
-  });
-
-  console.log("streamChatWithTools");
-
   try {
-    // 可能发生多轮：模型产生 tool_calls -> 执行工具 -> 继续流式总结
-    while (true) {
-      // 从上下文获取完整消息
-      const contextMessages =
-        contextManager.getContextMessages(currentSessionId);
+    // ========= 上下文管理：准备会话 =========
+    let currentSessionId =
+      sessionId ||
+      `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      const stream = await openai.chat.completions.create({
-        model,
-        messages: contextMessages,
-        tools,
-        tool_choice: "auto",
-        parallel_tool_calls: true, // 支持并行工具调用
-        stream: true,
-      });
+    let session = await ensureSession(currentSessionId, systemPrompt);
 
-      // 聚合流式增量：按 index 累积 tool_calls
-      const toolCallsMap = new Map(); // 用来拼接工具调用的增量 index -> { id, type, function: { name, arguments } }
-      let contentBuffer = ""; //用来拼接文本的增量
-      let finishReason = null; // 用来记录结束原因
+    // 添加用户消息到上下文
+    await contextManager.addMessage(currentSessionId, {
+      role: "user",
+      content: userMessage,
+    });
 
-      for await (const chunk of stream) {
-        /* 
-          //  chunk
-          {
-          choices: [
-            {
-              delta: {
-                content: null,
-                tool_calls: [
-                  {
-                    index: 0,
-                    id: "call_6ca671c32574424e87a953",
-                    type: "function",
-                    function: {
-                      name: "get_current_weather",
-                      arguments: "{\"location\":",
-                    },
-                  },
-                ],
-                role: "assistant",
-              },
-              finish_reason: null,
-              index: 0,
-              logprobs: null,
-            },
-          ],
-          object: "chat.completion.chunk",
-          usage: null,
-          created: 1760451319,
-          system_fingerprint: null,
-          model: "qwen-plus",
-          id: "chatcmpl-4f71fa26-40de-4383-8d7b-a3ce644316ab",
-         }
+    console.log("streamChatWithTools - 使用通用工具调用服务");
 
-         工具函数名称：仅在第一个流式返回的对象（delta）中出现。
-        */
-        const choice = chunk.choices?.[0];
-        if (!choice) continue;
-        // 文本增量
-        const delta = choice.delta?.content || "";
-        console.log(choice.delta, "choice.delta");
+    // 获取完整上下文消息
+    const contextMessages = contextManager.getContextMessages(currentSessionId);
 
-        if (delta) {
-          contentBuffer += delta;
-          onToken?.(delta);
-        }
+    // 收集所有需要批量添加的消息
+    const messagesToAdd = [];
 
-        // 工具调用增量（OpenAI 风格：按 index 累积）
-        const deltaToolCalls = choice.delta?.tool_calls || [];
-        for (const tc of deltaToolCalls) {
-          const idx = tc.index ?? 0;
+    // 🎯 使用通用工具调用服务
+    await streamChatWithToolsCore(contextMessages, model, {
+      onToken,
+      onToolCall,
+      token,
 
-          //   先创建后赋值
-          // 如果是这个工具的第一次出现，初始化空对象
-          if (!toolCallsMap.has(idx)) {
-            toolCallsMap.set(idx, {
-              id: tc.id || "",
-              type: "function",
-              function: { name: "", arguments: "" },
-            });
-          }
-          // 获取当前工具的累积对象
-          const current = toolCallsMap.get(idx);
-          // 拼接 ID（通常只在第一个 chunk 有）
-          if (tc.id) current.id = tc.id;
-          // 拼接函数名（可能分多次推送："get" + "_current" + "_weather"）
-          if (tc.function?.name) current.function.name += tc.function.name;
-          // 拼接参数（JSON 字符串分多次推送：'{"loc' + 'ation":"北京"}'）
-          if (tc.function?.arguments)
-            current.function.arguments += tc.function.arguments;
-        }
+      // 助手消息完成时回调
+      onAssistantMessage: (message) => {
+        messagesToAdd.push(message);
+      },
 
-        // 结束原因
-        if (choice.finish_reason) {
-          finishReason = choice.finish_reason;
-        }
-      }
+      // 工具消息完成时回调
+      onToolMessage: (message) => {
+        messagesToAdd.push(message);
+      },
+    });
 
-      // 本轮流式结束，若有内容则加入消息
-      const assistantMessage = {
-        role: "assistant",
-        content: contentBuffer || null,
-      };
-      const toolCalls = Array.from(toolCallsMap.values()).filter((tc) => tc.id);
-      if (toolCalls.length > 0) {
-        assistantMessage.tool_calls = toolCalls;
-      }
-      // 将助手回复加入上下文
-      await contextManager.addMessage(currentSessionId, assistantMessage);
-
-      // 没有工具调用，流程结束
-      if (toolCalls.length === 0) {
-        break;
-      }
-
-      // 并行执行所有工具
-      const toolMessages = await Promise.all(
-        toolCalls.map(async (tc) => {
-          const funcName = tc.function.name;
-          const funcArgs = (() => {
-            try {
-              return JSON.parse(tc.function.arguments || "{}");
-            } catch {
-              return {};
-            }
-          })();
-
-          const result = await executeTool(funcName, funcArgs,token);
-          const resultStr =
-            typeof result === "string" ? result : JSON.stringify(result);
-
-          // 通知前端工具调用结果
-          onToolCall?.(funcName, funcArgs, resultStr);
-
-          const toolMsg = {
-            role: "tool",
-            tool_call_id: tc.id,
-            content: resultStr,
-          };
-
-          // 工具消息加入上下文
-          await contextManager.addMessage(currentSessionId, toolMsg);
-
-          return toolMsg;
-        })
-      );
-
-      // 工具消息已加入上下文
-
-      // 如果模型明确 finish_reason !== 'tool_calls'，不再继续
-      if (finishReason && finishReason !== "tool_calls") {
-        break;
-      }
+    // 🎯 批量添加所有消息，避免频繁压缩
+    if (messagesToAdd.length > 0) {
+      await contextManager.addMessages(currentSessionId, messagesToAdd);
     }
 
     // 持久化会话
     await sessionStore.saveSession(
       currentSessionId,
-      contextManager.getSession(currentSessionId)
+      contextManager.getSession(currentSessionId),
     );
 
     onDone?.({
@@ -350,6 +220,7 @@ export const streamChatWithTools = async (
       stats: contextManager.getSessionStats(currentSessionId),
     });
   } catch (error) {
+    console.error("❌ 流式工具调用错误:", error);
     onError?.(error);
   }
 };

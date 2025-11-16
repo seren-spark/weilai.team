@@ -163,7 +163,7 @@ Content-Type: application/json
 {
   "message": "你好，介绍一下你自己",
   "systemPrompt": "You are a helpful assistant.",
-  "model": "qwen-plus"
+  "model": "qwen3-max"
 }
 ```
 
@@ -186,7 +186,7 @@ Content-Type: application/json
 {
   "message": "你好",
   "systemPrompt": "You are a helpful assistant.",
-  "model": "qwen-plus"
+  "model": "qwen3-max"
 }
 ```
 
@@ -196,7 +196,7 @@ Content-Type: application/json
 {
   "success": true,
   "response": "你好！我是通义千问...",
-  "model": "qwen-plus",
+  "model": "qwen3-max",
   "usage": {
     "prompt_tokens": 10,
     "completion_tokens": 50,

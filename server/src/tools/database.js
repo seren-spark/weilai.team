@@ -2,7 +2,7 @@
  * @Author: serendipity 2843306836@qq.com
  * @Date: 2025-11-07 21:49:10
  * @LastEditors: serendipity 2843306836@qq.com
- * @LastEditTime: 2025-11-09 16:25:38
+ * @LastEditTime: 2025-11-13 17:29:13
  * @FilePath: \weilai.team\server\src\tools\database.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -16,7 +16,7 @@ export const userSearchTool = {
     parameters: {
       type: "object",
       properties: {
-        keyword: {
+        content: {
           type: "string",
           description: "搜索关键词：姓名、学号、组别等",
         },
@@ -36,6 +36,7 @@ export const searchUsers = async (args, token) => {
     const { content, group } = args;
     let pageNumber = 1;
     let pageSize = 10;
+    console.log("查询人员参数", content, group);
 
     const response = await axios.get(
       `${process.env.BACKEND_API_URL}/user/searchUser`,

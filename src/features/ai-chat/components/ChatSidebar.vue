@@ -1,25 +1,21 @@
 <template>
   <div class="sidebar">
-    <SidebarHeader  />
+    <SidebarHeader />
 
     <!-- 新增对话按钮 -->
-    <button class="new-chat-btn" >
+    <button class="new-chat-btn">
       <Icon icon="mdi:plus" />
       新增对话
     </button>
 
-    <FeatureList
-      :current-feature="currentFeature"
-      :features="features"
-    
-    />
+    <FeatureList :current-feature="currentFeature" :features="features" />
 
     <ChatHistory
       :chat-history="chatHistory"
       :current-chat-id="currentChatId"
       @switch="$emit('chat-switch', $event)"
-
     />
+    <button @click="triggerReflection(isreflection=!isreflection)">反思机制 {{isreflection}}</button>
   </div>
 </template>
 
@@ -28,16 +24,20 @@ import { Icon } from "@iconify/vue";
 import SidebarHeader from "./SidebarHeader.vue";
 import FeatureList, { type Feature } from "./FeatureList.vue";
 import ChatHistory from "./ChatHistory.vue";
+import {ref} from "vue"
 import type { ChatHistory as ChatHistoryType } from "@/composables/useAiChat";
-
+const isreflection=ref(true)
+const trigRefle=()=>{
+  isreflection.value=!isreflection
+  triggerReflection(isreflection.value)
+}
 defineProps<{
   currentFeature: string;
   features: Feature[];
   chatHistory: ChatHistoryType[];
   currentChatId: string | null;
+  triggerReflection:boolean
 }>();
-
-
 </script>
 
 <style scoped lang="scss">

@@ -25,7 +25,7 @@ async function test() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: "我叫张三，今年25岁，是一名前端工程师",
-        model: "qwen-plus",
+        model: "qwen3-max",
       }),
     });
 
@@ -33,7 +33,7 @@ async function test() {
     sessionId = result.sessionId;
     console.log(`🤖 AI: ${result.response}`);
     console.log(
-      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`
+      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`,
     );
 
     // 第二轮：测试记忆
@@ -44,14 +44,14 @@ async function test() {
       body: JSON.stringify({
         message: "我叫什么名字？",
         sessionId,
-        model: "qwen-plus",
+        model: "qwen3-max",
       }),
     });
 
     result = await response.json();
     console.log(`🤖 AI: ${result.response}`);
     console.log(
-      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`
+      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`,
     );
 
     // 第三轮：继续测试记忆
@@ -62,14 +62,14 @@ async function test() {
       body: JSON.stringify({
         message: "我多大了？做什么工作？",
         sessionId,
-        model: "qwen-plus",
+        model: "qwen3-max",
       }),
     });
 
     result = await response.json();
     console.log(`🤖 AI: ${result.response}`);
     console.log(
-      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`
+      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`,
     );
 
     // ========== 测试 2：工具调用 ==========
@@ -83,7 +83,7 @@ async function test() {
       body: JSON.stringify({
         message: "北京今天天气怎么样？",
         sessionId,
-        model: "qwen-plus",
+        model: "qwen3-max",
       }),
     });
 
@@ -96,7 +96,7 @@ async function test() {
       });
     }
     console.log(
-      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`
+      `📊 Token: ${result.stats.totalTokens} | 消息数: ${result.stats.messageCount}`,
     );
 
     // ========== 测试 3：查看会话详情 ==========
@@ -111,7 +111,7 @@ async function test() {
     console.log(`Token 使用: ${result.session.stats.totalTokens}`);
     console.log(`压缩次数: ${result.session.stats.compressionCount}`);
     console.log(
-      `创建时间: ${new Date(result.session.stats.createdAt).toLocaleString()}`
+      `创建时间: ${new Date(result.session.stats.createdAt).toLocaleString()}`,
     );
 
     console.log("\n对话历史:");
@@ -134,7 +134,7 @@ async function test() {
     result.sessions.forEach((session, idx) => {
       console.log(`  ${idx + 1}. ${session.id}`);
       console.log(
-        `     消息数: ${session.messageCount} | Token: ${session.stats.totalTokens}`
+        `     消息数: ${session.messageCount} | Token: ${session.stats.totalTokens}`,
       );
     });
 
@@ -143,7 +143,7 @@ async function test() {
     console.log("----------------------------------------");
 
     response = await fetch(
-      `${API_BASE}/sessions/${sessionId}/export?format=markdown`
+      `${API_BASE}/sessions/${sessionId}/export?format=markdown`,
     );
     const markdown = await response.text();
 
@@ -155,7 +155,7 @@ async function test() {
     console.log("\n✅ 所有测试完成！");
     console.log(`\n💡 提示：会话已保存到 data/sessions/${sessionId}.json`);
     console.log(
-      `💡 可以通过 API 查看完整会话：GET ${API_BASE}/sessions/${sessionId}`
+      `💡 可以通过 API 查看完整会话：GET ${API_BASE}/sessions/${sessionId}`,
     );
   } catch (error) {
     console.error("\n❌ 测试失败:", error.message);

@@ -13,42 +13,66 @@
       :user-initial="userInitial"
     />
     <!-- 反思状态显示 -->
-    <div v-if="reflectionStatus" class="reflection-status-container">
-      <div class="reflection-status">
-        <div class="status-header">
-          <div class="spinner"></div>
-          <div class="status-info">
-            <div class="status-title">{{ getStatusTitle(reflectionStatus) }}</div>
-            <div class="status-message">{{ reflectionMessage }}</div>
+    <Transition name="reflection-slide">
+      <div v-if="reflectionStatus" class="reflection-status-container">
+        <div class="reflection-status">
+          <div class="status-header">
+            <div class="spinner"></div>
+            <div class="status-info">
+              <div class="status-title">
+                {{ getStatusTitle(reflectionStatus) }}
+              </div>
+              <div class="status-message">{{ reflectionMessage }}</div>
+            </div>
+          </div>
+
+          <!-- 初始回答显示（流式） -->
+          <div
+            v-if="
+              initialAnswerContent &&
+              (reflectionStatus === 'thinking' ||
+                reflectionStatus === 'initial_answer_streaming' ||
+                reflectionStatus === 'initial_answer')
+            "
+            class="initial-answer-preview"
+          >
+            <h4>💭 初始回答</h4>
+            <div
+              class="initial-answer-content"
+              v-html="renderMarkdown(initialAnswerContent)"
+            ></div>
+          </div>
+
+          <!-- 反思链可视化 -->
+          <div
+            v-if="currentReflections && currentReflections.length > 0"
+            class="reflection-chain"
+          >
+            <h4>🧠 思维链</h4>
+            <TransitionGroup name="reflection-fade" tag="div">
+              <div
+                v-for="(ref, idx) in currentReflections"
+                :key="`${idx}-${ref.dimension || 'unknown'}`"
+                class="chain-item"
+                :class="{
+                  error: ref.error,
+                  'just-added': isNewReflection(idx),
+                }"
+              >
+                <div class="chain-dimension">
+                  <span class="dimension-icon">✓</span>
+                  {{ ref.dimension }}
+                </div>
+                <div
+                  class="chain-reflection"
+                  v-html="renderMarkdown(ref.reflection)"
+                ></div>
+              </div>
+            </TransitionGroup>
           </div>
         </div>
-
-        <!-- 初始回答显示（流式） -->
-        <div v-if="initialAnswerContent && (reflectionStatus === 'thinking' || reflectionStatus === 'initial_answer_streaming' || reflectionStatus === 'initial_answer')" class="initial-answer-preview">
-          <h4>💭 初始回答</h4>
-          <div class="initial-answer-content" v-html="renderMarkdown(initialAnswerContent)"></div>
-        </div>
-
-        <!-- 反思链可视化 -->
-        <div v-if="currentReflections && currentReflections.length > 0" class="reflection-chain">
-          <h4>🧠 思维链</h4>
-          <transition-group name="reflection-fade" tag="div">
-            <div
-              v-for="(ref, idx) in currentReflections"
-              :key="ref.dimension || idx"
-              class="chain-item"
-              :class="{ error: ref.error, 'just-added': isNewReflection(idx) }"
-            >
-              <div class="chain-dimension">
-                <span class="dimension-icon">✓</span>
-                {{ ref.dimension }}
-              </div>
-              <div class="chain-reflection" v-html="renderMarkdown(ref.reflection)"></div>
-            </div>
-          </transition-group>
-        </div>
       </div>
-    </div>
+    </Transition>
 
     <!-- 加载中提示 -->
     <div v-if="isLoading && !reflectionStatus" class="message assistant">
@@ -97,7 +121,7 @@ watch(
         previousReflectionCount.value = newCount;
       }, 500); // 动画延迟
     }
-  }
+  },
 );
 
 // 监听反思状态变化（调试用）
@@ -105,16 +129,16 @@ watch(
   () => props.reflectionStatus,
   (newStatus, oldStatus) => {
     console.log("🔄 反思状态变化:", oldStatus, "→", newStatus);
-  }
+  },
 );
 
 // 渲染 Markdown
 const renderMarkdown = (text: string): string => {
-  if (!text) return '';
+  if (!text) return "";
   try {
     return marked.parse(text) as string;
   } catch (error) {
-    console.error('Markdown 渲染错误:', error);
+    console.error("Markdown 渲染错误:", error);
     return text;
   }
 };
@@ -131,6 +155,7 @@ const getStatusTitle = (status: string): string => {
     improved_answer: "✅ 优化完成",
     streaming: "📤 输出回答",
   };
+  console.log("当前状态", statusMap[status], status);
   return statusMap[status] || status;
 };
 
@@ -384,7 +409,8 @@ defineExpose({
         color: #333;
       }
 
-      :deep(ul), :deep(ol) {
+      :deep(ul),
+      :deep(ol) {
         margin: 0.5em 0;
         padding-left: 1.5em;
       }
@@ -423,7 +449,7 @@ defineExpose({
 
         .chain-dimension {
           color: #ff4444;
-          
+
           .dimension-icon {
             background: #ff4444;
           }
@@ -438,7 +464,7 @@ defineExpose({
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        
+
         .dimension-icon {
           display: inline-flex;
           align-items: center;
@@ -457,26 +483,26 @@ defineExpose({
         font-size: 0.85rem;
         line-height: 1.5;
         color: #555;
-        
+
         // Markdown 样式
         :deep(p) {
           margin: 0.3em 0;
         }
-        
+
         :deep(code) {
           background: rgba(0, 0, 0, 0.08);
           padding: 0.15em 0.3em;
           border-radius: 3px;
           font-size: 0.85em;
         }
-        
+
         :deep(pre) {
           background: #282c34;
           padding: 0.5em;
           border-radius: 4px;
           overflow-x: auto;
           margin: 0.3em 0;
-          
+
           code {
             background: none;
             padding: 0;
@@ -484,13 +510,14 @@ defineExpose({
             font-size: 0.85em;
           }
         }
-        
+
         :deep(strong) {
           font-weight: 600;
           color: #333;
         }
-        
-        :deep(ul), :deep(ol) {
+
+        :deep(ul),
+        :deep(ol) {
           margin: 0.3em 0;
           padding-left: 1.5em;
         }

@@ -54,7 +54,7 @@ const response = await fetch("http://localhost:5005/api/tool_call", {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     message: "北京今天天气怎么样？",
-    model: "qwen-plus",
+    model: "qwen3-max",
   }),
 });
 
@@ -122,7 +122,7 @@ const response = await fetch("http://localhost:5005/api/tool_call", {
   "message": "用户消息",
   "sessionId": "会话ID（可选）",
   "systemPrompt": "系统提示词（可选）",
-  "model": "qwen-plus"
+  "model": "qwen3-max"
 }
 ```
 
@@ -354,7 +354,7 @@ const systemPrompt = `你是一个专业的客服助手，需要：
 3. 如果需要查询订单、天气等信息，使用工具`;
 
 // 持续对话
-await chatWithTools(message, "qwen-plus", sessionId, systemPrompt);
+await chatWithTools(message, "qwen3-max", sessionId, systemPrompt);
 ```
 
 ### 场景 2：代码助手
@@ -367,9 +367,9 @@ const systemPrompt = `你是一个前端工程师助手，擅长：
 
 await chatWithTools(
   "怎么用 Vue 3 实现虚拟滚动？",
-  "qwen-plus",
+  "qwen3-max",
   null,
-  systemPrompt
+  systemPrompt,
 );
 ```
 
@@ -378,7 +378,7 @@ await chatWithTools(
 ```javascript
 // 支持超长对话，自动压缩保留关键信息
 for (let i = 0; i < 50; i++) {
-  const result = await chatWithTools(questions[i], "qwen-plus", sessionId);
+  const result = await chatWithTools(questions[i], "qwen3-max", sessionId);
 
   // 检查是否触发压缩
   if (result.stats.compressionCount > 0) {

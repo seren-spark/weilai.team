@@ -6,7 +6,7 @@ import { tools } from "../tools/index.js";
 export const simpleChat = async (
   message,
   systemPrompt,
-  model = "qwen-plus"
+  model = "qwen3-max",
 ) => {
   const completion = await openai.chat.completions.create({
     model,
@@ -31,7 +31,7 @@ export const simpleChat = async (
 export const streamChat = async (
   message,
   systemPrompt,
-  model = "qwen-plus"
+  model = "qwen3-max",
 ) => {
   console.log("请求了");
 

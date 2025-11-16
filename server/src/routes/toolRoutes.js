@@ -22,7 +22,7 @@ const router = express.Router();
 //   try {
 //     const {
 //       message,
-//       model = "qwen-plus",
+//       model = "qwen3-max",
 //       sessionId = null,
 //       systemPrompt = null,
 //     } = req.body;
@@ -73,7 +73,7 @@ router.post("/stream", async (req, res) => {
   try {
     const {
       message,
-      model = "qwen-plus",
+      model = "qwen3-max",
       sessionId = null,
       systemPrompt = null,
     } = req.body;
