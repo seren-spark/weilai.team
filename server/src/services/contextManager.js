@@ -378,6 +378,77 @@ export class ContextManager {
 
     return cleaned;
   }
+
+  /**
+   * 删除指定索引之后的所有消息
+   * @param {string} sessionId - 会话 ID
+   * @param {number} fromIndex - 从哪个索引开始删除（包含该索引）
+   * @returns {boolean} 删除是否成功
+   */
+  deleteMessagesFrom(sessionId, fromIndex) {
+    const session = this.getSession(sessionId);
+    if (!session) {
+      console.warn(`⚠️  会话 [${sessionId}] 不存在`);
+      return false;
+    }
+
+    if (fromIndex < 0 || fromIndex >= session.messages.length) {
+      console.warn(
+        `⚠️  索引 ${fromIndex} 超出范围 [0-${session.messages.length - 1}]`,
+      );
+      return false;
+    }
+
+    const deletedMessages = session.messages.splice(fromIndex);
+
+    // 重新计算 token 和统计
+    let totalTokens = 0;
+    session.messages.forEach((msg) => {
+      totalTokens += this.estimateTokens(this.formatMessage(msg));
+    });
+    session.stats.totalTokens = totalTokens;
+    session.stats.messageCount = session.messages.length;
+    session.stats.lastActive = new Date().toISOString();
+
+    console.log(
+      `🗑️  [${sessionId}] 删除了 ${deletedMessages.length} 条消息，从索引 ${fromIndex} 开始 | 剩余 ${session.messages.length} 条消息`,
+    );
+    return true;
+  }
+
+  /**
+   * 根据消息内容查找索引并删除后续消息
+   * @param {string} sessionId - 会话 ID
+   * @param {string} messageContent - 要查找的消息内容
+   * @param {string} role - user 或 assistant
+   * @returns {boolean} 删除是否成功
+   */
+  deleteMessagesAfter(sessionId, messageContent, role = "user") {
+    const session = this.getSession(sessionId);
+    if (!session) {
+      console.warn(`⚠️  会话 [${sessionId}] 不存在`);
+      return false;
+    }
+
+    // 查找消息索引
+    const index = session.messages.findIndex(
+      (msg) => msg.role === role && msg.content === messageContent,
+    );
+
+    if (index === -1) {
+      console.warn(
+        `⚠️  [${sessionId}] 未找到消息: ${messageContent.substring(0, 50)}...`,
+      );
+      return false;
+    }
+
+    console.log(
+      `🔍 [${sessionId}] 找到消息位于索引 ${index}，准备删除后续消息`,
+    );
+
+    // 删除该消息及之后的所有消息
+    return this.deleteMessagesFrom(sessionId, index);
+  }
 }
 
 // 创建全局实例

@@ -175,6 +175,47 @@ class ChatDatabase extends Dexie {
   }
 
   /**
+   * 删除指定消息 ID 之后的所有消息（用于编辑功能）
+   */
+  async deleteMessagesAfter(
+    chatId: string,
+    messageId: string,
+  ): Promise<number> {
+    // 1. 获取该会话的所有消息（按时间排序）
+    const allMessages = await this.messages
+      .where("chatId")
+      .equals(chatId)
+      .sortBy("timestamp");
+
+    // 2. 找到目标消息的索引
+    const targetIndex = allMessages.findIndex((m) => m.id === messageId);
+
+    if (targetIndex === -1) {
+      console.warn(`⚠️  消息 ${messageId} 不存在`);
+      return 0;
+    }
+
+    // 3. 获取要删除的消息 ID 列表（从目标消息开始到末尾）
+    const toDelete = allMessages.slice(targetIndex);
+    const deleteIds = toDelete.map((m) => m.id);
+
+    // 4. 批量删除
+    await this.messages.bulkDelete(deleteIds);
+
+    // 5. 更新会话的消息数量和更新时间
+    await this.sessions.update(chatId, {
+      messageCount: allMessages.length - toDelete.length,
+      updatedAt: Date.now(),
+    });
+
+    console.log(
+      `🗑️  IndexedDB 删除了 ${toDelete.length} 条消息 | 剩余 ${allMessages.length - toDelete.length} 条`,
+    );
+
+    return toDelete.length;
+  }
+
+  /**
    * 清空所有数据
    */
   async clearAll(): Promise<void> {

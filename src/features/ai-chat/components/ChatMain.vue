@@ -19,6 +19,7 @@
           :reflection-status="reflectionStatus"
           :reflection-message="reflectionMessage"
           :is-latest="messages[messages.length - 1]?.id === item.id"
+          @edit-submit="$emit('editSubmit', $event)"
         />
       </template>
     </VirtualMessageList>
@@ -58,7 +59,8 @@ defineProps<{
 defineEmits<{
   send: [message: string];
   voice: [];
-  abortReflection: []; // 🎯 新增：中断反思事件
+  abortReflection: [];
+  editSubmit: [payload: { id: string; content: string }];
 }>();
 
 const inputMessage = ref("");

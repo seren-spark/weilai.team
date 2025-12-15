@@ -203,7 +203,7 @@ router.get("/:sessionId/export", async (req, res) => {
       res.setHeader("Content-Type", "text/markdown");
       res.setHeader(
         "Content-Disposition",
-        `attachment; filename="session_${sessionId}.md"`
+        `attachment; filename="session_${sessionId}.md"`,
       );
       res.send(exported);
     } else {
@@ -274,6 +274,67 @@ router.post("/cleanup", async (req, res) => {
       fileCleanedCount,
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * POST /api/sessions/delete-messages
+ * 删除指定消息之后的所有消息（用于编辑功能）
+ * Body:
+ *   - sessionId: 会话 ID（必需）
+ *   - fromIndex: 从哪个索引开始删除（可选）
+ *   - messageContent: 要查找的消息内容（可选）
+ *   - role: 消息角色 user/assistant（可选，默认 user）
+ */
+router.post("/delete-messages", (req, res) => {
+  try {
+    const { sessionId, fromIndex, messageContent, role = "user" } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({
+        success: false,
+        error: "sessionId 不能为空",
+      });
+    }
+
+    let result;
+    if (typeof fromIndex === "number") {
+      // 按索引删除
+      result = contextManager.deleteMessagesFrom(sessionId, fromIndex);
+    } else if (messageContent) {
+      // 按内容查找并删除
+      result = contextManager.deleteMessagesAfter(
+        sessionId,
+        messageContent,
+        role,
+      );
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: "必须提供 fromIndex 或 messageContent 参数",
+      });
+    }
+
+    if (result) {
+      const session = contextManager.getSession(sessionId);
+      res.json({
+        success: true,
+        message: "消息删除成功",
+        stats: session ? session.stats : null,
+        remainingMessages: session ? session.messages.length : 0,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: "删除失败，会话或消息不存在",
+      });
+    }
+  } catch (error) {
+    console.error("❌ 删除消息失败:", error);
     res.status(500).json({
       success: false,
       error: error.message,

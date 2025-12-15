@@ -15,7 +15,9 @@
       :current-chat-id="currentChatId"
       @switch="$emit('chat-switch', $event)"
     />
-    <button @click="triggerReflection(isreflection=!isreflection)">反思机制 {{isreflection}}</button>
+    <button @click="triggerReflection((isreflection = !isreflection))">
+      反思机制 {{ isreflection }}
+    </button>
   </div>
 </template>
 
@@ -24,19 +26,19 @@ import { Icon } from "@iconify/vue";
 import SidebarHeader from "./SidebarHeader.vue";
 import FeatureList, { type Feature } from "./FeatureList.vue";
 import ChatHistory from "./ChatHistory.vue";
-import {ref} from "vue"
+import { ref } from "vue";
 import type { ChatHistory as ChatHistoryType } from "@/composables/useAiChat";
-const isreflection=ref(true)
-const trigRefle=()=>{
-  isreflection.value=!isreflection
-  triggerReflection(isreflection.value)
-}
+const isreflection = ref(true);
+const trigRefle = () => {
+  isreflection.value = !isreflection;
+  triggerReflection(isreflection.value);
+};
 defineProps<{
   currentFeature: string;
   features: Feature[];
   chatHistory: ChatHistoryType[];
   currentChatId: string | null;
-  triggerReflection:boolean
+  triggerReflection: boolean;
 }>();
 </script>
 

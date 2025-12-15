@@ -23,6 +23,7 @@
       @send="handleSendMessage"
       @voice="toggleVoice"
       @abort-reflection="abortReflection"
+      @edit-submit="handleEditSubmit"
     />
   </div>
 </template>
@@ -60,12 +61,17 @@ const {
   sendMessageStream, //  导入流式方法
 
   // 持久化存储方法
+  storage,
   initChatStorage,
   createNewChatPersisted,
   loadChatMessagesPersisted,
   saveUserMessage,
   saveAssistantMessage,
   updateStoredSessionId,
+
+  // 编辑消息功能
+  editAndResend,
+  abortResponse,
 } = useAiChat();
 
 // 状态管理
@@ -135,6 +141,8 @@ const handleReflectionMessage = async (message: string) => {
       role: "assistant",
       content: "",
       time: getCurrentTime(),
+      status: "normal",
+      isStreaming: true,
     });
 
     messages.value.push(aiMessage);
@@ -251,7 +259,13 @@ const handleReflectionMessage = async (message: string) => {
                 fullResponse += data.content;
                 aiMessage.content = fullResponse;
                 nextTick(() => {
-                  chatMainRef.value?.scrollToBottom();
+                  // 使用智能滚动，避免打断用户向上查看
+                  if (chatMainRef.value?.messageListRef) {
+                    const messageList = chatMainRef.value.messageListRef as any;
+                    if (messageList.smartScrollToBottom) {
+                      messageList.smartScrollToBottom();
+                    }
+                  }
                 });
                 break;
 
@@ -275,6 +289,9 @@ const handleReflectionMessage = async (message: string) => {
                   initialAnswer: finalInitialAnswer,
                   reflections: finalReflections,
                 };
+
+                // 标记流式完成
+                aiMessage.isStreaming = false;
 
                 // 保存到 IndexedDB
                 await saveAssistantMessage(fullResponse, aiMessage.metadata);
@@ -356,6 +373,7 @@ const handleReflectionMessage = async (message: string) => {
       role: "assistant",
       content: "抱歉，发生了错误，请稍后再试。",
       time: getCurrentTime(),
+      status: "normal",
     };
     messages.value.push(errorMsg);
   }
@@ -374,6 +392,88 @@ const cleanupReflectionState = () => {
   reflectionMessage.value = "";
   currentReflections.value = [];
   initialAnswerContent.value = "";
+};
+
+// 🔥 处理编辑消息并重新发送
+const handleEditSubmit = async (payload: { id: string; content: string }) => {
+  try {
+    // 1. 调用 editAndResend（内部会调用后端删除 API 并删除前端消息，同时中断流式）
+    const result = await editAndResend(payload.id, payload.content);
+    if (!result) return;
+
+    // 2. 🔥 从 IndexedDB 删除旧消息
+    if (currentChatId.value) {
+      try {
+        await storage.deleteMessagesAfter(currentChatId.value, payload.id);
+        console.log("✅ IndexedDB 旧消息已删除");
+      } catch (error) {
+        console.error("❌ IndexedDB 删除失败:", error);
+      }
+    }
+
+    // 3. 清理反思状态（如果有）
+    cleanupReflectionState();
+
+    // 4. 保存新的用户消息
+    await saveUserMessage(payload.content);
+    console.log("✅ 编辑后的用户消息已保存");
+
+    // 4. 强制滚动到底部（用户主动编辑，期望看到新消息）
+    await nextTick();
+    chatMainRef.value?.scrollToBottom();
+
+    // 5. 根据当前模式重新发送
+    if (useReflection.value) {
+      // 反思模式
+      await handleReflectionMessage(payload.content);
+    } else {
+      // 普通流式模式
+      const aiMessage: Reactive<Message> = reactive({
+        id: `msg-${Date.now()}-ai`,
+        role: "assistant",
+        content: "",
+        time: getCurrentTime(),
+        isStreaming: true,
+      });
+
+      messages.value.push(aiMessage);
+
+      let fullResponse = "";
+      await sendMessageStream(payload.content, (chunk) => {
+        fullResponse += chunk;
+        aiMessage.content = fullResponse;
+
+        // 流式渲染时使用智能滚动
+        nextTick(() => {
+          if (chatMainRef.value?.messageListRef) {
+            const messageList = chatMainRef.value.messageListRef as any;
+            if (messageList.smartScrollToBottom) {
+              messageList.smartScrollToBottom();
+            }
+          }
+        });
+      });
+
+      aiMessage.isStreaming = false;
+      await saveAssistantMessage(fullResponse);
+      console.log("✅ AI 消息已保存到本地");
+
+      if (currentSessionId.value) {
+        await updateStoredSessionId(currentSessionId.value);
+        console.log("✅ SessionId 已保存:", currentSessionId.value);
+      }
+    }
+  } catch (error) {
+    console.error("编辑消息失败:", error);
+    const errorMsg: Message = {
+      id: `msg-${Date.now()}-error`,
+      role: "assistant",
+      content: "抱歉，发生了错误，请稍后再试。",
+      time: getCurrentTime(),
+      status: "normal",
+    };
+    messages.value.push(errorMsg);
+  }
 };
 // 🔥 使用 SSE 流式发送消息 + 持久化存储
 const handleSendMessage = async (message: string) => {
@@ -399,6 +499,8 @@ const handleSendMessage = async (message: string) => {
         role: "assistant",
         content: "",
         time: getCurrentTime(),
+        status: "normal",
+        isStreaming: true,
       });
 
       messages.value.push(aiMessage);
@@ -410,9 +512,14 @@ const handleSendMessage = async (message: string) => {
         console.log(fullResponse, "fullResponse");
         aiMessage.content = fullResponse;
 
-        // 实时滚动到底部
+        // 使用智能滚动，避免打断用户向上查看
         nextTick(() => {
-          chatMainRef.value?.scrollToBottom();
+          if (chatMainRef.value?.messageListRef) {
+            const messageList = chatMainRef.value.messageListRef as any;
+            if (messageList.smartScrollToBottom) {
+              messageList.smartScrollToBottom();
+            }
+          }
         });
       });
 
@@ -433,6 +540,7 @@ const handleSendMessage = async (message: string) => {
         role: "assistant",
         content: "抱歉，发生了错误，请稍后再试。",
         time: getCurrentTime(),
+        status: "normal",
       };
       messages.value.push(errorMsg);
     }
@@ -453,6 +561,8 @@ const simulateStreamRendering = async () => {
     role: "assistant",
     content: "",
     time: getCurrentTime(),
+    status: "normal",
+    isStreaming: true,
   });
 
   messages.value.push(aiMessage);

@@ -1,52 +1,100 @@
 <template>
-  <div class="message" :class="message.role">
+  <div
+    class="message"
+    :class="[message.role, message.status === 'superseded' ? 'superseded' : '']"
+  >
     <div v-if="message.role === 'assistant'" class="message-avatar">
       <Icon icon="mdi:robot" />
     </div>
 
     <div class="message-content">
-      <div class="message-header" v-if="showThinkingBadge">
-        <div class="spinner"></div>
-        <span class="thinking-text">正在思考中...</span>
+      <!-- 编辑模式 -->
+      <div v-if="isEditing" class="edit-mode-container">
+        <textarea
+          v-model="editContent"
+          class="edit-textarea"
+          rows="3"
+          @keydown.enter.ctrl.prevent="handleConfirmEdit"
+        ></textarea>
+        <div class="edit-actions">
+          <button class="btn-cancel" @click="handleCancelEdit">取消</button>
+          <button class="btn-submit" @click="handleConfirmEdit">
+            发送 <Icon icon="mdi:send" />
+          </button>
+        </div>
       </div>
-      <div
-        class="message-text typing"
-        v-if="message.role === 'assistant'"
-        v-html="renderedContent"
-      />
 
-      <div class="message-text typing" v-else>{{ message.content }}</div>
-      <div class="message-time">{{ message.time }}</div>
+      <!-- 正常显示模式 -->
+      <template v-else>
+        <div class="message-header" v-if="showThinkingBadge">
+          <div class="spinner"></div>
+          <span class="thinking-text">正在思考中...</span>
+        </div>
+        <div
+          class="message-text typing"
+          v-if="message.role === 'assistant'"
+          v-html="renderedContent"
+        />
 
-      <!-- 反思详情 -->
-      <div v-if="message.metadata?.reflectionUsed" class="reflection-details">
-        <button @click="toggleReflectionDetails" class="toggle-reflection-btn">
-          {{ showReflectionDetails ? "隐藏" : "查看" }}反思过程
-        </button>
+        <div class="message-text typing" v-else>{{ message.content }}</div>
 
-        <div v-if="showReflectionDetails" class="reflection-content">
-          <!-- 初始回答 -->
-          <div class="reflection-section">
-            <h4>💭 初始回答</h4>
-            <div class="reflection-answer" v-html="renderedInitialAnswer"></div>
-          </div>
+        <!-- 操作栏 -->
+        <div
+          v-if="message.role === 'user' && message.status !== 'superseded'"
+          class="message-actions"
+        >
+          <button
+            class="action-btn"
+            @click="handleStartEdit"
+            title="编辑并重新发送"
+          >
+            <Icon icon="mdi:pencil-outline" />
+          </button>
+        </div>
 
-          <!-- 反思维度 -->
-          <div class="reflection-section">
-            <h4>🔍 反思分析</h4>
-            <div
-              v-for="(ref, idx) in message.metadata.reflections"
-              :key="idx"
-              class="reflection-item"
-            >
-              <div class="reflection-dimension">
-                {{ ref.dimension }}
+        <!-- 已失效标记 -->
+        <div v-if="message.status === 'superseded'" class="superseded-badge">
+          <Icon icon="mdi:history" /> 已根据新内容重新生成
+        </div>
+
+        <div class="message-time">{{ message.time }}</div>
+
+        <!-- 反思详情 -->
+        <div v-if="message.metadata?.reflectionUsed" class="reflection-details">
+          <button
+            @click="toggleReflectionDetails"
+            class="toggle-reflection-btn"
+          >
+            {{ showReflectionDetails ? "隐藏" : "查看" }}反思过程
+          </button>
+
+          <div v-if="showReflectionDetails" class="reflection-content">
+            <!-- 初始回答 -->
+            <div class="reflection-section">
+              <h4>💭 初始回答</h4>
+              <div
+                class="reflection-answer"
+                v-html="renderedInitialAnswer"
+              ></div>
+            </div>
+
+            <!-- 反思维度 -->
+            <div class="reflection-section">
+              <h4>🔍 反思分析</h4>
+              <div
+                v-for="(ref, idx) in message.metadata.reflections"
+                :key="idx"
+                class="reflection-item"
+              >
+                <div class="reflection-dimension">
+                  {{ ref.dimension }}
+                </div>
+                <div class="reflection-text">{{ ref.reflection }}</div>
               </div>
-              <div class="reflection-text">{{ ref.reflection }}</div>
             </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
     <div v-if="message.role === 'user'" class="message-avatar user">
       {{ userInitial }}
@@ -71,10 +119,43 @@ const props = defineProps<{
   isLatest?: boolean;
 }>();
 
+const emit = defineEmits<{
+  (e: "edit-start", id: string): void;
+  (e: "edit-submit", payload: { id: string; content: string }): void;
+}>();
+
 const showReflectionDetails = ref(false);
+const isEditing = ref(false);
+const editContent = ref("");
 
 const toggleReflectionDetails = () => {
   showReflectionDetails.value = !showReflectionDetails.value;
+};
+
+// 开始编辑
+const handleStartEdit = () => {
+  editContent.value = props.message.content;
+  isEditing.value = true;
+  emit("edit-start", props.message.id);
+};
+
+// 取消编辑
+const handleCancelEdit = () => {
+  isEditing.value = false;
+  editContent.value = "";
+};
+
+// 确认编辑
+const handleConfirmEdit = () => {
+  if (
+    !editContent.value.trim() ||
+    editContent.value === props.message.content
+  ) {
+    handleCancelEdit();
+    return;
+  }
+  emit("edit-submit", { id: props.message.id, content: editContent.value });
+  isEditing.value = false;
 };
 
 // 使用统一的 markdown 渲染器
@@ -161,9 +242,38 @@ const renderMermaid = async () => {
       border-radius: 18px 18px 4px 18px;
     }
 
+    .message-actions {
+      position: absolute;
+      bottom: -28px;
+      right: 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    &:hover .message-actions {
+      opacity: 1;
+    }
+
     .message-time {
       text-align: right;
       color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  // 失效消息样式
+  &.superseded {
+    opacity: 0.6;
+
+    .message-content {
+      background: #f0f0f0;
+      color: #999;
+      border: 1px dashed #d9d9d9;
+    }
+
+    &.user .message-content {
+      background: #e6f7ff;
+      color: #666;
+      border: 1px dashed #91d5ff;
     }
   }
 
@@ -205,6 +315,97 @@ const renderMermaid = async () => {
     max-width: 60%;
     padding: 0.75rem 1rem;
     position: relative;
+
+    // 编辑模式样式
+    .edit-mode-container {
+      min-width: 300px;
+
+      .edit-textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        color: inherit;
+        font-family: inherit;
+        font-size: 0.9rem;
+        resize: vertical;
+        outline: none;
+
+        &:focus {
+          background: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+
+      .edit-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+
+        button {
+          padding: 6px 12px;
+          border-radius: 4px;
+          border: none;
+          cursor: pointer;
+          font-size: 0.85rem;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+
+          &.btn-cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.3);
+            }
+          }
+
+          &.btn-submit {
+            background: white;
+            color: #1890ff;
+            font-weight: 500;
+
+            &:hover {
+              background: #f0f0f0;
+            }
+          }
+        }
+      }
+    }
+
+    // 消息操作栏
+    .message-actions {
+      .action-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #999;
+        padding: 4px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+          color: #1890ff;
+        }
+      }
+    }
+
+    // 失效标记
+    .superseded-badge {
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.45);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
     .message-header {
       display: inline-flex;

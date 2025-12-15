@@ -235,6 +235,26 @@ export function useChatStorage() {
   };
 
   /**
+   * 删除指定消息之后的所有消息（用于编辑功能）
+   */
+  const deleteMessagesAfter = async (chatId: string, messageId: string) => {
+    try {
+      const deletedCount = await chatDB.deleteMessagesAfter(chatId, messageId);
+
+      // 重新加载当前会话的消息
+      if (currentSession.value?.id === chatId) {
+        messages.value = await chatDB.getMessages(chatId);
+      }
+
+      console.log(`✅ 删除消息成功: ${deletedCount} 条`);
+      return deletedCount;
+    } catch (error) {
+      console.error("❌ 删除消息失败:", error);
+      throw error;
+    }
+  };
+
+  /**
    * 获取当前时间
    */
   const getCurrentTime = (): string => {
@@ -258,6 +278,7 @@ export function useChatStorage() {
     saveMessage,
     saveMessages,
     updateSessionId,
+    deleteMessagesAfter,
     clearAllData,
     getStorageStats,
   };

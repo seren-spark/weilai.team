@@ -83,6 +83,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  isEditingMode: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // 核心数据结构
@@ -199,7 +203,8 @@ const offsetY = computed(() => visibleRange.value.offsetY);
 // ResizeObserver 增量修正（核心优化）
 const resizeObserver = new ResizeObserver((entries) => {
   const shouldAutoScroll =
-    autoScrollState.value === AutoScrollState.FOLLOW_BOTTOM;
+    autoScrollState.value === AutoScrollState.FOLLOW_BOTTOM &&
+    !props.isEditingMode;
 
   entries.forEach((entry) => {
     const index = Number(entry.target.getAttribute("data-index"));
@@ -213,7 +218,7 @@ const resizeObserver = new ResizeObserver((entries) => {
       // 增量修正：只更新 heightMap,totalHeight 会自动重算
       heightMap.set(id, newHeight);
 
-      // 如果是最后一条流式消息且需要自动滚动
+      // 如果是最后一条流式消息且需要自动滚动（且不在编辑模式）
       if (shouldAutoScroll && index === props.items.length - 1) {
         nextTick(() => {
           scrollToBottom();
@@ -279,7 +284,10 @@ const scrollToBottom = () => {
 };
 
 const smartScrollToBottom = () => {
-  if (autoScrollState.value === AutoScrollState.FOLLOW_BOTTOM) {
+  if (
+    autoScrollState.value === AutoScrollState.FOLLOW_BOTTOM &&
+    !props.isEditingMode
+  ) {
     scrollToBottom();
   }
 };
@@ -329,8 +337,11 @@ watch(
       // 更新可视区
       visibleRange.value = calcVisibleRange(scrollTop.value);
 
-      // 如果处于自动滚动状态，滚动到底部
-      if (autoScrollState.value === AutoScrollState.FOLLOW_BOTTOM) {
+      // 如果处于自动滚动状态且不在编辑模式，滚动到底部
+      if (
+        autoScrollState.value === AutoScrollState.FOLLOW_BOTTOM &&
+        !props.isEditingMode
+      ) {
         await nextTick();
         scrollToBottom();
       }

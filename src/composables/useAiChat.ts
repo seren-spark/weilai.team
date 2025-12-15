@@ -25,6 +25,9 @@ export interface Message {
   role: "user" | "assistant";
   content: string;
   time: string;
+  status?: "normal" | "superseded";
+  parentId?: string;
+  isStreaming?: boolean;
   metadata?: {
     reflectionUsed: boolean;
     initialAnswer: string; // 原始回答
@@ -58,7 +61,8 @@ export function useAiChat() {
   const isLoading = ref(false);
   const currentChatId = ref<string>("");
   const isBusy = ref(false);
-  const currentSessionId = ref<string>("");
+  const currentSessionId = ref<string | null>("");
+  const abortController = ref<AbortController | null>(null);
 
   // 🔥 集成持久化存储
   const storage = useChatStorage();
@@ -70,7 +74,116 @@ export function useAiChat() {
     eventSource: typeof EventSource !== "undefined",
   };
 
-  // 📊 记录降级信息
+  /**
+   * 中断当前请求
+   */
+  const abortResponse = () => {
+    if (abortController.value) {
+      abortController.value.abort();
+      abortController.value = null;
+    }
+    isLoading.value = false;
+    isBusy.value = false;
+
+    // 标记最后一条正在流式的消息为中断
+    const lastMsg = messages.value[messages.value.length - 1];
+    if (lastMsg && lastMsg.role === "assistant" && lastMsg.isStreaming) {
+      lastMsg.isStreaming = false;
+    }
+  };
+
+  /**
+   * 构建上下文
+   */
+  const buildContextFromRevision = (targetMsgId: string) => {
+    // 简单策略：找到目标消息在数组中的位置，取之前的所有非 superseded 消息
+    // 注意：这只是一个近似实现，如果多次编辑，数组中会有多个 superseded 消息
+    // 正确的做法应该是根据 parentId 回溯，但在扁平数组中，我们可能需要依赖索引
+
+    const index = messages.value.findIndex((m) => m.id === targetMsgId);
+    if (index === -1) return [];
+
+    // 过滤掉已废弃的消息，构建历史上下文
+    // 这里我们只取当前消息之前的有效消息
+    return messages.value
+      .slice(0, index)
+      .filter((m) => m.status !== "superseded");
+  };
+
+  /**
+   * 编辑并重新发送
+   */
+  const editAndResend = async (
+    originalMessageId: string,
+    newContent: string,
+  ) => {
+    // 1. 中断当前所有请求（包括普通流式和反思流式）
+    abortResponse();
+
+    // 2. 找到原消息索引
+    const originalIndex = messages.value.findIndex(
+      (m) => m.id === originalMessageId,
+    );
+    if (originalIndex === -1) return null;
+
+    const originalMsg = messages.value[originalIndex];
+
+    // 3. 🔥 调用后端 API 删除 sessionId 中的旧消息
+    if (currentSessionId.value) {
+      try {
+        const token = getLocalStorageWithExpire<string>("token");
+        const headers: HeadersInit = {
+          "Content-Type": "application/json",
+        };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(
+          "http://localhost:5005/api/sessions/delete-messages",
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              sessionId: currentSessionId.value,
+              messageContent: originalMsg.content,
+              role: originalMsg.role,
+            }),
+          },
+        );
+
+        const result = await response.json();
+        if (result.success) {
+          console.log(
+            `✅ 后端消息已删除 | 剩余: ${result.remainingMessages} 条`,
+          );
+        } else {
+          console.warn("⚠️ 后端删除失败，重置 sessionId:", result.error);
+          // 如果后端删除失败，重置 sessionId 以避免上下文不一致
+          currentSessionId.value = null;
+        }
+      } catch (error) {
+        console.error("❌ 调用后端删除 API 失败:", error);
+        // 网络错误时也重置 sessionId
+        currentSessionId.value = null;
+      }
+    }
+
+    // 4. 前端删除旧消息（从该消息开始删除到末尾）
+    const deletedCount = messages.value.length - originalIndex;
+    messages.value.splice(originalIndex);
+    console.log(`🗑️  前端删除了 ${deletedCount} 条消息`);
+
+    // 5. 构建上下文（编辑点之前的所有消息）
+    const contextMessages = messages.value.slice();
+
+    return {
+      contextMessages,
+      newContent,
+      originalMessageId,
+    };
+  };
+
   if (!capabilities.streaming) {
     console.warn("⚠️ 浏览器不支持 Fetch Streaming，将使用降级方案");
     if (capabilities.xhr) {
@@ -409,6 +522,10 @@ export function useAiChat() {
     try {
       isBusy.value = true;
       isLoading.value = true;
+
+      // 创建新的 AbortController
+      abortController.value = new AbortController();
+
       // 构建请求数据，包含 sessionId（如果存在）
       const requestData: any = {
         message: content,
@@ -433,6 +550,7 @@ export function useAiChat() {
         method: "POST",
         headers,
         body: JSON.stringify(requestData),
+        signal: abortController.value.signal,
       });
       console.log(response);
 
@@ -527,13 +645,21 @@ export function useAiChat() {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       rafFlush(); // 错误时也要 flush
+
+      // 处理中断错误
+      if (error.name === "AbortError") {
+        console.log("🛑 流式请求被中断");
+        return;
+      }
+
       console.error("流式发送失败:", error);
       throw error;
     } finally {
       isLoading.value = false;
       isBusy.value = false;
+      abortController.value = null;
     }
   };
 
@@ -778,6 +904,7 @@ export function useAiChat() {
       role: msg.role,
       content: msg.content,
       time: msg.time,
+      status: msg.status || "normal",
       metadata: msg.metadata,
     }));
 
@@ -804,6 +931,7 @@ export function useAiChat() {
       role: "user",
       content,
       time,
+      status: "normal",
     });
   };
 
@@ -851,5 +979,9 @@ export function useAiChat() {
     saveUserMessage,
     saveAssistantMessage,
     updateStoredSessionId,
+
+    // 🔥 编辑消息功能
+    editAndResend,
+    abortResponse,
   };
 }
