@@ -7,6 +7,34 @@ import { tools, executeTool } from "../tools/index.js";
  */
 
 /**
+ * 清理消息历史，移除不符合 API 格式的消息
+ * - role: "tool" 必须紧跟在有 tool_calls 的 assistant 消息后面
+ * - 移除孤立的 tool 消息
+ */
+const cleanMessages = (messages) => {
+  const cleaned = [];
+
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i];
+
+    // 如果是 tool 消息，检查前一条是否是带 tool_calls 的 assistant 消息
+    if (msg.role === "tool") {
+      const prevMsg = cleaned[cleaned.length - 1];
+      if (prevMsg && prevMsg.role === "assistant" && prevMsg.tool_calls) {
+        cleaned.push(msg);
+      }
+      // 否则跳过这条 tool 消息
+      continue;
+    }
+
+    // 其他消息直接添加
+    cleaned.push(msg);
+  }
+
+  return cleaned;
+};
+
+/**
  * 流式聊天 + 工具调用（通用版本）
  * @param {Array} messages - 消息历史
  * @param {string} model - 模型名称
@@ -27,7 +55,8 @@ export const streamChatWithTools = async (
     token = null, // 用户认证token
   } = {},
 ) => {
-  let currentMessages = [...messages];
+  // 🎯 清理消息历史
+  let currentMessages = cleanMessages([...messages]);
   let finalResponse = "";
 
   try {

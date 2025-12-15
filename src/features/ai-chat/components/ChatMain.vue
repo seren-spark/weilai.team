@@ -2,16 +2,26 @@
   <div class="chat-main">
     <ChatHeader :greeting="greeting" />
 
-    <MessageList
+    <VirtualMessageList
       ref="messageListRef"
-      :messages="messages"
+      :items="messages"
       :is-loading="isLoading"
-      :user-initial="userInitial"
       :reflection-status="reflectionStatus"
       :reflection-message="reflectionMessage"
       :current-reflections="currentReflections"
       :initial-answer-content="initialAnswerContent"
-    />
+    >
+      <template #default="{ item }">
+        <MessageItem
+          :message="item"
+          :user-initial="userInitial"
+          :is-loading="isLoading"
+          :reflection-status="reflectionStatus"
+          :reflection-message="reflectionMessage"
+          :is-latest="messages[messages.length - 1]?.id === item.id"
+        />
+      </template>
+    </VirtualMessageList>
 
     <ChatInput
       v-model="inputMessage"
@@ -27,7 +37,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import ChatHeader from "./ChatHeader.vue";
-import MessageList from "./MessageList.vue";
+import VirtualMessageList from "./VirtualMessageList.vue";
+import MessageItem from "./MessageItem.vue";
 import ChatInput from "./ChatInput.vue";
 import type { Message, ReflectionData } from "@/composables/useAiChat";
 
@@ -51,7 +62,9 @@ defineEmits<{
 }>();
 
 const inputMessage = ref("");
-const messageListRef = ref<InstanceType<typeof MessageList> | null>(null);
+const messageListRef = ref<InstanceType<typeof VirtualMessageList> | null>(
+  null,
+);
 
 const scrollToBottom = () => {
   messageListRef.value?.scrollToBottom();
@@ -59,6 +72,7 @@ const scrollToBottom = () => {
 
 defineExpose({
   scrollToBottom,
+  messageListRef, // 暴露内部引用
 });
 </script>
 

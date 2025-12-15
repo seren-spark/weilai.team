@@ -1,5 +1,5 @@
 // src/utils/chatDatabase.ts
-import Dexie, {type Table } from "dexie";
+import Dexie, { type Table } from "dexie";
 
 /**
  * 聊天会话接口
@@ -23,6 +23,7 @@ export interface ChatMessage {
   content: string; // 消息内容
   timestamp: number; // 时间戳
   time: string; // 格式化时间
+  metadata?: any; // 额外元数据（如反思过程）
 }
 
 /**
@@ -36,13 +37,21 @@ class ChatDatabase extends Dexie {
   constructor() {
     super("AIChatDatabase");
 
-    // 定义数据库结构（版本1）
+    // 版本1：基础字段
     this.version(1).stores({
-      // 会话表：主键 id，索引 updatedAt（用于排序）
       sessions: "id, updatedAt",
-      // 消息表：主键 id，索引 chatId（用于查询某会话的消息）和 timestamp（用于排序）
       messages: "id, chatId, timestamp, [chatId+timestamp]",
     });
+
+    // 版本2：为消息添加 metadata（反思过程等）
+    this.version(2)
+      .stores({
+        sessions: "id, updatedAt",
+        messages: "id, chatId, timestamp, [chatId+timestamp]",
+      })
+      .upgrade(() => {
+        // 旧数据无需迁移字段，Dexie 会为新列使用 undefined
+      });
   }
 
   /**

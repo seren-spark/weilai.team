@@ -1,8 +1,8 @@
 <template>
   <div class="ai-chat-container">
+    <!-- :features="features" -->
     <ChatSidebar
       :current-feature="currentFeature"
-      :features="features"
       :chat-history="chatHistory"
       :current-chat-id="currentChatId"
       :trigger-reflection="triggerReflection"
@@ -46,6 +46,7 @@ import ChatSidebar from "./components/ChatSidebar.vue";
 import ChatMain from "./components/ChatMain.vue";
 import type { Feature } from "./components/FeatureList.vue";
 import { useLocalStorageWithExpire } from "@/composables/useLocalStorage";
+import { streamContent } from "./const/content";
 
 // 使用AI聊天composable
 const {
@@ -56,9 +57,9 @@ const {
   isBusy,
   currentSessionId,
   // sendMessage, // 不使用普通方式，使用流式
-  sendMessageStream, // ✅ 导入流式方法
+  sendMessageStream, //  导入流式方法
 
-  // 🔥 持久化存储方法
+  // 持久化存储方法
   initChatStorage,
   createNewChatPersisted,
   loadChatMessagesPersisted,
@@ -87,13 +88,13 @@ const userInitial = computed(() => "侯".charAt(0));
 const greeting = computed(() => "晚上好，侯博然");
 
 // 功能列表配置
-const features = ref<Feature[]>([
-  { id: "search", label: "AI 搜索", icon: "mdi:magnify" },
-  { id: "write", label: "帮我写作", icon: "mdi:pencil" },
-  { id: "program", label: "AI 编程", icon: "mdi:code-tags" },
-  { id: "image", label: "图像生成", icon: "mdi:image" },
-  { id: "more", label: "更多", icon: "mdi:dots-horizontal" },
-]);
+// const features = ref<Feature[]>([
+//   { id: "search", label: "AI 搜索", icon: "mdi:magnify" },
+//   { id: "write", label: "帮我写作", icon: "mdi:pencil" },
+//   { id: "program", label: "AI 编程", icon: "mdi:code-tags" },
+//   { id: "image", label: "图像生成", icon: "mdi:image" },
+//   { id: "more", label: "更多", icon: "mdi:dots-horizontal" },
+// ]);
 const triggerReflection = (value: boolean) => {
   useReflection.value = value;
 };
@@ -233,6 +234,17 @@ const handleReflectionMessage = async (message: string) => {
                     reflectionMetadata.reflections = data.data.reflections;
                   }
                 }
+
+                if (data.status === "aborted") {
+                  console.log("🛑 反思已被中断");
+                  cleanupReflectionState();
+
+                  // 更新AI消息显示中断状态
+                  const lastMessage = messages.value[messages.value.length - 1];
+                  if (lastMessage && lastMessage.role === "assistant") {
+                    lastMessage.content = "反思流程已被中断";
+                  }
+                }
                 break;
 
               case "token":
@@ -246,16 +258,26 @@ const handleReflectionMessage = async (message: string) => {
               case "done":
                 console.log("✅ 收到 done 事件，开始清理状态");
 
-                // 添加反思元数据
-                if (data.result.reflectionUsed && reflectionMetadata) {
-                  aiMessage.metadata = {
-                    reflectionUsed: true,
-                    ...reflectionMetadata,
-                  };
-                }
+                // 添加反思元数据（保证思考过程可查看）
+                const finalReflections =
+                  data.result?.reflections || currentReflections.value || [];
+                const finalInitialAnswer =
+                  reflectionMetadata?.initialAnswer ||
+                  initialAnswerContent.value ||
+                  data.data?.answer ||
+                  "";
+
+                aiMessage.metadata = {
+                  reflectionUsed:
+                    data.result?.reflectionUsed !== false ||
+                    finalReflections.length > 0 ||
+                    Boolean(finalInitialAnswer),
+                  initialAnswer: finalInitialAnswer,
+                  reflections: finalReflections,
+                };
 
                 // 保存到 IndexedDB
-                await saveAssistantMessage(fullResponse);
+                await saveAssistantMessage(fullResponse, aiMessage.metadata);
                 console.log("✅ 反思消息已保存到本地");
 
                 // 保存 sessionId
@@ -266,14 +288,15 @@ const handleReflectionMessage = async (message: string) => {
 
                 // 清除所有状态
                 console.log("🧹 清除反思状态...");
-                isLoading.value = false;
-                isBusy.value = false;
-                isReflectionRunning.value = false; // 🎯 重置运行状态
-                abortController.value = null; // 🎯 清除中断控制器
-                reflectionStatus.value = "";
-                reflectionMessage.value = "";
-                currentReflections.value = [];
-                initialAnswerContent.value = "";
+                // isLoading.value = false;
+                // isBusy.value = false;
+                // isReflectionRunning.value = false; // 🎯 重置运行状态
+                // abortController.value = null; // 🎯 清除中断控制器
+                // reflectionStatus.value = "";
+                // reflectionMessage.value = "";
+                // currentReflections.value = [];
+                // initialAnswerContent.value = "";
+                cleanupReflectionState();
                 console.log("✅ 状态已清除", {
                   reflectionStatus: reflectionStatus.value,
                   reflectionMessage: reflectionMessage.value,
@@ -289,28 +312,6 @@ const handleReflectionMessage = async (message: string) => {
                 reflectionStatus.value = "";
                 reflectionMessage.value = "";
                 currentReflections.value = [];
-                break;
-
-              // 🎯 新增：处理中断状态
-              case "status":
-                if (data.status === "aborted") {
-                  console.log("🛑 反思已被中断");
-                  isLoading.value = false;
-                  isBusy.value = false;
-                  isReflectionRunning.value = false;
-                  abortController.value = null;
-                  // 🎯 中断后完全清除状态显示
-                  reflectionStatus.value = "";
-                  reflectionMessage.value = "";
-                  currentReflections.value = [];
-                  initialAnswerContent.value = "";
-
-                  // 更新AI消息显示中断状态
-                  const lastMessage = messages.value[messages.value.length - 1];
-                  if (lastMessage && lastMessage.role === "assistant") {
-                    lastMessage.content = "反思流程已被中断";
-                  }
-                }
                 break;
             }
           } catch (e) {
@@ -363,6 +364,17 @@ const handleReflectionMessage = async (message: string) => {
   chatMainRef.value?.scrollToBottom();
 };
 
+// 清理状态
+const cleanupReflectionState = () => {
+  isLoading.value = false;
+  isBusy.value = false;
+  isReflectionRunning.value = false; // 🎯 重置运行状态
+  abortController.value = null; // 🎯 清除中断控制器
+  reflectionStatus.value = "";
+  reflectionMessage.value = "";
+  currentReflections.value = [];
+  initialAnswerContent.value = "";
+};
 // 🔥 使用 SSE 流式发送消息 + 持久化存储
 const handleSendMessage = async (message: string) => {
   // 根据是否启用反思功能选择不同的处理方式
@@ -430,6 +442,73 @@ const handleSendMessage = async (message: string) => {
   }
 };
 
+// 模拟流式渲染 content.ts 中的内容
+// 🎯 模拟流式渲染 content.ts 中的内容
+const simulateStreamRendering = async () => {
+  console.log("🚀 开始自动流式渲染演示内容...");
+
+  // 创建 AI 消息占位
+  const aiMessage: Reactive<Message> = reactive({
+    id: `msg-${Date.now()}-demo`,
+    role: "assistant",
+    content: "",
+    time: getCurrentTime(),
+  });
+
+  messages.value.push(aiMessage);
+  isLoading.value = true;
+  isBusy.value = true;
+
+  // await nextTick();
+  // chatMainRef.value?.scrollToBottom();
+  // 实时滚动到底部
+  nextTick(() => {
+    // 使用智能滚动，不打断用户向上查看
+    if (chatMainRef.value?.messageListRef) {
+      const messageList = chatMainRef.value.messageListRef as any;
+      if (messageList.smartScrollToBottom) {
+        messageList.smartScrollToBottom();
+      }
+    }
+  });
+  // 流式渲染配置
+  const chunkSize = 20; // 每次添加的字符数
+  const delay = 30; // 每次渲染的延迟（毫秒）
+  let currentIndex = 0;
+
+  // 使用 setInterval 模拟流式效果
+  const renderInterval = setInterval(() => {
+    if (currentIndex < streamContent.length) {
+      // 添加一块内容
+      const nextIndex = Math.min(
+        currentIndex + chunkSize,
+        streamContent.length,
+      );
+      aiMessage.content += streamContent.slice(currentIndex, nextIndex);
+      currentIndex = nextIndex;
+
+      // // 实时滚动到底部
+      // nextTick(() => {
+      //   chatMainRef.value?.scrollToBottom();
+      // });
+      // 实时滚动到底部（智能滚动）
+      nextTick(() => {
+        if (chatMainRef.value?.messageListRef) {
+          const messageList = chatMainRef.value.messageListRef as any;
+          if (messageList.smartScrollToBottom) {
+            messageList.smartScrollToBottom();
+          }
+        }
+      });
+    } else {
+      // 渲染完成
+      clearInterval(renderInterval);
+      isLoading.value = false;
+      isBusy.value = false;
+      console.log("✅ 演示内容渲染完成");
+    }
+  }, delay);
+};
 // 获取当前时间
 const getCurrentTime = () => {
   const now = new Date();
@@ -466,9 +545,16 @@ onMounted(async () => {
   }
 
   // 滚动到底部
-  await nextTick();
-  chatMainRef.value?.scrollToBottom();
-
+  nextTick(() => {
+    // 使用智能滚动，不打断用户向上查看
+    if (chatMainRef.value?.messageListRef) {
+      const messageList = chatMainRef.value.messageListRef as any;
+      if (messageList.smartScrollToBottom) {
+        messageList.smartScrollToBottom();
+      }
+    }
+  });
+  // await simulateStreamRendering();
   console.log("✅ AI 聊天初始化完成");
 });
 </script>

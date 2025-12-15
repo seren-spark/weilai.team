@@ -121,6 +121,7 @@ export function useChatStorage() {
     role: "user" | "assistant",
     content: string,
     time?: string,
+    metadata?: any,
   ): Promise<ChatMessage> => {
     try {
       const message = await chatDB.addMessage({
@@ -129,6 +130,7 @@ export function useChatStorage() {
         content,
         timestamp: Date.now(),
         time: time || getCurrentTime(),
+        metadata,
       });
 
       // 如果是当前会话，添加到消息列表
@@ -160,6 +162,7 @@ export function useChatStorage() {
       content: string;
       time?: string;
       timestamp?: number;
+      metadata?: any;
     }>,
   ) => {
     try {
@@ -170,6 +173,7 @@ export function useChatStorage() {
           content: msg.content,
           timestamp: msg.timestamp || Date.now(),
           time: msg.time || getCurrentTime(),
+          metadata: msg.metadata,
         });
       }
 

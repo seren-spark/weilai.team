@@ -378,6 +378,19 @@ export const streamReflectionChat = async (
       return;
     }
 
+    // 网络/API 错误
+    if (error.code === "ECONNREFUSED" || error.code === "ETIMEDOUT") {
+      console.error("❌ API 连接失败:", error);
+      onError?.(new Error("AI 服务暂时不可用，请稍后重试"));
+      return;
+    }
+    // Token 限制错误
+    if (error.message?.includes("token") || error.message?.includes("limit")) {
+      console.error("❌ Token 超限:", error);
+      onError?.(new Error("对话内容过长，请开启新会话"));
+      return;
+    }
+    // 通用错误
     console.error("❌ 反思流程错误:", error);
     onError?.(error);
   }

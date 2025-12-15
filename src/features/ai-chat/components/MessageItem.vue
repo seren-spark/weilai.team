@@ -3,16 +3,19 @@
     <div v-if="message.role === 'assistant'" class="message-avatar">
       <Icon icon="mdi:robot" />
     </div>
+
     <div class="message-content">
-      <div 
-        class="message-text typing" 
+      <div class="message-header" v-if="showThinkingBadge">
+        <div class="spinner"></div>
+        <span class="thinking-text">正在思考中...</span>
+      </div>
+      <div
+        class="message-text typing"
         v-if="message.role === 'assistant'"
         v-html="renderedContent"
-      ></div>
-      <div 
-        class="message-text typing" 
-        v-else
-      >{{ message.content }}</div>
+      />
+
+      <div class="message-text typing" v-else>{{ message.content }}</div>
       <div class="message-time">{{ message.time }}</div>
 
       <!-- 反思详情 -->
@@ -52,16 +55,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, nextTick, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import type { Message } from "@/composables/useAiChat";
-import { marked, Renderer } from "marked";
-import hljs from "highlight.js";
-import "highlight.js/styles/github-dark.css"; // 代码高亮主题
-
+import { renderMarkdown } from "@/utils/markdown";
+import mermaid from "mermaid";
+import MarkdownRender from "markstream-vue";
+import "markstream-vue/index.css";
 const props = defineProps<{
   message: Message;
   userInitial: string;
+  isLoading?: boolean;
+  reflectionStatus?: string;
+  reflectionMessage?: string;
+  isLatest?: boolean;
 }>();
 
 const showReflectionDetails = ref(false);
@@ -70,52 +77,54 @@ const toggleReflectionDetails = () => {
   showReflectionDetails.value = !showReflectionDetails.value;
 };
 
-// 创建自定义渲染器
-const renderer = new Renderer();
+// 使用统一的 markdown 渲染器
+const renderedContent = computed(() => renderMarkdown(props.message.content));
 
-// 自定义代码块渲染
-renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
-  const language = lang || '';
-  if (language && hljs.getLanguage(language)) {
-    try {
-      const highlighted = hljs.highlight(text, { language }).value;
-      return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
-    } catch (err) {
-      console.error('代码高亮错误:', err);
-    }
-  }
-  const highlighted = hljs.highlightAuto(text).value;
-  return `<pre><code class="hljs">${highlighted}</code></pre>`;
-};
-
-// 配置 marked
-marked.use({
-  renderer,
-  gfm: true,
-  breaks: true,
-});
-
-// 使用 marked 渲染 Markdown
-const renderedContent = computed(() => {
-  if (!props.message.content) return '';
-  try {
-    return marked.parse(props.message.content) as string;
-  } catch (error) {
-    console.error('Markdown 渲染错误:', error);
-    return props.message.content;
-  }
+const showThinkingBadge = computed(() => {
+  if (props.message.role !== "assistant") return false;
+  if (!props.isLatest) return false;
+  return Boolean(props.isLoading || props.reflectionStatus);
 });
 
 // 渲染初始回答
-const renderedInitialAnswer = computed(() => {
-  if (!props.message.metadata?.initialAnswer) return '';
-  try {
-    return marked.parse(props.message.metadata.initialAnswer) as string;
-  } catch (error) {
-    console.error('初始回答 Markdown 渲染错误:', error);
-    return props.message.metadata.initialAnswer;
-  }
+const renderedInitialAnswer = computed(() =>
+  renderMarkdown(props.message.metadata?.initialAnswer || ""),
+);
+
+// 初始化 Mermaid
+onMounted(() => {
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "default",
+    securityLevel: "loose",
+  });
+  renderMermaid();
 });
+
+// 监听内容变化，重新渲染 Mermaid
+watch(
+  () => props.message.content,
+  () => {
+    nextTick(() => {
+      renderMermaid();
+    });
+  },
+);
+
+// 渲染 Mermaid 图表
+const renderMermaid = async () => {
+  await nextTick();
+  const mermaidElements = document.querySelectorAll(".mermaid");
+  if (mermaidElements.length > 0) {
+    try {
+      await mermaid.run({
+        nodes: mermaidElements as any,
+      });
+    } catch (error) {
+      console.error("Mermaid 渲染错误:", error);
+    }
+  }
+};
 </script>
 
 <style scoped lang="scss">
@@ -126,6 +135,15 @@ const renderedInitialAnswer = computed(() => {
   }
   50% {
     opacity: 0;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -186,94 +204,133 @@ const renderedInitialAnswer = computed(() => {
   .message-content {
     max-width: 60%;
     padding: 0.75rem 1rem;
+    position: relative;
+
+    .message-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      background: rgba(24, 144, 255, 0.08);
+      border-radius: 999px;
+      color: #1890ff;
+      font-size: 0.85rem;
+
+      .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid #e6f4ff;
+        border-top: 2px solid #1890ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .thinking-text {
+        white-space: nowrap;
+      }
+    }
 
     .message-text {
       line-height: 1.6;
       word-wrap: break-word;
-      
+
       // Markdown 样式
-      :deep(h1), :deep(h2), :deep(h3), :deep(h4), :deep(h5), :deep(h6) {
+      :deep(h1),
+      :deep(h2),
+      :deep(h3),
+      :deep(h4),
+      :deep(h5),
+      :deep(h6) {
         margin: 0.5em 0;
         font-weight: 600;
       }
-      
-      :deep(h1) { font-size: 1.5em; }
-      :deep(h2) { font-size: 1.3em; }
-      :deep(h3) { font-size: 1.1em; }
-      
+
+      :deep(h1) {
+        font-size: 1.5em;
+      }
+      :deep(h2) {
+        font-size: 1.3em;
+      }
+      :deep(h3) {
+        font-size: 1.1em;
+      }
+
       :deep(p) {
         margin: 0.5em 0;
       }
-      
-      :deep(ul), :deep(ol) {
+
+      :deep(ul),
+      :deep(ol) {
         margin: 0.5em 0;
         padding-left: 1.5em;
       }
-      
+
       :deep(li) {
         margin: 0.25em 0;
       }
-      
+
       :deep(code) {
         background: rgba(0, 0, 0, 0.05);
         padding: 0.2em 0.4em;
         border-radius: 3px;
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-family: "Consolas", "Monaco", "Courier New", monospace;
         font-size: 0.9em;
       }
-      
+
       :deep(pre) {
         background: #282c34;
         padding: 1em;
         border-radius: 6px;
         overflow-x: auto;
         margin: 0.5em 0;
-        
+
         code {
           background: none;
           padding: 0;
           color: #abb2bf;
         }
       }
-      
+
       :deep(blockquote) {
         border-left: 3px solid #1890ff;
         padding-left: 1em;
         margin: 0.5em 0;
         color: #666;
       }
-      
+
       :deep(table) {
         border-collapse: collapse;
         width: 100%;
         margin: 0.5em 0;
-        
-        th, td {
+
+        th,
+        td {
           border: 1px solid #ddd;
           padding: 0.5em;
           text-align: left;
         }
-        
+
         th {
           background: #f5f5f5;
           font-weight: 600;
         }
       }
-      
+
       :deep(a) {
         color: #1890ff;
         text-decoration: none;
-        
+
         &:hover {
           text-decoration: underline;
         }
       }
-      
+
       :deep(img) {
         max-width: 100%;
         border-radius: 6px;
       }
-      
+
       // &.typing {
       //   &::after {
       //     content: "|";
@@ -323,7 +380,8 @@ const renderedInitialAnswer = computed(() => {
             font-weight: 600;
           }
 
-          p, .reflection-answer {
+          p,
+          .reflection-answer {
             margin: 0;
             padding: 0.5rem;
             background: rgba(0, 0, 0, 0.03);
@@ -332,27 +390,27 @@ const renderedInitialAnswer = computed(() => {
             line-height: 1.5;
             color: #666;
           }
-          
+
           // 反思答案的 Markdown 样式
           .reflection-answer {
             :deep(p) {
               margin: 0.3em 0;
             }
-            
+
             :deep(code) {
               background: rgba(0, 0, 0, 0.08);
               padding: 0.15em 0.3em;
               border-radius: 3px;
               font-size: 0.85em;
             }
-            
+
             :deep(pre) {
               background: #282c34;
               padding: 0.5em;
               border-radius: 4px;
               overflow-x: auto;
               margin: 0.3em 0;
-              
+
               code {
                 background: none;
                 padding: 0;

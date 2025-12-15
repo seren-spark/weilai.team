@@ -1,16 +1,50 @@
 <template>
-  <div class="messages-container" ref="messagesContainer">
+  <div
+    class="messages-container"
+    ref="messagesContainer"
+    @scroll="handleScrollEnhanced"
+  >
     <div v-if="messages.length === 0" class="empty-state">
       <div class="empty-icon">
         <Icon icon="mdi:robot-happy-outline" />
       </div>
       <p>开始新的对话吧!</p>
     </div>
-    <MessageItem
-      v-for="message in messages"
-      :key="message.id"
-      :message="message"
-      :user-initial="userInitial"
+
+    <!-- 虚拟滚动：顶部占位空间 -->
+    <div
+      v-if="virtualizationEnabled"
+      class="message-spacer"
+      :style="{ height: `${topSpacerHeight}px` }"
+      aria-hidden="true"
+    />
+
+    <!-- 渲染可见消息 -->
+    <template v-for="item in visibleMessages" :key="item.message.id">
+      <div
+        :ref="
+          (el) => setMessageSlotElement(item.index, el as HTMLElement | null)
+        "
+        class="message-slot"
+        :data-message-index="item.index"
+      >
+        <div
+          :ref="
+            (el) => setMessageContentRef(item.index, el as HTMLElement | null)
+          "
+          class="message-content-wrapper"
+        >
+          <MessageItem :message="item.message" :user-initial="userInitial" />
+        </div>
+      </div>
+    </template>
+
+    <!-- 虚拟滚动：底部占位空间 -->
+    <div
+      v-if="virtualizationEnabled"
+      class="message-spacer"
+      :style="{ height: `${bottomSpacerHeight}px` }"
+      aria-hidden="true"
     />
     <!-- 反思状态显示 -->
     <Transition name="reflection-slide">
@@ -88,11 +122,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, computed, reactive, onBeforeUnmount } from "vue";
 import { Icon } from "@iconify/vue";
 import MessageItem from "./MessageItem.vue";
 import type { Message, ReflectionData } from "@/composables/useAiChat";
-import { marked } from "marked";
+import { renderMarkdown } from "@/utils/markdown";
 
 const props = defineProps<{
   messages: Message[];
@@ -132,16 +166,7 @@ watch(
   },
 );
 
-// 渲染 Markdown
-const renderMarkdown = (text: string): string => {
-  if (!text) return "";
-  try {
-    return marked.parse(text) as string;
-  } catch (error) {
-    console.error("Markdown 渲染错误:", error);
-    return text;
-  }
-};
+// 使用统一的 markdown 渲染器（已从 @/utils/markdown 导入）
 
 // 状态标题映射
 const getStatusTitle = (status: string): string => {
@@ -160,6 +185,242 @@ const getStatusTitle = (status: string): string => {
 };
 
 const messagesContainer = ref<HTMLElement | null>(null);
+
+// ============= 虚拟滚动配置 =============
+const MAX_LIVE_MESSAGES = 50; // 最大同时渲染的消息数
+const LIVE_MESSAGE_BUFFER = 10; // 视口前后缓冲区大小
+const virtualizationEnabled = computed(
+  () => props.messages.length > MAX_LIVE_MESSAGES,
+);
+
+// ============= 用户滚动状态 =============
+const isUserScrolling = ref(false); // 用户是否手动滚动
+const scrollThreshold = 50; // 距离底部的阈值（像素）
+
+// ============= 虚拟化核心状态 =============
+const focusIndex = ref(0); // 当前视口中心的消息索引
+const liveRange = reactive({ start: 0, end: 0 }); // 当前活跃渲染范围
+const messageHeights = reactive<Record<number, number>>({}); // 消息高度记录
+const heightStats = reactive({ total: 0, count: 0 }); // 高度统计
+const messageSlotElements = new Map<number, HTMLElement | null>(); // 消息槽位元素
+const messageContentElements = new Map<number, HTMLElement | null>(); // 消息内容元素
+
+// ============= 滚动监听 =============
+let scrollListenerActive = false;
+let pendingScrollSync: number | null = null;
+// 检测用户是否在底部
+const isNearBottom = (): boolean => {
+  if (!messagesContainer.value) return true;
+
+  const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value;
+  const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+  return distanceFromBottom <= scrollThreshold;
+};
+// 监听滚动事件
+const handleScroll = () => {
+  if (!messagesContainer.value) return;
+
+  // 如果用户向上滚动（不在底部），标记为手动滚动
+  isUserScrolling.value = !isNearBottom();
+};
+
+// 智能滚动：只在用户位于底部时才自动滚动
+const smartScrollToBottom = () => {
+  if (!isUserScrolling.value || isNearBottom()) {
+    scrollToBottom();
+    isUserScrolling.value = false; // 重置标记
+  }
+};
+
+// ============= 虚拟滚动核心函数 =============
+
+// 工具函数：限制数值范围
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+// 记录消息高度
+function recordMessageHeight(index: number, height: number) {
+  if (!Number.isFinite(height) || height <= 0) return;
+
+  const previous = messageHeights[index];
+  messageHeights[index] = height;
+
+  if (previous) {
+    heightStats.total += height - previous;
+  } else {
+    heightStats.total += height;
+    heightStats.count++;
+  }
+}
+
+// 计算平均消息高度
+const averageMessageHeight = computed(() => {
+  return heightStats.count > 0
+    ? Math.max(60, heightStats.total / heightStats.count)
+    : 120;
+});
+
+// 估算指定范围的总高度
+function estimateHeightRange(start: number, end: number) {
+  if (start >= end) return 0;
+  let total = 0;
+  for (let i = start; i < end; i++) {
+    total += messageHeights[i] ?? averageMessageHeight.value;
+  }
+  return total;
+}
+
+// 根据偏移量估算消息索引
+function estimateIndexForOffset(offsetPx: number) {
+  if (offsetPx <= 0) return 0;
+  let remaining = offsetPx;
+  const messages = props.messages;
+  for (let i = 0; i < messages.length; i++) {
+    const height = messageHeights[i] ?? averageMessageHeight.value;
+    if (remaining <= height) return i;
+    remaining -= height;
+  }
+  return Math.max(0, messages.length - 1);
+}
+
+// 更新活跃渲染范围
+function updateLiveRange() {
+  const total = props.messages.length;
+  if (!virtualizationEnabled.value || total === 0) {
+    liveRange.start = 0;
+    liveRange.end = total;
+    return;
+  }
+
+  const windowSize = Math.min(MAX_LIVE_MESSAGES, total);
+  const buffer = LIVE_MESSAGE_BUFFER;
+  const desiredStart = clamp(
+    focusIndex.value - buffer,
+    0,
+    Math.max(0, total - windowSize),
+  );
+
+  liveRange.start = desiredStart;
+  liveRange.end = Math.min(total, desiredStart + windowSize);
+}
+
+// 同步焦点到滚动位置
+function syncFocusToScroll() {
+  if (!virtualizationEnabled.value || !messagesContainer.value) return;
+
+  const container = messagesContainer.value;
+  const scrollTop = container.scrollTop;
+  const viewportHeight = container.clientHeight;
+  const targetOffset = scrollTop + viewportHeight * 0.5;
+
+  const estimated = estimateIndexForOffset(targetOffset);
+  focusIndex.value = clamp(
+    estimated,
+    0,
+    Math.max(0, props.messages.length - 1),
+  );
+}
+
+// 调度滚动同步（使用 RAF 优化）
+function scheduleScrollSync() {
+  if (!virtualizationEnabled.value) return;
+  if (pendingScrollSync !== null) return;
+
+  pendingScrollSync = requestAnimationFrame(() => {
+    pendingScrollSync = null;
+    syncFocusToScroll();
+  });
+}
+
+// 监听滚动事件（增强版）
+const handleScrollEnhanced = () => {
+  handleScroll(); // 原有的用户滚动检测
+  if (virtualizationEnabled.value) {
+    scheduleScrollSync(); // 虚拟滚动同步
+  }
+};
+
+// 设置消息槽位元素引用
+function setMessageSlotElement(index: number, el: HTMLElement | null) {
+  if (el) {
+    messageSlotElements.set(index, el);
+  } else {
+    messageSlotElements.delete(index);
+  }
+}
+
+// 设置消息内容元素引用并测量高度
+function setMessageContentRef(index: number, el: HTMLElement | null) {
+  if (!el) {
+    messageContentElements.delete(index);
+    return;
+  }
+
+  messageContentElements.set(index, el);
+
+  // 使用 microtask 延迟测量，确保 DOM 渲染完成
+  queueMicrotask(() => {
+    if (el.offsetHeight > 0) {
+      recordMessageHeight(index, el.offsetHeight);
+    }
+  });
+}
+
+// 计算可见消息列表
+const visibleMessages = computed(() => {
+  if (!virtualizationEnabled.value) {
+    return props.messages.map((msg, index) => ({ message: msg, index }));
+  }
+
+  const total = props.messages.length;
+  const start = clamp(liveRange.start, 0, total);
+  const end = clamp(liveRange.end, start, total);
+
+  return props.messages.slice(start, end).map((msg, idx) => ({
+    message: msg,
+    index: start + idx,
+  }));
+});
+
+// 计算顶部占位高度
+const topSpacerHeight = computed(() => {
+  if (!virtualizationEnabled.value) return 0;
+  return estimateHeightRange(
+    0,
+    Math.min(liveRange.start, props.messages.length),
+  );
+});
+
+// 计算底部占位高度
+const bottomSpacerHeight = computed(() => {
+  if (!virtualizationEnabled.value) return 0;
+  const total = props.messages.length;
+  const end = Math.min(liveRange.end, total);
+  return estimateHeightRange(end, total);
+});
+
+// 设置滚动监听
+function setupScrollListener() {
+  if (
+    scrollListenerActive ||
+    !virtualizationEnabled.value ||
+    !messagesContainer.value
+  )
+    return;
+  scrollListenerActive = true;
+}
+
+// 清理滚动监听
+function cleanupScrollListener() {
+  scrollListenerActive = false;
+  if (pendingScrollSync !== null) {
+    cancelAnimationFrame(pendingScrollSync);
+    pendingScrollSync = null;
+  }
+}
+
 // 滚动到底部
 const scrollToBottom = () => {
   if (messagesContainer.value) {
@@ -170,9 +431,16 @@ const scrollToBottom = () => {
 // 监听消息变化自动滚动
 watch(
   () => props.messages.length,
-  async () => {
+  async (newLength, oldLength) => {
     await nextTick();
-    scrollToBottom();
+
+    // 如果是新增消息且启用虚拟化，自动聚焦到最后
+    if (virtualizationEnabled.value && newLength > (oldLength || 0)) {
+      focusIndex.value = Math.max(0, newLength - 1);
+      updateLiveRange();
+    }
+
+    smartScrollToBottom(); // 使用智能滚动
   },
 );
 
@@ -180,12 +448,44 @@ watch(
   () => props.isLoading,
   async () => {
     await nextTick();
-    scrollToBottom();
+    // scrollToBottom();
+    smartScrollToBottom(); // 使用智能滚动
   },
 );
 
+// 监听虚拟化状态变化
+watch(
+  () => virtualizationEnabled.value,
+  (enabled) => {
+    if (enabled) {
+      setupScrollListener();
+      syncFocusToScroll();
+    } else {
+      cleanupScrollListener();
+    }
+  },
+  { immediate: true },
+);
+
+// 监听焦点索引变化，更新渲染范围
+watch(
+  [focusIndex, () => props.messages.length],
+  () => {
+    updateLiveRange();
+  },
+  { immediate: true },
+);
+
+// 组件卸载时清理
+onBeforeUnmount(() => {
+  cleanupScrollListener();
+  messageSlotElements.clear();
+  messageContentElements.clear();
+});
+
 defineExpose({
   scrollToBottom,
+  smartScrollToBottom, // 暴露智能滚动方法
 });
 </script>
 
@@ -200,6 +500,10 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  /* 虚拟滚动优化 */
+  position: relative;
+  contain: layout;
+  content-visibility: auto;
 
   .empty-state {
     display: flex;
@@ -288,6 +592,20 @@ defineExpose({
 
 .messages-container::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* 虚拟滚动样式 */
+.message-spacer {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.message-slot {
+  width: 100%;
+}
+
+.message-content-wrapper {
+  width: 100%;
 }
 
 @keyframes typing {

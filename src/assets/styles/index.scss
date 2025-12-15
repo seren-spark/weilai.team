@@ -4,6 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  @import "markstream-vue/index.css";
+  @import "markstream-vue/index.css";
+}
+
+[data-custom-id="docs"] .prose {
+  max-width: 720px;
+}
 @media screen and (max-width: 768px) {
   html {
     font-size: 13px;

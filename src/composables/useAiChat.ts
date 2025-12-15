@@ -778,6 +778,7 @@ export function useAiChat() {
       role: msg.role,
       content: msg.content,
       time: msg.time,
+      metadata: msg.metadata,
     }));
 
     // 恢复 sessionId
@@ -806,12 +807,18 @@ export function useAiChat() {
     });
   };
 
-  // 保存 AI 消息
-  const saveAssistantMessage = async (content: string) => {
+  // 保存 AI 消息（支持元数据）
+  const saveAssistantMessage = async (content: string, metadata?: any) => {
     if (!currentChatId.value) return;
 
     const time = getCurrentTime();
-    await storage.saveMessage(currentChatId.value, "assistant", content, time);
+    await storage.saveMessage(
+      currentChatId.value,
+      "assistant",
+      content,
+      time,
+      metadata,
+    );
   };
 
   // 更新会话的 sessionId
