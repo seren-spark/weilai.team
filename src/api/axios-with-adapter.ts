@@ -1,6 +1,5 @@
 /**
  * Axios + 智能适配器集成示例
- * 
  * 这个文件展示了如何在现有的 axios 实例中集成智能适配器
  * 可以直接替换原有的 axios.ts 文件使用
  */
@@ -44,7 +43,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // ==================== 响应拦截器（集成智能适配器） ====================
@@ -80,7 +79,7 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     console.error("[Response Error]", error);
-    
+
     let { message } = error;
     if (message == "Network Error") {
       message = "网络错误";
@@ -98,9 +97,9 @@ apiClient.interceptors.response.use(
       data: null,
       message,
       code: error.response?.status || 500,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     } as StandardResponse);
-  }
+  },
 );
 
 // ==================== 辅助函数 ====================
@@ -111,14 +110,14 @@ apiClient.interceptors.response.use(
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTeamIdFromUrl(url?: string): string {
-  if (!url) return 'default';
-  
+  if (!url) return "default";
+
   // 示例：根据URL路径判断
-  if (url.includes('/team-a/')) return 'team-a';
-  if (url.includes('/team-b/')) return 'team-b';
-  if (url.includes('/legacy/')) return 'team-legacy-complex';
-  
-  return 'default';
+  if (url.includes("/team-a/")) return "team-a";
+  if (url.includes("/team-b/")) return "team-b";
+  if (url.includes("/legacy/")) return "team-legacy-complex";
+
+  return "default";
 }
 
 // ==================== 便捷方法封装 ====================
@@ -129,7 +128,7 @@ function getTeamIdFromUrl(url?: string): string {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function get<T = any>(
   url: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): Promise<StandardResponse<T>> {
   const response = await apiClient.get(url, { params });
   return response as StandardResponse<T>;
@@ -141,7 +140,7 @@ export async function get<T = any>(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function post<T = any>(
   url: string,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
 ): Promise<StandardResponse<T>> {
   const response = await apiClient.post(url, data);
   return response as StandardResponse<T>;
@@ -153,7 +152,7 @@ export async function post<T = any>(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function put<T = any>(
   url: string,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
 ): Promise<StandardResponse<T>> {
   const response = await apiClient.put(url, data);
   return response as StandardResponse<T>;
@@ -165,11 +164,10 @@ export async function put<T = any>(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function del<T = any>(
   url: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): Promise<StandardResponse<T>> {
   const response = await apiClient.delete(url, { params });
   return response as StandardResponse<T>;
 }
 
 export default apiClient;
-

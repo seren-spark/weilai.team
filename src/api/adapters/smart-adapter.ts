@@ -1,11 +1,11 @@
 /**
  * 智能适配器 - 混合方案实现
- * 
+ *
  * 核心设计思路：
  * 1. 优先级机制：自定义函数 > 声明式配置 > 智能检测
  * 2. 层层兜底：每一层失败都有下一层兜底
  * 3. 缓存优化：首次检测后缓存配置，后续零开销
- * 
+ *
  * 面试亮点：
  * - 混合方案设计，平衡易用性和灵活性
  * - 多层兜底机制，确保系统稳定性
@@ -13,8 +13,12 @@
  * - 性能优化，智能缓存机制
  */
 
-import type { StandardResponse } from '../types';
-import type { TeamConfig, ResponseFormatConfig, CustomHandlers } from '../config/team-config';
+import type { StandardResponse } from "../types";
+import type {
+  TeamConfig,
+  ResponseFormatConfig,
+  CustomHandlers,
+} from "../config/team-config";
 
 /**
  * 智能适配器主类
@@ -22,7 +26,7 @@ import type { TeamConfig, ResponseFormatConfig, CustomHandlers } from '../config
 export class SmartAdapter {
   // 配置缓存，避免重复检测
   private static configCache = new Map<string, any>();
-  
+
   // 是否启用调试日志
   private static debugMode = false;
 
@@ -45,70 +49,75 @@ export class SmartAdapter {
   /**
    * ==================== 主入口方法 ====================
    * 智能适配响应 - 支持混合配置
-   * 
+   *
    * @param response 原始响应数据
    * @param teamConfig 团队配置（可选）
    * @returns 标准响应格式
    */
   static adaptResponse(
     response: any,
-    teamConfig?: TeamConfig
+    teamConfig?: TeamConfig,
   ): StandardResponse {
     try {
-      this.log('开始适配响应', { response, teamConfig: teamConfig?.teamId });
+      this.log("开始适配响应", { response, teamConfig: teamConfig?.teamId });
 
       // ==================== 优先级1：自定义 transform 预处理 ====================
       let processedResponse = response;
       if (teamConfig?.customHandlers?.transform) {
-        this.log('执行自定义 transform');
+        this.log("执行自定义 transform");
         processedResponse = teamConfig.customHandlers.transform(response);
       }
 
       // ==================== 优先级2：完整自定义函数处理 ====================
       if (this.hasCompleteCustomHandlers(teamConfig?.customHandlers)) {
-        this.log('使用完整自定义函数处理');
-        return this.applyCustomHandlers(processedResponse, teamConfig!.customHandlers!);
+        this.log("使用完整自定义函数处理");
+        return this.applyCustomHandlers(
+          processedResponse,
+          teamConfig!.customHandlers!,
+        );
       }
 
       // ==================== 优先级3：混合处理（声明式 + 部分自定义） ====================
       if (teamConfig?.responseFormat) {
-        this.log('使用声明式配置 + 部分自定义函数');
+        this.log("使用声明式配置 + 部分自定义函数");
         return this.applyMixedAdapter(
           processedResponse,
           teamConfig.responseFormat,
-          teamConfig.customHandlers
+          teamConfig.customHandlers,
         );
       }
 
       // ==================== 优先级4：智能检测兜底 ====================
-      this.log('使用智能检测兜底');
+      this.log("使用智能检测兜底");
       const teamId = teamConfig?.teamId;
-      
+
       // 尝试从缓存获取配置
       if (teamId && this.configCache.has(teamId)) {
-        this.log('使用缓存配置', teamId);
+        this.log("使用缓存配置", teamId);
         const cachedConfig = this.configCache.get(teamId);
+        //返回对应的值
         return this.applyAdapter(processedResponse, cachedConfig);
       }
 
-      // 智能检测
+      // 智能检测 得到字段
       const detectedConfig = this.detectResponseFormat(processedResponse);
-      
+
       // 缓存检测结果
       if (teamId && teamConfig?.enableCache !== false) {
         this.configCache.set(teamId, detectedConfig);
       }
 
-      return this.applyAdapter(processedResponse, detectedConfig);
+      //最终检测到字段了 那么就是获取value 返回值
 
+      return this.applyAdapter(processedResponse, detectedConfig);
     } catch (error) {
-      this.log('适配器错误', error);
-      
+      this.log("适配器错误", error);
+
       // 错误后处理
       if (teamConfig?.customHandlers?.errorTransform) {
         return teamConfig.customHandlers.errorTransform(error, response);
       }
-      
+
       return this.createErrorResponse(error);
     }
   }
@@ -126,25 +135,25 @@ export class SmartAdapter {
    */
   private static applyCustomHandlers(
     response: any,
-    handlers: CustomHandlers
+    handlers: CustomHandlers,
   ): StandardResponse {
     const isSuccess = handlers.isSuccess!(response);
-    
+
     let data = null;
-    let message = '';
+    let message = "";
 
     if (isSuccess) {
       data = handlers.getData!(response);
       message = handlers.getMessage
         ? handlers.getMessage(response, true)
-        : this.extractMessage(response, 'message');
+        : this.extractMessage(response, "message");
     } else {
       data = null;
       message = handlers.getError
         ? handlers.getError(response)
         : handlers.getMessage
-        ? handlers.getMessage(response, false)
-        : this.extractMessage(response, 'message');
+          ? handlers.getMessage(response, false)
+          : this.extractMessage(response, "message");
     }
 
     return {
@@ -152,7 +161,7 @@ export class SmartAdapter {
       data,
       message,
       code: this.extractCode(response),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -162,12 +171,16 @@ export class SmartAdapter {
   private static applyMixedAdapter(
     response: any,
     format: ResponseFormatConfig,
-    handlers?: CustomHandlers
+    handlers?: CustomHandlers,
   ): StandardResponse {
     // 1. 判断成功状态（自定义优先）
     const isSuccess = handlers?.isSuccess
       ? handlers.isSuccess(response)
-      : this.getSuccessValue(response, format.successField, format.successValues);
+      : this.getSuccessValue(
+          response,
+          format.successField,
+          format.successValues,
+        );
 
     // 2. 提取数据（自定义优先）
     const data = handlers?.getData
@@ -175,7 +188,7 @@ export class SmartAdapter {
       : this.getDataValue(response, format.dataField, format);
 
     // 3. 提取消息（自定义优先）
-    let message = '';
+    let message = "";
     if (handlers?.getMessage) {
       message = handlers.getMessage(response, isSuccess);
     } else if (!isSuccess && handlers?.getError) {
@@ -192,7 +205,7 @@ export class SmartAdapter {
       data,
       message,
       code,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -200,14 +213,14 @@ export class SmartAdapter {
    * ==================== 应用声明式配置适配器 ====================
    */
   private static applyAdapter(response: any, config: any): StandardResponse {
-    this.log('应用适配器', config);
-    
+    this.log("应用适配器", config);
+
     const success = this.getSuccessValue(
       response,
       config.successField,
-      config.successValues || [200, 'success', true]
+      config.successValues || [200, "success", true],
     );
-    
+
     const data = this.getDataValue(response, config.dataField, config);
     const message = this.getMessageValue(response, config, success);
     const code = this.getCodeValue(response, config.successField);
@@ -217,7 +230,7 @@ export class SmartAdapter {
       data,
       message,
       code,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -233,9 +246,8 @@ export class SmartAdapter {
 
       // 检测分页信息
       const data = response[dataField];
-      const paginationInfo = data && typeof data === 'object'
-        ? this.detectPagination(data)
-        : null;
+      const paginationInfo =
+        data && typeof data === "object" ? this.detectPagination(data) : null;
 
       return {
         successField,
@@ -243,10 +255,10 @@ export class SmartAdapter {
         dataField,
         messageField,
         paginationInfo,
-        isPaginated: paginationInfo !== null
+        isPaginated: paginationInfo !== null,
       };
     } catch (error) {
-      this.log('检测失败，使用默认配置', error);
+      this.log("检测失败，使用默认配置", error);
       return this.getDefaultConfig();
     }
   }
@@ -255,9 +267,9 @@ export class SmartAdapter {
    * 检测成功值
    */
   private static detectSuccessValues(value: any): any[] {
-    if (typeof value === 'number') return [200, 201, 204];
-    if (typeof value === 'string') return ['success', 'ok'];
-    if (typeof value === 'boolean') return [true];
+    if (typeof value === "number") return [200, 201, 204];
+    if (typeof value === "string") return ["success", "ok"];
+    if (typeof value === "boolean") return [true];
     return [200];
   }
 
@@ -265,7 +277,7 @@ export class SmartAdapter {
    * 检测成功标识字段
    */
   private static detectSuccessField(response: any): string {
-    const successFields = ['code', 'status', 'success', 'result'];
+    const successFields = ["code", "status", "success", "result"];
 
     for (const field of successFields) {
       if (response[field] !== undefined) {
@@ -275,14 +287,16 @@ export class SmartAdapter {
       }
     }
 
-    return successFields.find(field => response[field] !== undefined) || 'code';
+    return (
+      successFields.find((field) => response[field] !== undefined) || "code"
+    );
   }
 
   /**
    * 检测数据字段
    */
   private static detectDataField(response: any): string {
-    const dataFields = ['data', 'result', 'payload', 'content', 'records'];
+    const dataFields = ["data", "result", "payload", "content", "records"];
 
     for (const field of dataFields) {
       if (response[field] !== undefined && response[field] !== null) {
@@ -290,14 +304,20 @@ export class SmartAdapter {
       }
     }
 
-    return 'data';
+    return "data";
   }
 
   /**
    * 检测消息字段（支持嵌套）
    */
   private static detectMessageField(response: any): string | string[] {
-    const topLevelFields = ['message', 'msg', 'msgOther', 'error', 'errorMessage'];
+    const topLevelFields = [
+      "message",
+      "msg",
+      "msgOther",
+      "error",
+      "errorMessage",
+    ];
 
     // 1. 先检测顶层
     for (const field of topLevelFields) {
@@ -310,7 +330,7 @@ export class SmartAdapter {
     const dataField = this.detectDataField(response);
     const data = response[dataField];
 
-    if (data && typeof data === 'object' && !Array.isArray(data)) {
+    if (data && typeof data === "object" && !Array.isArray(data)) {
       for (const field of topLevelFields) {
         if (data[field] !== undefined && data[field] !== null) {
           return [dataField, field]; // 返回嵌套路径
@@ -318,36 +338,126 @@ export class SmartAdapter {
       }
     }
 
-    return 'message';
+    return "message";
   }
 
   /**
-   * 检测分页信息
+   * 检测分页信息（支持深层嵌套）
    */
   private static detectPagination(data: any): any {
-    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
       return null;
     }
 
-    // 检测嵌套分页
-    const paginationFields = ['pagination', 'pageInfo', 'meta', 'page']; //页数等信息
-    const listFields = ['list', 'items', 'records', 'data', 'users'];//每页数据
+    const paginationFields = ["pagination", "pageInfo", "meta", "page"]; //页数等信息
+    const listFields = ["list", "items", "records", "data", "users"]; //每页数据
 
+    // 1. 检测当前层级的嵌套分页
     for (const paginationField of paginationFields) {
-      if (data[paginationField]) { //如果找到页数的信息
+      if (data[paginationField]) {
+        //如果找到页数的信息
         const listInfo = this.findListFieldWithName(data, listFields);
         if (listInfo) {
           return {
             listField: listInfo.fieldName,
             paginationField,
-            pagination: data[paginationField]
+            pagination: data[paginationField],
+            nestingLevel: 0, // 当前层级
           };
         }
       }
     }
 
-    // 检测扁平化分页
-    return this.detectFlatPagination(data, listFields);
+    // 2. 检测当前层级的扁平化分页
+    const flatResult = this.detectFlatPagination(data, listFields);
+    if (flatResult) {
+      return { ...flatResult, nestingLevel: 0 };
+    }
+
+    // 3. 当前层没找到 递归检测下一层（最多检测3层，避免性能问题）
+    return this.detectNestedPagination(
+      data,
+      paginationFields,
+      listFields,
+      1,
+      3,
+    );
+  }
+
+  /**
+   * 递归检测深层嵌套分页
+   * @param data 当前数据对象
+   * @param paginationFields 分页字段候选
+   * @param listFields 列表字段候选
+   * @param currentLevel 当前层级
+   * @param maxLevel 最大检测层级
+   */
+  private static detectNestedPagination(
+    data: any,
+    paginationFields: string[],
+    listFields: string[],
+    currentLevel: number,
+    maxLevel: number,
+  ): any {
+    // 超过最大层级  返回 防止无限递归
+    if (currentLevel > maxLevel) {
+      return null;
+    }
+
+    // 遍历当前对象的所有属性（比如data={result: {...}, code:200} → 遍历result、code）
+    for (const key in data) {
+      const value = data[key];
+      // 跳过非对象或数组
+      if (!value || typeof value !== "object" || Array.isArray(value)) {
+        continue;
+      }
+
+      // 检测这一层是否有分页信息
+      // 情况1: 嵌套分页 { result: { list: [], pagination: {} } }
+      for (const paginationField of paginationFields) {
+        if (value[paginationField]) {
+          const listInfo = this.findListFieldWithName(value, listFields);
+          if (listInfo) {
+            return {
+              listField: listInfo.fieldName,
+              paginationField,
+              pagination: value[paginationField],
+              nestingLevel: currentLevel,
+              nestingPath: [key], // 记录嵌套路径
+            };
+          }
+        }
+      }
+
+      // 情况2: 扁平分页 { result: { list: [], current: 1, total: 100 } }
+      const flatResult = this.detectFlatPagination(value, listFields);
+      if (flatResult) {
+        return {
+          ...flatResult,
+          nestingLevel: currentLevel,
+          nestingPath: [key],
+        };
+      }
+
+      // 继续递归下一层
+      const deepResult = this.detectNestedPagination(
+        value,
+        paginationFields,
+        listFields,
+        currentLevel + 1,
+        maxLevel,
+      );
+
+      if (deepResult) {
+        // 更新嵌套路径
+        return {
+          ...deepResult,
+          nestingPath: [key, ...(deepResult.nestingPath || [])],
+        };
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -357,24 +467,28 @@ export class SmartAdapter {
     const listInfo = this.findListFieldWithName(data, listFields);
     if (!listInfo) return null;
 
-    const pageFields = ['current', 'page', 'pageNum', 'pageNumber'];
-    const sizeFields = ['pageSize', 'size', 'limit'];
-    const totalFields = ['total', 'totalCount', 'totalElements', 'count'];
-    const pagesFields = ['totalPages', 'pages', 'totalPage'];
+    const pageFields = ["current", "page", "pageNum", "pageNumber"];
+    const sizeFields = ["pageSize", "size", "limit"];
+    const totalFields = ["total", "totalCount", "totalElements", "count"];
+    const pagesFields = ["totalPages", "pages", "totalPage"];
 
     const current = this.findField(data, pageFields);
     const pageSize = this.findField(data, sizeFields);
     const total = this.findField(data, totalFields);
     const totalPages = this.findField(data, pagesFields);
 
-    if (current !== undefined && pageSize !== undefined && total !== undefined) {
+    if (
+      current !== undefined &&
+      pageSize !== undefined &&
+      total !== undefined
+    ) {
       return {
         listField: listInfo.fieldName,
         isFlat: true,
         current,
         pageSize,
         total,
-        totalPages: totalPages || Math.ceil(total / pageSize)
+        totalPages: totalPages || Math.ceil(total / pageSize),
       };
     }
 
@@ -387,7 +501,7 @@ export class SmartAdapter {
   private static getSuccessValue(
     response: any,
     field: string,
-    successValues: any[]
+    successValues: any[],
   ): boolean {
     const value = response[field];
     return successValues.includes(value);
@@ -396,7 +510,11 @@ export class SmartAdapter {
   /**
    * ==================== 获取数据值 ====================
    */
-  private static getDataValue(response: any, dataField: string, config: any): any {
+  private static getDataValue(
+    response: any,
+    dataField: string,
+    config: any,
+  ): any {
     const data = response[dataField];
 
     if (config.isPaginated) {
@@ -412,13 +530,13 @@ export class SmartAdapter {
   private static getMessageValue(
     response: any,
     format: ResponseFormatConfig,
-    isSuccess: boolean
+    isSuccess: boolean,
   ): string {
     const { messageField, errorConfig } = format;
 
     // 1. 成功时的消息提取
     if (isSuccess) {
-      return this.extractMessageByField(response, messageField) || 'Success';
+      return this.extractMessageByField(response, messageField) || "Success";
     }
 
     // 2. 失败时的消息提取
@@ -426,7 +544,7 @@ export class SmartAdapter {
     if (errorConfig?.nestedMessagePath) {
       const nestedMessage = this.extractNestedMessage(
         response,
-        errorConfig.nestedMessagePath
+        errorConfig.nestedMessagePath,
       );
       if (nestedMessage) return nestedMessage;
     }
@@ -435,19 +553,19 @@ export class SmartAdapter {
     if (errorConfig?.errorMessageField) {
       const errorMessage = this.extractMessageByField(
         response,
-        errorConfig.errorMessageField
+        errorConfig.errorMessageField,
       );
       if (errorMessage) return errorMessage;
     }
 
     // 优先级3: data 本身是字符串
     const data = response[format.dataField];
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       return data;
     }
 
     // 优先级4: data 中的 message
-    if (data && typeof data === 'object') {
+    if (data && typeof data === "object") {
       if (data.message) return data.message;
       if (data.msg) return data.msg;
       if (data.error) return data.error;
@@ -458,7 +576,7 @@ export class SmartAdapter {
     if (message) return message;
 
     // 最终兜底
-    return 'Error';
+    return "Error";
   }
 
   /**
@@ -466,11 +584,11 @@ export class SmartAdapter {
    */
   private static extractNestedMessage(
     response: any,
-    path: string | string[]
+    path: string | string[],
   ): string | null {
     // 支持字符串路径 'data.message'
-    if (typeof path === 'string') {
-      path = path.split('.');
+    if (typeof path === "string") {
+      path = path.split(".");
     }
 
     let value = response;
@@ -479,7 +597,7 @@ export class SmartAdapter {
       if (value === undefined) return null;
     }
 
-    return typeof value === 'string' ? value : null;
+    return typeof value === "string" ? value : null;
   }
 
   /**
@@ -487,23 +605,26 @@ export class SmartAdapter {
    */
   private static extractMessageByField(
     response: any,
-    field: string | string[]
+    field: string | string[],
   ): string | null {
     // 简单字段名
-    if (typeof field === 'string') {
+    if (typeof field === "string") {
       return response[field] || null;
     }
 
     // 优先级数组
     if (Array.isArray(field)) {
       // 如果是嵌套路径 ['data', 'message']
-      if (field.length > 1 && !response[field[0]]?.constructor?.name?.includes('String')) {
+      if (
+        field.length > 1 &&
+        !response[field[0]]?.constructor?.name?.includes("String")
+      ) {
         let value = response;
         for (const key of field) {
           value = value?.[key];
           if (value === undefined) break;
         }
-        if (typeof value === 'string') return value;
+        if (typeof value === "string") return value;
       }
 
       // 如果是优先级列表 ['message', 'msg', 'tips']
@@ -519,20 +640,20 @@ export class SmartAdapter {
    * 提取简单消息
    */
   private static extractMessage(response: any, defaultField: string): string {
-    const fields = ['message', 'msg', 'error', 'errorMessage'];
+    const fields = ["message", "msg", "error", "errorMessage"];
     for (const field of fields) {
       if (response[field]) return response[field];
     }
-    return response[defaultField] || 'Unknown';
+    return response[defaultField] || "Unknown";
   }
 
   /**
    * 提取状态码
    */
   private static extractCode(response: any): number {
-    if (typeof response.code === 'number') return response.code;
-    if (typeof response.status === 'number') return response.status;
-    if (typeof response.statusCode === 'number') return response.statusCode;
+    if (typeof response.code === "number") return response.code;
+    if (typeof response.status === "number") return response.status;
+    if (typeof response.statusCode === "number") return response.statusCode;
     return 200;
   }
 
@@ -541,8 +662,8 @@ export class SmartAdapter {
    */
   private static getCodeValue(response: any, field: string): number {
     const value = response[field];
-    if (typeof value === 'number') return value;
-    if (typeof value === 'string') return value === 'success' ? 200 : 500;
+    if (typeof value === "number") return value;
+    if (typeof value === "string") return value === "success" ? 200 : 500;
     return 200;
   }
 
@@ -551,35 +672,67 @@ export class SmartAdapter {
    */
   private static handleMixedData(data: any, config: any): any {
     const result: any = {};
+    const paginationInfo = config.paginationInfo;
 
-    if (config.paginationInfo.isFlat) {
+    // 如果有嵌套路径，先提取嵌套的数据
+    let targetData = data;
+    if (paginationInfo.nestingPath && paginationInfo.nestingPath.length > 0) {
+      for (const key of paginationInfo.nestingPath) {
+        targetData = targetData?.[key];
+        if (!targetData) {
+          // 嵌套路径无效，返回空结果
+          return {
+            records: [],
+            current: 1,
+            size: 10,
+            total: 0,
+            pages: 0,
+          };
+        }
+      }
+    }
+
+    if (paginationInfo.isFlat) {
       // 扁平化分页处理
-      const listField = config.paginationInfo.listField;
+      const listField = paginationInfo.listField;
 
-      result.records = data[listField] || [];
-      result.current = config.paginationInfo.current || 1;
-      result.size = config.paginationInfo.pageSize || 10;
-      result.total = config.paginationInfo.total || 0;
-      result.pages = config.paginationInfo.totalPages || 0;
+      result.records = targetData[listField] || [];
+      result.current = paginationInfo.current || 1;
+      result.size = paginationInfo.pageSize || 10;
+      result.total = paginationInfo.total || 0;
+      result.pages = paginationInfo.totalPages || 0;
 
       // 提取其他数据
-      this.extractOtherData(data, result, [
-        listField, 'current', 'pageSize', 'total', 'totalPages', 'pages'
+      this.extractOtherData(targetData, result, [
+        listField,
+        "current",
+        "pageSize",
+        "total",
+        "totalPages",
+        "pages",
       ]);
     } else {
       // 嵌套分页处理
-      const listField = config.paginationInfo.listField;
-      const paginationField = config.paginationInfo.paginationField;
-      const pagination = data[paginationField];
+      const listField = paginationInfo.listField;
+      const paginationField = paginationInfo.paginationField;
+      const pagination = targetData[paginationField];
 
-      result.records = data[listField] || [];
+      result.records = targetData[listField] || [];
       result.current = pagination?.current || pagination?.page || 1;
       result.size = pagination?.pageSize || pagination?.size || 10;
       result.total = pagination?.total || pagination?.totalCount || 0;
       result.pages = pagination?.totalPages || pagination?.pages || 0;
 
       // 提取其他数据
-      this.extractOtherData(data, result, [listField, paginationField]);
+      this.extractOtherData(targetData, result, [listField, paginationField]);
+    }
+
+    // 如果有嵌套，记录嵌套信息（便于调试）
+    if (paginationInfo.nestingLevel > 0) {
+      result._nestingInfo = {
+        level: paginationInfo.nestingLevel,
+        path: paginationInfo.nestingPath,
+      };
     }
 
     return result;
@@ -591,9 +744,9 @@ export class SmartAdapter {
   private static extractOtherData(
     sourceData: any,
     targetData: any,
-    excludeFields: string[]
+    excludeFields: string[],
   ): void {
-    Object.keys(sourceData).forEach(key => {
+    Object.keys(sourceData).forEach((key) => {
       if (!excludeFields.includes(key) && sourceData[key] !== undefined) {
         targetData[key] = sourceData[key];
       }
@@ -604,9 +757,10 @@ export class SmartAdapter {
    * ==================== 辅助方法 ====================
    */
   private static isSuccessCondition(value: any): boolean {
-    if (typeof value === 'number') return value >= 200 && value < 300;
-    if (typeof value === 'string') return ['success', 'ok', 'completed'].includes(value);
-    if (typeof value === 'boolean') return value === true;
+    if (typeof value === "number") return value >= 200 && value < 300;
+    if (typeof value === "string")
+      return ["success", "ok", "completed"].includes(value);
+    if (typeof value === "boolean") return value === true;
     return false;
   }
 
@@ -621,7 +775,7 @@ export class SmartAdapter {
 
   private static findListFieldWithName(
     data: any,
-    fields: string[]
+    fields: string[],
   ): { fieldName: string; value: any[] } | null {
     for (const field of fields) {
       if (data[field] && Array.isArray(data[field])) {
@@ -647,9 +801,9 @@ export class SmartAdapter {
     return {
       success: false,
       data: null,
-      message: error?.message || 'Unknown error',
+      message: error?.message || "Unknown error",
       code: 500,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -658,29 +812,29 @@ export class SmartAdapter {
    */
   private static getDefaultConfig() {
     return {
-      successField: 'code',
+      successField: "code",
       successValues: [200],
-      dataField: 'data',
-      messageField: 'message',
+      dataField: "data",
+      messageField: "message",
       paginationInfo: null,
-      isPaginated: false
+      isPaginated: false,
     };
   }
 
   /**
    * ==================== 工具方法 ====================
    */
-  
+
   /**
    * 清除缓存
    */
   static clearCache(teamId?: string): void {
     if (teamId) {
       this.configCache.delete(teamId);
-      this.log('清除缓存', teamId);
+      this.log("清除缓存", teamId);
     } else {
       this.configCache.clear();
-      this.log('清除所有缓存');
+      this.log("清除所有缓存");
     }
   }
 
@@ -691,4 +845,3 @@ export class SmartAdapter {
     return new Map(this.configCache);
   }
 }
-

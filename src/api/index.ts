@@ -4,7 +4,7 @@
  */
 
 // 核心类导出
-export { SmartApiClient } from "./core/smart-api-client";
+// export { SmartApiClient } from "@/api/core/smart-api-client";
 export { SmartAdapter } from "./adapters/smart-adapter";
 
 // 配置导出

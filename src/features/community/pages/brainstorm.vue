@@ -10,7 +10,7 @@ interface TagData {
 // const tagType = ref('blog')
 const typeData = ref<TagData>({ type: 4, tagType: "brainstorm" });
 
-const addTagType = useTagStore();
+const addTagType = useTagStore(); 
 addTagType.addTag(typeData.value);
 </script>
 
