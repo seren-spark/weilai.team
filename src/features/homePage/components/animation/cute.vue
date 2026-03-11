@@ -2,17 +2,17 @@
   <div class="content" @mouseenter="stopAnimation" @mouseleave="startAnimation">
     <div class="moving-container">
       <!-- 招新时取消注释跳转报名页 -->
-      <!-- <RouterLink to="/application"> -->
-      <img
-        ref="movingImg"
-        src="../../../../assets/img/homePage/Animation1.gif"
-        alt="图片"
-        class="moving-image"
-      />
-      <!-- </RouterLink> -->
-      <!-- <div v-show="isEnterShow" class="text">
+      <RouterLink to="/application">
+        <img
+          ref="movingImg"
+          src="../../../../assets/img/homePage/Animation1.gif"
+          alt="图片"
+          class="moving-image"
+        />
+      </RouterLink>
+      <div v-show="isEnterShow" class="text">
         <img src="../../../../assets/img/homePage/enter.png" alt="报名" />
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
