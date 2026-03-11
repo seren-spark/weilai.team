@@ -5,6 +5,7 @@ interface UserState {
   isSelf: boolean;
   avatar: string;
   permissions: string[];
+  isTeacher: boolean;
 }
 export const useUserStore = defineStore("user", {
   // 定义初始状态
@@ -13,6 +14,7 @@ export const useUserStore = defineStore("user", {
     isSelf: true,
     avatar: "",
     permissions: [],
+    isTeacher: false,
   }),
 
   actions: {
@@ -21,7 +23,9 @@ export const useUserStore = defineStore("user", {
       this.userId = id;
       this.avatar = avatar;
     },
-
+    setIsTeacher(status: boolean) {
+      this.isTeacher = status;
+    },
     getMyId() {
       return Number(JSON.parse(localStorage.getItem("userId") as string).value);
       // return JSON.parse(localStorage.getItem("userId") as string);
@@ -32,18 +36,21 @@ export const useUserStore = defineStore("user", {
         JSON.parse(localStorage.getItem("userId") as string).value,
       );
       this.isSelf = true;
+      this.isTeacher = false;
     },
     resetStorage() {
       this.userId = undefined;
       this.isSelf = true;
       this.avatar = "";
       this.permissions = [];
+      this.isTeacher = false;
     },
   },
   getters: {
     getUserId: (state) => state.userId,
     getIsSelf: (state) => state.isSelf,
     getAvatar: (state) => state.avatar,
+    getIsTeacher: (state) => state.isTeacher,
   },
   persist: {
     key: "userStore",

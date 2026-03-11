@@ -34,10 +34,11 @@ const userStore = useUserStore();
 
 import { computed } from "vue";
 
-const isTeacher = computed(() => userStore.permissions.includes("teacher"));
+const isTeacher = computed(() => userStore.isTeacher);
 const showSchedule = computed(() => !isTeacher.value);
 const showCollections = computed(() => userStore.isSelf);
 const showLifePhotos = computed(() => userStore.isSelf);
+console.log("userStore", userStore);
 
 const gridColumnsClass = computed(() => {
   if (!userStore.isSelf) {

@@ -410,7 +410,7 @@
     </div>
 
     <div
-      v-if="userInfo.lastLoginTime && userStore.isSelf"
+      v-if="userInfo.lastLoginTime"
       class="lastLoginTime"
     >
       <p>
@@ -660,6 +660,9 @@ async function getUserInfo() {
   if (data.value && data.value.code == 200) {
     Object.assign(userInfo, data.value.data);
     console.log("用户信息：", userInfo);
+
+    userStore.isTeacher = userInfo.auth.includes("teacher");
+    console.log('用户是否为教师:', userStore.isTeacher);
 
     phone.value = userInfo.phone;
     qq.value = userInfo.qq;
